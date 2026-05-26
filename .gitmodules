@@ -1,6 +1,6 @@
-[submodule "aom-nirs"]
-	path = aom-nirs
-	url = git@github.com:GBeurier/aom-nirs.git
+[submodule "nirs4all-aom"]
+	path = nirs4all-aom
+	url = git@github.com:GBeurier/nirs4all-aom.git
 	branch = main
 [submodule "dag-ml"]
 	path = dag-ml

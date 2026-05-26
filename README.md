@@ -10,7 +10,7 @@
 
 | Submodule | Branche suivie | Visibilité |
 | --- | --- | --- |
-| `aom-nirs` | `main` | public |
+| `nirs4all-aom` | `main` | public |
 | `dag-ml` | `main` | public |
 | `dag-ml-data` | `main` | public |
 | `nirs4all-arena` | `main` | public |
