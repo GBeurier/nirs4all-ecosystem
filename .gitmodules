@@ -30,6 +30,10 @@
 	path = nirs4all-lab
 	url = git@github.com:GBeurier/nirs4all-lab.git
 	branch = main
+[submodule "nirs4all-formats"]
+	path = nirs4all-formats
+	url = git@github.com:GBeurier/nirs4all-formats.git
+	branch = main
 [submodule "nirs4all-io"]
 	path = nirs4all-io
 	url = git@github.com:GBeurier/nirs4all-io.git

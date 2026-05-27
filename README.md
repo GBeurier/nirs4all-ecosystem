@@ -18,9 +18,19 @@
 | `nirs4all-studio` | `master` | public |
 | `nirs4all-webpage` | `main` | public |
 | `nirs4all-lab` | `main` | **privé** |
+| `nirs4all-formats` | `main` | public |
 | `nirs4all-io` | `main` | public |
 | `nirs4all-methods` | `main` | public |
 | `nirs4all-datasets` | `main` | **privé** |
+
+> **`nirs4all-formats` vs `nirs4all-io`.** Les responsabilités de lecture de
+> fichiers et d'assemblage de jeux de données ont été séparées :
+> - **`nirs4all-formats`** (anciennement `nirs4all-io`) : bibliothèque Rust de
+>   *lecteurs* de fichiers spectroscopiques (lecture seule, ~45 formats).
+> - **`nirs4all-io`** (nouveau) : *pont d'assemblage* de jeux de données
+>   (résolution → inférence → configuration → matérialisation). Python en phase 1
+>   (compatible `SpectroDataset`), Rust en phase 2 (compatible `dag-ml-data`).
+>   Il consomme `nirs4all-formats` pour la lecture des fichiers.
 
 ## Cloner
 
@@ -45,7 +55,7 @@ autres s'initialisent normalement. Pour n'initialiser que ce à quoi vous avez
 accès, ciblez les chemins voulus :
 
 ```bash
-git submodule update --init nirs4all nirs4all-io nirs4all-methods   # exemple
+git submodule update --init nirs4all nirs4all-formats nirs4all-io   # exemple
 ```
 
 ## Mettre à jour
