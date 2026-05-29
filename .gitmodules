@@ -46,3 +46,15 @@
 	path = nirs4all-datasets
 	url = git@github.com:GBeurier/nirs4all-datasets.git
 	branch = main
+[submodule "nirs4all-cluster"]
+	path = nirs4all-cluster
+	url = git@github.com:GBeurier/nirs4all-cluster.git
+	branch = main
+[submodule "nirs4all-dist"]
+	path = nirs4all-dist
+	url = git@github.com:GBeurier/nirs4all-dist.git
+	branch = main
+[submodule "nirs4all-lite"]
+	path = nirs4all-lite
+	url = git@github.com:GBeurier/nirs4all-lite.git
+	branch = main
