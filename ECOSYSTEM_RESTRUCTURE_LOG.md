@@ -44,6 +44,7 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 - `GBeurier/nirs4all-dist` was audited and deleted: it only contained a placeholder README for a future distribution factory, a role now owned by `nirs4all-lite` release/binding infrastructure.
 - `GBeurier/nirs4all-web` was cleaned of the legacy `single-page-WASM` prototype; the active `studio-lite` app passes typecheck, unit tests, catalog validation, served/single-file builds, and browser smokes.
 - `GBeurier/nirs4all-lite` was hardened with release/build scaffolding for Rust, Python, npm/WASM, R, and MATLAB/Octave. CI is green across Rust, Python 3.11/3.12, npm, R `R CMD build/check`, and Octave smoke/package zip.
+- `GBeurier/nirs4all-lite` CI now uploads downloadable artifacts for every target: Rust crate, Python wheel/sdist, npm tarball, R source tarball, and MATLAB/Octave zip. The final green run produced `r-source/nirs4all_0.0.0.tar.gz`.
 - `GBeurier/GBeurier.r-universe.dev` was updated to include `dagmldata`, `nirs4alldatasets`, and the `nirs4all` R aggregate from `nirs4all-lite/bindings/r`.
 
 ## Local State After Split
@@ -77,6 +78,7 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 | done | Retire `nirs4all-dist` | Remote repository deleted after confirming it only contained a placeholder README; submodule removed from `nirs4all-ecosystem`. |
 | done | Clean and validate `nirs4all-web` | Removed legacy `single-page-WASM`; fixed smoke defaults; Pages deploy is green and live. |
 | done | Harden `nirs4all-lite` bindings/release gates | Added license/package metadata, corrected upstream package candidates, R docs/tests, MATLAB/Octave smoke/package, Makefile, release docs, CI and release workflow. |
+| done | Expose `nirs4all-lite` CI artifacts | CI uploads `rust-crate`, `python-*`, `npm-wasm`, `r-source`, and `matlab-octave`; latest green run includes `nirs4all_0.0.0.tar.gz`. |
 | done | Configure R-universe registry | `GBeurier.r-universe.dev/packages.json` now tracks `dagmldata`, `nirs4alldatasets`, and `nirs4all` from the relevant subdirectories. |
 | pending | Audit remaining private non-paper repos before visibility flips | `nirs4all-lab` is still private on GitHub; do not make public without content audit. |
 
