@@ -46,6 +46,7 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 - `GBeurier/nirs4all-lite` was hardened with release/build scaffolding for Rust, Python, npm/WASM, R, and MATLAB/Octave. CI is green across Rust, Python 3.11/3.12, npm, R `R CMD build/check`, and Octave smoke/package zip.
 - `GBeurier/nirs4all-lite` CI now uploads downloadable artifacts for every target: Rust crate, Python wheel/sdist, npm tarball, R source tarball, and MATLAB/Octave zip. The final green run produced `r-source/nirs4all_0.0.0.tar.gz`.
 - `GBeurier/GBeurier.r-universe.dev` was updated to include `dagmldata`, `nirs4alldatasets`, and the `nirs4all` R aggregate from `nirs4all-lite/bindings/r`.
+- `GBeurier/nirs4all-lite` now has a JSON/YAML parser contract for the full Python `nirs4all` definition envelope: direct step lists, `pipeline`, `steps`, JSON/YAML paths, and JSON/YAML text. The shared portable fixture uses the `nirs4all/examples/pipeline_samples` syntax for Kennard-Stone, SNV, Savitzky-Golay, and PLS `_grid_`/`param` sweeps. CI run `27384969720` is green across Rust, Python 3.11/3.12, npm, R, and MATLAB/Octave.
 
 ## Local State After Split
 
@@ -80,6 +81,7 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 | done | Harden `nirs4all-lite` bindings/release gates | Added license/package metadata, corrected upstream package candidates, R docs/tests, MATLAB/Octave smoke/package, Makefile, release docs, CI and release workflow. |
 | done | Expose `nirs4all-lite` CI artifacts | CI uploads `rust-crate`, `python-*`, `npm-wasm`, `r-source`, and `matlab-octave`; latest green run includes `nirs4all_0.0.0.tar.gz`. |
 | done | Configure R-universe registry | `GBeurier.r-universe.dev/packages.json` now tracks `dagmldata`, `nirs4alldatasets`, and `nirs4all` from the relevant subdirectories. |
+| done | Add `nirs4all` JSON/YAML parser contract to `nirs4all-lite` | Python, Rust, and npm parse the same portable JSON/YAML fixture and accept `pipeline`, `steps`, and direct step-list envelopes. This is syntax parity only; execution parity remains a separate gate. |
 | pending | Audit remaining private non-paper repos before visibility flips | `nirs4all-lab` is still private on GitHub; do not make public without content audit. |
 
 ## GitHub Commands Executed
@@ -120,3 +122,4 @@ Final submodule pointers were updated and pushed after the `cluster`, `web`, and
 - Audit `nirs4all-lab` before any visibility change.
 - Migrate AOM public reproduction material into `nirs4all-papers` only after draft/private content is separated.
 - Wait for R-universe to ingest the updated `packages.json`; `https://gbeurier.r-universe.dev/src/contrib/PACKAGES` still showed only the pre-existing packages immediately after the push.
+- Implement and gate the full execution parity test: run one portable `nirs4all` JSON/YAML pipeline through full Python `nirs4all`, native `nirs4all-lite`, and every binding, then compare outputs within declared tolerances.
