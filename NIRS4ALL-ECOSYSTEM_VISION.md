@@ -6,7 +6,7 @@ L'écosystème nirs4all a trois ambitions superposées :
 
 1. **Faire de `nirs4all` (lib Python) + `nirs4all-studio` (Electron) une option de référence open-source pour la NIRS appliquée** — visant à compléter, voire concurrencer sur certains usages, les outils propriétaires établis (PLS_Toolbox, Unscrambler, SIMCA) et les briques open-source existantes (R `prospectr`/`mdatools`/`pls`/`hyperSpec`, Python `SpectroChemPy`, Orange-Spectroscopy/Quasar, HyperSpy/Spectral Python), avec une intégration native des frameworks ML/DL modernes (sklearn, PyTorch, JAX, TabPFN) et une reproductibilité par construction.
 2. **Construire en dessous une couche d'infrastructure réutilisable hors du domaine NIRS** : `dag-ml` (cœur Rust de coordination ML reproductible, OOF-safe) et `dag-ml-data` (contrats de données alignées par identité). Une fondation publiable en informatique/ML, indépendante du domaine.
-3. **Porter le tout vers tous les écosystèmes scientifiques utiles** : R, MATLAB/Octave, Julia, C/C++, WASM, Android — par bindings minces hébergés dans `nirs4all-methods` / `nirs4all-formats`, et via `nirs4all-lite` qui distribue **la chaîne des packages bas-niveau** (`nirs4all-formats` + `nirs4all-io` + `nirs4all-methods` + `dag-ml` [+ `dag-ml-data`]) en bundles installables par langage cible (CRAN, MATLAB toolbox, Julia Pkg, npm, Conda, Docker, vcpkg/Conan/Homebrew, .deb/.rpm). **Le « lite » est sémantique : sans Python on perd sklearn/PyTorch/TF/JAX, donc capability réduite ; ce n'est ni un sous-ensemble du code, ni une réécriture.** Zéro code numérique nouveau. La factory partagée qui *produit* ces bundles (patrons de build, scaffolding CI, supply-chain) est un sujet distinct, à instruire après — cf. annexe `nirs4all-dist`.
+3. **Porter le tout vers tous les écosystèmes scientifiques utiles** : R, MATLAB/Octave, Julia, C/C++, WASM, Android — par bindings minces hébergés dans `nirs4all-methods` / `nirs4all-formats`, et via `nirs4all-lite` qui distribue **la chaîne des packages bas-niveau** (`nirs4all-formats` + `nirs4all-io` + `nirs4all-methods` + `dag-ml` [+ `dag-ml-data`]) en bundles installables par langage cible (CRAN, MATLAB toolbox, Julia Pkg, npm, Conda, Docker, vcpkg/Conan/Homebrew, .deb/.rpm). **Le « lite » est sémantique : sans Python on perd sklearn/PyTorch/TF/JAX, donc capability réduite ; ce n'est ni un sous-ensemble du code, ni une réécriture.** Zéro code numérique nouveau. Les recettes de build, release et supply-chain vivent dans `nirs4all-lite` tant qu'elles servent cette distribution.
 
 À long terme : `nirs4all-studio` devient un atelier scientifique multi-modal (séries temporelles, hyperspectral, génomique, tabulaire) grâce à `dag-ml` / `dag-ml-data`, et `nirs4all-arena` devient un dépôt public de pipelines + datasets reproductibles, avec une matrice de comparaison méthodes × datasets curée en interne et publiée en lecture (pas une plateforme de compétition externe).
 
@@ -50,7 +50,6 @@ Quatre couches logiques. Chaque dépôt vit en parallèle dans `~/nirs4all/` ; `
 | `nirs4all-papers` | Dépôt public des papiers déposés de l'écosystème + artefacts `.n4a` reproductibles. | scaffold local créé, remote public à créer |
 | `nirs4all-drafts` | Drafts et papiers privés + artefacts `.n4a`. | ancien `nirs4all-papers` privé, remote à renommer |
 | `nirs4all-lite` | **Distribution simplifiée multi-langages** de la chaîne bas-niveau (`nirs4all-formats` + `nirs4all-io` + `nirs4all-methods` + `dag-ml` [+ `dag-ml-data`]). Bundles installables pour R (CRAN), MATLAB/Octave (`.mltbx`), Julia (`Pkg`), JS/WASM (npm), C/C++ (vcpkg / Conan / Homebrew / .deb / .rpm), Conda channel, Docker images. **Le « lite » est sémantique : capability réduite (pas de sklearn/PyTorch/TF/JAX sans Python), pas codebase réduit.** Zéro code numérique, zéro patch upstream. Semver strict, libs amont épinglées par tag. | scaffold local initial |
-| `nirs4all-dist` *(perspective, hors roadmap)* | **Factory partagée pour produire les bundles `nirs4all-lite` et les artefacts de chaque lib bas-niveau.** Patrons de build (`copier` / `cruft`), composite actions + reusable workflows GitHub, recettes packaging communes, pipelines supply-chain (SBOM, Sigstore / SLSA, CVE rebuild). À instruire **après** la première release `nirs4all-lite`, quand la redondance build/deploy entre dépôts amont aura été mesurée en pratique. Voir annexe. | à instruire post-`lite` v1 |
 | *exécution distribuée* (pas un dépôt) | Backend optionnel de `nirs4all.run(executor=...)` pour dispatcher l'exécution sur plusieurs workers. **Pas de nouveau dépôt prévu** ; module / extra dans `nirs4all`, conditionné aux critères go/no-go documentés dans l'*Annexe — Perspective : exécution distribuée* en fin de document. | à instruire, hors roadmap court/moyen terme |
 
 ### Schéma de dépendances (chemin "live" NIRS)
@@ -181,7 +180,9 @@ Le pattern existe et est mature : **conda-forge feedstocks** (recettes + CI + va
 
 `nirs4all-lite` devient un point de centralisation critique côté distribution. Si une release casse, *tous les utilisateurs aval* voient leur installation rompue. Mitigation : politique semver stricte + tags pinés côté libs amont + tests fixtures + automation §7.6 (les bumps de refs et la regen des recettes packaging sont précisément des tâches agent-driven adaptées, cf. mention explicite §7.6).
 
-> **Note** — la *factory* qui produit les bundles `nirs4all-lite` (patrons de build partagés entre dépôts amont, scaffolding CI, recettes communes, pipelines supply-chain) est un sujet **distinct** : voir *Annexe — Perspective : `nirs4all-dist`* en fin de document. À instruire après la première release `lite` une fois la redondance build/deploy effectivement mesurée — pas avant.
+> **Note** — les recettes de build/release des bundles `nirs4all-lite` restent dans `nirs4all-lite`.
+> Si une redondance réelle apparaît dans les dépôts amont, elle doit être factorisée par petites
+> briques documentées, pas par un dépôt factory séparé recréé par défaut.
 
 ### 4.4 `nirs4all-arena` : périmètre et cadrage
 
@@ -372,7 +373,7 @@ Préalable à toute soumission :
 ### 7.3 Ce qu'il faut différer (et l'écrire)
 
 - **`nirs4all-lite` comme dépôt de code numérique / réécriture native** → **abandonné**. Le dépôt existe en tant que *distribution simplifiée multi-langages* de la chaîne bas-niveau (cf. §4.3), pas comme réécriture ou sous-ensemble. Démarrage conditionné à la politique de stabilité écrite (semver strict, tags pinés, tests fixtures, compat matrix, SBOM/CVE/redistribution).
-- **`nirs4all-dist` (factory partagée build / scaffolding / supply-chain)** → **différé en perspective hors roadmap**. À instruire seulement après que la première release `nirs4all-lite` aura mis en lumière la redondance build/deploy réelle. Pas avant. Voir annexe en fin de document.
+- **`nirs4all-dist` (factory partagée build / scaffolding / supply-chain)** → **abandonné comme dépôt actif**. Son rôle est repris par les workflows, scripts et docs de `nirs4all-lite`; ne pas référencer de reusable workflows `GBeurier/nirs4all-dist`.
 - **Plateforme de soumission externe / compétition type Kaggle pour l'arena** → **abandonnée**. L'arena reste curée + compute interne + browsing public. Ne pas l'annoncer comme un Kaggle-NIRS, même à long terme.
 - **Exécution distribuée client/serveur/workers** (cf. *Annexe — Perspective : exécution distribuée* en fin de document) → pas de dépôt `nirs4all-cluster`. Au plus un spike Dask opt-in dans `nirs4all` après validation des 5 critères go/no-go.
 - **Bindings Julia / JNI / Android** de tous les projets → différer jusqu'à demande utilisateur explicite.
@@ -409,7 +410,6 @@ L'écosystème fait le choix explicite d'automatiser au maximum, par agents IA (
 - Réponses de premier niveau aux issues (clarification, demande de repro, pointage doc) avant escalade humaine.
 - Build / parity / ABI snapshot diffs sur les dépôts Rust et C++ — *lecture* des diffs ; toute *modification* de l'ABI publique remonte humain.
 - **`nirs4all-lite` (§4.3) — cas modèle agent-driven** : bumps de refs vers les libs amont (lock files), mise à jour des recettes packaging (Conda, Docker, R DESCRIPTION/Makevars, MATLAB toolbox), rebuild CVE déclenché sur signal supply-chain, regen des SBOM/attestations. Le périmètre est *parfait* pour l'automation parce que (a) zéro code numérique, (b) frontières claires entre configs et libs amont, (c) tests fixtures vérifient la non-régression à chaque PR.
-- **`nirs4all-dist` (annexe, perspective)** — *si* instruit : regen des templates `copier`/`cruft` dans les dépôts amont consommateurs, propagation des bumps de versions des composite actions et reusable workflows, audit régulier de la compat matrix « workflow version × lib version ». Même profil agent-friendly que `nirs4all-lite`.
 
 #### Périmètres qui restent humains (revue qualifiée systématique, jamais en autonomie complète)
 
@@ -472,7 +472,7 @@ Mitigation : revue trimestrielle humaine de l'état réel de l'écosystème + de
 | R12 | **AOM soumis Talanta prématurément** (sans aggréger les multi-seed déjà calculés + sans citations + sans paragraphe failure-modes) | Élevé scientifiquement | ~2-3 j humains de rédaction + agrégation sur des données existantes (cf. header revisé `paper/review/paper_review.md`). Ne pas soumettre sans cette passe. |
 | R13 | **Exécution distribuée bâclée** — soit dépôt `nirs4all-cluster` créé prématurément (scope/maintenance explosion), soit prototype Dask déployé sans modèle de sécurité (mTLS, secrets, isolation workspaces, quotas). Risque même si le site de browsing arena reste *read-only* : un worker mal isolé est exploitable | Très élevé pour scope *et* pour réputation (incidents data/security) | Imposer le passage par Option C (Dask backend opt-in dans `nirs4all`, zéro nouveau dépôt) avec critères go/no-go documentés dans l'*Annexe — Perspective : exécution distribuée*. Modèle data + sécurité + reprise écrit avant le code. Le « public » de l'arena reste un *site de consultation*, jamais un *endpoint d'exécution accessible aux tiers*. |
 | R14 | **Dérive du pari automation** : auto-merge sur `main`, sur-affirmations corrigées ré-introduites, code mort, dépôts multipliés sans clarification stratégique, CI verte mais UX cassée, supply-chain agentique compromise (MCP / plugin / dépendance), *privilege creep* sur permissions agent, pollution contexte / hallucination d'API privée, PR qui ajoute un test validant le bug | Moyen-élevé (érosion silencieuse de qualité, voire incident sécurité) | Pas d'auto-merge `main` (règle dure) ; reviewer sub-agent obligatoire + humain reviewer responsable (cf. §7.6) ; audit trimestriel agent vs humain (dashboard) ; tests E2E + couverture mesurée ; SBOM + provenance + SCA sur dépendances et plugins MCP ; permissions agent documentées et révisées ; CLAUDE.md / AGENTS.md à jour comme contrat opérationnel ; référencement explicite §7.5 décision 6 dans chaque CLAUDE.md. |
-| R15 | **Factory `nirs4all-dist` trop centrale** — si instruite trop tôt ou sans semver strict, un changement scaffolding casse la CI / release de N libs amont en cascade | Moyen-élevé pour velocity et fiabilité release | Instruire **uniquement** après la première release `nirs4all-lite` (annexe) ; semver strict, tags pinés côté libs amont, tests sur repos fixtures, CODEOWNERS par cible, no autonomous merge, compat matrix « workflow version × lib version » publiée. **Option A (statu quo) reste préférable à un `nirs4all-dist` instable.** |
+| R15 | **Distribution `nirs4all-lite` trop centrale** — si les recettes de build/release sont modifiées sans tests par cible, une release casse plusieurs bindings en cascade | Moyen-élevé pour velocity et fiabilité release | CI dédiée par cible (Rust, Python, R, JS/WASM, MATLAB/Octave), artefacts de release reconstruits à chaque tag, semver strict, tags pinés côté libs amont, CODEOWNER par cible, no autonomous merge, compat matrix publiée. |
 
 ---
 
@@ -487,7 +487,7 @@ Le risque principal n'est plus technique ni la maintenance brute, il est de **di
 - **dépendances cachées** entre objectifs : `dag-ml` publiable suppose qu'il soit consommé par `nirs4all` ; AOM publiable suppose les blockers levés ; arena suppose datasets ouverts et compute interne curé,
 - **trop d'ambitions parallèles vs capacité de décision et de revue *qualifiée*** : le pari automation (§7.6) recalibre la maintenance de routine mais n'absorbe pas la couche stratégique (architecture, science, sécurité, partenariats, communication), qui scale linéairement avec le nombre de dépôts et reste portée par très peu de personnes.
 
-La période 2026-S2 / 2027-S1 devrait être une phase de **consolidation et de mise en cohérence**, *avant* la phase de diffusion : 1.0.0 de `nirs4all`, alignement des claims, deux papiers d'abord (JOSS + AOM nettoyé), arena en benchmark reproductible curé + site de browsing, présence ICNIRS 2027. `nirs4all-lite` peut démarrer en parallèle dès qu'un premier bundle multi-langage est utile (CRAN, Conda ou Docker). `nirs4all-dist` (factory partagée build/scaffolding/supply-chain) reste **en perspective post-`lite` v1** — pas avant que la redondance build/deploy ait été mesurée empiriquement. Multi-modal studio, bindings exotiques attendent. La plateforme de soumission externe type Kaggle est explicitement abandonnée ; la réécriture native Rust/C++ n'a jamais été le projet (cf. §4.3).
+La période 2026-S2 / 2027-S1 devrait être une phase de **consolidation et de mise en cohérence**, *avant* la phase de diffusion : 1.0.0 de `nirs4all`, alignement des claims, deux papiers d'abord (JOSS + AOM nettoyé), arena en benchmark reproductible curé + site de browsing, présence ICNIRS 2027. `nirs4all-lite` peut démarrer en parallèle dès qu'un premier bundle multi-langage est utile (CRAN, Conda ou Docker) et porte directement ses recettes de build/release. Multi-modal studio, bindings exotiques attendent. La plateforme de soumission externe type Kaggle est explicitement abandonnée ; la réécriture native Rust/C++ n'a jamais été le projet (cf. §4.3).
 
 L'objectif long-terme défendable n'est pas « écrire encore plus de code » : c'est **devenir une référence open-source citée en NIRS appliquée et chimiométrie**, avec une couche d'infrastructure (`dag-ml`) propre et utilisée, publiable séparément en open-source ML (MLOSS / JMLR). Les deux objectifs se servent mutuellement, à condition de tenir les claims.
 
@@ -584,59 +584,3 @@ Le go est conditionnel à toutes ces conditions :
 Sans ces 5 conditions : no-go.
 
 ---
-
-## Annexe — Perspective : `nirs4all-dist` (factory partagée build / scaffolding / supply-chain)
-
-> *Hors recommandations à court/moyen terme.* Cette annexe consigne l'analyse d'une factory potentielle pour produire les bundles `nirs4all-lite` (§4.3) et les artefacts de chaque lib bas-niveau, sans dupliquer les recettes dans chaque dépôt. À instruire **après** la première release `nirs4all-lite`, quand la redondance build/deploy aura été mesurée en pratique. Pas avant. Référencée depuis §2 cartographie, §4.3, §7.6.
-
-### Constat motivant
-
-Aujourd'hui, chaque dépôt bas-niveau (`nirs4all-methods`, `nirs4all-formats`, `nirs4all-io`, `dag-ml`, `dag-ml-data`) embarque son propre scaffolding pour les bindings amont : `bindings/python` (PyO3 / maturin / cibuildwheel), `bindings/r` (extendr / `configure` / `Makevars.in`), `bindings/wasm` (wasm-pack), `bindings/octave` (MEX builders), `bindings/julia`, `bindings/jni`, `bindings/android`. Il y a de la redondance réelle entre dépôts (mêmes patterns maturin, mêmes scripts `configure` R, mêmes recettes cibuildwheel). Cette redondance n'est pas bloquante aujourd'hui mais croît avec chaque nouvelle cible ajoutée.
-
-### Cinq options en théorie
-
-| Option | Description | Avis |
-|---|---|---|
-| **A. Statu quo** — chaque lib porte son scaffolding | Velocité OK tant que le nombre de cibles n'explose pas. Bindings testés au plus près du C ABI. | Acceptable maintenant, à réévaluer si l'ajout d'une langue oblige à toucher N libs. |
-| **B. Dépôt par langage** — `nirs4all-r`, `nirs4all-py`, `nirs4all-julia` qui wrappent tout | **Rejeté pour du code métier** : casse la discipline de frontières, sépare bindings de leur ABI, complexifie tests de parité. | À utiliser uniquement comme **méta-paquet langage *vide*** : par ex. un package R `nirs4all` qui dépend en chaîne des packages R existants (Imports dans DESCRIPTION) — utile pour une expérience d'installation unifiée côté utilisateur. **Ce méta-paquet appartient au produit utilisateur `nirs4all-lite` (§4.3), pas à la factory `nirs4all-dist`.** |
-| **C. Scaffolding partagé centralisé** (= `nirs4all-dist`) | Templates `copier` / `cruft` paramétrés (chaque lib reste libre de ses choix : maturin pour `nirs4all-formats`, cibuildwheel pour `nirs4all-methods`). Composite actions GitHub pour étapes fines. Reusable workflows (`workflow_call`) pour matrices CI complètes. Renovate pour bump auto des refs. | **Option pragmatique gagnante** quand la redondance devient pénible. Templates *paramétrés*, pas fichiers clonés. |
-| **D. Bindings générés depuis C ABI seul** (ctypes / cffi / `dyn.load`) | Minimal mais non idiomatique. PyO3 = naturel pour Python ; ctypes = ressenti C dans Python. | À garder uniquement pour smoke tests cross-language (déjà le cas dans `dag-ml-data-capi`). |
-| **E. Two-tier** (low généré + high manuel) | Théoriquement le plus propre. | Sur-dimensionné pour l'état actuel. |
-
-### Périmètre de `nirs4all-dist` si instruit
-
-- **Patrons de build** : templates `copier`/`cruft` versionnés pour les patterns récurrents (maturin pyproject, configure R vendoring, cbindgen.toml, MEX build, wasm-pack manifest, Dockerfile multi-stage, conda-forge recipe). Chaque lib amont consomme un template au tag pinè, regénère localement, garde la responsabilité finale.
-- **Composite actions GitHub** : `setup-rust-toolchain`, `build-python-wheel-matrix`, `test-r-binding-parity`, `abi-snapshot-diff` — réutilisables dans n'importe quel job CI.
-- **Reusable workflows** : `python-wheel-release.yml`, `r-cran-build.yml`, `wasm-publish.yml`, `octave-mex-test.yml` — appelables par `uses: GBeurier/nirs4all-dist/.github/workflows/<name>.yml@v1`.
-- **Pipelines supply-chain** : génération SBOM (`syft`), signature Sigstore, attestations SLSA / in-toto, scan CVE (`trivy` / `osv-scanner`), rebuild automatique sur signal vulnérabilité.
-- **Recettes packaging consolidées** pour conda-forge feedstock, Homebrew formula, vcpkg port, Conan recipe.
-- **Renovate config** pour bump auto des refs et des dépendances tierces.
-
-### Hygiène (si instruit, à écrire dès le démarrage)
-
-Les mêmes règles que pour `nirs4all-lite` (§4.3), plus celles propres à une factory critique :
-
-- **Pure config + templates, jamais de code numérique** ni de patch upstream.
-- **Semver strict, tags `v1`/`v2`**, libs amont épinglent un tag, pas `main`.
-- **Tests sur repos fixtures** : un dépôt test minimal consomme chaque workflow et chaque template à chaque PR. Sans ça, un changement scaffolding casse silencieusement N libs amont.
-- **CODEOWNERS** par cible (un humain responsable de l'ajout d'une cible R, MATLAB, etc.).
-- **Compat matrix `workflow version × lib version`** publiée.
-- **Dépréciation sur ≥ 2 minor releases** avant breaking change.
-- **Politique de gestion des secrets** : les credentials de release (PyPI / CRAN / npm / crates.io) restent côté caller (lib amont), passés explicitement aux reusable workflows. Aucune élévation de privilège côté `dist`.
-
-### Pourquoi instruire après `nirs4all-lite` v1 et pas avant
-
-On factorise ce qui est *empiriquement* redondant, pas ce qu'on imagine redondant. Produire d'abord un premier `nirs4all-lite` (CRAN + Conda + Docker, par exemple) avec des recettes ad-hoc dans le dépôt `lite` met en lumière :
-- ce qui est *vraiment* commun entre les recettes ;
-- ce qui *paraît* commun mais diverge en pratique à cause des contraintes ABI / OS / version compiler ;
-- ce qui doit rester par-cible et ne pas être abstrait.
-
-Sans cette première expérience, un `nirs4all-dist` créé en amont risque de figer la mauvaise abstraction. C'est le pattern *rule of three* du refactoring appliqué à l'infrastructure.
-
-### Couplage avec le pari automation §7.6
-
-`nirs4all-dist` est, comme `nirs4all-lite`, un cas modèle agent-driven : bumps de refs, regen de templates dans les dépôts consommateurs, rebuild CVE sur signal supply-chain, regen SBOM/attestations. Zéro code numérique, frontières claires, tests fixtures = filet de sécurité. Le pari automation rend cette factory soutenable à coût marginal réduit.
-
-### Risque résiduel
-
-Le risque god-repo est *plus fort* sur `nirs4all-dist` que sur `nirs4all-lite` parce que `dist` est consommé par *toutes* les libs amont, alors que `lite` est consommé par les utilisateurs finaux. Un changement scaffolding mal validé casse la chaîne CI de chaque lib. Mitigation : semver strict + tests fixtures + automation §7.6 + politique « no autonomous merge ». Si ces conditions ne sont pas tenables, **rester en option A (statu quo)** est préférable à un `nirs4all-dist` instable.

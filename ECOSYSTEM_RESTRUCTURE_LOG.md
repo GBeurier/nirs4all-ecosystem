@@ -28,7 +28,7 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 - `GBeurier/nirs4all-web` does not exist.
 - `GBeurier/nirs4all-webpage` exists and is public; it serves `nirs4all.org`.
 - `GBeurier/nirs4all-org` and `GBeurier/nirs4all.org` do not exist.
-- `GBeurier/nirs4all-cluster`, `GBeurier/nirs4all-dist`, and `GBeurier/nirs4all-lab` are currently private.
+- `GBeurier/nirs4all-cluster`, `GBeurier/nirs4all-dist`, and `GBeurier/nirs4all-lab` were initially private.
 
 ## Remote State After 2026-06-11 Execution
 
@@ -39,6 +39,8 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 - New public `GBeurier/nirs4all-lite` was created and seeded from local `nirs4all-lite/`.
 - New public `GBeurier/GBeurier.github.io` was created as a minimal redirect from `https://gbeurier.github.io/` to `https://nirs4all.org/`.
 - `GBeurier/nirs4all-org` Pages is configured with `CNAME=nirs4all.org`, source `main:/`, HTTPS enforced, and status `built`.
+- `GBeurier/nirs4all-cluster` was audited, documented as public alpha, and made public.
+- `GBeurier/nirs4all-dist` was audited and deleted: it only contained a placeholder README for a future distribution factory, a role now owned by `nirs4all-lite` release/binding infrastructure.
 
 ## Local State After Split
 
@@ -66,7 +68,9 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 | done | Push `nirs4all-web` rename commit | Pages deploy succeeded and `https://gbeurier.github.io/nirs4all-web/` now serves `nirs4all-web` title/OG metadata. |
 | done | Push `nirs4all-lite` seed | Remote `main` exists; CI scaffold passed. |
 | done | Push `nirs4all-papers` seed | Remote `main` exists; content check passed. |
-| pending | Audit private non-paper repos before visibility flips | `nirs4all-lab`, `nirs4all-cluster`, and `nirs4all-dist` are still private on GitHub; do not make public without content audit. |
+| done | Publish `nirs4all-cluster` after audit | README and project metadata now mark it as a public alpha/prototype; GitHub visibility is public. |
+| done | Retire `nirs4all-dist` | Remote repository deleted after confirming it only contained a placeholder README; submodule removed from `nirs4all-ecosystem`. |
+| pending | Audit remaining private non-paper repos before visibility flips | `nirs4all-lab` is still private on GitHub; do not make public without content audit. |
 
 ## GitHub Commands Executed
 
@@ -105,5 +109,5 @@ Finally update `nirs4all-ecosystem/.gitmodules`, sync submodules, and commit the
 
 - Update `nirs4all-ecosystem/.gitmodules` and submodule gitlinks now that all target remotes exist.
 - Decide whether to keep or remove the pre-existing local `single-page-WASM/` deletion in `nirs4all-web`; it was not included in the `nirs4all-web` rename commit.
-- Audit `nirs4all-lab`, `nirs4all-cluster`, and `nirs4all-dist` before any visibility change.
+- Audit `nirs4all-lab` before any visibility change.
 - Migrate AOM public reproduction material into `nirs4all-papers` only after draft/private content is separated.

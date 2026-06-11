@@ -26,8 +26,7 @@
 | `nirs4all-io` | `main` | public |
 | `nirs4all-methods` | `main` | public |
 | `nirs4all-datasets` | `main` | public |
-| `nirs4all-cluster` | `main` | public cible, actuellement privé |
-| `nirs4all-dist` | `main` | public cible, actuellement privé |
+| `nirs4all-cluster` | `main` | public |
 
 > **`nirs4all-formats` vs `nirs4all-io`.** Les responsabilités de lecture de
 > fichiers et d'assemblage de jeux de données ont été séparées :
@@ -54,13 +53,13 @@ git submodule update --init --recursive
 
 ### Pull partiel (submodules privés)
 
-`nirs4all-drafts` reste **privé**. Pendant la migration, `nirs4all-lab`,
-`nirs4all-cluster` et `nirs4all-dist` peuvent encore être privés sur GitHub tant
-qu'un audit de publication n'a pas confirmé qu'ils ne contiennent rien de
-sensible. Un dépôt public peut référencer des submodules privés (seule l'URL est
-exposée, pas le contenu). Sans les droits d'accès, l'init global échoue *sur ces
-submodules uniquement* ; les autres s'initialisent normalement. Pour
-n'initialiser que ce à quoi vous avez accès, ciblez les chemins voulus :
+`nirs4all-drafts` reste **privé**. Pendant la migration, `nirs4all-lab` peut
+encore être privé sur GitHub tant qu'un audit de publication n'a pas confirmé
+qu'il ne contient rien de sensible. Un dépôt public peut référencer des submodules
+privés (seule l'URL est exposée, pas le contenu). Sans les droits d'accès, l'init
+global échoue *sur ces submodules uniquement* ; les autres s'initialisent
+normalement. Pour n'initialiser que ce à quoi vous avez accès, ciblez les chemins
+voulus :
 
 ```bash
 git submodule update --init nirs4all nirs4all-formats nirs4all-io   # exemple
