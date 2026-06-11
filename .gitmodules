@@ -22,9 +22,25 @@
 	path = nirs4all-studio
 	url = git@github.com:GBeurier/nirs4all-studio.git
 	branch = master
-[submodule "nirs4all-webpage"]
-	path = nirs4all-webpage
-	url = git@github.com:GBeurier/nirs4all-webpage.git
+[submodule "nirs4all-web"]
+	path = nirs4all-web
+	url = git@github.com:GBeurier/nirs4all-web.git
+	branch = main
+[submodule "nirs4all-lite"]
+	path = nirs4all-lite
+	url = git@github.com:GBeurier/nirs4all-lite.git
+	branch = main
+[submodule "nirs4all-org"]
+	path = nirs4all-org
+	url = git@github.com:GBeurier/nirs4all-org.git
+	branch = main
+[submodule "nirs4all-drafts"]
+	path = nirs4all-drafts
+	url = git@github.com:GBeurier/nirs4all-drafts.git
+	branch = main
+[submodule "nirs4all-papers"]
+	path = nirs4all-papers
+	url = git@github.com:GBeurier/nirs4all-papers.git
 	branch = main
 [submodule "nirs4all-lab"]
 	path = nirs4all-lab
@@ -53,8 +69,4 @@
 [submodule "nirs4all-dist"]
 	path = nirs4all-dist
 	url = git@github.com:GBeurier/nirs4all-dist.git
-	branch = main
-[submodule "nirs4all-lite"]
-	path = nirs4all-lite
-	url = git@github.com:GBeurier/nirs4all-lite.git
 	branch = main

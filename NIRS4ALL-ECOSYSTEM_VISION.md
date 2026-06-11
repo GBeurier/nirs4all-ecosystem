@@ -42,14 +42,14 @@ Quatre couches logiques. Chaque dépôt vit en parallèle dans `~/nirs4all/` ; `
 
 | Dépôt | Rôle | État |
 |---|---|---|
-| `nirs4all-datasets` | Catalogue + accès *pooch-style* à des datasets NIRS sur Dataverse (Recherche Data Gouv / CIRAD), cibles : DOIs, identity cards, Croissant. Réutilise `nirs4all-io`. | stub fonctionnel : 1 dataset exemple, DOIs/cards/manifests pas encore peuplés ; repo privé |
+| `nirs4all-datasets` | Catalogue + accès *pooch-style* à des datasets NIRS sur Dataverse (Recherche Data Gouv / CIRAD), cibles : DOIs, identity cards, Croissant. Réutilise `nirs4all-io`. | stub fonctionnel : 1 dataset exemple, DOIs/cards/manifests pas encore peuplés ; repo public |
 | `nirs4all-arena` | Environnement de benchmarks publiables : pipelines × datasets × méthodes, runs reproductibles via fichiers `.n4a`, site de browsing. | stub (README seul) |
 | `nirs4all-aom` | Code compagnon du papier AOM-PLS / POP-PLS / AOM-Ridge / FastAOM. À migrer dans `nirs4all-methods` à terme. | beta, papier en cours |
 | `nirs4all-lab` | Espace privé de prototypage : NICon, FCK-PLS, synthèse (ViTnirs), TabPFN, subset analysis, harness de benchmark. | actif, privé |
-| `nirs4all-webpage` | Landing page statique nirs4all.org. | en ligne |
-| `nirs4all-papers` *(planifié)* | Dépôt public des papiers de l'écosystème + artefacts `.n4a` reproductibles. | à créer |
-| `nirs4all-drafts` *(planifié)* | Drafts et papiers privés + artefacts `.n4a`. | à créer |
-| `nirs4all-lite` *(planifié)* | **Distribution simplifiée multi-langages** de la chaîne bas-niveau (`nirs4all-formats` + `nirs4all-io` + `nirs4all-methods` + `dag-ml` [+ `dag-ml-data`]). Bundles installables pour R (CRAN), MATLAB/Octave (`.mltbx`), Julia (`Pkg`), JS/WASM (npm), C/C++ (vcpkg / Conan / Homebrew / .deb / .rpm), Conda channel, Docker images. **Le « lite » est sémantique : capability réduite (pas de sklearn/PyTorch/TF/JAX sans Python), pas codebase réduit.** Zéro code numérique, zéro patch upstream. Semver strict, libs amont épinglées par tag. | à créer |
+| `nirs4all-org` | Landing page statique nirs4all.org. | en ligne, anciennement `nirs4all-webpage` |
+| `nirs4all-papers` | Dépôt public des papiers déposés de l'écosystème + artefacts `.n4a` reproductibles. | scaffold local créé, remote public à créer |
+| `nirs4all-drafts` | Drafts et papiers privés + artefacts `.n4a`. | ancien `nirs4all-papers` privé, remote à renommer |
+| `nirs4all-lite` | **Distribution simplifiée multi-langages** de la chaîne bas-niveau (`nirs4all-formats` + `nirs4all-io` + `nirs4all-methods` + `dag-ml` [+ `dag-ml-data`]). Bundles installables pour R (CRAN), MATLAB/Octave (`.mltbx`), Julia (`Pkg`), JS/WASM (npm), C/C++ (vcpkg / Conan / Homebrew / .deb / .rpm), Conda channel, Docker images. **Le « lite » est sémantique : capability réduite (pas de sklearn/PyTorch/TF/JAX sans Python), pas codebase réduit.** Zéro code numérique, zéro patch upstream. Semver strict, libs amont épinglées par tag. | scaffold local initial |
 | `nirs4all-dist` *(perspective, hors roadmap)* | **Factory partagée pour produire les bundles `nirs4all-lite` et les artefacts de chaque lib bas-niveau.** Patrons de build (`copier` / `cruft`), composite actions + reusable workflows GitHub, recettes packaging communes, pipelines supply-chain (SBOM, Sigstore / SLSA, CVE rebuild). À instruire **après** la première release `nirs4all-lite`, quand la redondance build/deploy entre dépôts amont aura été mesurée en pratique. Voir annexe. | à instruire post-`lite` v1 |
 | *exécution distribuée* (pas un dépôt) | Backend optionnel de `nirs4all.run(executor=...)` pour dispatcher l'exécution sur plusieurs workers. **Pas de nouveau dépôt prévu** ; module / extra dans `nirs4all`, conditionné aux critères go/no-go documentés dans l'*Annexe — Perspective : exécution distribuée* en fin de document. | à instruire, hors roadmap court/moyen terme |
 
@@ -93,9 +93,10 @@ Ce qui est **réellement en main** aujourd'hui :
 - **`nirs4all-io`** : Phase 1 Python terminée + parité octets-vs-octets avec `nirs4all.DatasetConfigs`, ~200 tests, ruff+mypy clean. Phase 2 Rust gatée.
 - **`dag-ml` + `dag-ml-data`** : crates actifs, contrats JSON partagés, C ABI + bindings Python ctypes smoke, fingerprints stables, validation envelope+materialize. Niveau de maturité : **scaffold + conformance pack avancés** ; les host controller adapters production, les providers production et le connecteur depuis le DSL `nirs4all` ne sont pas implémentés. Aujourd'hui aucun pipeline `nirs4all` ne s'exécute via `dag-ml`.
 - **`nirs4all-aom`** : code utilisé pour le manuscrit, 3 familles (`pls` / `ridge` / `fast`). **arXiv v2 prêt** (bundle `paper/aom_arxiv_v2.tar.gz`, abstract finalisé, repo public référencé dans `main.tex`). Pour Talanta, audit benchmark récent (28 mai) : la `paper/review/paper_review.md` initiale (17 mai) surestimait les blockers compute. **Les expériences manquantes citées par la review existent déjà** dans les workspaces archivés (Blender + AutoSelect seeds 0/1/2 sur 26 datasets dans `_archive/trashed_runs/AOM_v0_legacy/Ridge/benchmark_runs/da001_*_seeds012/`, RMSEP identique entre seeds — caveat : le split SPXY3 est déterministe par protocole, donc c'est de la *protocol determinism*, pas une robustesse à partitions répétées ; baseline conventionnelle forte couverte par `pls-tabpfn-hpo-25trials` qui fait HPO sur `norm` / `smooth` / `baseline` / `osc` / composantes — à présenter comme « search space conventionnel sous HPO », pas comme recette fixe). Reste pour Talanta : (a) re-agréger workspaces archivés dans `final_stats.md` + supplement, en dédupliquant `(dataset, variant, seed)` et en cadrant le claim sur N=26 (ou re-run les 6 datasets manquants pour atteindre N_cap=32) ; (b) promouvoir l'audit de missingness en table publiée ; (c) paragraphe + table failure-modes ; (d) citations SPORT/PORTO/PROSAC + ML-bias ; (e) reflow Figure 5 ; (f) expliciter le search space PLS-HPO dans le texte ; (g) smoke test reproductibilité repo. **Effort total ~2-3 jours humains, ~0 compute supplémentaire** (ou +6 datasets si on vise N_cap=32 strict pour le multi-seed). Détail dans le header revisé de `paper/review/paper_review.md`.
-- **`nirs4all-datasets`** : structure + CLI + intégration Dataverse en place, mais le catalogue local contient **un seul dataset d'exemple** avec `doi: null`, `has_card: false`, `has_manifest: false`. Repo aussi marqué privé dans `nirs4all-ecosystem`. Statut réel : *stub fonctionnel*, pas alpha au sens publiable.
-- **`nirs4all-webpage`** : en ligne mais **stale** : affiche `nirs4all` 0.8.8 alors que la lib est 0.9.1. Premier réflexe consolidation.
-- **`nirs4all-arena`** / `-papers` / `-drafts` / `-lite` : non démarrés.
+- **`nirs4all-datasets`** : structure + CLI + intégration Dataverse en place, mais le catalogue local contient **un seul dataset d'exemple** avec `doi: null`, `has_card: false`, `has_manifest: false`. Statut réel : *stub fonctionnel*, pas alpha au sens publiable.
+- **`nirs4all-org`** : en ligne mais **stale** : anciennement `nirs4all-webpage`, à garder aligné avec les versions et noms publics.
+- **`nirs4all-web`** : ancien rôle `nirs4all-lite` browser/WASM, à publier sous son nom propre.
+- **`nirs4all-papers` / `nirs4all-drafts` / `nirs4all-lite`** : scaffolds locaux ou renommages locaux en place ; remotes et submodules restent à aligner.
 
 Ce qui n'est **pas** en main aujourd'hui :
 
@@ -295,7 +296,7 @@ Liste priorisée. Les items sont notés **(P1/P2/P3)** par priorité et **(0-6m 
 |---|---|---|---|
 | **P1** | **JOSS paper `nirs4all`** | 6-12m | Soumission JOSS ne se fait pas à froid : il faut archive Zenodo/DOI, *statement of need*, alternatives discutées (au minimum prospectr, mdatools, SpectroChemPy, Orange-Spectroscopy, Pinard), tests + CI verts + couverture, *contribution guidelines*, *example gallery*, release stable (≥ 1.0.0). Sans cela, le reviewer JOSS demande des corrections. La rédaction est légère mais la mise à niveau du repo est non-triviale. |
 | **P1** | **Papier AOM-PLS / POP-PLS** | 1-3m | arXiv v2 uploadable as-is. Pour Talanta : ~2-3 j humains de rédaction + agrégation, ~0 compute. Les expériences manquantes citées par la review (Blender/AutoSelect seeds 1/2, baseline conventionnelle SNV+SG+OSC+composantes tunées) **existent déjà** ; il reste à aggréger les workspaces archivés `da001_*_seeds012` dans `final_stats.md`, promouvoir missingness + failure-modes en tables supplément, ajouter SPORT/PORTO/PROSAC + Cawley-Talbot + Bergstra-Bengio + Varma-Simon, reflow Figure 5, expliciter le search space PLS-HPO dans le texte, et un smoke test repo. Venue Talanta. |
-| **P1** | **Mise à jour `nirs4all-webpage`** (pas un papier, mais préalable) | 0-3m | Aligner les versions affichées (0.8.8 → 0.9.x), corriger la galerie, ajouter *statement of need* et liens packages. Conditionne crédibilité de toute publi citée. |
+| **P1** | **Mise à jour `nirs4all-org`** (pas un papier, mais préalable) | 0-3m | Aligner les versions affichées (0.8.8 → 0.9.x), corriger la galerie, ajouter *statement of need* et liens packages. Conditionne crédibilité de toute publi citée. |
 | **P2** | Papier formats / IO (`nirs4all-formats` + `nirs4all-io`) à JOSS ou SoftwareX | 12-18m | Conditionné à fixtures publiques propres + matrice de conformance documentée + comparaison vs `spc-spectra`, `jcamp`, `brukeropus`, `spectrolab`. SoftwareX a un APC non négligeable, à arbitrer vs JOSS gratuit. |
 | **P2** | Papier DSL pipeline (Chemometrics & ILS ou SoftwareX) | 12-18m | À sortir **après** 1.0 de `nirs4all` et **après** au moins un benchmark comparatif documenté vs Kedro/Hamilton/MLflow sur ≥ 3 workflows. Sinon le claim « DSL différenciant » est non démontré. |
 | **P2** | Papier `dag-ml` à MLOSS / JMLR | 12-18m | Pas OSDI/EuroSys (évaluation systèmes lourde non envisagée). MLOSS / JMLR open-source ML track est le bon couloir. **Conditionné à : (a) backend `dag-ml` effectivement consommé par `nirs4all`, (b) bench empirique sur ≥ 5 pipelines avec ≥ 2 concurrents (MLflow, DVC, Hamilton ou Metaflow), (c) démonstration concrète de cas de fuite/leakage attrapés.** Sans (a)(b)(c), pas de papier. |
@@ -318,7 +319,7 @@ Liste priorisée. Les items sont notés **(P1/P2/P3)** par priorité et **(0-6m 
 ### 6.3 Industrie
 
 - **(P1, 0-6m)** Sortir la **matrice de licence publique** de l'écosystème (cf. critique 4.6). Pré-requis à toute discussion industrielle : un vendeur ne signe pas sans clarté. Inclut une éventuelle double licence (CeCILL libre + commercial avec support CIRAD).
-- **(P2, 6-12m)** Approche **vendeurs d'instruments** (Bruker, Foss, Metrohm, ABB, PerkinElmer, ASD/Malvern) — **conditionnée à** : (a) matrice de licence sortie, (b) `nirs4all` 1.0 stable et publié, (c) `nirs4all-webpage` à jour, (d) au moins une publi citable. Démonstration : `nirs4all-formats` lit leurs sorties natives + studio interactif sans logiciel propriétaire. Sans (a)(b)(c)(d), prématuré.
+- **(P2, 6-12m)** Approche **vendeurs d'instruments** (Bruker, Foss, Metrohm, ABB, PerkinElmer, ASD/Malvern) — **conditionnée à** : (a) matrice de licence sortie, (b) `nirs4all` 1.0 stable et publié, (c) `nirs4all-org` à jour, (d) au moins une publi citable. Démonstration : `nirs4all-formats` lit leurs sorties natives + studio interactif sans logiciel propriétaire. Sans (a)(b)(c)(d), prématuré.
 - **(P2, 12-24m)** Cible verticale **PAT pharma** (Process Analytical Technology). Audit conformité GxP, traçabilité runs, intégrité signatures électroniques (CFR 21 Part 11). Marché payant ; `nirs4all` a déjà la traçabilité par construction. Conditionné à un partenaire pharma identifié.
 - **(P3, 12-24m)** Cible verticale **agronomie / breeding** (CIRAD est sur place) : NIRS + génotype SNP via `dag-ml-data`. Pilote interne CIRAD (G2F-like, breeding NIRS) → publi (e.g. *Plant Phenomics*, *G3*) → diffusion. Bon levier publication interdisciplinaire.
 - **(P3, 12-24m)** Cible verticale **soil / agronomy NIRS** (mesures sol, sondes terrain) et **food quality control**. Marchés diffus mais utilisateurs nombreux.
@@ -337,9 +338,9 @@ Liste priorisée. Les items sont notés **(P1/P2/P3)** par priorité et **(0-6m 
 
 ### 6.5 Communications
 
-- **(P1, 0-3m)** **Mise à niveau `nirs4all-webpage`** : aligner versions (0.8.8 stale → 0.9.x), corriger la galerie d'écrans, ajouter *statement of need*, lien direct vers packages (PyPI, CRAN, crates.io), citation BibTeX, état réel des projets. Préalable à toute publi qui pointe vers le site.
+- **(P1, 0-3m)** **Mise à niveau `nirs4all-org`** : aligner versions (0.8.8 stale → 0.9.x), corriger la galerie d'écrans, ajouter *statement of need*, lien direct vers packages (PyPI, CRAN, crates.io), citation BibTeX, état réel des projets. Préalable à toute publi qui pointe vers le site.
 - **(P1, 0-6m)** Refonte progressive : démo studio en GIF / vidéo, exemples concrets « 10 lignes de code », pages dédiées par projet de l'écosystème.
-- **(P1, 0-6m)** Lancer un blog technique (`posts/` dans `nirs4all-webpage`) avec 4-6 posts cibles : *Why we built nirs4all*, *The pipeline DSL*, *AOM-PLS in 5 minutes*, *From OPUS file to prediction in Studio*, *Reproducible NIRS bundles*, *nirs4all-formats : reading 58 vendor formats from Rust*. Visibilité long-traîne SEO.
+- **(P1, 0-6m)** Lancer un blog technique (`posts/` dans `nirs4all-org`) avec 4-6 posts cibles : *Why we built nirs4all*, *The pipeline DSL*, *AOM-PLS in 5 minutes*, *From OPUS file to prediction in Studio*, *Reproducible NIRS bundles*, *nirs4all-formats : reading 58 vendor formats from Rust*. Visibilité long-traîne SEO.
 - **(P2, 6-12m)** Démo WebAssembly en ligne : `nirs4all-formats` + PLS basique en client-side, en démo sur nirs4all.org. Démonstration concrète du pari portable, utile pour outreach R / industrie.
 - **(P2, 6-12m)** Présence YouTube / chaîne CIRAD : 4-5 tutoriels vidéo (15-30 min) sur les usages typiques.
 - **(P3, 12-24m)** Ouvrir un forum (Discourse ou GitHub Discussions) si la communauté grandit suffisamment.
@@ -352,7 +353,7 @@ Liste priorisée. Les items sont notés **(P1/P2/P3)** par priorité et **(0-6m 
 
 L'écosystème a accumulé plus de code que de diffusion. Trois axes en parallèle :
 
-1. **Consolider ce qui existe.** Finir le 0.9.x stable, sortir 1.0.0 de `nirs4all` avec promesses d'API publiques explicites, releaser `nirs4all-methods` sur PyPI + CRAN, releaser `nirs4all-formats` sur PyPI + crates.io, mettre `nirs4all-webpage` à jour. Aligner les claims publics (parité, ABI réconciliée, statuts datasets) sur la réalité documentée du repo.
+1. **Consolider ce qui existe.** Finir le 0.9.x stable, sortir 1.0.0 de `nirs4all` avec promesses d'API publiques explicites, releaser `nirs4all-methods` sur PyPI + CRAN, releaser `nirs4all-formats` sur PyPI + crates.io, mettre `nirs4all-org` à jour. Aligner les claims publics (parité, ABI réconciliée, statuts datasets) sur la réalité documentée du repo.
 2. **Deux publications cibles d'abord**, pas trois en parallèle : (a) JOSS `nirs4all` une fois 1.0 sorti + checklist JOSS remplie (cf. 7.2), (b) AOM-PLS une fois les blockers `paper_review.md` levés. DSL et `dag-ml` viennent ensuite, conditionnés à des artefacts publics et benchmarks comparatifs.
 3. **`nirs4all-arena` — benchmark interne reproductible publié en lecture.** Choisir 5 datasets publics (NIRS pharma + agro + food + soil + plant phenotyping si possible), 10-15 pipelines (PLS, AOM, RF, NN, TabPFN…), splits group/instrument/campagne, matrice méthode × scenario générée en interne, pages de browsing publiques, bundles `.n4a` téléchargeables. **Pas de soumission externe, pas de plateforme de compétition.** La *version citable* (DOIs, licences, cards, Croissant complets) est un palier supplémentaire à 12-18 mois.
 
@@ -506,12 +507,12 @@ L'objectif long-terme défendable n'est pas « écrire encore plus de code » : 
 | `dag-ml` | dev | public | pas de release | rust ci OK | cargo + validate_contracts | C ABI + Python ctypes smoke | Pas encore de host controller production ; pas encore consommé par `nirs4all` |
 | `dag-ml-data` | dev | public | pas de release | rust ci OK | cargo + validate_contracts cross-repo | C ABI + Python ctypes smoke | Contrats partagés avec `dag-ml` |
 | `nirs4all-aom` | beta | public | pas encore PyPI | partielle | pytest + benchmarks | Python | Papier en cours, blockers expérimentaux à lever |
-| `nirs4all-datasets` | dev | **privé** | pas de release | partielle | pytest minimal | Python | 1 dataset exemple, DOIs/cards/manifests pas encore peuplés |
+| `nirs4all-datasets` | dev | public | pas de release | partielle | pytest minimal | Python | 1 dataset exemple, DOIs/cards/manifests pas encore peuplés |
 | `nirs4all-lab` | dev | **privé** | n/a | n/a | n/a | Python | Espace de prototypage |
 | `nirs4all-arena` | stub | public | n/a | n/a | n/a | n/a | README uniquement |
-| `nirs4all-webpage` | en ligne (stale) | public | n/a | GitHub Actions deploy | n/a | n/a | Affiche `nirs4all` 0.8.8 vs lib 0.9.1 — à corriger en priorité |
+| `nirs4all-org` | en ligne (stale) | public | n/a | GitHub Actions deploy | n/a | n/a | Ancien `nirs4all-webpage`; à garder aligné avec les versions et noms publics |
 | `nirs4all-ecosystem` | dev | public | n/a (parent submodules) | n/a | n/a | n/a | Ne contient pas de code |
-| `nirs4all-papers` / `-drafts` / `-lite` | planifié | n/a | n/a | n/a | n/a | n/a | Pas démarrés |
+| `nirs4all-papers` / `-drafts` / `-lite` | scaffold local / migration | papers public cible, drafts privé | n/a | CI placeholders pour `papers` et `lite` | scaffold tests Rust/Python/JS pour `lite` | Rust, Python, R, MATLAB/Octave, JS/WASM pour `lite` | Remotes et submodules à aligner |
 
 ---
 
