@@ -39,6 +39,7 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 - New public `GBeurier/nirs4all-lite` was created and seeded from local `nirs4all-lite/`.
 - New public `GBeurier/GBeurier.github.io` was created as a minimal redirect from `https://gbeurier.github.io/` to `https://nirs4all.org/`.
 - `GBeurier/nirs4all-org` Pages is configured with `CNAME=nirs4all.org`, source `main:/`, HTTPS enforced, and status `built`.
+- `GBeurier/nirs4all-org` was updated after the split to keep public ecosystem claims conservative (`nirs4all-lite` build scaffold, `nirs4all-cluster` alpha prototype, `nirs4all-arena` browsable benchmark rather than public submission platform) and its Pages workflow now uses the current GitHub Actions majors.
 - `GBeurier/nirs4all-cluster` was audited, documented as public alpha, and made public.
 - `GBeurier/nirs4all-dist` was audited and deleted: it only contained a placeholder README for a future distribution factory, a role now owned by `nirs4all-lite` release/binding infrastructure.
 - `GBeurier/nirs4all-web` was cleaned of the legacy `single-page-WASM` prototype; the active `studio-lite` app passes typecheck, unit tests, catalog validation, served/single-file builds, and browser smokes.
@@ -67,6 +68,7 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 | done | Initialize new public `nirs4all-papers` locally | README, safety rules, and reproducibility kit template added; AOM public repro can migrate later. |
 | done | Update `nirs4all-ecosystem` submodules/docs | `.gitmodules` and gitlinks reflect the renamed/created repositories; later bumped `cluster`, `web`, and `lite` to the audited commits. |
 | done | Update `nirs4all.org` content | Replaced "lite demo" language with `nirs4all-web`; added `nirs4all-lite` and `nirs4all-papers` links. Deployed to Pages successfully. |
+| done | Re-audit `nirs4all.org` public claims | Tightened visible wording for `nirs4all-lite`, `nirs4all-cluster`, and `nirs4all-arena`; bumped Pages actions to current majors and redeployed successfully. |
 | done | Restore `https://gbeurier.github.io/` | Created `GBeurier.github.io` redirect page to `https://nirs4all.org/`; Pages status is `built`. |
 | done | Push `nirs4all-web` rename commit | Pages deploy succeeded and `https://gbeurier.github.io/nirs4all-web/` now serves `nirs4all-web` title/OG metadata. |
 | done | Push `nirs4all-lite` seed | Remote `main` exists; CI scaffold passed. |
