@@ -41,13 +41,16 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 - `GBeurier/nirs4all-org` Pages is configured with `CNAME=nirs4all.org`, source `main:/`, HTTPS enforced, and status `built`.
 - `GBeurier/nirs4all-cluster` was audited, documented as public alpha, and made public.
 - `GBeurier/nirs4all-dist` was audited and deleted: it only contained a placeholder README for a future distribution factory, a role now owned by `nirs4all-lite` release/binding infrastructure.
+- `GBeurier/nirs4all-web` was cleaned of the legacy `single-page-WASM` prototype; the active `studio-lite` app passes typecheck, unit tests, catalog validation, served/single-file builds, and browser smokes.
+- `GBeurier/nirs4all-lite` was hardened with release/build scaffolding for Rust, Python, npm/WASM, R, and MATLAB/Octave. CI is green across Rust, Python 3.11/3.12, npm, R `R CMD build/check`, and Octave smoke/package zip.
+- `GBeurier/GBeurier.r-universe.dev` was updated to include `dagmldata`, `nirs4alldatasets`, and the `nirs4all` R aggregate from `nirs4all-lite/bindings/r`.
 
 ## Local State After Split
 
 - Local checkout `nirs4all-web/` now contains the former `nirs4all-lite` browser/WASM app.
 - Local checkout `nirs4all-org/` now contains the former `nirs4all-webpage` static site.
 - Local checkout `nirs4all-drafts/` now contains the former private `nirs4all-papers` draft/manuscript repository.
-- Local checkout `nirs4all-lite/` is a new git repository scaffold with Rust, Python, R, MATLAB/Octave, and JS/WASM binding surfaces.
+- Local checkout `nirs4all-lite/` is a buildable aggregate repository with Rust, Python, R, MATLAB/Octave, and JS/WASM binding surfaces plus release docs and CI gates.
 - Local checkout `nirs4all-papers/` is a new git repository scaffold for public deposited papers and reproducibility kits.
 - The old non-git `.codegraph` stub that occupied `nirs4all-drafts/` was moved to `nirs4all-drafts.codegraph-stub-20260611/`.
 
@@ -62,7 +65,7 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 | done | Rename `nirs4all-webpage` to `nirs4all-org` locally | Prefer `nirs4all-org` over `nirs4all.org` for tooling compatibility; keep CNAME as `nirs4all.org`. |
 | done | Re-home current private `nirs4all-papers` as `nirs4all-drafts` locally | Preserved active draft history and uncommitted work; did not make public. |
 | done | Initialize new public `nirs4all-papers` locally | README, safety rules, and reproducibility kit template added; AOM public repro can migrate later. |
-| in-progress | Update `nirs4all-ecosystem` submodules/docs | README reflects target model. `.gitmodules` still needs a controlled update after remote renames/create. |
+| done | Update `nirs4all-ecosystem` submodules/docs | `.gitmodules` and gitlinks reflect the renamed/created repositories; later bumped `cluster`, `web`, and `lite` to the audited commits. |
 | done | Update `nirs4all.org` content | Replaced "lite demo" language with `nirs4all-web`; added `nirs4all-lite` and `nirs4all-papers` links. Deployed to Pages successfully. |
 | done | Restore `https://gbeurier.github.io/` | Created `GBeurier.github.io` redirect page to `https://nirs4all.org/`; Pages status is `built`. |
 | done | Push `nirs4all-web` rename commit | Pages deploy succeeded and `https://gbeurier.github.io/nirs4all-web/` now serves `nirs4all-web` title/OG metadata. |
@@ -70,6 +73,9 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 | done | Push `nirs4all-papers` seed | Remote `main` exists; content check passed. |
 | done | Publish `nirs4all-cluster` after audit | README and project metadata now mark it as a public alpha/prototype; GitHub visibility is public. |
 | done | Retire `nirs4all-dist` | Remote repository deleted after confirming it only contained a placeholder README; submodule removed from `nirs4all-ecosystem`. |
+| done | Clean and validate `nirs4all-web` | Removed legacy `single-page-WASM`; fixed smoke defaults; Pages deploy is green and live. |
+| done | Harden `nirs4all-lite` bindings/release gates | Added license/package metadata, corrected upstream package candidates, R docs/tests, MATLAB/Octave smoke/package, Makefile, release docs, CI and release workflow. |
+| done | Configure R-universe registry | `GBeurier.r-universe.dev/packages.json` now tracks `dagmldata`, `nirs4alldatasets`, and `nirs4all` from the relevant subdirectories. |
 | pending | Audit remaining private non-paper repos before visibility flips | `nirs4all-lab` is still private on GitHub; do not make public without content audit. |
 
 ## GitHub Commands Executed
@@ -103,11 +109,10 @@ git -C ../nirs4all-lite remote add origin https://github.com/GBeurier/nirs4all-l
 git -C ../nirs4all-lite push -u origin main
 ```
 
-Finally update `nirs4all-ecosystem/.gitmodules`, sync submodules, and commit the new submodule pointers.
+Final submodule pointers were updated and pushed after the `cluster`, `web`, and `lite` follow-up commits.
 
 ## Remaining Controlled Work
 
-- Update `nirs4all-ecosystem/.gitmodules` and submodule gitlinks now that all target remotes exist.
-- Decide whether to keep or remove the pre-existing local `single-page-WASM/` deletion in `nirs4all-web`; it was not included in the `nirs4all-web` rename commit.
 - Audit `nirs4all-lab` before any visibility change.
 - Migrate AOM public reproduction material into `nirs4all-papers` only after draft/private content is separated.
+- Wait for R-universe to ingest the updated `packages.json`; `https://gbeurier.r-universe.dev/src/contrib/PACKAGES` still showed only the pre-existing packages immediately after the push.
