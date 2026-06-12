@@ -127,6 +127,7 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 | done | Make `nirs4all-web` use the direct lite aggregate for portable runs | Added a strict web bridge from the UI DSL to the shared nirs4all JSON syntax and a saved-model prediction path through `predictPortablePipeline()`. |
 | done | Final integration review and browser smoke | Claude Opus "fable" review found no blockers; served Chromium `tests/*smoke.mjs` all passed against the built preview. |
 | done | Promote MATLAB/Octave execution parity | `nirs4all-methods` exposes SNV, Savitzky-Golay, and Kennard-Stone through MEX shims; `nirs4all-lite` runs the same four full-Python oracle fixtures through MATLAB/Octave in strict CI. |
+| done | Close fable Savitzky-Golay mode follow-up | `nirs4all-lite` commit `83521db` preserves explicit Savitzky-Golay `mode`/`cval` across Python, Rust, JavaScript/WASM, R, and MATLAB/Octave while keeping `interp` as the full nirs4all default. Local gates passed: Python strict oracle, WASM oracle, Rust clippy/test, R check/parity, and MATLAB/Octave strict parity. |
 | pending | Audit remaining private non-paper repos before visibility flips | `nirs4all-lab` is still private on GitHub; do not make public without content audit. |
 
 ## GitHub Commands Executed
