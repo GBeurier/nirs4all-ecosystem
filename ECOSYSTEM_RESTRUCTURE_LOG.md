@@ -67,6 +67,11 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 - 2026-06-12 final verification: `nirs4all-methods` commit `1c84cd6` keeps the new R preprocessing wrapper in the Windows object list. CI is green for CI, ABI Surface, Coverage, docs, Parity gate, version-sync, Cross-binding parity, and Sanitizers.
 - 2026-06-12 final verification: `nirs4all-lite` commit `c0a7774` extends strict portable parity to the R aggregate binding, makes R parity fixtures drift-checked against the shared fixtures, and keeps SNV `ddof = 0` explicit. CI is green for Rust, Python 3.11/3.12, npm, R, MATLAB/Octave, and strict-parity.
 - 2026-06-12 final verification: `nirs4all-web` commit `102c370` vendors the updated lite aggregate, aliases `@nirs4all/datasets-wasm`, and passes local `check:lite-shim`, targeted Vitest, typecheck, catalog validation, and build. GitHub Pages deploy is green, and `https://nirs4all.org/`, `https://gbeurier.github.io/`, and `https://gbeurier.github.io/nirs4all-web/` return HTTP 200.
+- 2026-06-12 continuation: `nirs4all-lite` Rust now executes the same four full-Python oracle fixtures through a caller-supplied `libn4m` (`run_portable_pipeline_with_library`). The Rust test compares split indices, targets, RMSE, predictions, and selected `n_components`; CI strict-parity invokes it with `NIRS4ALL_METHODS_LIB`.
+- 2026-06-12 continuation: `nirs4all-lite` JavaScript/WASM now returns a serialized selected PLS model from `runPortablePipeline()` and exposes `predictPortablePipeline()`. The WASM oracle test reuses the fitted model and checks held-out predictions against the selected run output.
+- 2026-06-12 continuation: `nirs4all-web` runtime now has a strict direct path for portable regression pipelines (`KennardStone`, `StandardNormalVariate`, `SavitzkyGolay`, `PLS`, `n_components` range sweep). Compatible runs execute through the vendored `nirs4all-lite` aggregate instead of rebuilding the pipeline from per-package calls; unsupported pipelines stay on `dag-ml + libn4m`.
+- 2026-06-12 continuation: MATLAB/Octave execution parity was audited by Claude Opus read-only. Existing `nirs4all-methods` MATLAB APIs cover PLS (`n4m_pls_fit_mex`, `n4m_method_fit_mex`, `n4m_model_fit_mex`, `pls4all.Regression`, `pls4all.pls_fit`), but there are no public MEX shims for `n4m_split_kennard_stone_*`, SNV, or Savitzky-Golay. Required follow-up belongs first in `nirs4all-methods` (`n4m_preprocess_mex.c`, `n4m_split_mex.c`, and `pls4all.snv` / `pls4all.savgol` / `pls4all.kennard_stone` wrappers), then in `nirs4all-lite` (`+nirs4all/executePipeline.m` and parity test).
+- 2026-06-12 continuation: Claude Opus "fable" completed the requested read-only final integration review across `nirs4all-lite`, `nirs4all-web`, and this log. It found no blockers. Local validation also reran `nirs4all-lite` WASM strict parity, web `check:lite-shim`, typecheck, Vitest, build, and the full served Chromium `tests/*smoke.mjs` suite successfully.
 
 ## Local State After Split
 
@@ -114,6 +119,10 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 | done | Fix methods CI regressions after WASM follow-up | Latest `nirs4all-methods` commit `1c84cd6` is green for CI, Parity gate, Cross-binding parity, ABI Surface, Sanitizers, Coverage, docs, and version-sync. |
 | done | Promote R execution parity in `nirs4all-lite` | R now executes the shared portable JSON/YAML oracle fixtures in CI alongside WASM and Python; fixture drift is blocked by `make test-r-fixtures` on commit `c0a7774`. |
 | done | Normalize datasets WASM package naming | Public references now use `@nirs4all/datasets-wasm` in datasets, lite, web, and ecosystem docs; local wasm-pack generated naming remains an implementation detail. |
+| done | Promote Rust execution parity in `nirs4all-lite` | Rust now dynamically loads `libn4m` and executes the shared portable oracle fixtures via `run_portable_pipeline_with_library`; strict CI runs the Rust parity test with missing-artifact skips disabled. |
+| done | Make `nirs4all-web` use the direct lite aggregate for portable runs | Added a strict web bridge from the UI DSL to the shared nirs4all JSON syntax and a saved-model prediction path through `predictPortablePipeline()`. |
+| done | Final integration review and browser smoke | Claude Opus "fable" review found no blockers; served Chromium `tests/*smoke.mjs` all passed against the built preview. |
+| pending | Promote MATLAB/Octave execution parity | Blocked on upstream `nirs4all-methods` MATLAB MEX shims for Kennard-Stone, SNV, and Savitzky-Golay; current MATLAB/Octave aggregate remains parser/registry only. |
 | pending | Audit remaining private non-paper repos before visibility flips | `nirs4all-lab` is still private on GitHub; do not make public without content audit. |
 
 ## GitHub Commands Executed
@@ -154,7 +163,7 @@ Final submodule pointers were updated and pushed after the `cluster`, `web`, and
 - Audit `nirs4all-lab` before any visibility change.
 - Migrate AOM public reproduction material into `nirs4all-papers` only after draft/private content is separated.
 - Wait for R-universe to ingest the updated `packages.json`; `https://gbeurier.r-universe.dev/src/contrib/PACKAGES` still showed only the pre-existing packages immediately after the push.
-- Extend the new execution parity gate beyond npm/WASM/Python/R: run the same portable `nirs4all` JSON/YAML fixtures through native Rust and MATLAB/Octave aggregate bindings once their upstream method surfaces can execute the portable KS/SNV/Savitzky-Golay/PLS subset without reimplementing kernels.
+- Extend the new execution parity gate to MATLAB/Octave once `nirs4all-methods` exposes MEX shims for Kennard-Stone, SNV, and Savitzky-Golay. Rust is now covered by the same full-Python oracle fixtures as npm/WASM/Python/R.
 - Add a cross-binding drift gate for the duplicated portable operator allowlist/parser contract.
 - Either replace or explicitly scope the MATLAB/Octave YAML mini-parser; it is currently adequate for committed fixtures but not a full YAML implementation.
 - Normalize any remaining npm upstream naming conventions later; the datasets WASM package is now consistently referenced as `@nirs4all/datasets-wasm`.
