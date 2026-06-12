@@ -72,6 +72,9 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 - 2026-06-12 continuation: `nirs4all-web` runtime now has a strict direct path for portable regression pipelines (`KennardStone`, `StandardNormalVariate`, `SavitzkyGolay`, `PLS`, `n_components` range sweep). Compatible runs execute through the vendored `nirs4all-lite` aggregate instead of rebuilding the pipeline from per-package calls; unsupported pipelines stay on `dag-ml + libn4m`.
 - 2026-06-12 continuation: MATLAB/Octave execution parity was audited by Claude Opus read-only. Existing `nirs4all-methods` MATLAB APIs cover PLS (`n4m_pls_fit_mex`, `n4m_method_fit_mex`, `n4m_model_fit_mex`, `pls4all.Regression`, `pls4all.pls_fit`), but there are no public MEX shims for `n4m_split_kennard_stone_*`, SNV, or Savitzky-Golay. Required follow-up belongs first in `nirs4all-methods` (`n4m_preprocess_mex.c`, `n4m_split_mex.c`, and `pls4all.snv` / `pls4all.savgol` / `pls4all.kennard_stone` wrappers), then in `nirs4all-lite` (`+nirs4all/executePipeline.m` and parity test).
 - 2026-06-12 continuation: Claude Opus "fable" completed the requested read-only final integration review across `nirs4all-lite`, `nirs4all-web`, and this log. It found no blockers. Local validation also reran `nirs4all-lite` WASM strict parity, web `check:lite-shim`, typecheck, Vitest, build, and the full served Chromium `tests/*smoke.mjs` suite successfully.
+- 2026-06-12 MATLAB/Octave parity closeout: `nirs4all-methods` commit `288e2a8` adds public `+pls4all` MEX shims/wrappers for SNV, Savitzky-Golay, and Kennard-Stone, and aligns R/MATLAB Savitzky-Golay defaults to full Python `nirs4all` (`polyorder = 3`). CI is green for CI, ABI Surface, Coverage, docs, Parity gate, version-sync, Cross-binding parity, and Sanitizers.
+- 2026-06-12 MATLAB/Octave parity closeout: `nirs4all-lite` commit `5894c4a` promotes MATLAB/Octave from parser-only to strict execution parity through `nirs4all.runPortablePipeline()`. The CI `strict-parity` job now builds methods MEX shims and runs WASM, Rust, Python, R, and MATLAB/Octave against the same four full-Python oracle fixtures. CI run `27396764682` is green across Rust, Python 3.11/3.12, npm, R, MATLAB/Octave, and strict-parity.
+- 2026-06-12 local closeout: local conda toolchains revalidated `nirs4all-methods` Octave MEX build + `test_parity`, `nirs4all-lite` `make test-matlab-parity`, `make test-r-parity` with a freshly installed local `n4m`, `R CMD check --no-manual bindings/r`, strict Python parity, strict Rust parity, npm/WASM oracle tests, `cargo fmt`, `cargo clippy`, and `cargo test`.
 
 ## Local State After Split
 
@@ -123,7 +126,7 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 | done | Promote Rust execution parity in `nirs4all-lite` | Rust now dynamically loads `libn4m` and executes the shared portable oracle fixtures via `run_portable_pipeline_with_library`; strict CI runs the Rust parity test with missing-artifact skips disabled. |
 | done | Make `nirs4all-web` use the direct lite aggregate for portable runs | Added a strict web bridge from the UI DSL to the shared nirs4all JSON syntax and a saved-model prediction path through `predictPortablePipeline()`. |
 | done | Final integration review and browser smoke | Claude Opus "fable" review found no blockers; served Chromium `tests/*smoke.mjs` all passed against the built preview. |
-| pending | Promote MATLAB/Octave execution parity | Blocked on upstream `nirs4all-methods` MATLAB MEX shims for Kennard-Stone, SNV, and Savitzky-Golay; current MATLAB/Octave aggregate remains parser/registry only. |
+| done | Promote MATLAB/Octave execution parity | `nirs4all-methods` exposes SNV, Savitzky-Golay, and Kennard-Stone through MEX shims; `nirs4all-lite` runs the same four full-Python oracle fixtures through MATLAB/Octave in strict CI. |
 | pending | Audit remaining private non-paper repos before visibility flips | `nirs4all-lab` is still private on GitHub; do not make public without content audit. |
 
 ## GitHub Commands Executed
@@ -164,7 +167,6 @@ Final submodule pointers were updated and pushed after the `cluster`, `web`, and
 - Audit `nirs4all-lab` before any visibility change.
 - Migrate AOM public reproduction material into `nirs4all-papers` only after draft/private content is separated.
 - Wait for R-universe to ingest the updated `packages.json`; `https://gbeurier.r-universe.dev/src/contrib/PACKAGES` still showed only the pre-existing packages immediately after the push.
-- Extend the new execution parity gate to MATLAB/Octave once `nirs4all-methods` exposes MEX shims for Kennard-Stone, SNV, and Savitzky-Golay. Rust is now covered by the same full-Python oracle fixtures as npm/WASM/Python/R.
 - Add a cross-binding drift gate for the duplicated portable operator allowlist/parser contract.
 - Either replace or explicitly scope the MATLAB/Octave YAML mini-parser; it is currently adequate for committed fixtures but not a full YAML implementation.
 - Normalize any remaining npm upstream naming conventions later; the datasets WASM package is now consistently referenced as `@nirs4all/datasets-wasm`.
