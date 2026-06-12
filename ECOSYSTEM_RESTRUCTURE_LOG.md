@@ -49,6 +49,8 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 - `GBeurier/nirs4all-lite` now has a JSON/YAML parser contract for the full Python `nirs4all` definition envelope: direct step lists, `pipeline`, `steps`, JSON/YAML paths, and JSON/YAML text. The shared portable fixtures use the `nirs4all/examples/pipeline_samples` syntax for Kennard-Stone, SNV, Savitzky-Golay, and PLS `_range_`/`param` sweeps. Python, Rust, npm/WASM, R, and MATLAB/Octave expose the contract. CI run `27385368565` is green across Rust, Python 3.11/3.12, npm, R, and MATLAB/Octave; local 2026-06-12 checks revalidated Python, Rust, and npm after adding the extra fixtures.
 - 2026-06-12 local follow-up: `nirs4all-datasets` WASM was confirmed to exist and to be browser-scoped (`resolve` + `sha256`). A web-target package was generated with `wasm-pack --target web`, vendored into `nirs4all-web/studio-lite/src/engine/wasm/datasets`, and wired through the `nirs4all-lite` npm aggregate using the real scoped package name `@nirs4all/nirs4all-datasets-wasm`.
 - 2026-06-12 local follow-up: `nirs4all-web` now routes datasets through the aggregate shim, removes the active finetuning UI/runtime path, migrates legacy imported `finetune` specs to finite `model.sweeps`, and exposes sweeps on branch/DAG-container operator params as well as model and linear-chain params.
+- 2026-06-12 local follow-up: `nirs4all-web` vendors the `nirs4all-lite` npm aggregate under `studio-lite/vendor/nirs4all`, so its GitHub Pages workflow no longer depends on a sibling checkout of `nirs4all-lite`.
+- 2026-06-12 local follow-up: `nirs4all-datasets` CI was fixed after the WASM doc change. The workflow now recreates the uv virtualenv idempotently and runs gates with `uv run --no-sync`, avoiding CI attempts to resolve local workspace-only `[tool.uv.sources]` siblings that are absent on GitHub runners.
 - 2026-06-12 local follow-up: Claude Opus "fable" completed a read-only review of the lite/web integration. No blocker was found. Residual risks logged: MATLAB/Octave YAML parser is fixture-shaped rather than a full YAML parser, the portable allowlist is duplicated across bindings without a drift gate, R/Octave local checks were not available in this environment, and npm upstream package naming should be normalized later.
 
 ## Local State After Split
@@ -88,6 +90,8 @@ Note: the initial request also said "`nirs4all-drafts` and `nirs4all-papers` are
 | done | Confirm and wire `nirs4all-datasets` WASM into web | Existing `nirs4all-datasets` WASM is offline/browser-scoped (`resolve`, `sha256`). Added browser artefacts to `nirs4all-web`, aliased `@nirs4all/nirs4all-datasets-wasm`, and updated `nirs4all-lite` npm upstream candidates/locks/docs. |
 | done | Replace active web finetuning with sweeps | Removed `FinetunePanel`; legacy imported finetune specs migrate to `model.sweeps`; dag-ml lowering/counting now uses explicit sweeps only. Sweeps are available on model params, linear steps, and DAG branch steps. |
 | done | Re-run web/lite validation after datasets+sweeps | Web: typecheck, vitest, catalog validator, served build, single-file build, browser `smoke`, `generators-smoke`, and `dag-ops-smoke` passed. Lite: npm tests, Python unittest, and Rust cargo tests passed. Datasets: node WASM smoke passed. |
+| done | Make web Pages build standalone after lite split | Vendored the npm aggregate under `nirs4all-web/studio-lite/vendor/nirs4all`; latest `nirs4all-web` Pages deploy succeeded. |
+| done | Fix and revalidate datasets CI after WASM follow-up | Latest `nirs4all-datasets` workflows are green for CI, ABI Surface, Site, and version-sync on commit `aeab788`. |
 | pending | Audit remaining private non-paper repos before visibility flips | `nirs4all-lab` is still private on GitHub; do not make public without content audit. |
 
 ## GitHub Commands Executed
@@ -132,3 +136,4 @@ Final submodule pointers were updated and pushed after the `cluster`, `web`, and
 - Add a cross-binding drift gate for the duplicated portable operator allowlist/parser contract.
 - Either replace or explicitly scope the MATLAB/Octave YAML mini-parser; it is currently adequate for committed fixtures but not a full YAML implementation.
 - Normalize npm upstream naming conventions later; current web wiring is correct but mixes scoped and unscoped package names across upstreams.
+- Replace the temporary vendored `studio-lite/vendor/nirs4all` copy with a published npm tarball/package once the `nirs4all-lite` npm release is available, or add an automated sync gate to prevent drift.
