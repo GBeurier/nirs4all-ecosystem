@@ -91,3 +91,10 @@ git push
 ```bash
 ./pull-all.sh   # updates the parent, (re)initializes, then synchronizes the submodules
 ```
+
+## License
+
+`nirs4all-ecosystem` is a meta-repository of git submodules: **each submodule carries its own license**
+(see that project). This repository's own glue (README, scripts, CI) is dual-licensed open-source —
+**`CeCILL-2.1 OR AGPL-3.0-or-later`** — with an optional **commercial license** (for any commercial use,
+contact <nirs4all-admin@cirad.fr>). See [`LICENSING.md`](LICENSING.md) and [`LICENSES/`](LICENSES/).
