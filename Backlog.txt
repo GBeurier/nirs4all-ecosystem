@@ -1,12 +1,10 @@
 nirs4all datasets
 nirs4all dag-ml
-nirs4all v1 (dépiler le backlog une fois lean)
+nirs4all v1 (unstack the backlog once lean)
 studio v1
 nirs4all-web
-nirs4all-org v1: nirs4all-web, video, formats, etc.
-nirs4all arena
-Publications packages: methods, pls4all, nirs4all, nirs4all-dag > pypi, CRAN / R.xxxx, Octable, WASM (npm), apt ??
-nirs4all-cluster
+nirs4all-org v1: nirs4all-web, video, formats, etc. nirs4all arena
+Publications packages: methods, pls4all, nirs4all, nirs4all-dag > pypi, CRAN/R.xxxx, Octable, WASM (npm), apt ?? nirs4all-cluster
 
 Multimodal
 NIRS PFN

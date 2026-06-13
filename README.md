@@ -1,14 +1,13 @@
 # nirs4all-ecosystem
 
-> **Ce dépôt n'est pas un monorepo.** C'est un dépôt parent *minimal* qui regroupe
-> les projets de l'écosystème **nirs4all** sous forme de **submodules Git**.
-> Chaque projet reste un **dépôt indépendant** (historique, issues, releases et
-> droits d'accès propres). Ce dépôt ne fait que **référencer un commit précis** de
-> chacun — il ne contient pas leur code.
+> **This repository is not a monorepo.** It is a *minimal* parent repository which groups
+> projects from the **nirs4all** ecosystem in the form of **Git submodules**. > Each project remains an **independent repository** (history, issues, releases and
+> own access rights). This repository only **references a specific commit** of
+> each — it does not contain their code.
 
-## Projets référencés
+## Projects referenced
 
-| Submodule | Branche suivie | Visibilité |
+| Submodule | Tracked branch | Visibility |
 | --- | --- | --- |
 | `nirs4all-aom` | `main` | public |
 | `dag-ml` | `main` | public |
@@ -19,71 +18,67 @@
 | `nirs4all-web` | `main` | public |
 | `nirs4all-lite` | `main` | public |
 | `nirs4all-org` | `main` | public |
-| `nirs4all-drafts` | `main` | **privé** |
+| `nirs4all-drafts` | `main` | **private** |
 | `nirs4all-papers` | `main` | public |
-| `nirs4all-lab` | `main` | public cible, actuellement privé |
+| `nirs4all-lab` | `main` | target audience, currently private |
 | `nirs4all-formats` | `main` | public |
 | `nirs4all-io` | `main` | public |
 | `nirs4all-methods` | `main` | public |
 | `nirs4all-datasets` | `main` | public |
 | `nirs4all-cluster` | `main` | public |
 
-> **`nirs4all-formats` vs `nirs4all-io`.** Les responsabilités de lecture de
-> fichiers et d'assemblage de jeux de données ont été séparées :
-> - **`nirs4all-formats`** (anciennement `nirs4all-io`) : bibliothèque Rust de
->   *lecteurs* de fichiers spectroscopiques (lecture seule, ~45 formats).
-> - **`nirs4all-io`** (nouveau) : *pont d'assemblage* de jeux de données
->   (résolution → inférence → configuration → matérialisation). Python en phase 1
->   (compatible `SpectroDataset`), Rust en phase 2 (compatible `dag-ml-data`).
->   Il consomme `nirs4all-formats` pour la lecture des fichiers.
+> **`nirs4all-formats`vs`nirs4all-io`.** Reading responsibilities of
+> files and assembly of datasets have been separated: > - **`nirs4all-formats`** (formerly`nirs4all-io`): Rust library of
+> *readers* of spectroscopic files (read only, ~45 formats). > - **`nirs4all-io`** (new): *assembly bridge* of datasets
+> (resolution → inference → configuration → materialization). Python in phase 1
+> (`SpectroDataset`compatible), Rust in phase 2 (`dag-ml-data`compatible). > It consumes`nirs4all-formats`for reading files.
 
 ## Cloner
 
-Clone complet (parent + contenu des submodules) :
+Full clone (parent + submodule contents):
 
 ```bash
 git clone --recurse-submodules git@github.com:GBeurier/nirs4all-ecosystem.git
 ```
 
-Initialiser les submodules après un clone simple :
+Initialize the submodules after a simple clone:
 
 ```bash
 git submodule update --init --recursive
 ```
 
-### Pull partiel (submodules privés)
+### Partial pull (private submodules)
 
-`nirs4all-drafts` reste **privé**. Pendant la migration, `nirs4all-lab` peut
-encore être privé sur GitHub tant qu'un audit de publication n'a pas confirmé
-qu'il ne contient rien de sensible. Un dépôt public peut référencer des submodules
-privés (seule l'URL est exposée, pas le contenu). Sans les droits d'accès, l'init
-global échoue *sur ces submodules uniquement* ; les autres s'initialisent
-normalement. Pour n'initialiser que ce à quoi vous avez accès, ciblez les chemins
-voulus :
+`nirs4all-drafts`remains **private**. During migration,`nirs4all-lab`may
+still be private on GitHub until a release audit confirms
+that it contains nothing sensitive. A public repository can reference private
+submodules (only the URL is exposed, not the content). Without access rights,
+global init fails *for these submodules only*; the others initialize
+normally. To initialize only what you can access, target the desired paths:
 
 ```bash
 git submodule update --init nirs4all nirs4all-formats nirs4all-io   # exemple
 ```
 
-## Mettre à jour
+## To update
 
-Amener tous les submodules au dernier commit de leur branche suivie :
+Bring all submodules to the last commit of their tracked branch:
 
 ```bash
 git submodule update --remote --merge
 ```
 
-Status global de tous les submodules :
+Global status of all submodules:
 
 ```bash
 git submodule foreach 'git status --short'
 ```
 
-## Figer l'état
+## Freeze state
 
-Après un `git submodule update --remote --merge`, les pointeurs de submodules ont
-bougé localement mais **ne sont pas figés**. Pour figer l'état dans le dépôt
-parent, il faut **committer les pointeurs** :
+After a`git submodule update --remote --merge`, the submodule pointers have
+moved locally but **are not fixed**. To freeze the state in the repository
+parent, you must **commit the pointers**:
 
 ```bash
 git add .
@@ -94,5 +89,5 @@ git push
 ## Script
 
 ```bash
-./pull-all.sh   # met à jour le parent, (re)init puis synchronise les submodules
+./pull-all.sh   # updates the parent, (re)initializes, then synchronizes the submodules
 ```
