@@ -1,2 +1,9 @@
 # local code-intelligence index
 .codegraph/
+
+# --- untracked build/process docs (kept locally, 2026-06-16) ---
+ECOSYSTEM_RESTRUCTURE_LOG.md
+REVIEW_VISION.md
+
+# planning docs relocated here, kept local only
+/docs/
