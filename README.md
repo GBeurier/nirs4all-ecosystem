@@ -12,7 +12,8 @@
 | `nirs4all-aom` | `main` | public |
 | `dag-ml` | `main` | public |
 | `dag-ml-data` | `main` | public |
-| `nirs4all-arena` | `main` | public |
+| `nirs4all-benchmarks` | `main` | public |
+| `nirs4all-repository` | `main` | public |
 | `nirs4all` | `main` | public |
 | `nirs4all-studio` | `master` | public |
 | `nirs4all-web` | `main` | public |

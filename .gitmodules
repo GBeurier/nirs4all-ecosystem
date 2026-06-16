@@ -10,9 +10,9 @@
 	path = dag-ml-data
 	url = git@github.com:GBeurier/dag-ml-data.git
 	branch = main
-[submodule "nirs4all-arena"]
-	path = nirs4all-arena
-	url = git@github.com:GBeurier/nirs4all-arena.git
+[submodule "nirs4all-benchmarks"]
+	path = nirs4all-benchmarks
+	url = git@github.com:GBeurier/nirs4all-benchmarks.git
 	branch = main
 [submodule "nirs4all"]
 	path = nirs4all
@@ -65,4 +65,8 @@
 [submodule "nirs4all-cluster"]
 	path = nirs4all-cluster
 	url = git@github.com:GBeurier/nirs4all-cluster.git
+	branch = main
+[submodule "nirs4all-repository"]
+	path = nirs4all-repository
+	url = git@github.com:GBeurier/nirs4all-repository.git
 	branch = main

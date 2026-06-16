@@ -6,7 +6,7 @@ The nirs4all ecosystem has three overlapping ambitions:
 
 1. **Make`nirs4all`(Python lib) +`nirs4all-studio`(Electron) an open-source reference option for applied NIRS** — aiming to complement, or even compete for certain uses, established proprietary tools (PLS_Toolbox, Unscrambler, SIMCA) and existing open-source bricks (R`prospectr`/`mdatools`/`pls`/`hyperSpec`, Python`SpectroChemPy`, Orange-Spectroscopy/Quasar, HyperSpy/Spectral Python), with native integration of modern ML/DL frameworks (sklearn, PyTorch, JAX, TabPFN) and reproducibility by build. 2. **Build underneath a reusable infrastructure layer outside the NIRS domain**:`dag-ml`(Rust reproducible ML coordination core, OOF-safe) and`dag-ml-data`(identity-aligned data contracts). A publishable, domain-agnostic foundation in computer science/ML. 3. **Port everything to all useful scientific ecosystems**: lightweight Python, R, MATLAB/Octave, Julia, C/C++, WASM, Android — via thin bindings hosted in`nirs4all-methods`/`nirs4all-formats`, and via`nirs4all-lite`which distributes **the chain of low-level packages** (`nirs4all-formats`+`nirs4all-io`+`nirs4all-methods`+`dag-ml`[+`dag-ml-data`]) in installable bundles per target language (PyPI under`nirs4all-lite`, CRAN/R-universe under`nirs4all`, MATLAB toolbox, Julia Pkg, npm under`nirs4all`, Conda, Docker, vcpkg/Conan/Homebrew, .deb/.rpm). **The “lite” is semantic: excluding the complete`nirs4all`Python library, we lose sklearn/PyTorch/TF/JAX, therefore reduced capability; it is neither a subset of the code nor a rewrite.** Zero new digital code. Build, release and supply-chain recipes live in`nirs4all-lite`as long as they serve this distribution.
 
-In the long term:`nirs4all-studio`becomes a multi-modal scientific workshop (time series, hyperspectral, genomics, tabular) thanks to`dag-ml`/`dag-ml-data`, and`nirs4all-arena`becomes a public repository of pipelines + reproducible datasets, with a methods × datasets comparison matrix curated internally and published for reading (not an external competition platform).
+In the long term:`nirs4all-studio`becomes a multi-modal scientific workshop (time series, hyperspectral, genomics, tabular) thanks to`dag-ml`/`dag-ml-data`, and`nirs4all-benchmarks`becomes a public repository of pipelines + reproducible datasets, with a methods × datasets comparison matrix curated internally and published for reading (not an external competition platform).
 
 ---
 
@@ -41,7 +41,7 @@ Four logical layers. Each repository lives in parallel in`~/nirs4all/`;`nirs4all
 | Deposit | Role | State |
 |---|---|---|
 | `nirs4all-datasets` | Catalog + *pooch-style* access to NIRS datasets on Dataverse (Research Data Gouv / CIRAD), targeted outputs: DOIs, data cards, Croissant. Reuses`nirs4all-io`. | functional stub: 1 example dataset, DOIs/cards/manifests not yet populated; public repos |
-| `nirs4all-arena` | Publishable benchmark environment: pipelines × datasets × methods, reproducible runs via`.n4a`files, browsing site. | stub (README only) |
+| `nirs4all-benchmarks` | Publishable benchmark environment: pipelines × datasets × methods, reproducible runs via`.n4a`files, browsing site. | stub (README only) |
 | `nirs4all-aom` | Companion code for the AOM-PLS / POP-PLS / AOM-Ridge / FastAOM paper. To be migrated to`nirs4all-methods`eventually. | beta, paper in progress |
 | `nirs4all-lab` | Private prototyping space: NICon, FCK-PLS, synthesis (ViTnirs), TabPFN, subset analysis, benchmark harness. | active, private |
 | `nirs4all-org` | Static landing page for nirs4all.org. | online, formerly `nirs4all-webpage` |
@@ -74,7 +74,7 @@ dag-ml + dag-ml-data       ──►  potential/conditional execution substrate 
                               (conditioned on effective coupling with `nirs4all`, item P1 §6.4)
 nirs4all-aom               ──►  AOM methods, future candidates to migrate into nirs4all-methods
 nirs4all-datasets          ──►  provider consumed by nirs4all-io
-nirs4all-arena             ──►  consumer of published .n4a bundles
+nirs4all-benchmarks             ──►  consumer of published .n4a bundles
 ```
 
 ---
@@ -146,7 +146,7 @@ The pattern exists and is mature: **conda-forge feedstocks** (recipes + CI + val
 > **Note** — build/release recipes for`nirs4all-lite`bundles remain in`nirs4all-lite`. > If real redundancy appears in the upstream repositories, it must be factored out in small amounts
 > documented bricks, not by a separate factory repository recreated by default.
 
-### 4.4`nirs4all-arena`: perimeter and framing
+### 4.4`nirs4all-benchmarks`: perimeter and framing
 
 The arena is a **curated repository of reproducible comparisons** methods × datasets × scenarios. **Not a Kaggle type competition platform**: no external submission, no runs hosted on demand, no user leaderboard, no SaaS. The compute remains internal (CIRAD or equivalent); the result is public and browsable. This avoids the costs of a multi-tenant platform (sandboxing, moderation, IP, GDPR, scaling) and remains scientifically defensible.
 
@@ -182,7 +182,7 @@ Risk must be read in two layers:
 
 Mitigations in addition to automation:
 
-- **Public architecture document** — release the CLAUDE.md / AGENTS.md in public form in the`docs/`of each repository, so that *external* agents can also operate if someone else takes over. - **Tests + golden gates + green CIs** by deposit as an executable contract of expected behavior — this is what allows a buyer (human or agent) to modify without breaking. - **CONTRIBUTING.md + good first results** on the 3-4 most welcoming public repositories (`nirs4all`,`nirs4all-formats`,`nirs4all-io`) to initiate human contributors beyond agents. - **Externalize CI/release** beyond the personal machine (GitHub-hosted runners, organizational secrets): if the maintainer's machine disappears, the release chain survives. - **Recruitment of a postdoc / engineer** dedicated to`nirs4all-arena`(infra side) or`dag-ml`(algorithm side) remains relevant in the medium term for the strategic layer — less priority than in the pre-automation version, but not useless.
+- **Public architecture document** — release the CLAUDE.md / AGENTS.md in public form in the`docs/`of each repository, so that *external* agents can also operate if someone else takes over. - **Tests + golden gates + green CIs** by deposit as an executable contract of expected behavior — this is what allows a buyer (human or agent) to modify without breaking. - **CONTRIBUTING.md + good first results** on the 3-4 most welcoming public repositories (`nirs4all`,`nirs4all-formats`,`nirs4all-io`) to initiate human contributors beyond agents. - **Externalize CI/release** beyond the personal machine (GitHub-hosted runners, organizational secrets): if the maintainer's machine disappears, the release chain survives. - **Recruitment of a postdoc / engineer** dedicated to`nirs4all-benchmarks`(infra side) or`dag-ml`(algorithm side) remains relevant in the medium term for the strategic layer — less priority than in the pre-automation version, but not useless.
 
 ### 4.8 The “Python without pricing” risk
 
@@ -249,7 +249,7 @@ Prioritized list. The items are noted **(P1/P2/P3)** by priority and **(0-6m / 6
 | **P2** | DSL pipeline paper (Chemometrics & ILS or SoftwareX) | 12-18m | To be released **after** 1.0 of`nirs4all`and **after** at least one documented comparative benchmark vs Kedro/Hamilton/MLflow on ≥ 3 workflows. Otherwise the “DSL differentiating” claim is unproven. |
 | **P2** | `dag-ml`paper to MLOSS/JMLR | 12-18m | Not OSDI/EuroSys (heavy systems evaluation not envisaged). MLOSS / JMLR open-source ML track is the right lane. **Conditioned to: (a)`dag-ml`backend actually consumed by`nirs4all`, (b) empirical benchmarking on ≥ 5 pipelines with ≥ 2 competitors (MLflow, DVC, Hamilton or Metaflow), (c) concrete demonstration of leak cases/leaks caught.** Without (a)(b)(c), no paper. |
 | **P2** | Physically based NIRS augmentation paper | 12-18m | Can be written alone once the comparative matrix has been produced (see 5.4). |
-| **P3** | Benchmark `nirs4all-arena` (Scientific Data en *data descriptor*, ou Chemometrics & ILS) | 18-24m | To be released when we have 5-10 datasets × 20+ pipelines with documented group/instrument/campaign splits, archived`.n4a`bundles (Zenodo / Software Heritage), DOI-pinned datasets via`nirs4all-datasets`. Variant of high interest: **benchmark cross-instrument / calibration transfer** — compare DiPLS, PDS, deep DA, conformal on pairs of documented instruments; well aligned with plant phenotyping CIRAD. |
+| **P3** | Benchmark `nirs4all-benchmarks` (Scientific Data en *data descriptor*, ou Chemometrics & ILS) | 18-24m | To be released when we have 5-10 datasets × 20+ pipelines with documented group/instrument/campaign splits, archived`.n4a`bundles (Zenodo / Software Heritage), DOI-pinned datasets via`nirs4all-datasets`. Variant of high interest: **benchmark cross-instrument / calibration transfer** — compare DiPLS, PDS, deep DA, conformal on pairs of documented instruments; well aligned with plant phenotyping CIRAD. |
 | **P3** | Calibration transfer paper (DiPLS + extensions modernes : DANN, MMD, conformal) | 18-24m | Promising domain; to be coupled with a real multi-instrument dataset (CIRAD?). |
 | **P3** | Foundation model NIRS (`NIRS-FM`pre-trained on public corpus, extends ViTnirs) | 18-30m | High visibility if submitted to a NeurIPS/ICLR spectroscopy applications workshop. Conditioned on a net pre-train corpus (≥ 100k aggregated public spectra). |
 
@@ -277,7 +277,7 @@ Prioritized list. The items are noted **(P1/P2/P3)** by priority and **(0-6m / 6
 
 The ecosystem has accumulated more code than distribution. Three axes in parallel:
 
-1. **Consolidate what exists.** Finish stable 0.9.x, release 1.0.0 of`nirs4all`with explicit public API promises, release`nirs4all-methods`on PyPI + CRAN, release`nirs4all-formats`on PyPI + crates.io, update`nirs4all-org`. Align public claims (parity, reconciled ABI, dataset statuses) with the documented reality of the repo. 2. **Two target publications first**, not three in parallel: (a) JOSS`nirs4all`once 1.0 is released + JOSS checklist completed (see 7.2), (b) AOM-PLS once the`paper_review.md`blockers are lifted. DSL and`dag-ml`come next, conditioned on public artifacts and comparative benchmarks. 3. **`nirs4all-arena`— reproducible internal benchmark published for reading.** Choose 5 public datasets (NIRS pharma + agro + food + soil + plant phenotyping if possible), 10-15 pipelines (PLS, AOM, RF, NN, TabPFN…), group/instrument/campaign splits, method × scenario matrix generated internally, public browsing pages, downloadable`.n4a`bundles. **No external submission, no competition platform.** The *citable version* (DOIs, licenses, cards, full Croissant) is an additional level at 12-18 months.
+1. **Consolidate what exists.** Finish stable 0.9.x, release 1.0.0 of`nirs4all`with explicit public API promises, release`nirs4all-methods`on PyPI + CRAN, release`nirs4all-formats`on PyPI + crates.io, update`nirs4all-org`. Align public claims (parity, reconciled ABI, dataset statuses) with the documented reality of the repo. 2. **Two target publications first**, not three in parallel: (a) JOSS`nirs4all`once 1.0 is released + JOSS checklist completed (see 7.2), (b) AOM-PLS once the`paper_review.md`blockers are lifted. DSL and`dag-ml`come next, conditioned on public artifacts and comparative benchmarks. 3. **`nirs4all-benchmarks`— reproducible internal benchmark published for reading.** Choose 5 public datasets (NIRS pharma + agro + food + soil + plant phenotyping if possible), 10-15 pipelines (PLS, AOM, RF, NN, TabPFN…), group/instrument/campaign splits, method × scenario matrix generated internally, public browsing pages, downloadable`.n4a`bundles. **No external submission, no competition platform.** The *citable version* (DOIs, licenses, cards, full Croissant) is an additional level at 12-18 months.
 
 ### 7.2 Checklist JOSS minimale pour `nirs4all`
 
@@ -293,7 +293,7 @@ Prerequisite for any submission: - Zenodo / DOI archive of the submission tag; -
 
 ### 7.5 Decisions to be made explicitly (to be written in a public document)
 
-1. **Public licensing policy** of the ecosystem (matrix by deposit × commercial use × contagion). 2. **`nirs4all-lite`**: scope of priority target artifacts (PyPI`nirs4all-lite`, CRAN/R-universe`nirs4all`, npm`nirs4all`, MATLAB/Octave zip/toolbox first, then Conda channel + Docker images + Julia Pkg + vcpkg), semver and compat matrix policy, CODEOWNERS and release frequency. 3. **`nirs4all-arena`**: target levels (a) *reproducible internal benchmark*, (b) *public browsing site*, (c) *citable resource* DOIs + cards + Croissant + versioned`.n4a`bundles, and realistic schedule for each. **No “external submission platform” level** (abandoned, see §4.4 and §7.3). 4. **Prioritization of bindings**: R = P1, MATLAB = P2, JS/WASM demo = P3, Julia/JNI/Android = on request. 5. **`dag-ml`↔`nirs4all`coupling **: which version of`nirs4all`does`dag-ml`become opt-in backend? Conditions`dag-ml`paper. 6. **Public freshness policy**: commitment to align the claims of the repo / webpage / README with the documented reality (versions, parity, ABI, datasets) before each release. 7. **Automation policy** (see §7.6): which agent perimeters *can* operate autonomously, which require systematic human review, how to audit.
+1. **Public licensing policy** of the ecosystem (matrix by deposit × commercial use × contagion). 2. **`nirs4all-lite`**: scope of priority target artifacts (PyPI`nirs4all-lite`, CRAN/R-universe`nirs4all`, npm`nirs4all`, MATLAB/Octave zip/toolbox first, then Conda channel + Docker images + Julia Pkg + vcpkg), semver and compat matrix policy, CODEOWNERS and release frequency. 3. **`nirs4all-benchmarks`**: target levels (a) *reproducible internal benchmark*, (b) *public browsing site*, (c) *citable resource* DOIs + cards + Croissant + versioned`.n4a`bundles, and realistic schedule for each. **No “external submission platform” level** (abandoned, see §4.4 and §7.3). 4. **Prioritization of bindings**: R = P1, MATLAB = P2, JS/WASM demo = P3, Julia/JNI/Android = on request. 5. **`dag-ml`↔`nirs4all`coupling **: which version of`nirs4all`does`dag-ml`become opt-in backend? Conditions`dag-ml`paper. 6. **Public freshness policy**: commitment to align the claims of the repo / webpage / README with the documented reality (versions, parity, ABI, datasets) before each release. 7. **Automation policy** (see §7.6): which agent perimeters *can* operate autonomously, which require systematic human review, how to audit.
 
 ### 7.6 The automation bet as a maintenance strategy
 
@@ -330,7 +330,7 @@ Mitigation: quarterly human review of the ecosystem's actual state + merged agen
 | R5 | **Public/private mismatch**:`nirs4all-datasets`is private,`nirs4all-lab`is private, but the “public arena” + “public benchmark” ambition depends on their openness. | Raised for community | Explicitly decide which datasets/pipelines go public, and do so before announcing a public arena. |
 | R6 | **Stale public metadata** : webpage, READMEs, versions divergent (webpage 0.8.8 vs lib 0.9.1, finish-lib-progress 100% ABI vs SPEC 64% catalogued). | Average, but harms scientific and industrial credibility | Freshness policy (see 7.5 decision 6); pre-release checklist. |
 | R7 | **Benchmark leakage** in the arena (single split, repeated ungrouped samples, instrument leakage, temporal leakage). | Scientifically raised (published rejected or retracted) | Group/instrument/campaign splits from day 1; document the strategy. This is precisely what`dag-ml`can guarantee. |
-| R8 | **`nirs4all-arena`announced as a submission / competition platform ** while the scope is curated + internal compute + public browsing | Medium, reputational and scope | Framing §4.4 explicit; public communication limited to *curated reproducible benchmark* and *browsing site*, never *external submission* nor *competition*. |
+| R8 | **`nirs4all-benchmarks`announced as a submission / competition platform ** while the scope is curated + internal compute + public browsing | Medium, reputational and scope | Framing §4.4 explicit; public communication limited to *curated reproducible benchmark* and *browsing site*, never *external submission* nor *competition*. |
 | R9 | **R competition** (mdatools, prospectr, hyperSpec, ChemoSpec) which adopts these ideas before us | Moyen | Sortir vite JOSS + outreach R-side (PRs, atelier ICNIRS, posts blog). |
 | R10 | **Established tools** (PLS_Toolbox, Unscrambler, SIMCA, Quasar/Orange-Spectroscopy) ignore open-source or reinforce themselves | Moyen | Network effect via *instrument vendors*, trained students, CIRAD plant phenotyping. Long term. |
 | R11 | **Electron studio extra cost** vs pure web | Moyen | Maintain standalone web mode; Electron as an optional distribution. |
@@ -374,7 +374,7 @@ To be kept up to date. All external communication should reflect this table, not
 | `nirs4all-aom` | beta | public | not yet on PyPI | partial | pytest + benchmarks | Python | Paper in progress, experimental blockers to be lifted |
 | `nirs4all-datasets` | dev | public | no release | partial | pytest minimal | Python | 1 example dataset, DOIs/cards/manifests not yet populated |
 | `nirs4all-lab` | dev | **private** | n/a | n/a | n/a | Python | Prototyping space |
-| `nirs4all-arena` | stub | public | n/a | n/a | n/a | n/a | README only |
+| `nirs4all-benchmarks` | stub | public | n/a | n/a | n/a | n/a | README only |
 | `nirs4all-org` | online | public | n/a | GitHub Actions deploy | n/a | n/a | Former`nirs4all-webpage`; public links aligned with`nirs4all-web`,`nirs4all-lite`and`nirs4all-cluster` |
 | `nirs4all-ecosystem` | dev | public | n/a (parent submodules) | n/a | n/a | n/a | Contains no code |
 | `nirs4all-cluster` | alpha/prototype | public | n/a | oui | pytest + mypy + ruff | Python | Public distributed prototype; not present as a stable service |
