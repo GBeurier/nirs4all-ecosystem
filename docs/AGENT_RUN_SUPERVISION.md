@@ -282,3 +282,50 @@ Final Wave-2B state after reset/resume supervision:
   workspace root and were not killed. Latest process audit showed only those two
   top-level external Claude sessions plus MCP server processes; no lingering
   Vite/codex preview server was left running.
+
+## Managed Wave-2C implementation sessions
+
+Started 2026-07-01 after creating local integration branches from the successful
+Wave-2B commits. These agents run from `_worktrees/W11-*` through
+`_worktrees/W20-*`, consuming the shared prompt program
+`docs/WAVE_2C_AGENT_PROMPTS.md`.
+
+Integration bases created before launch:
+
+| Repo | Integration branch / worktree | Contents | Quick gate |
+|---|---|---|---|
+| `nirs4all` | `refactor/integration-nirs4all` / `_worktrees/INT-nirs4all` | W1+W2+W3+W4+W7 | `27 passed` for RT envelopes + fallback meter tests |
+| `dag-ml` | `refactor/integration-dagml` / `_worktrees/INT-dagml` | L20+L16+W5+W6 | `cargo test -p dag-ml-core controller_adapter --lib` -> 18 passed |
+| `dag-ml-data` | `refactor/integration-dmd` / `_worktrees/INT-dmd` | L20+L6+W5 | `cargo test -p dag-ml-data-core representation_registry --lib` -> 5 passed |
+| `nirs4all-studio` | `refactor/integration-studio` / `_worktrees/INT-studio` | L11+L12+W8 | compile attempted; backend tests need FastAPI env |
+| `nirs4all-web` | `refactor/integration-web` / `_worktrees/INT-web` | L13+W9 | typecheck attempted; current PATH resolves Windows npm |
+| `nirs4all-cluster` | `refactor/integration-cluster` / `_worktrees/INT-cluster` | L15 | compile attempted; tests need FastAPI env |
+| `nirs4all-io` | `refactor/integration-io` / `_worktrees/INT-io` | L7 | clean worktree |
+
+Known environment limits at launch:
+
+- Studio and Cluster backend tests require a Python environment with `fastapi`;
+  supervisor `python3` did not have it.
+- Web typecheck/build require WSL-local Node/npm; the observed `npm` on PATH was
+  Windows npm.
+
+| Agent | Session ID | Scope | Worktree / cwd | Report |
+|---|---|---|---|---|
+| `W11` | `c8189b12-2edd-4539-99d8-c060db0a5d4f` | B-010 branch/dup fallback lowering | `_worktrees/W11-nirs4all-branch` | `docs/agent_reports/W11_BRANCH_FALLBACK.md` |
+| `W12` | `baa2b9d1-2340-449d-a738-876b09b22e21` | B-010 multi-source fallback lowering | `_worktrees/W12-nirs4all-multisource` | `docs/agent_reports/W12_MULTISOURCE_FALLBACK.md` |
+| `W13` | `09bd4fa1-41a2-48eb-9956-a33f95286d2c` | native `.n4a` export production slice | `_worktrees/W13-nirs4all-export` + `_worktrees/W13-dagml-export` | `docs/agent_reports/W13_NATIVE_N4A_EXPORT.md` |
+| `W14` | `d08edf50-3183-421b-ba8d-74daa4b98300` | Studio-bypass parity + engine-record gates | `_worktrees/W14-studio-parity` | `docs/agent_reports/W14_STUDIO_BYPASS_PARITY.md` |
+| `W15` | `ba591d16-31da-4bf3-93a5-d1a29d0464c7` | Studio compute push-down first slice | `_worktrees/W15-studio-compute` | `docs/agent_reports/W15_STUDIO_COMPUTE_PUSHDOWN.md` |
+| `W16` | `afb6d3a8-4411-4d31-8bd5-62bdeced6ccd` | Web served smoke + RtError diagnostics | `_worktrees/W16-web-rt-smoke` | `docs/agent_reports/W16_WEB_RT_SMOKE.md` |
+| `W17` | `dae4db7d-eb6d-4ac6-ae26-6f9e4a6eac61` | DatasetPackage v2 first implementation | `_worktrees/W17-io-dataset-package` | `docs/agent_reports/W17_DATASET_PACKAGE.md` |
+| `W18` | `ef4d87b0-da0b-4126-92a7-0800382b45f6` | provider adapters phase 2 | `_worktrees/W18-providers` | `docs/agent_reports/W18_PROVIDERS_PHASE2.md` |
+| `W19` | `6982df22-b082-4747-9075-f011329a17b4` | cluster typed client/adapter | `_worktrees/W19-cluster-client` | `docs/agent_reports/W19_CLUSTER_CLIENT.md` |
+| `W20` | `b2942e83-e228-41cb-8e62-3e53788752d9` | lite -> `nirs4all-core` aggregate + `n4a` facade | `_worktrees/W20-lite-core` | `docs/agent_reports/W20_LITE_CORE.md` |
+
+Launch notes:
+
+- All `claude_code` calls used
+  `allowedTools=["Bash","Read","Write","Edit","Glob","Grep","Task"]`.
+- All agents were started with `effort=max`; the MCP resolved model as
+  `claude-opus-4-8`.
+- External interactive Claude CLI PIDs `208304` and `208423` remain untouched.
