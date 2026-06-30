@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GBeurier/nirs4all-ecosystem/schemas/runtime/rt_run_request.v1.schema.json",
+  "title": "nirs4all Runtime RtRunRequest v1",
+  "$comment": "LOCK-RT / RT-002 unified run-request envelope. The union of the run_via_dagml field set + the ExecutionDriverCapability execution_backend taxonomy + the net-new options.allow_fallback strict-mode flag. `execution_backend` (the environment) stays ORTHOGONAL to the ML `engine` (which rides in `options`). Net-new wrapper; pipeline_dsl is the existing pipeline_dsl compat contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["pipeline_dsl", "dataset_ref", "execution_backend"],
+  "properties": {
+    "pipeline_dsl": {
+      "$comment": "The pipeline DSL (the existing pipeline_dsl.schema.json compat contract). Carried opaque here so this envelope does not fork it.",
+      "type": ["object", "array", "string"]
+    },
+    "dataset_ref": {
+      "$comment": "A dataset reference (path / config / id) the runtime resolves; shape is runtime-specific."
+    },
+    "cv": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "folds": { "type": ["integer", "null"] },
+        "seed": { "type": ["integer", "null"] }
+      }
+    },
+    "execution_backend": {
+      "$comment": "The execution ENVIRONMENT (ExecutionDriverCapability taxonomy), not the ML engine.",
+      "enum": ["local-python", "wasm-local", "cluster"]
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": ["string", "null"] },
+        "engine": { "type": ["string", "null"] },
+        "refit": {},
+        "project": { "type": ["string", "null"] },
+        "session": {},
+        "cache": {},
+        "allow_fallback": { "type": "boolean" }
+      }
+    }
+  }
+}

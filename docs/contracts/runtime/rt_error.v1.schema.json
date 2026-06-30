@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GBeurier/nirs4all-ecosystem/schemas/runtime/rt_error.v1.schema.json",
+  "title": "nirs4all Runtime RtError v1",
+  "$comment": "LOCK-RT / RT-003 unified runtime error envelope (B-018). The `cause` vocabulary and `mitigation`/`unsupported_capability` tokens are OWNED by CAP-004 (this schema only freezes the envelope, not the vocabulary). Net-new wrapper; references no dag-ml field.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["verb", "cause", "message"],
+  "properties": {
+    "verb": {
+      "$comment": "The runtime verb the error is scoped to (RT-001 / DEC-RT-001).",
+      "enum": ["inspect", "validate", "plan", "run", "predict", "replay", "explain", "export"]
+    },
+    "cause": {
+      "$comment": "Coarse wire cause (RT-003). The migration table maps DagMlUnavailable -> unavailable_backend, DagMlUnsupported/NotImplementedError -> unsupported_shape, preflight missing_module -> unsupported_capability.",
+      "enum": ["unsupported_shape", "unsupported_capability", "unavailable_backend", "invalid_request", "runtime_error"]
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mitigation": {
+      "$comment": "Derived remedy (owned by CAP-004).",
+      "type": "string"
+    },
+    "unsupported_capability": {
+      "$comment": "The finer CAP capability token when one applies (CAP-004); opaque here.",
+      "type": "string"
+    },
+    "portable_level": {
+      "$comment": "The CAP-002 portability classifier; opaque referenced field (null/absent in V1).",
+      "type": ["string", "null"]
+    }
+  }
+}

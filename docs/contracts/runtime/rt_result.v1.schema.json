@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GBeurier/nirs4all-ecosystem/schemas/runtime/rt_result.v1.schema.json",
+  "title": "nirs4all Runtime RtResult v1",
+  "$comment": "LOCK-RT / RT-002 unified result envelope. A thin wrapper that BINDS the dag-ml native triple (score_set + predictions + manifest + selection_decision) which already co-emit from native_results.write_native_results. `reports` is VERBATIM score_set.reports[] (the partition/level/fold_id/variant_id/target join key). Studio ChainSummary (pivot) and Web RunResult (nest) are deterministic VIEWS of this envelope. Net-new wrapper; adds zero new dag-ml fields and references the dag-ml contracts by $id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "plan_id", "selection", "reports", "predictions", "manifest"],
+  "properties": {
+    "schema_version": {
+      "$comment": "The RtResult envelope's own version (net-new), independent of the dag-ml ScoreSet/manifest schema versions.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "run_id": { "type": ["string", "null"] },
+    "plan_id": {
+      "$comment": "<- score_set.plan_id (score_set.v1.schema.json).",
+      "type": ["string", "null"]
+    },
+    "selection": {
+      "$comment": "<- dag-ml selection_decision (winner + ranked) when present; V1 carries the thin {selected_variant} projection from the native manifest, or null.",
+      "anyOf": [
+        { "$ref": "https://github.com/GBeurier/dag-ml/schemas/selection_decision.v1.schema.json" },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": { "selected_variant": { "type": ["string", "null"] } }
+        },
+        { "type": "null" }
+      ]
+    },
+    "reports": {
+      "$comment": "VERBATIM score_set.reports[] — each item is a dag-ml regression_metric_report (referenced, not forked).",
+      "type": "array",
+      "items": {
+        "$ref": "https://github.com/GBeurier/dag-ml/schemas/score_set.v1.schema.json#/$defs/regression_metric_report"
+      }
+    },
+    "predictions": {
+      "$comment": "Per-block drill-down rows projected from predictions.parquet / the in-memory Predictions (the arrays a view joins by sample_indices). Not the metric source of truth — reports[] is.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["partition", "sample_indices"],
+        "properties": {
+          "partition": { "type": "string" },
+          "fold_id": { "type": ["string", "null"] },
+          "variant_id": { "type": ["string", "null"] },
+          "model_name": { "type": "string" },
+          "sample_indices": { "type": "array", "items": { "type": "integer" } },
+          "y_true": { "type": ["array", "null"] },
+          "y_pred": { "type": ["array", "null"] },
+          "y_proba": { "type": ["array", "null"] },
+          "scores": { "type": "object" },
+          "metric": { "type": "string" },
+          "task_type": { "type": "string" }
+        }
+      }
+    },
+    "manifest": {
+      "$comment": "<- native_results manifest.json header projection.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["engine", "fingerprints", "capabilities", "portable_level", "files"],
+      "properties": {
+        "engine": { "type": "string" },
+        "fingerprints": {
+          "$comment": "score_set_hash + plan_id + bundle_id (the native manifest fingerprints available without the coordinator_data_plan_envelope).",
+          "type": "object"
+        },
+        "capabilities": { "type": "object" },
+        "portable_level": {
+          "$comment": "CAP-002 classifier slot — opaque referenced field, null in V1.",
+          "type": ["string", "null"]
+        },
+        "files": { "type": "object" }
+      }
+    },
+    "artifacts": {
+      "$comment": "<- native manifest artifacts[] (dag-ml ArtifactRef list); absent for an in-memory-only result.",
+      "type": ["array", "null"],
+      "items": { "type": "object" }
+    },
+    "diagnostics": {
+      "$comment": "list[RtError] — e.g. 'ran legacy because <cause>' from the run() fallback.",
+      "type": "array",
+      "items": {
+        "$ref": "https://github.com/GBeurier/nirs4all-ecosystem/schemas/runtime/rt_error.v1.schema.json"
+      }
+    }
+  }
+}
