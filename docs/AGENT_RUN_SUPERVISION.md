@@ -205,3 +205,50 @@ Final managed-review state:
   current lane slices are staged but not committed, so new worktrees must not be
   branched for W2 until each lane branch/repo has an actual commit.
 - External Claude CLI processes `208304` and `208423` still remain untouched.
+
+## Managed Wave-2B implementation sessions
+
+Started 2026-07-01 after resolving PRE-W2a (`B-022`) by committing every staged
+Wave-2A slice on its lane branch. These agents are implementation agents in
+fresh worktrees. They must not edit `PARALLEL_REFACTORING_SYNC.md`; each writes
+only its assigned `docs/agent_reports/W*.md` report and may make local commits
+on its isolated W branch if its gates are green. No agent may push.
+
+Committed base tips used for W2B:
+
+| Lane | Repo / branch | Tip |
+|---|---|---|
+| ecosystem docs | `nirs4all-ecosystem/main` | `75f7736` |
+| tools | `nirs4all-tools/main` | `93f7050` |
+| L17 | `nirs4all/refactor/L17-pyref` | `1e4d8043` |
+| L7 | `nirs4all-io/refactor/L7-io-dagml-sibling` | `5651da5` |
+| L20 core | `dag-ml/refactor/L20-lockstep` | `4f0a3b5` |
+| L20 data | `dag-ml-data/refactor/L20-lockstep` | `2214f75` |
+| L6 | `dag-ml-data/refactor/L6-dmd-registry` | `4003480` |
+| L11 | `nirs4all-studio/refactor/L11-ui-vm` | `8d6a1f0` |
+| L12 | `nirs4all-studio/refactor/L12-runtime-routes` | `155678b` |
+| L13 | `nirs4all-web/refactor/L13-web-rt` | `488176b` |
+| L15 | `nirs4all-cluster/refactor/L15-rbac` | `259d598` |
+| L16 | `dag-ml/refactor/L16-controller-manifests` | `2143c57` |
+
+| Agent | Session ID | Scope | Worktree / cwd | Status at launch | Report |
+|---|---|---|---|---|---|
+| `W1` | `597c2cdf-0e98-40c5-a64d-5b54ef7d8bac` | B-010 fallback coverage meter | `_worktrees/W1-nirs4all` | running | `docs/agent_reports/W1_FALLBACK_METER.md` |
+| `W2` | `8b54536f-ce87-4e33-ae11-b7d179fe30b4` | B-010 native fallback lowering | `_worktrees/W2-nirs4all` | running | `docs/agent_reports/W2_NATIVE_FALLBACK.md` |
+| `W3` | `d9749b9f-9c4a-44c2-9059-cdb0ec0c1657` | B-010 native `.n4a` export | `_worktrees/W3-nirs4all` + `_worktrees/W3-dagml` | running | `docs/agent_reports/W3_NATIVE_EXPORT.md` |
+| `W4` | `23618bd3-1c71-4899-bca7-31aa62beabf6` | B-011 cross-engine parity | `_worktrees/W4-nirs4all` | running | `docs/agent_reports/W4_CROSS_ENGINE.md` |
+| `W5` | `039683db-68ce-4993-b610-4d246e2e3ded` | B-014 lockstep contracts | `_worktrees/W5-dmd` + `_worktrees/W5-dagml` | running | `docs/agent_reports/W5_CONTRACTS_LOCKSTEP.md` |
+| `W6` | `ba11ad50-88e3-4fcd-9f9a-025236eb930f` | B-014 controller `data_requirements` | `_worktrees/W6-dagml` | running | `docs/agent_reports/W6_DATA_REQUIREMENTS.md` |
+| `W7` | `4325df06-2b5e-4c33-87b3-26c0ba5520d4` | B-018 runtime envelopes | `_worktrees/W7-nirs4all` | running | `docs/agent_reports/W7_RT_ENVELOPES.md` |
+| `W8` | `512b108d-4394-4177-bf78-805cd7d4446d` | B-017/B-018 Studio routing | `_worktrees/W8-studio` | running | `docs/agent_reports/W8_STUDIO_ROUTING.md` |
+| `W9` | `8e6f6cbd-cba0-4dfc-bf60-47a8d22a67c2` | B-018 Web RtError | `_worktrees/W9-web` | running | `docs/agent_reports/W9_WEB_RT.md` |
+| `W10` | `ceae37ad-37e7-473b-a076-2fccdd6a2165` | L14 providers scaffold | `nirs4all-providers` | running | `docs/agent_reports/W10_PROVIDERS.md` |
+
+Launch notes:
+
+- Claude Code MCP setup was ready and authenticated before launch.
+- All `claude_code` calls included
+  `allowedTools=["Bash","Read","Write","Edit","Glob","Grep","Task"]`.
+- External interactive Claude CLI processes `208304` and `208423` remain
+  untouched; no visible `pytest`/`cargo`/`npm run` children were attached at the
+  launch audit.
