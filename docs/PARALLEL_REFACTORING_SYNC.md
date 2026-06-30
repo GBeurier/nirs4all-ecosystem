@@ -1,0 +1,327 @@
+# Sync board - refactoring multimodal parallele
+
+**Date de creation:** 2026-06-30
+**Statut global:** first-wave + managed second-wave reports collected; `LOCK-CAP`, `LOCK-RT`, `LOCK-GOV`, `LOCK-LOCKSTEP`, `LOCK-IO`, `LOCK-UI`, `LOCK-REL`, and `LOCK-MIG` landed; `LOCK-PYREF` and `LOCK-DROP` remain in progress; provider/cluster/proof decisions still open.
+**Roadmap:** `PARALLEL_REFACTORING_ROADMAP.md`
+**Questions a trancher:** `REFACTORING_DECISIONS_TO_ARBITRATE.md`
+**Prompts agents:** `PARALLEL_AGENT_PROMPT_PROGRAM.md`
+
+Ce document est le point de synchronisation operationnel des agents. Il est
+fait pour etre modifie pendant le chantier. La roadmap change rarement; ce
+fichier change souvent.
+
+## Regles d'edition
+
+1. Chaque agent modifie uniquement sa ligne de lane, les blockers qui le
+   concernent, et ajoute une entree append-only dans le worklog.
+2. Toute modification d'interface cross-repo passe par une decision `DEC-*`.
+3. Une decision ne devient active que quand son statut est `accepted`.
+4. Un lock ne devient actif que quand il reference une decision acceptee.
+5. Les specs longues doivent etre creees dans des fichiers dedies et referencees
+   ici.
+6. Ne pas resoudre un blocker en supprimant le blocker d'un autre agent; ajouter
+   une note de resolution datee.
+
+## Statuts autorises
+
+- `blocked`
+- `ready`
+- `in_progress`
+- `review`
+- `landed`
+- `superseded`
+
+## Prereq gate
+
+| Gate | Statut | Evidence | Owner | Notes |
+|---|---|---|---|---|
+| `PRE-1` Backend `dag-ml` comme backend `nirs4all` | satisfied | local `nirs4all` `e41362b4` (pushed) + TAG `dagml-adr17-complete-2026-06-30`; `DEFAULT_ENGINE="legacy"` (engine.py:29); `engine="dag-ml"` dispatch vers `run_via_dagml` | A0 | Ratifie A0 pass 2. Backend selectionnable; hardening/cutover = `L5`/`L19`. |
+| `PRE-2` Studio pristine | satisfied | local `nirs4all-studio` `2ccbf68`; `git status --short` = 0; `NativeResultsAdapter` et `/api/runs/execution-backends` presents | A0 | Ratifie A0 pass 2. Baseline propre; poser un tag PRE-2 si un point immuable est requis. |
+| `PRE-3` Oracle Python/conformance disponible | satisfied | `nirs4all/tests/integration/parity/` (`_oracle.py`, `_conformance_helpers.py`, `test_conformance_dual_engine.py`, `KNOWN_DIVERGENCES`/`EXPECTED_FALLBACK`) | A0 | Oracle present + adopte. Full PYREF vert sur `refactor/L17-pyref`; `B-009`/`B-013`/`B-015` resolus localement. Signature finale de `LOCK-PYREF` encore bloquee par `B-011`. |
+| `PRE-4` Branch strategy choisie | satisfied | `ARB-009` = A: branche `refactor/<lane>` par repo + worktrees `_worktrees/<lane>-<repo>`; contrats cross-repo par `DEC-*` | A0 | Accepte 2026-06-30. Voir "Plan de merge par lane". **Tous les PRE gates verts -> Vague 1 ouverte.** |
+
+## Locks
+
+| Lock | Statut | Decision source | Owner | Impact |
+|---|---|---|---|---|
+| `LOCK-GOV` | landed | `DEC-GOV-001` + `DEC-GOV-002` (accepted) | A0/L1 | Signe `ARB-013`/`014`=A: clone `nirs4all-core` RETIRE (aucun checkout); target-state `nirs4all-lite` -> `nirs4all-core` (aggregate), `datasets` OPTIONNEL; `nirs4all.*` + distributions explicites + facade `n4a.*` additive, R packages explicites. Audit SW2: coherent mais pas implemente; methods distrib primary encore `pls4all`; `n4a` facade absente. Appliquer release-inventory A13. |
+| `LOCK-CAP` | landed | `DEC-CAP-001` (accepted) | A0/L2 | Signe sur `CAP_spec.md`: `ControllerCapability` (19) + fit_scope/rng_policy/artifact_policy (4+4+4) verifies (controller.rs:18-65, schema:149-171), contrat dormant (consomme seulement par `validate()`). 5 items NET-NEW derives acceptes (portable_level ladder, +2 sorties RT, envelope diagnostic, labels runtime, ledger). CON-001 peut maintenant consommer `nirs4all/docs/compatibility.json`; cloture capability restante depend de `B-014`. |
+| `LOCK-PYREF` | in_progress | `DEC-PYREF-001` + `DEC-PYREF-002` (accepted) | A0/L17 | `docs/compatibility.md`, `docs/compatibility.json`, `_authority.py` et le test de drift existent sur `refactor/L17-pyref`; full PYREF vert (`556 passed, 14 skipped, 197 deselected, 11 xfailed`, exit 0) + ledger authority test vert; methods-installed CI gate livre localement. Sous-slice `B-011` export/error dag-ml livree localement mais RV8 confirme qu'elle n'est pas une vraie parite cross-engine. Restent error/refusal parity, workspace/artifact cross-engine `.n4a` round-trip, et Studio-bypass parity. Bloque final sign via `B-011`. |
+| `LOCK-MIG` | landed | `DEC-MIG-001` (accepted) | A0/L18 | Signe sur `SW4_MIG_CONVERTER_spec.md`: nouveau repo `nirs4all-tools`, offline/one-way/no-in-place, target Phase-1 = workspace v2 deja lisible, manifest/report/checksum/id-map vocabulary, Studio legacy-status + command guidance. Runtime V1 garde zero legacy reader. |
+| `LOCK-DROP` | in_progress | `DEC-DROP-001` (accepted: legacy default, flip last) | A0/L19 | Critere fige; execution sequencee EN DERNIER. `DEFAULT_ENGINE` reste `legacy` jusqu'au gate. |
+| `LOCK-LOCKSTEP` | landed | `DEC-LOCKSTEP-001` (accepted) | A0/L20 | Signe. Repos deja en etat coherent pushe; `validate_contracts.py` present des deux cotes -> brancher en gate CI. |
+| `LOCK-REL` | landed | `DEC-REL-001` (accepted) | A0/L3 | Signe sur `SW3_REL_MANIFEST_LOCKFILE_spec.md`: `aggregation-manifest.n4a.json` (intent) + `aggregation-lock.n4a.lock.json` (generated exact state) qui CONSOMMENT per-repo conformance/ABI/schema digests; pas de re-pin concurrent. |
+| `LOCK-IO` | landed | `DEC-IO-001` (accepted) | A0/L7 | Signe sur `IO_spec.md`: `DatasetSpec v2`+`DatasetPackage` etendent le bridge `io->dag-ml-data` (spectra-only aujourd'hui); representation IDs `DMD-001` DEJA presents (`dag-ml-data-core/src/builtin_models.rs:36-62`, 26 builtins); MVP spectra+image = 12 IDs (8 emis, 4 image NET-NEW emit). README io "Phase 2 gated" = stale (code wins). Impl v2 = Vague-2. |
+| `LOCK-RT` | landed | `DEC-RT-001` (accepted) | A0/L10 | Signe sur `RT_spec.md`: 8 verbes mappes sur contrats dag-ml; ancre commune = `ScoreSet` (`score_set.schema.json`) dont Studio (`native_results_adapter.py`) et Web (`dagml-engine.ts`) sont DEJA des vues. Envelopes `RtResult/RtRunRequest/RtError` = wrappers (0 champ neuf). 3 verbes non-natifs acceptes (inspect, predict-unifie, explain=Python-only). Vocab erreur -> CAP-004. |
+| `LOCK-UI` | landed | `DEC-UI-001` (accepted) | A0/L11 | Signe sur `UI_spec.md` (+A6): nirs4all-ui = package INTERNE Studio; gold = couche pure VM-adapter (`src/lib/inspector/*Data.ts` 15 fichiers 0-import) extraite d'abord; bucket `controllers` = greenfield (depuis CAP); UI-004 = vues sur `RtResult`. Primitive policy RECOMMANDEE: (c) headless + theme/app + plancher React-18, base shadcn = generation Web/v4 (mainteneur peut imposer (a) une identite, `B-016`). Baseline net-new (Playwright). Wave 0-1 debloquees; Wave 3 + push-down FastAPI (`B-017`) gated. |
+
+## Lane board
+
+| Lane | Statut | Owner | Repos | Next action | Blockers |
+|---|---|---|---|---|---|
+| `L0` Coordination | in_progress | A0 | `nirs4all-ecosystem` | Vague 1 lancee: integrer les rapports lock-spec (CAP/RT/IO/CTRL) sous `docs/agent_reports/`, signer les locks restants. | none (PRE-* satisfaits) |
+| `L1` Governance/naming/ADR | landed | A0 | `nirs4all-ecosystem` | `LOCK-GOV` signe; appliquer `nirs4all-lite -> nirs4all-core`, facade `n4a.*` additive, R packages explicites, puis `GOV-003`/`GOV-005`. | none |
+| `L2` Capabilities/conformance | review | TBD | ecosystem + core/runtime/product repos | Implementer le ledger/capability view depuis `CAP_spec.md`; consommer `nirs4all/docs/compatibility.json` comme autorite PYREF. | `B-014` |
+| `L3` Aggregation/release tooling | review | SW3/Codex | `nirs4all-ecosystem` | Generator/validator + checkout pinned-members + validation CI multi-repo livres localement. Etendre les gates quand de nouveaux packs apparaissent. | none |
+| `L4` Core aggregate | review | TBD | `nirs4all-lite` | Implementer l'ADR `lite -> nirs4all-core` contre `LOCK-GOV` + `LOCK-REL`. | none |
+| `L5` dag-ml runtime | review | TBD | `dag-ml`, `nirs4all/pipeline/dagml` | Rescoper en hardening: native-vs-fallback coverage, migration `run_paths.py`/`detect.py` down, native export. | `LOCK-PYREF`, `LOCK-RT`, `L16`, `LOCK-DROP` |
+| `L6` dag-ml-data providers | review | IMP-L6 | `dag-ml-data` (`refactor/L6-dmd-registry`) | Representation registry v1 livre et staged: les 26 IDs existants sont publies/frozen via API+CLI+JSON+drift test; prochaine tranche = wiring lockstep conformance-pack avec `dag-ml` et `data_requirements` L16. | `LOCK-IO`, `LOCK-LOCKSTEP` |
+| `L7` nirs4all-io multimodal | review | Codex/L7 | `nirs4all-io` (`refactor/L7-io-dagml-sibling`) | Gate sibling `dag-ml-data` livre localement pour `nirs4all-io-dagml`; prochaine etape = spec V2 `DatasetPackage`. | `LOCK-IO` |
+| `L8` formats/readers | blocked | TBD | `nirs4all-formats` | Lister readers/sidecars necessaires au MVP multimodal. | `LOCK-IO`, demandes `L7` |
+| `L9` methods/parity | review | TBD | `nirs4all-methods` + `nirs4all` CI | Methods-installed gate livre localement cote `nirs4all`; prochaine tranche = relier kernel parity au capability ledger et aux manifests. | `LOCK-CAP`, `CON-001` |
+| `L10` Runtime API | review | TBD | spec + implementations | Consommer `SW8_RT_STUDIO_IMPL_spec.md`: schemas runtime neutres, Python `pipeline/dagml/rt.py`, TS mirror, Studio Pydantic models, fallback -> `RtError`. | `B-018`, `LOCK-PYREF` |
+| `L11` nirs4all-ui | review | IMP-L11 | `nirs4all-studio` (`refactor/L11-ui-vm`) | Premier slice interne `src/ui/score` livre et staged: score/metric view-models purs extraits, barrels + README + tests; RV6 approuve, mais la preuve `npx tsc --noEmit` racine etait non probante. Gate TS utile = `tsc -p tsconfig.app.json --noEmit` avec delta 0 sur 3 erreurs preexistantes. Prochaine tranche = `chartExport`/`partitionColors` ou `lib/inspector/*Data.ts`. | `B-016`, `LOCK-IO` pour surfaces datasets |
+| `L12` Studio reassembly | review | IMP-L12 | `nirs4all-studio` (`refactor/L12-runtime-routes`) | Premier slice `RtError` livre et staged: envelope Pydantic neutre, `RtUnsupportedError(RuntimeError)` et details backend indisponible derives sans changer les wire shapes. Next = engine threading/recording + vrai push-down `B-017` + Studio-bypass parity. | `B-017`, `LOCK-PYREF`, `B-011` |
+| `L13` Web/WASM reassembly | review | IMP-L13 | `nirs4all-web` (`refactor/L13-web-rt`) | Web fallback/unsupported livre et staged: `RtError` TS, strict `allowFallback=false`, diagnostics/fallback lineage, worker boundary, UI chip conditionnel. Next = browser smoke forced-failure + offline JS orchestrator diagnostics. | `CORE-*`, `RT-WASM-001` |
+| `L14` Providers/plugins | review | SW6 | datasets/repository/benchmarks/papers | Consommer `SW6_PROV_PLUGINS_spec.md`: adapters fins sur APIs reelles; drafts/lab hors scope; repository/benchmarks/papers read/local-write boundaries. | `DEC-PROV-001` still proposed |
+| `L15` Cluster distribue | review | IMP-L15 | `nirs4all-cluster` (`refactor/L15-rbac`) | RBAC/rights livre et staged sur le `/v1` existant: credential-bound `{submit,read,cancel,execute,admin}`, legacy `--token` admin preserve, worker rights echo, docs/tests. Next = client core/Studio/CLI adapter + distributed==local parity. | fine-grained DAG depends on `L5`/`L16` |
+| `L16` Controllers/bindings | review | IMP-L16 | `dag-ml` (`refactor/L16-controller-manifests`) | Native adapter foundation livre et staged: `HostControllerSpec -> derive() -> ControllerManifest`, registry derivation, 11 tests; prochaine tranche = PyO3/CLI/Studio route consumption + rebuild `.so` at landing. | `LOCK-RT`, `B-014` pour representation IDs |
+| `L17` Oracle parite Python | review | L17-impl | `nirs4all` (branche `refactor/L17-pyref`) | Full PYREF run vert + compatibility ledger MD/JSON + authority drift test + methods-installed gate livres; export/error dag-ml sub-slice livre, mais RV8 corrige le scope: il manque encore error/refusal parity cross-engine, workspace/artifact `.n4a` round-trip cross-engine, et Studio-bypass. | `B-011` |
+| `L18` Tools/migration legacy | review | IMP-L18 | `nirs4all-tools` (`main`, new sibling repo) | Standalone toolbox scaffold livre et staged: CLI `legacy inspect/migrate/verify`, no-in-place policy, detection, contracts, dry-run, copy-only, verify, tests. RV7 M1-M3 corriges localement: `migrate --copy-only --verify` renseigne le rapport, `source.fingerprint` est un hash contenu, et les inventaires suivent la shape du contrat. Next = vrai transform legacy -> workspace v2 + fixtures/goldens. | native export schemas `dag-ml` V1 for later native-results target |
+| `L19` Cutover legacy-DROP | blocked | TBD | `nirs4all`, `dag-ml`, `dag-ml-data`, Studio/Web docs | Definir et executer le gate `DEFAULT_ENGINE="dag-ml"` sans fallback legacy implicite. | `LOCK-DROP`, `LOCK-PYREF`, `LOCK-LOCKSTEP`, `L18` preview |
+| `L20` dag-ml/dag-ml-data lockstep | review | Codex/L20 | `dag-ml`, `dag-ml-data` (`refactor/L20-lockstep`) | Verrou script + job CI lockstep livres localement; RV9 approuve mais note que seul `contract-lockstep` utilise la branche paire. Pour un breaking shared-contract, documenter la choregraphie de merge ou propager le paired ref aux autres jobs CI peer-checkout. | `LOCK-REL`, `LOCK-IO` |
+
+## Decision register
+
+| ID | Statut | Sujet | Owner | Decision | Links |
+|---|---|---|---|---|---|
+| `DEC-GOV-001` | accepted | Statut du clone temporaire `nirs4all-core` | A0 | `ARB-013`=A: aucun checkout `nirs4all-core` (verifie A13) -> concept clone RETIRE; `nirs4all` = lib Python; `nirs4all-core` reserve a l'aggregate. | roadmap `GOV-001` |
+| `DEC-GOV-002` | accepted | `nirs4all-lite` devient `nirs4all-core` (aggregate) | A0 | `ARB-013`=A: lite -> `nirs4all-core`; `datasets` OPTIONNEL (hors aggregate par defaut); `CORE-002` exposer upstreams = vrai impl. `ARB-014`=A: distributions explicites + facade `n4a.*` additive (`nirs4all.*` compatible; R packages explicites). | roadmap `GOV-002`, `GOV-004` |
+| `DEC-CAP-001` | accepted | Vocabulaire capability/portability/unsupported | A0 | Derive de l'enum `capabilities` controller (+ `rng_policy`/`fit_scope`/`artifact_policy`); pas de vocab neuf (review DEC-9). | roadmap `CAP-001` |
+| `DEC-PYREF-001` | accepted | Oracle de parite avec `nirs4all` Python actuel | A0 | `ARB-002`=A. Adopter l'oracle `tests/integration/parity/` comme gate Tier-1; corpus/comparateurs/commandes adoptes, pas reconstruits. | roadmap `PYREF-*`, design `1bis` |
+| `DEC-MIG-001` | accepted | Projet `nirs4all-tools` et migration legacy -> V1 | A0 | `ARB-006`=A. Nouveau repo offline/one-way/no-in-place; absorbe `pipeline/storage/migration.py`; legacy hors runtime V1. | roadmap `TOOL-*` |
+| `DEC-PYREF-002` | accepted | Registre 3-tier des incompatibilites deja mesurees | A0 | `ARB-002`=A. Preload 13 entrees (8 strict-xfail + 2 legacy_bug + best_X + 2 num_predictions); `rng_nondeterministic` et `skip-unknown` distincts; jamais masquer RNG par tolerance. | roadmap `PYREF-000` |
+| `DEC-DROP-001` | accepted | Cutover legacy-DROP / `DEFAULT_ENGINE="dag-ml"` | A0 | `ARB-001`=B / DEC-6(a). V1 garde `legacy`; flip EN DERNIER quand `EXPECTED_FALLBACK==empty` + export `.n4a` natif + oracle 3-tier vert + Studio/Web runtime + outil migration. | roadmap `L19` |
+| `DEC-LOCKSTEP-001` | accepted | Lockstep `dag-ml` / `dag-ml-data` | A0 | `ARB-008`=A. Paires de PRs + CI `validate_contracts.py` obligatoire. Repos deja coherents/pushes (audit pass 2). | roadmap `L20` |
+| `DEC-REL-001` | accepted | Schema manifest/lockfile aggregation | A0 | Direction: manifest/lockfile qui CONSOMME les conformance-pack hashes par repo; pas de re-pin concurrent (review DEC-10). | roadmap `REL-001` |
+| `DEC-IO-001` | accepted | `DatasetSpec v2` et `DatasetPackage` | A0 | Direction: net-new (SCHEMA_VERSION stable) en etendant le bridge `io->dag-ml-data` existant (`84ab189`), pas from scratch. | roadmap `IO-001`, `IO-002` |
+| `DEC-RT-001` | accepted | Runtime API commune | A0 | Direction: surface inspect/validate/plan/run/predict/replay/explain/export referencant les contrats dag-ml existants. | roadmap `RT-001` |
+| `DEC-UI-001` | accepted | Scope et taxonomy `nirs4all-ui` | A0 | `ARB-007`=A. Studio-first foundation/data/pipeline; contract-first runtime/results/export (+`LOCK-RT`); baseline visuelle net-new (Playwright `toHaveScreenshot`). | roadmap `UI-001..010`, design `10` |
+| `DEC-PROOF-001` | proposed | Premier cas public multimodal/reproductible | TBD | P1 (`ARB-017`): a choisir selon donnees/licences; drafts/lab hors scope. | design `DQ-006` |
+| `DEC-DESIGN-001` | accepted (in part) | Separation `core` vs `runtime` et package topology | A0 | `ARB-005`=A. Core = inspect/validate/capability only; retirer `portable_run_subset`/`runPortable`; execution dans runtimes. Topology lite->core = P1 (`ARB-013`). | design schemas |
+| `DEC-PROV-001` | proposed | Contracts providers/plugins datasets/repository/benchmarks/papers | TBD | P1 (`ARB-010`): renommer sur les vraies APIs; couche provider unifiante = net-new. | roadmap `PROV-*` |
+| `DEC-CLU-001` | proposed | Cluster comme client/server/workers et client core optionnel | TBD | P1 (`ARB-011`): durcir le `/v1` existant (RBAC), pas un scheduler from scratch. | roadmap `CLU-*` |
+| `DEC-CTRL-001` | accepted | Controllers comme interface principale des bindings idiomatiques | A0 | `ARB-004`=A. `ControllerManifest` canonique; adapter `OperatorController->manifest` (B1) AVANT `CTRL-001`; node-registry Studio reconciliee; `transport`/`runtime_requirements`/`conformance_fixtures` = extension versionnee. `ARB-003`=A: V1 sklearn-only, n4m post-V1. A4/RT: adapter = 2 couches (keyword->kind, class->operator_selectors); de-facto `dagml_bridge.controller_manifests()` = 5 manifests statiques (`dagml_bridge.py:1008`, pas d'adapter classe); 31 ctrls = 10 manifestable/10 replace-native/11 legacy; Studio besoin `/api/operators/manifests`; drafts `DEC-CTRL-002..007` (A4 §6). | roadmap `CTRL-*`, design `4ter` |
+| `DEC-FAST-001` | accepted | Arbitrages P0 pour lancement rapide des agents | A0 | Tranche 2026-06-30: `ARB-001`=B, `002`=A, `003`=A, `004`=A, `005`=A, `006`=A, `007`=A, `008`=A, `009`=A. Splittes dans les `DEC-*` ci-dessus. P1 `ARB-010..018` ouverts. | decisions doc |
+
+## Blockers
+
+| ID | Statut | Description | Blocks | Owner | Next action |
+|---|---|---|---|---|---|
+| `B-001` | superseded | L'hypothese "backend/Studio pas prets" etait trop forte. | - | TBD | Remplace par l'audit de ratification `PRE-1`/`PRE-2`/`PRE-3`. |
+| `B-002` | resolved | Ambiguite `nirs4all-core` clone vs aggregate. Tranche `ARB-013`=A 2026-06-30: aucun checkout clone (retire), `lite->nirs4all-core`, `datasets` optionnel. | `L1`, `L4` | A0 | `DEC-GOV-001/002` accepted; `LOCK-GOV` signe; appliquer release-inventory A13. |
+| `B-003` | resolved | Le lock capability commun est signe dans `CAP_spec.md`. | - | A0/L2 | `DEC-CAP-001` accepted; reste l'implementation ledger/manifests et `B-014` pour representation IDs. |
+| `B-004` | resolved | Schema manifest/lockfile defini. | - | SW3/L3 | `LOCK-REL` signe sur `SW3_REL_MANIFEST_LOCKFILE_spec.md`; reste implementation generator/validator. |
+| `B-005` | superseded | L'oracle Python actuel est adopte comme gate bloquante, mais sa signature finale est incomplete. | - | A0/L17 | Remplace par `B-009`, `B-011`, `B-013`, `B-015`. |
+| `B-006` | superseded | La direction migration est formalisee, mais la spec concrete du convertisseur est incomplete. | - | A0/L18 | Remplace par les sous-blockers `LOCK-MIG` issus de `A8_A8-migration.md`. |
+| `B-007` | superseded | La lane cutover est signee: legacy reste default, flip `dag-ml` en dernier. | - | A0/L19 | Remplace par `B-010`, `B-011`, `B-013`, `B-018` et les gates `LOCK-DROP`. |
+| `B-008` | resolved | Contrats `dag-ml`/`dag-ml-data` partages sans lock de release dedie. | L5, L6, release train | A0/L20 | `DEC-LOCKSTEP-001` accepte 2026-06-30; `validate_contracts.py` present des deux cotes (cf `A9_A9-lockstep.md`). |
+| `B-009` | resolved | `nirs4all/docs/compatibility.md` reconcilie le contrat 1e-9 vs 1e-3, et la source machine-readable est livree (`docs/compatibility.json`, `tests/integration/parity/_authority.py`, `test_compatibility_ledger.py`). | - | L17 | Tests locaux verts: `json.tool`, `py_compile`, `pytest tests/integration/parity/test_compatibility_ledger.py -q -p no:cacheprovider`. |
+| `B-010` | open | `EXPECTED_FALLBACK` = 11 cas exacts (4 `branch_dup_*` + 4 `multi_source_*` + 3 `preprocessing_*`): orchestration native dag-ml incomplete. | `LOCK-DROP`/`L19` cutover | L5 (A3 host-bridge) | Migrer `run_paths.py`/`detect.py` DOWN -> `EXPECTED_FALLBACK==empty`; cf `A3_A3-dagml.md` + `A2_A2-pyref.md` §8 D1-D8. |
+| `B-011` | in_progress | Gaps L17: cross-engine `.n4a`/workspace/artifacts, error/refusal parity, et Studio-bypass non couverts par l'oracle. Sous-slice locale actuelle couvre surtout la catchability dag-ml (`RunResult.export()` refuse `source=`/`chain_id=` avant refit legacy et l'absence workspace/spec remonte `NotImplementedError`); RV8 confirme que ce n'est pas encore une parite cross-engine. | `LOCK-PYREF` final, claims `L19` | L17 (+L5/L9/L12) | Restant: error/refusal parity legacy vs dag-ml, workspace/artifact `.n4a` round-trip cross-engine, et Studio route bypass parity de `SW8`; garder final `LOCK-PYREF` ouvert jusque-la. |
+| `B-012` | resolved | `LOCK-LOCKSTEP` CI durcie localement: `--require-sibling`/`--sibling-root` livres des deux cotes; job `contract-lockstep` choisit la branche paire si elle existe et echoue si une PR modifie les contrats sans branche paire dans le repo sibling. | tout changement de contrat partage `dag-ml`/`dag-ml-data` | L20 | Commit/push `refactor/L20-lockstep` dans `dag-ml` et `dag-ml-data`; GitHub Actions executera `python3 scripts/validate_contracts.py --require-sibling --sibling-root external/<sibling>`. |
+| `B-013` | resolved | Suite PYREF collecte et passe sur `refactor/L17-pyref`: `matplotlib>=3.7.0` ajoute au dev extra; full run `pytest tests/integration/parity/ -m parity -p no:cacheprovider` -> `556 passed, 14 skipped, 197 deselected, 11 xfailed`, exit 0 le 2026-06-30. | `LOCK-PYREF` final, `PRE-3` claim, `L19` | L17 | Commit/push L17 apres review; garder `.so` freshness comme futur gate consumer-side (`B-011`/SW5), pas comme blocker de collection. |
+| `B-014` | in_progress | (A4 B-CTRL-2) Representation IDs: le catalogue `DMD-001` EXISTE deja (`dag-ml-data-core/src/builtin_models.rs:36-62`, 26 builtins). Tranche L6 livree localement: registry v1 publie/freeze les 26 IDs via API+CLI+JSON+drift test, sans vocab neuf; spectra+image MVP = 12 IDs (8 emis, 4 image landed_pending_emit). | `L16` manifests, `L7` IO | L6/L7/L20 | Restant: cabler `data_requirements` L16 puis ajouter le manifest au conformance-pack/`validate_contracts.py` en tranche lockstep `dag-ml` + `dag-ml-data`. |
+| `B-015` | resolved | `test_n4m_ops` conserve le skip opt-in par defaut mais echoue en mode strict (`NIRS4ALL_REQUIRE_N4M=1`); workflow `methods-installed.yml` installe `nirs4all-methods`, verifie `n4m`, puis lance le marker `methods`. | - | L9 (+L17) | Tests locaux verts: strict `pytest -m methods`, `py_compile`, Ruff cible, YAML parse. |
+| `B-016` | open | Decision primitive UI (a) une identite vs (c) headless+theme/app: fork prouve = generation shadcn (Studio v3/React19 vs Web v4/React18, `button.tsx`), pas un version-pin. RECOMMANDATION `UI_spec.md` = (c) + base v4. | `LOCK-UI` Wave 2+, `L11` | UI-SPEC/mainteneur | Mainteneur confirme (a) vs (c); puis token-NAME contract + baseline Playwright. Wave 0-1 (cn split/ports/adapters) independante de ce choix. |
+| `B-017` | open | Compute encore piege dans Studio FastAPI (`metrics_computer`, `analysis`, `playground/executor`, `playground/charts`, `spectra`, datasets, preprocessing). | `L12`, portabilite Web/UI, runtime reassembly | L12 (+L5/L16) | Router ces traitements vers runtime/core APIs au lieu de les fossiliser dans l'UI/backend Studio. |
+| `B-018` | in_progress | Semantique fallback/erreur runtime divergente: Web fallback silencieux et Python warn+fallback doivent devenir `RtError` explicite. Tranches locales livrees: L12 expose `RtError` Pydantic/`RtUnsupportedError` pour backends Studio indisponibles sans changer les wire shapes; L13 expose `RtError` TS, diagnostics et strict `allowFallback=false` pour Web/WASM. | `L10`, `L12`, `L13`, `LOCK-DROP` | L10 (+L12/L13) | Restant: runtime Python warn+fallback, schema partage/golden tests, route-level envelope quand les wire shapes peuvent evoluer, browser smoke forced-failure Web. |
+| `B-019` | resolved | Correction SW1 traitee localement: `nirs4all-io-dagml` est reconnu comme workspace member; le harness cross-CLI patch Cargo vers le sibling `dag-ml-data` quand present, et la CI clone/requiert les siblings avec `NIRS4ALL_REQUIRE_DAGML_SIBLINGS=1`. | `L7` IO CI, `LOCK-IO` impl, `LOCK-LOCKSTEP` | L7/L20 | Commit/push `refactor/L7-io-dagml-sibling`; poursuivre `DatasetSpec v2`/`DatasetPackage`. |
+| `B-020` | resolved | Cluster beta single-token corrige localement: RBAC/rights `{submit, read, cancel, execute, admin}` livres sur `refactor/L15-rbac`; droits derives du credential, `X-N4C-Role` reste advisory, `--token` legacy preserve comme admin, dev mode preserve. | - | L15 | Tests verts: `ruff check .`, `mypy nirs4all_cluster`, `pytest -q` -> 98 passed/1 skipped, `pytest tests/test_rbac.py` -> 16 passed. Next cluster work = client core/Studio/CLI adapter + parity distributed==local, pas blocker RBAC. |
+| `B-021` | resolved | `LOCK-REL` generator/validator + validation CI multi-repo livres localement. `checkout-members` reconstruit les repos membres aux commits verrouilles, le lock n'encode plus de chemin/commit ecosystem auto-invalidant, et le job `release-lock-validation` valide avec `--workspace-root external`. | `L3`, release train | L3 | Commit/push `nirs4all-ecosystem`; etendre le manifest quand de nouveaux repos publient conformance/ABI/schema packs. |
+| `B-022` | open | PRE-W2a: les slices Vague-2A sont staged mais pas committees dans plusieurs repos. Un nouveau worktree branche maintenant ne verra pas ces changements indexes et risque de refaire/contredire le travail. | prochaine vague implementation, RV10 plan W2 | mainteneur/Codex | Committer chaque lane branch/repo staged (`L6`, `L7`, `L11`, `L12`, `L13`, `L15`, `L16`, `L17`, `L18`, `L20`, ecosystem) avant de lancer les prochains agents d'implementation. |
+
+## Interface watchlist
+
+Les agents doivent eviter de modifier ces surfaces sans decision:
+
+| Surface | Owner pressenti | Raison |
+|---|---|---|
+| Package/repo/import names | `L1` | Collision publique possible. |
+| Capability vocabulary | `L2` | Consomme par core, runtimes, UI, Studio, Web. |
+| Python reference parity | `L17` | Bloque tout claim "compatible avec nirs4all actuel". |
+| Legacy migration manifest/report | `L18` | Bloque les claims de conservation des anciennes predictions/pipelines/workspaces. |
+| legacy-DROP/default engine | `L19` | Bloque la release qui fait de `dag-ml` le moteur par defaut. |
+| `dag-ml`/`dag-ml-data` mirrored contracts | `L20` | Bloque les releases de contracts partages. |
+| Aggregation manifest/lockfile | `L3` | Source de verite release. |
+| `DatasetSpec v2` / `DatasetPackage` | `L7` + `L6` | Impacte IO, dag-ml-data, datasets, UI. |
+| Runtime request/response schemas | `L10` | Impacte Studio/Web/CLI. |
+| UI component package deps | `L11` | Impacte Studio/Web builds. |
+| Bundle `.n4a` portability metadata | `L2` + `L4` + `L5` | Impacte claims cross-runtime. |
+| License/commercial matrix | `L1` | Impacte packaging Studio/hosted. |
+
+## Worklog
+
+Append-only. Format:
+
+```text
+YYYY-MM-DD | <agent/lane> | <status> | <summary> | tests/evidence | blockers/next
+```
+
+- 2026-06-30 | Codex/L0 | landed | Created initial parallel roadmap and sync board from local synthesis and ecosystem docs. | docs only; no tests run. | Wait for `PRE-1` and `PRE-2`.
+- 2026-06-30 | Codex/L0 | landed | Added design discussion document with core/runtime distinction, package taxonomy, UML/workflow/build/release schemas, and open design questions. | docs only; no tests run. | Discuss `DEC-DESIGN-001` before freezing roadmap locks.
+- 2026-06-30 | Codex/L0 | landed | Expanded design document with exhaustive workspace repo role map, peripheral repos, and release deliverables for org/cockpit/lab/drafts/cluster/aom/ecosystem. | docs only; no tests run. | Use the repo role map when assigning lanes.
+- 2026-06-30 | Codex/L0 | landed | Corrected design and roadmap: drafts/lab private out of scope; repository/benchmarks/papers treated as providers/plugins; datasets feeds IO/core; cluster modeled as client/server/workers scheduler with optional core client. | docs only; no tests run. | Re-discuss `DEC-DESIGN-001` on provider/plugin and cluster boundaries.
+- 2026-06-30 | Codex/L0 | landed | Added explicit controller contract section and roadmap lane: controllers are the primary binding surface for idiomatic methods; separated controllers from data providers, artifact stores, plugins and cluster. | docs only; no tests run. | Discuss `DEC-CTRL-001` before binding/runtime implementation.
+- 2026-06-30 | Codex/L0 | landed | Added Python current-library parity as a V1 oracle (`LOCK-PYREF`, `L17`) and expanded `nirs4all-ui` extraction into a taxonomy, workflow and visual/contract gates. | docs only; no tests run. | Discuss `DEC-PYREF-001` and update `DEC-UI-001` before implementation lanes.
+- 2026-06-30 | Codex/L0 | landed | Added `nirs4all-tools` as a standalone ecosystem toolkit lane with legacy workspace/bundle migration as first tool, keeping legacy readers out of runtime V1. | docs only; no tests run. | Discuss `DEC-MIG-001` and freeze `LOCK-MIG` before V1 storage cutover.
+- 2026-06-30 | Codex/L0 | review | Integrated `REFACTORING_ROADMAP_CRITICAL_REVIEW.md`: re-baselined backend/parity/Studio status, added `LOCK-DROP`, `LOCK-LOCKSTEP`, `L19`, `L20`, and changed L5/L17/L16 from greenfield to harden/adopt/adapter work. | Fact-check via local repo heads, `engine.py`, `api/run.py`, parity tree, controller schemas, cluster/tooling docs; docs only. | Sign `DEC-PYREF-002`, `DEC-DROP-001`, `DEC-LOCKSTEP-001`.
+- 2026-06-30 | Codex/L0 | landed | Re-audited after local update with CodeGraph plus direct code checks; added decision-arbitration queue and ready-to-copy parallel agent prompt program. | Verified heads: nirs4all e41362b4, dag-ml f58d7bf, dag-ml-data 347c15f, nirs4all-io 84ab189, studio 2ccbf68, cluster dcced30; docs only. | Launch A0-A9 from `PARALLEL_AGENT_PROMPT_PROGRAM.md`; maintainer to answer P0 `ARB-*` list.
+- 2026-06-30 | A0/L0 | review | Second-pass re-audit (Opus effort max). Confirmed decision-doc base-audit table fully current: 8/8 critical heads match, all working trees clean. Key moves vs critical review: dag-ml `f58d7bf` now on `main`==`origin/main` (`feat/native-scoring` MERGED + pushed); dag-ml-data `347c15f` pushed (contains provider spike `04ecf3a`); nirs4all `e41362b4` now TAGGED `dagml-adr17-complete-2026-06-30` + pushed; nirs4all-io `84ab189`. Marked STALE: review's "dag-ml not merged to main", "04ecf3a not pushed", "io da24fb5", "nirs4all no tag". Re-verified STILL VALID at current heads: `DEFAULT_ENGINE="legacy"` (engine.py:29); B2 no n4m on dag-ml path (grep dag-ml/crates + pipeline/dagml empty); B1 no OperatorController->ControllerManifest adapter (only comment dagml_bridge.py:1070); L17 oracle present (KNOWN_DIVERGENCES/EXPECTED_FALLBACK/strict-xfail encoded); validate_contracts.py present in dag-ml AND dag-ml-data. | git rev-parse / branch -avv / rev-list --left-right / describe; grep; ls. No code changed. | Sequencing delta recorded in "Re-audit A0 pass 2" + "Plan de merge par lane" sections below. LOCK-LOCKSTEP ratifiable now; LOCK-DROP/L19 remains the real pending cutover. Maintainer to answer `ARB-001..009`.
+- 2026-06-30 | A0/L0 | landed | Mainteneur a tranche les P0: `ARB-001`=B (legacy default, flip last), `ARB-002..008`=recommended defaults, `ARB-009`=A (branch-per-lane + worktrees). Convertis en DEC-* acceptes: DEC-FAST-001, PYREF-001, PYREF-002, CAP-001, RT-001, IO-001, REL-001, UI-001, MIG-001, DROP-001, LOCKSTEP-001, CTRL-001, DESIGN-001 (in part). Locks: `LOCK-PYREF` + `LOCK-LOCKSTEP` = landed (signes); `LOCK-MIG`/`DROP`/`CAP`/`REL`/`IO`/`RT`/`UI` = in_progress (direction acceptee, spec Vague 1); `LOCK-GOV` reste blocked (P1 `ARB-013`/`ARB-014`). PRE-4 satisfait -> 4 PRE gates verts, Vague 1 ouverte. | docs only (sync board). | Lancer agents lock-spec READ-ONLY (CAP/RT/IO/CTRL) -> rapports `docs/agent_reports/`; puis REL/MIG/DROP/PYREF-000 detail; GOV en attente P1.
+- 2026-06-30 | A0/L0 | review | Decouvert un run anterieur du programme (21:11-21:47) avec rapports completes sous `docs/agent_reports/`: A1-preflight, A2-pyref, A3-dagml, A4-controllers (44K, couvre l'adapter B1), A5-methods, A8-migration, A9-lockstep, A13-core-release. A6-studio-ui = ECHEC (log vide, pas de .md). CAP/RT/IO = non couverts (mes agents CAP/RT en cours non-dupliques). CTRL NON relance (A4 existe). Correction: `nirs4all/docs/compatibility.md` ABSENT confirme -> `LOCK-PYREF` retrograde landed->in_progress + blocker `B-009`; ajoute `B-010` (EXPECTED_FALLBACK!=empty, A3). `B-008` resolu (lockstep). | ls + lecture rapports; aucun code modifie. | Digest read-only des 8 rapports anterieurs pour integration board; puis decider IO/UI spec; GOV attend P1.
+- 2026-06-30 | A0/L2+L10 | landed | CAP-SPEC + RT-SPEC rendus -> `LOCK-CAP` et `LOCK-RT` SIGNES. CAP: enums dag-ml verifies (19+4+4+4), contrat dormant surface, 5 NET-NEW derives acceptes; `portable_run_subset`/`runPortable` DEJA retires (DEC-DESIGN-001 satisfait cote code). RT: ancre commune = dag-ml `ScoreSet`, Studio (`native_results_adapter.py`) + Web (`dagml-engine.ts`) deja des vues; `RtResult/RtError` = wrappers; 3 verbes non-natifs (inspect/predict/explain) acceptes. Digest des 8 rapports anterieurs integre: PRE-3 corrige (incoherence "LOCK-PYREF signe"); blockers `B-011..B-015` ajoutes (L17 gaps, LOCKSTEP CI Gap-3/4, oracle non-vert-sur-main+matplotlib, representation IDs, methods-CI skip); `B-002` maj (aucun checkout `nirs4all-core`); `B-010` precise (11 cas exacts). A6/UI = ECHEC reconfirme (pas de .md) -> UI uncovered. | lecture CAP_spec.md / RT_spec.md / INTEGRATION_DIGEST_A0.md + summaries; aucun code modifie. | LOCK-CAP+RT debloquent LOCK-UI; lancer IO-SPEC (critical path) + UI-SPEC (A6 echoue). GOV/PROV/CLU = P1. |
+- 2026-06-30 | Codex/supervisor | review | Supervised first-wave agent state after manual-launch failures. All expected first-wave reports are now present and non-empty (`A1`, `A2`, `A3`, `A4`, `A5`, `A6`, `A8`, `A9`, `A13`) plus `INTEGRATION_DIGEST_A0.md` and `CAP_spec.md`. Two external Claude sessions still running on `/dev/pts/10` and `/dev/pts/7`; left untouched. No duplicate agents launched. | `ps`, `find docs/agent_reports`, report existence checks; saved `docs/AGENT_RUN_SUPERVISION.md`. | Next: reconcile the A0 digest with now-present `A6` and `CAP_spec`, then update board/locks before launching second-wave agents.
+- 2026-06-30 | Codex/supervisor | review | Corrected active sync state after late report discovery: `A6_A6-studio-ui.md` and `RT_spec.md` are present, so `LOCK-UI` is no longer "failed/uncovered" and `L10` is no longer blocked on runtime design. Added UI/runtime/Studio blockers `B-016..B-018` and resolved/superseded stale blockers `B-003`, `B-005..B-007`. | `ps`, `find docs/agent_reports`, direct reads of sync board and report inventory; docs only. | Second-wave should target missing/unfinished specs: IO/DMD, GOV naming, PROV providers, CLU cluster, REL schema, MIG concrete manifest, PYREF compatibility ledger, and implementations only after board lock.
+- 2026-06-30 | A0/L1 | landed | Mainteneur a tranche P1 `ARB-013`=A (lite->`nirs4all-core`, `datasets` optionnel) et `ARB-014`=A (distributions explicites + facade `n4a.*` additive, R packages explicites). `DEC-GOV-001`+`DEC-GOV-002` accepted -> `LOCK-GOV` SIGNE; `B-002` resolu; `L1`/`L4` debloques (L4 reste sur `LOCK-REL`). Bilan locks Vague-1: SIGNES = `LOCK-CAP`/`LOCK-RT`/`LOCK-GOV`/`LOCK-LOCKSTEP`; in_progress direction-acceptee = `LOCK-PYREF`(B-009/B-013)/`LOCK-MIG`/`LOCK-DROP`(B-010, flip-last)/`LOCK-REL`/`LOCK-IO`(spec en cours)/`LOCK-UI`(spec en cours). NOTE coordination: board co-maintenu avec Codex/supervisor (cf entrees ci-dessus + `AGENT_RUN_SUPERVISION.md`); GOV etait la seule info manquante cote supervisor. Mes agents IO-SPEC + UI-SPEC tournent (UI recouvre A6 desormais present -> overlap accepte, sorties = `IO_spec.md`/`UI_spec.md`). | reponse mainteneur (AskUserQuestion ARB-013/014); docs only. | Vague-2 = implementation code: attendre go mainteneur explicite sous branche-par-lane; integrer IO/UI a leur retour. P1 restants: `ARB-010` PROV, `ARB-011` CLU, `ARB-017` proof.
+- 2026-06-30 | A0/L7 | landed | IO-SPEC rendu (`IO_spec.md`) -> `LOCK-IO` SIGNE. `DatasetSpec v2`+`DatasetPackage` = NET-NEW etendant le bridge io->dag-ml-data deja landed (spectra-only). DECOUVERTE: le catalogue representation-ID `DMD-001` EXISTE deja (`dag-ml-data-core/src/builtin_models.rs:36-62`, 26 builtins) -> `B-014` requalifie freeze/publish (pas invention); MVP spectra+image = 12 IDs (8 emis, 4 image NET-NEW). Ajoute `B-019` (crate `nirs4all-io-dagml` exclu du workspace -> non build par `cargo test --workspace`). | lecture `IO_spec.md` + summary; aucun code modifie. | Vague-1: 5 locks SIGNES (CAP/RT/GOV/LOCKSTEP/IO); reste `LOCK-UI` (UI-SPEC en cours) + PYREF/MIG/DROP/REL in_progress. A la fin d'UI -> proposer Vague-2. |
+- 2026-06-30 | A0/L11 | landed | UI-SPEC rendu (`UI_spec.md`, 9 sections) -> `LOCK-UI` SIGNE. **VAGUE-1 COMPLETE: 6/6 locks signes** (CAP/RT/GOV/IO/UI/LOCKSTEP). nirs4all-ui = package interne Studio; gold = couche VM-adapter pure; bucket controllers greenfield (CAP). Primitive policy recommandee (c) headless+theme/app (base shadcn v4) -> `B-016` requalifie (mainteneur confirme a vs c; n'impacte pas Wave 0-1). Corrige A6: `A6.md` existait (seul `.log` vide); `BACKEND_RULES.md` bien sous `docs/_internals/`. | lecture `UI_spec.md` + summary; aucun code modifie. | Vague-1 close. Proposer plan Vague-2 (impl, branche-par-lane); top = `B-009` compatibility.md (L17) + `B-010` EXPECTED_FALLBACK (L5). |
+- 2026-06-30 | A0/L17 | in_progress | VAGUE-2 demarree (mainteneur: L17 d'abord). Branche `refactor/L17-pyref` creee depuis main `e41362b4` (le checkout `nirs4all` est DESORMAIS sur cette branche, plus `main` -- a savoir pour les `git rev-parse` du supervisor). Agent impl L17 lance (background): `docs/compatibility.md` (ledger 3-tier, 13 entrees), reparation `.venv` matplotlib (`B-013`), run PYREF reel pour evidence, green gate. Pas de push/merge (decision mainteneur). | `git switch -c` (tree clean verifie); agent en cours. | A son retour: integrer les VRAIS comptes PYREF -> signer `LOCK-PYREF` (`B-009`/`B-013`) ou lister le reste; puis proposer la lane suivante. |
+- 2026-06-30 | A0/L17 | in_progress | L17 impl: `docs/compatibility.md` AUTHORED (290 lignes, ledger 3-tier + reconciliation B-009 1e-9/1e-3) sur `refactor/L17-pyref` (untracked, non commit). Env repare: matplotlib 3.11.0 + `pyproject.toml` modifie -> collection PYREF 0 -> 581/778 (`B-013` collection LEVEE); `.so` dag-ml frais, wheels natifs importables (dual-engine natif, pas de faux-vert). Run PYREF complet DETACHE + VIVANT (~20%, PASS + XFAIL corrects, 0 FAIL jusqu'ici), log `scratchpad/pyref_full.log`; waiter background arme. PAS encore signe (vrai vert non confirme). NOTE: supervisor a signe `LOCK-MIG`/`LOCK-REL` (SW3/SW4) en parallele -- accepte/complementaire (mon L17 = impl reelle, SW5 = spec). | git status branche; tail log; pgrep. | Fin du run -> comptes reels -> signer `LOCK-PYREF` si vert, sinon lister `B-011`/`B-015` restants. | |
+- 2026-06-30 | Codex/supervisor | in_progress | Launched managed Claude Code MCP sessions `SW1..SW8` as second-wave report agents while leaving external Claude PIDs `208304`/`208423` untouched. After A0 landed GOV/IO concurrently, redirected `SW1` and `SW2` from duplicate specs into validation audits of `IO_spec.md` and `LOCK-GOV`. | `claude_code_setup`, `claude_code_session list`, `interrupt`+`reply` for SW1/SW2; session IDs saved in `AGENT_RUN_SUPERVISION.md`. | Poll managed sessions and integrate only non-duplicative findings; avoid treating `SW1/SW2` as source of truth over landed A0 locks unless they find factual errors. |
+- 2026-06-30 | SW7/L15 | review | Cluster report complete: `nirs4all-cluster` is already a working trusted-LAN beta (client/server/polling workers, SQLite WAL queue, leases/retries/cancel, capability routing). V1 gap is hardening: RBAC/rights, optional core/Studio/CLI client seam, RT envelope mapping, distributed==local parity. Fine-grained DAG remains post-V1 through dag-ml, not cluster-owned. | `docs/agent_reports/SW7_CLUSTER_DISTRIBUTED_spec.md`; direct code reads cited by file:line; no code edits. | `DEC-CLU-001` still proposed; added `B-020` for RBAC single-token gap. |
+- 2026-06-30 | SW1+SW2/L7+L1 | review | Validation audits complete. SW1: `LOCK-IO` safe, but `B-019` was factually wrong at HEAD (`nirs4all-io-dagml` is workspace member); real risk is local sibling drift vs published `dag-ml-data 0.2.2`. SW2: `LOCK-GOV` coherent, but target-state not implemented; methods primary dist still `pls4all`, `n4a` facade absent. | `SW1_IO_DMD_spec.md`, `SW2_GOV_CORE_NAMING_spec.md`; direct git/rg checks; no code edits. | Correct stale IO docs/spec claim and add ecosystem path-override CI; treat GOV as signed design, not completed implementation. |
+- 2026-06-30 | SW3+SW4/L3+L18 | landed | `LOCK-REL` and `LOCK-MIG` signed from managed reports. REL defines intent manifest + generated lockfile consuming per-repo conformance/ABI/schema digests. MIG defines standalone `nirs4all-tools` converter: offline, one-way, no-in-place, workspace-v2 target, legacy readers outside runtime V1. | `SW3_REL_MANIFEST_LOCKFILE_spec.md`, `SW4_MIG_CONVERTER_spec.md`; docs only. | Start generator/validator and migration-tool implementation after L17 critical path returns. |
+- 2026-06-30 | SW5+SW8/L17+L10+L12 | review | PYREF ledger and RT/Studio implementation specs complete. SW5 defines the missing compatibility authority (`compatibility.md/json`, 3-tier registry, tolerances, artifact/workspace/error/Studio parity, methods-installed CI). SW8 defines runtime wrapper placement and Studio push-down plan (`pipeline/dagml/rt.py`, neutral schemas, TS mirror, Pydantic models, explicit `RtError`). | `SW5_PYREF_COMPATIBILITY_LEDGER_spec.md`, `SW8_RT_STUDIO_IMPL_spec.md`; no code edits. | L17 implementation is already running externally on `refactor/L17-pyref`; do not duplicate. L10/L12 implementation waits on PYREF and fallback policy. |
+- 2026-06-30 | SW6/L14 | review | Provider/plugin spec complete. It wraps existing APIs, does not invent provider classes: datasets `list/get/card/retrieve`, repository `list/card/get/fetch`, benchmarks query/store without ecosystem write path, papers reproducible export using methods docs. drafts/lab remain private out of scope. | `SW6_PROV_PLUGINS_spec.md`; direct repo reads; no code edits. | `DEC-PROV-001` still proposed; maintainer can sign once comfortable with adapter names and write boundaries. |
+- 2026-06-30 | Codex/supervisor | landed | All managed Claude Code MCP sessions `SW1..SW8` reached `idle`; no permission stalls. Reports exist under `docs/agent_reports/`. External Claude PIDs `208304`/`208423` remain untouched and may still own L17 implementation. | `claude_code_session list`, report inventory. | Stage coordination docs/reports with `git add -f`; monitor external L17 result before launching overlapping code agents. |
+- 2026-06-30 | Codex/L3 | review | Implemented first `LOCK-REL` tooling slice: reviewed aggregation manifest, deterministic lockfile generator/validator, current workspace lockfile. The lock consumes existing per-repo contract/ABI artifacts and verifies dag-ml/dag-ml-data shared pack/oracle equivalence. Ecosystem dirty bit intentionally excluded from generated provenance to avoid self-invalidating locks. Added CI syntax/tooling check; full multi-repo validation remains local until sibling checkout is solved. | `python3 scripts/n4a_release_lock.py generate ...`; `python3 scripts/n4a_release_lock.py validate ...`; `python3 -m py_compile scripts/n4a_release_lock.py`; json.tool; workflow updated. | Close `B-021` after CI can checkout/validate siblings; extend member gates as implementation lanes add conformance packs. |
+- 2026-06-30 | Codex/L3 | review | Closed the release-lock CI gap locally: `scripts/n4a_release_lock.py` now has `checkout-members`, the lockfile provenance no longer records absolute ecosystem path/commit, manifest verification commands match the CI flow, and `.github/workflows/version-guard.yml` has a `release-lock-validation` job that reconstructs pinned member repos then validates the lock. | Local clean-workspace generation+validation via temporary main worktrees/symlinks; `python3 -m py_compile scripts/n4a_release_lock.py`; `json.tool` on manifest+lock; `checkout-members --help`; PyYAML parse of workflow. Network clone smoke was interrupted because full `nirs4all-methods` checkout was slow; CI uses `--filter=blob:none`. | `B-021` resolved locally; remaining step is commit/push ecosystem changes. |
+- 2026-06-30 | Codex/L20 | review | Implemented lockstep hardening in `dag-ml` and `dag-ml-data` on branch `refactor/L20-lockstep`: both `scripts/validate_contracts.py` now accept `--require-sibling` and an exclusive `--sibling-root` override; both CI workflows now include `contract-lockstep`, resolve the peer branch, fail contract-changing PRs without a paired sibling branch, and run the validator in strict mode. Default local behavior remains tolerant when no sibling is available. | `python3 -m py_compile scripts/validate_contracts.py` in both repos; `python3 scripts/validate_contracts.py --require-sibling --sibling-root ../<sibling>` in both repos; missing sibling negative checks exit 1; PyYAML parse of both `ci.yml` files. | `B-012` resolved locally; remaining operational step is paired branch commit/push in both repos. |
+- 2026-06-30 | Codex/L7 | review | Closed `B-019` locally on `nirs4all-io` branch `refactor/L7-io-dagml-sibling`: cross-CLI conformance now clones/requires sibling `dag-ml-data`/`dag-ml` in CI, `verify_cross_cli.sh` fails when required siblings are absent, and Cargo patches `dag-ml-data` to the sibling checkout instead of crates.io. Stale docs/comments now reflect that `nirs4all-io-dagml` is a workspace member. | `bash -n tests/dag_ml_data/verify_cross_cli.sh`; PyYAML parse of `.github/workflows/dag-ml-data-conformance.yml`; `cargo fmt --all --check`; `cargo test -p nirs4all-io-dagml --config patch.crates-io.dag-ml-data.path='../dag-ml-data/crates/dag-ml-data'`; `cargo test -p nirs4all-io-cli emit_dag_ml_data_points_to_ecosystem_crate`. | `B-019` resolved locally; remaining step is commit/push L7 branch and continue DatasetPackage v2. |
+- 2026-06-30 | External Claude/L17 + Codex observe | review | Full PYREF run completed green on `nirs4all/refactor/L17-pyref`: `docs/compatibility.md` exists, `pyproject.toml` adds matplotlib to dev extra, and the detached run finished with `EXIT_CODE=0`. | Log `/tmp/claude-1000/-home-delete-nirs4all/abf01f02-12b7-4296-b4eb-e5e93479486a/scratchpad/pyref_full.log`: `556 passed, 14 skipped, 197 deselected, 11 xfailed, 1354 warnings in 2352.55s`; `EXIT_CODE=0 at Tue Jun 30 23:03:01 CEST 2026`. | `B-013` resolved. `LOCK-PYREF` still awaits B-009 machine-readable decision plus B-011/B-015. Do not duplicate L17 edits while external Claude PIDs remain open. |
+- 2026-06-30 | Codex/L17 | review | Resolved `B-009` locally on `nirs4all/refactor/L17-pyref`: added machine-readable compatibility authority (`docs/compatibility.json`), live drift validator (`tests/integration/parity/_authority.py`), and ledger test (`test_compatibility_ledger.py`) matching the full PYREF oracle. `docs/compatibility.md` now points to the JSON companion. External Claude PIDs `208304`/`208423` remain open but no build/test children are running; they were left untouched. | `python3 -m json.tool docs/compatibility.json`; `.venv/bin/python -m py_compile tests/integration/parity/_authority.py tests/integration/parity/test_compatibility_ledger.py`; `.venv/bin/python -m pytest tests/integration/parity/test_compatibility_ledger.py -q -p no:cacheprovider` -> `2 passed`. | `B-009` resolved. `LOCK-PYREF` remains `in_progress` until `B-011` and `B-015` are implemented. |
+- 2026-06-30 | Codex/L9+L17 | review | Resolved `B-015` locally on `nirs4all/refactor/L17-pyref`: `test_n4m_ops` now supports strict mode via `NIRS4ALL_REQUIRE_N4M=1`, has pytest marker `methods`, and a dedicated `methods-installed.yml` workflow installs/verifies `nirs4all-methods` before running the native methods parity gate. | `NIRS4ALL_REQUIRE_N4M=1 .venv/bin/python -m pytest -m methods tests/unit/operators/methods/test_n4m_ops.py -q -p no:cacheprovider` -> `11 passed`; `.venv/bin/python -m py_compile tests/unit/operators/methods/test_n4m_ops.py`; `.venv/bin/python -m ruff check tests/unit/operators/methods/test_n4m_ops.py`; PyYAML parse of workflow; `git diff --check` targeted. | `B-015` resolved. `LOCK-PYREF` remains `in_progress` only because `B-011` is still open. |
+- 2026-06-30 | Codex/L17 | review | Advanced `B-011` locally on `nirs4all/refactor/L17-pyref`: added export-surface parity tests to `test_conformance_export_roundtrip.py` so dag-ml `.n4a` export rejects explicit workspace selectors (`source=`/`chain_id=`) before legacy refit and raises catchable `NotImplementedError` for dag-ml no-workspace/no-spec export. | `.venv/bin/python -m pytest tests/integration/parity/test_conformance_export_roundtrip.py -k 'dagml_n4a_export' -q -p no:cacheprovider` -> `3 passed`; `.venv/bin/python -m ruff check tests/integration/parity/test_conformance_export_roundtrip.py`; `.venv/bin/python -m py_compile tests/integration/parity/test_conformance_export_roundtrip.py`; targeted `git diff --check`. | `B-011` remains `in_progress`: workspace/artifact cross-engine and Studio-bypass parity still need coverage before `LOCK-PYREF` can be signed. |
+- 2026-06-30 | IMP-L11 | review | Studio UI first extraction slice complete on `nirs4all-studio/refactor/L11-ui-vm`: `src/ui/score` internal foundation created, pure score/metric modules moved from `src/lib`, public barrels/README/tests added, and 5 importers repointed with no shim. | Report `docs/agent_reports/IMP_L11_STUDIO_UI_VM.md`; gates from agent: full `tsc --noEmit`, eslint on touched files, 45 targeted tests, and 1421 blast-radius vitest tests all green; supervisor `git diff --cached --check` green. | Ready for review. Next slices should stay pure view-model/adapters before LOCK-RT-gated result presentation. |
+- 2026-06-30 | IMP-L16 | review | dag-ml controller adapter foundation complete on `dag-ml/refactor/L16-controller-manifests`: new `controller_adapter` module derives validated `ControllerManifest` values from `HostControllerSpec`, exposes per-kind templates and registry derivation, and reproduces existing nirs4all bridge manifests. | Report `docs/agent_reports/IMP_L16_CONTROLLER_MANIFESTS.md`; gates from agent: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace` -> `548 passed, 2 ignored`, `validate-graph`, `validate_contracts.py`, `check_so_freshness.py`; supervisor staged files and `git diff --cached --check` green. | Ready for review. Landing commit must rebuild/commit tracked `_dag_ml.abi3.so` after Rust commit timestamp changes; PyO3/CLI/Studio route consumption remains next tranche. |
+- 2026-06-30 | IMP-L6 | review | dag-ml-data representation registry slice complete on `dag-ml-data/refactor/L6-dmd-registry`: existing 26 builtin representation IDs are published/frozen through `representation_registry()` API, `dag-ml-data-cli representation-registry`, committed JSON manifest, and drift tests; spectra+image MVP annotated honestly (8 emitted, 4 image landed_pending_emit). | Report `docs/agent_reports/IMP_L6_DMD_REGISTRY.md`; gates from agent: fmt, clippy, workspace tests -> 263 passed/2 ignored, registry tests, rustdoc, CLI smoke, byte-identical manifest regen, local+cross-repo `validate_contracts.py`; supervisor `git diff --cached --check` green. | Ready for review. Next slice must be lockstep with `dag-ml` to add conformance-pack/validator wiring and L16 `data_requirements`. |
+- 2026-06-30 | IMP-L12 | review | Studio runtime `RtError` slice complete on `nirs4all-studio/refactor/L12-runtime-routes`: neutral Pydantic envelope, `RtUnsupportedError(RuntimeError)`, backend unavailable detail derived from the envelope, and strict compatibility with existing route/exception wire shapes. | Report `docs/agent_reports/IMP_L12_STUDIO_RUNTIME.md`; gates from agent: 90 targeted backend tests, ruff clean, external review, cleanup, then 57 targeted tests green; supervisor staged files and `git diff --cached --check` green. | Ready for review. Remaining L12 = engine/thread recording, Studio route-bypass parity, and later `B-017` compute push-down. |
+- 2026-06-30 | IMP-L13 | review | Web/WASM runtime `RtError` slice complete on `nirs4all-web/refactor/L13-web-rt`: TS `RtError`/`RtErrorException`, strict `allowFallback=false`, diagnostics + `lineage.schedulerFallback`, worker error propagation, and conditional amber UI fallback chip. | Report `docs/agent_reports/IMP_L13_WEB_RT.md`; gates from agent: 53 targeted engine tests, full unit suite -> 99 passed, typecheck, catalog validator self-skip exit 0, build and single-file build green; supervisor staged files and `git diff --cached --check` green. | Ready for review. Follow-up = browser smoke forced scheduler failure + offline JS orchestrator diagnostics. |
+- 2026-06-30 | IMP-L15 | review | Cluster RBAC slice complete on `nirs4all-cluster/refactor/L15-rbac`: credential-bound rights `{submit,read,cancel,execute,admin}` enforced on existing `/v1` routes, legacy `--token` preserved as admin, dev open mode preserved, worker registration echoes rights, docs updated. | Report `docs/agent_reports/IMP_L15_CLUSTER_RBAC.md`; gates from agent: `ruff check .`, `mypy nirs4all_cluster`, full `pytest -q` -> 98 passed/1 skipped, `pytest tests/test_rbac.py` -> 16 passed; supervisor staged files and `git diff --cached --check` green. | Ready for review. Next cluster work = core/Studio/CLI client adapter, audit logging, optional python grant, distributed==local parity. |
+- 2026-06-30 | IMP-L18 | review | Created new sibling repo `nirs4all-tools` (`main`) for the standalone legacy migration toolbox: project metadata, typed package, CLI, no-in-place policy, detectors, manifest/report/id-map contracts, dry-run, copy-only and verify paths, plus tests. Claude hit `maxTurns`; supervisor fixed `_unknown()` detector, test import, Ruff issues, cleaned caches, initialized git, and staged the repo. | Report `docs/agent_reports/IMP_L18_TOOLS_SCAFFOLD.md`; gates: `ruff check .`, `pytest -q` -> 57 passed, `compileall`, `mypy` -> success 11 source files, CLI version/inspect JSON smokes, copy-only+verify smoke, `git diff --cached --check` clean in new repo. | Ready for review. No remote configured; next slice = real legacy reader adaptation and workspace-v2 transform with golden fixtures. |
+- 2026-06-30 | RV1..RV10 | landed | Managed review wave complete. RV1/RV3/RV5/RV6 approve their slices with notes; RV2 approves L16 but flags tracked `_dag_ml.abi3.so` rebuild at landing; RV4 approves Web with low follow-ups; RV7 approves tools scaffold but found M1-M3; RV8 corrects `B-011` scope; RV9 approves release/lockstep/IO with CI-choreography follow-up; RV10 defines the next-wave plan and PRE-W2a prerequisite. | Reports `RV1_L6_DMD_REGISTRY_REVIEW.md` through `RV10_NEXT_WAVE_PLAN.md`; all staged. | Do not launch W2 implementation agents until `B-022` is resolved by committing current staged lane branches/repos. |
+- 2026-06-30 | Codex/L18 | review | Addressed RV7 M1-M3 in staged `nirs4all-tools`: `--trusted-load-joblib` and inert `--strict` combinations are refused, `migrate --copy-only --verify` now runs verification and records `verification_summary`, `source.fingerprint` is a stable content hash, and input/output inventories follow `legacy_migration_manifest.v1` shape. | `uv run --extra dev pytest -q` -> 62 passed; `uv run --extra dev ruff check .`; `uv run --extra dev mypy`; `python3 -m compileall -q src tests`; `git diff --cached --check`. | Remaining L18 work is the real legacy reader -> workspace-v2 transform, golden fixtures, validated resume, and later native-results target. |
+- 2026-06-30 | RV6/L11 | review | Review approved the UI VM slice but corrected the evidence: root `npx tsc --noEmit` compiles an empty program and should not be cited as a gate. Useful gate is `tsc -p tsconfig.app.json --noEmit`; reviewer saw the same 3 pre-existing baseline errors with delta 0. | `RV6_L11_STUDIO_UI_VM_REVIEW.md`. | Future Studio UI agents must use project tsconfig gates plus targeted Vitest/Playwright evidence, not root no-op TypeScript checks. |
+- 2026-06-30 | RV10/L0 | open | Next implementation wave is planned but blocked by PRE-W2a: current changes are staged/index-only in multiple sibling repos. Worktrees branched before commit would miss the implementation slices and create false parallelism. | `RV10_NEXT_WAVE_PLAN.md`; `B-022` added. | Commit current lane branches/repos first, then spawn W2 worktrees from committed tips. |
+
+## Agent handoff template
+
+```text
+Lane:
+Task IDs:
+Repos touched:
+Branch/worktree:
+What changed:
+Contracts changed:
+Tests run:
+Evidence:
+Blockers:
+Next action:
+Sync doc updated: yes/no
+```
+
+## Review queue
+
+| Item | Lane | Reviewer | Status | Notes |
+|---|---|---|---|---|
+| Decision queue P0 | L0 | maintainer | landed | `ARB-001..009` accepted; P1 `ARB-010..018` still open. |
+| Agent prompt program | L0 | maintainer / coordinator | review | `PARALLEL_AGENT_PROMPT_PROGRAM.md`; first manual launch superseded by MCP-managed SW1..SW8 in `AGENT_RUN_SUPERVISION.md`. |
+| First-wave reports integration | L0 | Codex/supervisor | landed | A6/CAP/RT/IO/UI reconciled; old contradictory worklog entries retained append-only. |
+| Managed second-wave reports | L0 | Codex/supervisor | landed | `SW1..SW8` complete; REL/MIG signed, PROV/CLU proposed, PYREF/RT/Studio ready for implementation planning. |
+| External/Codex L17 implementation | L17 | A0/external Claude/Codex | review | Full PYREF green, B-009 ledger authority, B-015 methods-installed gate, and B-011 export/error sub-slice are present; remaining L17 work is workspace cross-engine + Studio-bypass parity. External Claude CLI processes are still open but left untouched. |
+| Managed implementation wave | L6/L11/L12/L13/L15/L16/L18 | Codex supervisor + IMP agents | review | Staged worktrees/repos ready for human review: L6 representation registry, L11 UI VM, L12 Studio `RtError`, L13 Web `RtError`, L15 cluster RBAC, L16 controller adapter, and new `nirs4all-tools` scaffold. |
+| Managed review wave | RV1..RV10 | Codex supervisor + RV agents | landed | All review reports complete. Blocking corrections integrated: RV7 M1-M3 fixed in `nirs4all-tools`; RV8 `B-011` scope corrected; RV10 `B-022` added for commit-before-W2. |
+| PRE-W2a commit prerequisite | all staged lanes | maintainer / Codex | open | Resolve `B-022` before launching more implementation agents. New worktrees must start from committed lane tips, not from uncommitted index state. |
+
+## Release/integration notes
+
+- The workspace root is a collection of sibling repositories, not a monorepo.
+- Commit inside the child repo being changed.
+- Keep `nirs4all-studio` isolated until its pristine baseline is confirmed.
+- Apply `LOCK-GOV` as signed design, but remember SW2: `nirs4all-core`/`n4a.*`
+  are target-state implementation work, not already shipped surfaces.
+- Do not change persistence/bundle formats until current backend and Studio
+  contracts are green and the migration policy is explicit.
+- In this local checkout, `nirs4all-ecosystem/.gitignore` ignores `/docs/` as
+  local planning material. Use `git add -f docs/PARALLEL_REFACTORING_*.md` or
+  move the files if the roadmap/sync board must become versioned.
+
+## Re-audit A0 pass 2 (2026-06-30)
+
+Coordinateur Opus effort max. Methode: `git rev-parse` / `branch -avv` /
+`rev-list --left-right` / `describe`, `grep`, `ls` directs (pas seulement
+CodeGraph). Aucun code modifie.
+
+**Heads locaux verifies (tous clean) — identiques a la table "Base d'audit
+locale" du decision doc; aucune derive depuis la passe Codex/L0 :**
+
+| Repo | Head | Etat verifie |
+|---|---|---|
+| `nirs4all` | `e41362b4` | main == origin/main (pushed); TAG `dagml-adr17-complete-2026-06-30` |
+| `dag-ml` | `f58d7bf` | main == `feat/native-scoring` == origin/main (merge + push faits) |
+| `dag-ml-data` | `347c15f` | pushed; contient le provider spike `04ecf3a` |
+| `nirs4all-io` | `84ab189` | pushed |
+| `nirs4all-methods` | `7602eb08` | clean |
+| `nirs4all-studio` | `2ccbf68` | clean (baseline `PRE-2`) |
+| `nirs4all-web` | `745eef8` | clean |
+| `nirs4all-cluster` | `dcced30` | clean |
+| `nirs4all-lite` | `c14dcca` | clean (hors table d'origine) |
+| `nirs4all-formats` | `89231b2` | clean (hors table d'origine) |
+
+**Hypotheses/hashes de la review marques STALE :**
+
+- `dag-ml f58d7bf "sur feat/native-scoring, NON merge a main"` -> merge + push
+  faits (`main == origin/main`).
+- `dag-ml-data b041019 / spike 04ecf3a "committed-local, non pushe"` ->
+  `347c15f` pushe, `04ecf3a` ancetre de HEAD.
+- `nirs4all-io da24fb5` -> `84ab189`.
+- `nirs4all "NO publish/tag"` -> tag `dagml-adr17-complete-2026-06-30` present
+  + pushe.
+
+**Conclusions structurelles de la review STILL VALID au head courant :**
+
+- `DEFAULT_ENGINE = "legacy"` (`nirs4all/pipeline/engine.py:29`) -> `ARB-001`
+  ouvert, `LOCK-DROP`/`L19` reellement non fait.
+- B2: aucun chemin source `n4m` dans `dag-ml/crates` ni
+  `nirs4all/pipeline/dagml` (grep vide) -> "PLS/AOM via n4m" reste roadmap.
+- B1: pas d'adapter `OperatorController -> ControllerManifest`
+  (seul un commentaire `dagml_bridge.py:1070`).
+- `L17`: oracle parity present, `KNOWN_DIVERGENCES`/`EXPECTED_FALLBACK`/
+  strict-xfail encodes -> adopt-not-rebuild.
+- `LOCK-LOCKSTEP`: `validate_contracts.py` present dans `dag-ml` ET
+  `dag-ml-data`.
+
+**Delta de sequencement (consequence majeure):** la review supposait que le
+merge `feat/native-scoring` + la release lockstep `dag-ml-data` arriveraient
+*au/apres* le cutover global. C'est depasse: native-scoring est sur dag-ml main
++ pushe, dag-ml-data pushe, nirs4all tagge `dagml-adr17-complete-2026-06-30`.
+Donc `LOCK-LOCKSTEP` est ratifiable maintenant comme obligation CI permanente
+(les deux repos sont deja en etat coherent pushe), tandis que `LOCK-DROP`/`L19`
+(flip `DEFAULT_ENGINE="dag-ml"`) reste le seul vrai point de bascule non fait.
+
+## Plan de merge par lane (propose — depend de `ARB-009`)
+
+Statut: `proposed`. Recommandation `ARB-009` = option A (branche par lane par
+repo touche, sync board comme source commune, contrats cross-repo par `DEC-*`).
+A activer apres reponse mainteneur.
+
+- Une branche `refactor/<lane>-<sujet>` par repo touche; jamais deux agents
+  dans le meme checkout sans worktree (`_worktrees/<lane>-<repo>`).
+- Aucun merge cross-repo couplant un contrat partage sans `DEC-*` accepte +
+  lock actif (regles d'edition 2-4).
+- `dag-ml` <-> `dag-ml-data`: tout changement de schema/fixture partage = paire
+  de PRs lockstep, `validate_contracts.py` vert des deux cotes (`LOCK-LOCKSTEP`).
+- Ordre d'integration recommande:
+  1. Vague 0 (`PRE-1`/`PRE-2`/`PRE-3`) — ratifiee/confirmee cette passe; reste
+     `PRE-4` = `ARB-009`.
+  2. Vague 1 locks: chaque lock merge sa spec dans `nirs4all-ecosystem` d'abord,
+     avant toute implementation de lane.
+  3. Vague 2 impl faible-conflit: branche par lane, merge des que gate local +
+     smoke d'integration verts.
+  4. `L19`/`LOCK-DROP` en dernier: flip `DEFAULT_ENGINE` seulement quand
+     `EXPECTED_FALLBACK == empty` + export `.n4a` natif + oracle 3-tier vert +
+     Studio/Web sur route runtime + outil migration dispo.
+- Couplage du merge `L19`: succede au merge `dag-ml` (DEJA fait) + release
+  lockstep `dag-ml-data` (DEJA pushee) + un tag nirs4all de cutover succedant a
+  `dagml-adr17-complete-2026-06-30`.

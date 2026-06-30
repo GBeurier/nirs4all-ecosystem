@@ -114,3 +114,35 @@ jobs:
               )
               sys.exit(1)
           print("OK: manifest is not ahead of the latest tag (tag ahead of / equal to the manifest is fine).")
+
+  release-lock-tooling:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check release lock tooling and JSON syntax
+        run: |
+          python -m py_compile scripts/n4a_release_lock.py
+          python -m json.tool docs/contracts/release/aggregation-manifest.n4a.json >/dev/null
+          python -m json.tool docs/contracts/release/aggregation-lock.n4a.lock.json >/dev/null
+          python scripts/n4a_release_lock.py --help >/dev/null
+
+  release-lock-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate release lock against pinned member repos
+        run: |
+          python scripts/n4a_release_lock.py checkout-members \
+            --manifest docs/contracts/release/aggregation-manifest.n4a.json \
+            --lock docs/contracts/release/aggregation-lock.n4a.lock.json \
+            --output external
+          python scripts/n4a_release_lock.py validate \
+            --workspace-root external \
+            --manifest docs/contracts/release/aggregation-manifest.n4a.json \
+            --lock docs/contracts/release/aggregation-lock.n4a.lock.json

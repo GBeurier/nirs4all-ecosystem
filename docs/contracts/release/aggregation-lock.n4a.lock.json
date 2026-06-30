@@ -1,0 +1,748 @@
+{
+  "aggregation_lock_version": 1,
+  "compatibility_policy": {
+    "datasets_default": "external",
+    "facade_namespace": "n4a",
+    "private_repos_allowed": false,
+    "python_compat_namespace": "nirs4all",
+    "r_packages": "explicit"
+  },
+  "generated_from": {
+    "ecosystem_repo": "nirs4all-ecosystem",
+    "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
+    "tool": "scripts/n4a_release_lock.py"
+  },
+  "lockstep_groups": [
+    {
+      "equivalence": "scripts/validate_contracts.py",
+      "errors": [],
+      "id": "dagml-pair",
+      "members": [
+        "dag_ml",
+        "dag_ml_data"
+      ],
+      "shared_artifacts": {
+        "conformance_pack": {
+          "canonical_json_equal": true,
+          "members": [
+            {
+              "canonical_json_sha256": "sha256:736b6f09fa7fcda3ec8db4e1e67d53b53743362547a51801ad20209384101ac7",
+              "member": "dag_ml",
+              "raw_sha256": "sha256:da08bbd15be5a1198e42361a4a7fc56d7291fb221ee587fcbeffab4dcf811f06"
+            },
+            {
+              "canonical_json_sha256": "sha256:736b6f09fa7fcda3ec8db4e1e67d53b53743362547a51801ad20209384101ac7",
+              "member": "dag_ml_data",
+              "raw_sha256": "sha256:da08bbd15be5a1198e42361a4a7fc56d7291fb221ee587fcbeffab4dcf811f06"
+            }
+          ],
+          "raw_equal": true
+        },
+        "parity_oracle": {
+          "canonical_json_equal": true,
+          "members": [
+            {
+              "canonical_json_sha256": "sha256:eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67",
+              "member": "dag_ml",
+              "raw_sha256": "sha256:c3e2fa3e60ae8ad8d0e31b0cef822c66b186df84b205f53e94db205ac5d9750a"
+            },
+            {
+              "canonical_json_sha256": "sha256:eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67",
+              "member": "dag_ml_data",
+              "raw_sha256": "sha256:c3e2fa3e60ae8ad8d0e31b0cef822c66b186df84b205f53e94db205ac5d9750a"
+            }
+          ],
+          "raw_equal": true
+        }
+      },
+      "valid": true
+    }
+  ],
+  "manifest_digest": "sha256:84b2150a142fcdec719069feeb54b7d05fcb436a6558a65d41960a477e54ae6f",
+  "members": {
+    "dag_ml": {
+      "availability": {
+        "matlab": "none",
+        "native": "full",
+        "python": "full",
+        "r": "none",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [
+        {
+          "canonical_json_sha256": "sha256:736b6f09fa7fcda3ec8db4e1e67d53b53743362547a51801ad20209384101ac7",
+          "contracts": {
+            "coordinator_branch_view.v1": {
+              "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
+            },
+            "coordinator_data_plan_envelope.v1": {
+              "normalized_sha256": "63b0d862bbbf0fd677a59426053a10e0350876943dc437b4a9e16b915956c584"
+            },
+            "data_output_provenance.v1": {
+              "normalized_sha256": "d90533a9ae7d5a9415a1f8239ea24fbb1e1c37203eba255023e1caadc43494d7"
+            },
+            "feature_fusion_selector.v1": {
+              "normalized_sha256": "44820d64f6dbc0f5324535135b6806f350518e06e9da63c2b79a8607ba31e84b"
+            },
+            "fitted_adapter_ref.v1": {
+              "normalized_sha256": "43001ff6f7a286924ec01ca85b95233c7a50fe9cc8595d67da1eb2a35704dddf"
+            },
+            "parity_oracle.v1": {
+              "canonical_json_sha256": "eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67"
+            }
+          },
+          "id": "conformance_pack",
+          "kind": "conformance_pack",
+          "pack_id": "dag-ml.shared.conformance.v1",
+          "path": "docs/contracts/conformance_pack.v1.json",
+          "raw_sha256": "sha256:da08bbd15be5a1198e42361a4a7fc56d7291fb221ee587fcbeffab4dcf811f06"
+        },
+        {
+          "canonical_json_sha256": "sha256:eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67",
+          "id": "parity_oracle",
+          "kind": "parity_oracle",
+          "oracle_id": "dag-ml.nirs4all.parity_oracle.v1",
+          "path": "docs/contracts/parity_oracle.v1.json",
+          "raw_sha256": "sha256:c3e2fa3e60ae8ad8d0e31b0cef822c66b186df84b205f53e94db205ac5d9750a",
+          "required_case_count": 5,
+          "required_case_ids": [
+            "nirs4all_lite_browser_compile_plan",
+            "repetition_group_leakage_refusal",
+            "controller_registry_selector_parity",
+            "branch_merge_oof_refit_replay",
+            "python_wheel_facade_integration"
+          ]
+        },
+        {
+          "canonical_json_sha256": "sha256:bcbd5eaa193fcbdd366cabc099705ce19f20fe293cc427bf29ed8d4043eabd79",
+          "crate": "dag-ml",
+          "headers": [
+            {
+              "path": "crates/dag-ml-capi/include/dag_ml.h",
+              "sha256": "96914365a099fdced0cfb44177dc9a50244f6b545a03ecb89dce35d95855be8e"
+            }
+          ],
+          "id": "abi_snapshot",
+          "kind": "abi_snapshot",
+          "package_version": "0.2.1",
+          "path": "docs/contracts/abi_snapshot.v1.json",
+          "raw_sha256": "sha256:3ca82a9d9fcda73efe6ed9c0b2937fa198253b8dad60aa7556a0afa33f9fd054"
+        }
+      ],
+      "default_inclusion": "base",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": false,
+      "owner_boundary": "control",
+      "packages": {
+        "c_abi": {
+          "header": "dag_ml.h"
+        },
+        "npm": {
+          "packages": [
+            "dag-ml-wasm"
+          ]
+        },
+        "python": {
+          "distribution": "dag-ml",
+          "imports": [
+            "dag_ml"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "dag-ml",
+            "dag-ml-core",
+            "dag-ml-capi",
+            "dag-ml-cli",
+            "dag-ml-wasm"
+          ]
+        }
+      },
+      "private": false,
+      "repo_path": "dag-ml",
+      "repo_url": "GBeurier/dag-ml",
+      "required_gates": [
+        "dagml_validate_contracts",
+        "dagml_abi_snapshot",
+        "dagml_parity_oracle"
+      ],
+      "role": "DAG runtime and native execution contracts",
+      "state": {
+        "branch": "main",
+        "commit": "f58d7bf7098178bf41097ff08e4d62a2d8fc3631",
+        "dirty": false,
+        "exact_tag": "dagml-adr17-complete-2026-06-30"
+      },
+      "versions": {
+        "abi_snapshot": {
+          "kind": "json",
+          "source": "docs/contracts/abi_snapshot.v1.json",
+          "value": "0.2.1"
+        },
+        "python": {
+          "kind": "toml",
+          "source": "crates/dag-ml-py/pyproject.toml",
+          "value": "0.2.1"
+        },
+        "rust_workspace": {
+          "kind": "toml",
+          "source": "Cargo.toml",
+          "value": "0.2.1"
+        }
+      }
+    },
+    "dag_ml_data": {
+      "availability": {
+        "matlab": "none",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [
+        {
+          "canonical_json_sha256": "sha256:736b6f09fa7fcda3ec8db4e1e67d53b53743362547a51801ad20209384101ac7",
+          "contracts": {
+            "coordinator_branch_view.v1": {
+              "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
+            },
+            "coordinator_data_plan_envelope.v1": {
+              "normalized_sha256": "63b0d862bbbf0fd677a59426053a10e0350876943dc437b4a9e16b915956c584"
+            },
+            "data_output_provenance.v1": {
+              "normalized_sha256": "d90533a9ae7d5a9415a1f8239ea24fbb1e1c37203eba255023e1caadc43494d7"
+            },
+            "feature_fusion_selector.v1": {
+              "normalized_sha256": "44820d64f6dbc0f5324535135b6806f350518e06e9da63c2b79a8607ba31e84b"
+            },
+            "fitted_adapter_ref.v1": {
+              "normalized_sha256": "43001ff6f7a286924ec01ca85b95233c7a50fe9cc8595d67da1eb2a35704dddf"
+            },
+            "parity_oracle.v1": {
+              "canonical_json_sha256": "eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67"
+            }
+          },
+          "id": "conformance_pack",
+          "kind": "conformance_pack",
+          "pack_id": "dag-ml.shared.conformance.v1",
+          "path": "docs/contracts/conformance_pack.v1.json",
+          "raw_sha256": "sha256:da08bbd15be5a1198e42361a4a7fc56d7291fb221ee587fcbeffab4dcf811f06"
+        },
+        {
+          "canonical_json_sha256": "sha256:eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67",
+          "id": "parity_oracle",
+          "kind": "parity_oracle",
+          "oracle_id": "dag-ml.nirs4all.parity_oracle.v1",
+          "path": "docs/contracts/parity_oracle.v1.json",
+          "raw_sha256": "sha256:c3e2fa3e60ae8ad8d0e31b0cef822c66b186df84b205f53e94db205ac5d9750a",
+          "required_case_count": 5,
+          "required_case_ids": [
+            "nirs4all_lite_browser_compile_plan",
+            "repetition_group_leakage_refusal",
+            "controller_registry_selector_parity",
+            "branch_merge_oof_refit_replay",
+            "python_wheel_facade_integration"
+          ]
+        },
+        {
+          "canonical_json_sha256": "sha256:c668c0a69d30a2a6e57ebb116598c5da974d19d57cbbff4048d7801c56239964",
+          "crate": "dag-ml-data",
+          "headers": [
+            {
+              "path": "crates/dag-ml-data-capi/include/dag_ml_data.h",
+              "sha256": "ca5d34264977867388d098cbf3af7381072a5fbd6affad8adbcee23ebb4a9b4a"
+            }
+          ],
+          "id": "abi_snapshot",
+          "kind": "abi_snapshot",
+          "package_version": "0.2.2",
+          "path": "docs/contracts/abi_snapshot.v1.json",
+          "raw_sha256": "sha256:bc59ebdbaca632412652efc8382d8402329d460a94c510b05b68ce841c33fb10"
+        }
+      ],
+      "default_inclusion": "base",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": false,
+      "owner_boundary": "data",
+      "packages": {
+        "c_abi": {
+          "header": "dag_ml_data.h"
+        },
+        "npm": {
+          "packages": [
+            "dag-ml-data-wasm"
+          ]
+        },
+        "python": {
+          "distribution": "dag-ml-data",
+          "imports": [
+            "dag_ml_data"
+          ]
+        },
+        "r": {
+          "packages": [
+            "dagmldata"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "dag-ml-data",
+            "dag-ml-data-core",
+            "dag-ml-data-capi",
+            "dag-ml-data-cli",
+            "dag-ml-data-wasm"
+          ]
+        }
+      },
+      "private": false,
+      "repo_path": "dag-ml-data",
+      "repo_url": "GBeurier/dag-ml-data",
+      "required_gates": [
+        "dagml_data_validate_contracts",
+        "dagml_data_abi_snapshot",
+        "dagml_data_parity_oracle"
+      ],
+      "role": "Data provider contracts and DMD representations",
+      "state": {
+        "branch": "main",
+        "commit": "347c15f69fabf2aac442d04e16b4557b82e7deca",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "versions": {
+        "abi_snapshot": {
+          "kind": "json",
+          "source": "docs/contracts/abi_snapshot.v1.json",
+          "value": "0.2.2"
+        },
+        "python": {
+          "kind": "toml",
+          "source": "crates/dag-ml-data-py/pyproject.toml",
+          "value": "0.2.2"
+        },
+        "r": {
+          "kind": "description",
+          "source": "crates/dag-ml-data-r/DESCRIPTION",
+          "value": "0.1.0"
+        },
+        "rust_workspace": {
+          "kind": "toml",
+          "source": "Cargo.toml",
+          "value": "0.2.2"
+        }
+      }
+    },
+    "datasets": {
+      "availability": {
+        "matlab": "none",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [],
+      "default_inclusion": "external",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": true,
+      "owner_boundary": "catalog",
+      "packages": {
+        "npm": {
+          "packages": [
+            "@nirs4all/datasets-wasm"
+          ]
+        },
+        "python": {
+          "distribution": "nirs4all-datasets",
+          "imports": [
+            "nirs4all_datasets"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4alldatasets"
+          ]
+        }
+      },
+      "private": false,
+      "repo_path": "nirs4all-datasets",
+      "repo_url": "GBeurier/nirs4all-datasets",
+      "required_gates": [
+        "datasets_catalog_checksums"
+      ],
+      "role": "Reference dataset catalog",
+      "state": {
+        "branch": "main",
+        "commit": "ae414964554e6399478ea5b2434d72d930499d90",
+        "dirty": false,
+        "exact_tag": "v0.3.0"
+      },
+      "versions": {
+        "python": {
+          "kind": "toml",
+          "source": "pyproject.toml",
+          "value": "0.3.0"
+        },
+        "r": {
+          "kind": "description",
+          "source": "bindings/r/nirs4alldatasets/DESCRIPTION",
+          "value": "0.3.0"
+        },
+        "rust_workspace": {
+          "kind": "toml",
+          "source": "Cargo.toml",
+          "value": "0.3.0"
+        }
+      }
+    },
+    "formats": {
+      "availability": {
+        "matlab": "none",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [],
+      "default_inclusion": "base",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": false,
+      "owner_boundary": "readers",
+      "packages": {
+        "c_abi": {
+          "header": "nirs4all_formats.h",
+          "prefix": "n4fmt_"
+        },
+        "python": {
+          "distribution": "nirs4all-formats",
+          "imports": [
+            "nirs4all_formats"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4allformats",
+            "nirs4allformatslite"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "nirs4all-formats",
+            "nirs4all-formats-core",
+            "nirs4all-formats-capi",
+            "nirs4all-formats-cli"
+          ]
+        }
+      },
+      "private": false,
+      "repo_path": "nirs4all-formats",
+      "repo_url": "GBeurier/nirs4all-formats",
+      "required_gates": [
+        "formats_version_guard",
+        "formats_conformance"
+      ],
+      "role": "Vendor readers and bindings",
+      "state": {
+        "branch": "main",
+        "commit": "89231b2786efc13f357092c0779a396e429a3158",
+        "dirty": false,
+        "exact_tag": "v0.2.1"
+      },
+      "versions": {
+        "python": {
+          "kind": "toml",
+          "source": "bindings/python/Cargo.toml",
+          "value": "0.2.1"
+        },
+        "r": {
+          "kind": "description",
+          "source": "bindings/r/nirs4allformats/DESCRIPTION",
+          "value": "0.2.1"
+        },
+        "rust_workspace": {
+          "kind": "toml",
+          "source": "Cargo.toml",
+          "value": "0.2.1"
+        }
+      }
+    },
+    "io": {
+      "availability": {
+        "matlab": "none",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [],
+      "default_inclusion": "base",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": false,
+      "owner_boundary": "assembly",
+      "packages": {
+        "c_abi": {
+          "header": "nirs4all_io.h",
+          "prefix": "n4io_"
+        },
+        "python": {
+          "distribution": "nirs4all-io",
+          "imports": [
+            "nirs4all_io"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4allio"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "nirs4all-io",
+            "nirs4all-io-core",
+            "nirs4all-io-dagml"
+          ]
+        }
+      },
+      "private": false,
+      "repo_path": "nirs4all-io",
+      "repo_url": "GBeurier/nirs4all-io",
+      "required_gates": [
+        "io_workspace",
+        "io_dagml_path_override",
+        "dataset_package_v2"
+      ],
+      "role": "Dataset assembly and DatasetPackage bridge",
+      "state": {
+        "branch": "main",
+        "commit": "84ab189317d82d8432463ab6c749effb0740312b",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "versions": {
+        "python": {
+          "kind": "toml",
+          "source": "bindings/python/Cargo.toml",
+          "value": "0.1.3"
+        },
+        "r": {
+          "kind": "description",
+          "source": "bindings/r/DESCRIPTION",
+          "value": "0.1.3"
+        },
+        "rust_workspace": {
+          "kind": "toml",
+          "source": "Cargo.toml",
+          "value": "0.1.3"
+        }
+      }
+    },
+    "lite": {
+      "availability": {
+        "matlab": "subset",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [],
+      "default_inclusion": "base",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": false,
+      "owner_boundary": "aggregate",
+      "packages": {
+        "npm": {
+          "packages": [
+            "nirs4all"
+          ]
+        },
+        "python": {
+          "distribution": "nirs4all-lite",
+          "imports": [
+            "nirs4all_lite"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4all"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "nirs4all"
+          ]
+        }
+      },
+      "private": false,
+      "repo_path": "nirs4all-lite",
+      "repo_url": "GBeurier/nirs4all-lite",
+      "required_gates": [
+        "lite_version_guard",
+        "lite_release_source",
+        "lite_pipeline_parity"
+      ],
+      "role": "Portable aggregate bindings, future nirs4all-core",
+      "state": {
+        "branch": "main",
+        "commit": "c14dcca88fe65e6facd13f86cedbbf87a18a8a49",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "versions": {
+        "npm": {
+          "kind": "json",
+          "source": "bindings/wasm/package.json",
+          "value": "0.2.0"
+        },
+        "python": {
+          "kind": "toml",
+          "source": "bindings/python/pyproject.toml",
+          "value": "0.2.0"
+        },
+        "r": {
+          "kind": "description",
+          "source": "bindings/r/DESCRIPTION",
+          "value": "0.2.0"
+        },
+        "rust": {
+          "kind": "toml",
+          "source": "bindings/rust/nirs4all/Cargo.toml",
+          "value": "0.2.0"
+        }
+      }
+    },
+    "methods": {
+      "availability": {
+        "matlab": "subset",
+        "native": "full",
+        "python": "full",
+        "r": "full",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [
+        {
+          "id": "n4m_version_header",
+          "kind": "text",
+          "path": "cpp/include/n4m/n4m_version.h",
+          "raw_sha256": "sha256:b89665c16982eab5383a20929f46e787e862b0b316b6ca06d324300a95ab93fe"
+        }
+      ],
+      "default_inclusion": "aggregate-extra",
+      "glob_artifacts": {
+        "expected_symbols": {
+          "cpp/abi/expected_symbols_linux.txt": "sha256:ba68da77cc18f2a757fa94ea31549d0469aae0d9039cde2c3c367a0ba63912d9",
+          "cpp/abi/expected_symbols_macos.txt": "sha256:167fe8b328c4a149932da70a6e0afe60539431d195204b9b1ccda31071b797a1",
+          "cpp/abi/expected_symbols_windows.txt": "sha256:167fe8b328c4a149932da70a6e0afe60539431d195204b9b1ccda31071b797a1"
+        }
+      },
+      "license_expression": "CECILL-2.1",
+      "optional": false,
+      "owner_boundary": "kernels",
+      "packages": {
+        "c_abi": {
+          "header": "n4m.h",
+          "prefix": "n4m_"
+        },
+        "npm": {
+          "packages": [
+            "@nirs4all/methods-wasm"
+          ]
+        },
+        "python": {
+          "distribution": "nirs4all-methods",
+          "imports": [
+            "nirs4all_methods",
+            "n4m",
+            "pls4all"
+          ]
+        },
+        "r": {
+          "packages": [
+            "n4m",
+            "pls4all"
+          ]
+        }
+      },
+      "private": false,
+      "repo_path": "nirs4all-methods",
+      "repo_url": "GBeurier/nirs4all-methods",
+      "required_gates": [
+        "n4m_abi_symbols",
+        "n4m_version_sync",
+        "methods_installed_ci"
+      ],
+      "role": "Portable methods kernels and C ABI",
+      "state": {
+        "branch": "main",
+        "commit": "7602eb08f9a6040d640c503f4cc37d66c2d95f00",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "versions": {
+        "c_header": {
+          "kind": "c_header_macros",
+          "source": "cpp/include/n4m/n4m_version.h",
+          "value": {
+            "abi_version": "2.0.0",
+            "abi_version_int": null,
+            "project_version": "1.0.1",
+            "serialization_format_version": 1,
+            "serialization_magic": "N4MM",
+            "source_sha256": "sha256:b89665c16982eab5383a20929f46e787e862b0b316b6ca06d324300a95ab93fe"
+          }
+        },
+        "python_nirs4all_methods": {
+          "kind": "toml",
+          "source": "bindings/python_nirs4all_methods/pyproject.toml",
+          "value": "1.0.0"
+        },
+        "python_pls4all": {
+          "kind": "toml",
+          "source": "bindings/python_pls4all/pyproject.toml",
+          "value": "1.0.0"
+        },
+        "r_n4m": {
+          "kind": "description",
+          "source": "bindings/r/n4m/DESCRIPTION",
+          "value": "1.0.1"
+        }
+      }
+    }
+  },
+  "release_train": "2026.07-refactor",
+  "schema_version": "n4a.aggregation-lock/v1",
+  "status": "candidate",
+  "verification": {
+    "all_lockstep_groups_valid": true,
+    "commands": [
+      "python3 scripts/n4a_release_lock.py checkout-members --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json --output external",
+      "python3 scripts/n4a_release_lock.py --workspace-root external validate --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json",
+      "python3 scripts/validate_contracts.py --require-sibling --sibling-root external/<sibling>  # in dag-ml and dag-ml-data"
+    ],
+    "private_repos_present": false,
+    "required_gates": [
+      "dagml_abi_snapshot",
+      "dagml_data_abi_snapshot",
+      "dagml_data_parity_oracle",
+      "dagml_data_validate_contracts",
+      "dagml_parity_oracle",
+      "dagml_validate_contracts",
+      "dataset_package_v2",
+      "datasets_catalog_checksums",
+      "formats_conformance",
+      "formats_version_guard",
+      "io_dagml_path_override",
+      "io_workspace",
+      "lite_pipeline_parity",
+      "lite_release_source",
+      "lite_version_guard",
+      "methods_installed_ci",
+      "n4m_abi_symbols",
+      "n4m_version_sync"
+    ]
+  }
+}

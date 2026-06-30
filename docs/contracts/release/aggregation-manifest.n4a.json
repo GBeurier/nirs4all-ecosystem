@@ -1,0 +1,568 @@
+{
+  "schema_version": "n4a.aggregation-manifest/v1",
+  "aggregate_id": "nirs4all-lite",
+  "future_aggregate_id": "nirs4all-core",
+  "release_train": "2026.07-refactor",
+  "status": "candidate",
+  "compatibility_policy": {
+    "python_compat_namespace": "nirs4all",
+    "facade_namespace": "n4a",
+    "datasets_default": "external",
+    "private_repos_allowed": false,
+    "r_packages": "explicit"
+  },
+  "lockstep_groups": [
+    {
+      "id": "dagml-pair",
+      "members": [
+        "dag_ml",
+        "dag_ml_data"
+      ],
+      "equivalence": "scripts/validate_contracts.py",
+      "shared_artifact_ids": [
+        "conformance_pack",
+        "parity_oracle"
+      ]
+    }
+  ],
+  "verification_commands": [
+    "python3 scripts/n4a_release_lock.py checkout-members --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json --output external",
+    "python3 scripts/n4a_release_lock.py --workspace-root external validate --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json",
+    "python3 scripts/validate_contracts.py --require-sibling --sibling-root external/<sibling>  # in dag-ml and dag-ml-data"
+  ],
+  "components": [
+    {
+      "key": "dag_ml",
+      "repo_path": "dag-ml",
+      "repo_url": "GBeurier/dag-ml",
+      "role": "DAG runtime and native execution contracts",
+      "owner_boundary": "control",
+      "default_inclusion": "base",
+      "optional": false,
+      "private": false,
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "packages": {
+        "python": {
+          "distribution": "dag-ml",
+          "imports": [
+            "dag_ml"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "dag-ml",
+            "dag-ml-core",
+            "dag-ml-capi",
+            "dag-ml-cli",
+            "dag-ml-wasm"
+          ]
+        },
+        "npm": {
+          "packages": [
+            "dag-ml-wasm"
+          ]
+        },
+        "c_abi": {
+          "header": "dag_ml.h"
+        }
+      },
+      "availability": {
+        "python": "full",
+        "r": "none",
+        "wasm": "subset",
+        "matlab": "none",
+        "native": "full"
+      },
+      "required_gates": [
+        "dagml_validate_contracts",
+        "dagml_abi_snapshot",
+        "dagml_parity_oracle"
+      ],
+      "version_sources": [
+        {
+          "key": "rust_workspace",
+          "kind": "toml",
+          "path": "Cargo.toml",
+          "field": "workspace.package.version"
+        },
+        {
+          "key": "python",
+          "kind": "toml",
+          "path": "crates/dag-ml-py/pyproject.toml",
+          "field": "project.version"
+        },
+        {
+          "key": "abi_snapshot",
+          "kind": "json",
+          "path": "docs/contracts/abi_snapshot.v1.json",
+          "field": "package_version"
+        }
+      ],
+      "contract_artifacts": [
+        {
+          "id": "conformance_pack",
+          "kind": "conformance_pack",
+          "path": "docs/contracts/conformance_pack.v1.json"
+        },
+        {
+          "id": "parity_oracle",
+          "kind": "parity_oracle",
+          "path": "docs/contracts/parity_oracle.v1.json"
+        },
+        {
+          "id": "abi_snapshot",
+          "kind": "abi_snapshot",
+          "path": "docs/contracts/abi_snapshot.v1.json"
+        }
+      ]
+    },
+    {
+      "key": "dag_ml_data",
+      "repo_path": "dag-ml-data",
+      "repo_url": "GBeurier/dag-ml-data",
+      "role": "Data provider contracts and DMD representations",
+      "owner_boundary": "data",
+      "default_inclusion": "base",
+      "optional": false,
+      "private": false,
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "packages": {
+        "python": {
+          "distribution": "dag-ml-data",
+          "imports": [
+            "dag_ml_data"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "dag-ml-data",
+            "dag-ml-data-core",
+            "dag-ml-data-capi",
+            "dag-ml-data-cli",
+            "dag-ml-data-wasm"
+          ]
+        },
+        "npm": {
+          "packages": [
+            "dag-ml-data-wasm"
+          ]
+        },
+        "r": {
+          "packages": [
+            "dagmldata"
+          ]
+        },
+        "c_abi": {
+          "header": "dag_ml_data.h"
+        }
+      },
+      "availability": {
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset",
+        "matlab": "none",
+        "native": "full"
+      },
+      "required_gates": [
+        "dagml_data_validate_contracts",
+        "dagml_data_abi_snapshot",
+        "dagml_data_parity_oracle"
+      ],
+      "version_sources": [
+        {
+          "key": "rust_workspace",
+          "kind": "toml",
+          "path": "Cargo.toml",
+          "field": "workspace.package.version"
+        },
+        {
+          "key": "python",
+          "kind": "toml",
+          "path": "crates/dag-ml-data-py/pyproject.toml",
+          "field": "project.version"
+        },
+        {
+          "key": "r",
+          "kind": "description",
+          "path": "crates/dag-ml-data-r/DESCRIPTION",
+          "field": "Version"
+        },
+        {
+          "key": "abi_snapshot",
+          "kind": "json",
+          "path": "docs/contracts/abi_snapshot.v1.json",
+          "field": "package_version"
+        }
+      ],
+      "contract_artifacts": [
+        {
+          "id": "conformance_pack",
+          "kind": "conformance_pack",
+          "path": "docs/contracts/conformance_pack.v1.json"
+        },
+        {
+          "id": "parity_oracle",
+          "kind": "parity_oracle",
+          "path": "docs/contracts/parity_oracle.v1.json"
+        },
+        {
+          "id": "abi_snapshot",
+          "kind": "abi_snapshot",
+          "path": "docs/contracts/abi_snapshot.v1.json"
+        }
+      ]
+    },
+    {
+      "key": "methods",
+      "repo_path": "nirs4all-methods",
+      "repo_url": "GBeurier/nirs4all-methods",
+      "role": "Portable methods kernels and C ABI",
+      "owner_boundary": "kernels",
+      "default_inclusion": "aggregate-extra",
+      "optional": false,
+      "private": false,
+      "license_expression": "CECILL-2.1",
+      "packages": {
+        "python": {
+          "distribution": "nirs4all-methods",
+          "imports": [
+            "nirs4all_methods",
+            "n4m",
+            "pls4all"
+          ]
+        },
+        "r": {
+          "packages": [
+            "n4m",
+            "pls4all"
+          ]
+        },
+        "npm": {
+          "packages": [
+            "@nirs4all/methods-wasm"
+          ]
+        },
+        "c_abi": {
+          "header": "n4m.h",
+          "prefix": "n4m_"
+        }
+      },
+      "availability": {
+        "python": "full",
+        "r": "full",
+        "wasm": "subset",
+        "matlab": "subset",
+        "native": "full"
+      },
+      "required_gates": [
+        "n4m_abi_symbols",
+        "n4m_version_sync",
+        "methods_installed_ci"
+      ],
+      "version_sources": [
+        {
+          "key": "c_header",
+          "kind": "c_header_macros",
+          "path": "cpp/include/n4m/n4m_version.h"
+        },
+        {
+          "key": "python_nirs4all_methods",
+          "kind": "toml",
+          "path": "bindings/python_nirs4all_methods/pyproject.toml",
+          "field": "project.version"
+        },
+        {
+          "key": "python_pls4all",
+          "kind": "toml",
+          "path": "bindings/python_pls4all/pyproject.toml",
+          "field": "project.version"
+        },
+        {
+          "key": "r_n4m",
+          "kind": "description",
+          "path": "bindings/r/n4m/DESCRIPTION",
+          "field": "Version"
+        }
+      ],
+      "contract_artifacts": [
+        {
+          "id": "n4m_version_header",
+          "kind": "text",
+          "path": "cpp/include/n4m/n4m_version.h"
+        }
+      ],
+      "glob_artifacts": [
+        {
+          "id": "expected_symbols",
+          "pattern": "cpp/abi/expected_symbols_*.txt"
+        }
+      ]
+    },
+    {
+      "key": "formats",
+      "repo_path": "nirs4all-formats",
+      "repo_url": "GBeurier/nirs4all-formats",
+      "role": "Vendor readers and bindings",
+      "owner_boundary": "readers",
+      "default_inclusion": "base",
+      "optional": false,
+      "private": false,
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "packages": {
+        "python": {
+          "distribution": "nirs4all-formats",
+          "imports": [
+            "nirs4all_formats"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "nirs4all-formats",
+            "nirs4all-formats-core",
+            "nirs4all-formats-capi",
+            "nirs4all-formats-cli"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4allformats",
+            "nirs4allformatslite"
+          ]
+        },
+        "c_abi": {
+          "header": "nirs4all_formats.h",
+          "prefix": "n4fmt_"
+        }
+      },
+      "availability": {
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset",
+        "matlab": "none",
+        "native": "full"
+      },
+      "required_gates": [
+        "formats_version_guard",
+        "formats_conformance"
+      ],
+      "version_sources": [
+        {
+          "key": "rust_workspace",
+          "kind": "toml",
+          "path": "Cargo.toml",
+          "field": "workspace.package.version"
+        },
+        {
+          "key": "python",
+          "kind": "toml",
+          "path": "bindings/python/Cargo.toml",
+          "field": "package.version"
+        },
+        {
+          "key": "r",
+          "kind": "description",
+          "path": "bindings/r/nirs4allformats/DESCRIPTION",
+          "field": "Version"
+        }
+      ]
+    },
+    {
+      "key": "io",
+      "repo_path": "nirs4all-io",
+      "repo_url": "GBeurier/nirs4all-io",
+      "role": "Dataset assembly and DatasetPackage bridge",
+      "owner_boundary": "assembly",
+      "default_inclusion": "base",
+      "optional": false,
+      "private": false,
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "packages": {
+        "python": {
+          "distribution": "nirs4all-io",
+          "imports": [
+            "nirs4all_io"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "nirs4all-io",
+            "nirs4all-io-core",
+            "nirs4all-io-dagml"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4allio"
+          ]
+        },
+        "c_abi": {
+          "header": "nirs4all_io.h",
+          "prefix": "n4io_"
+        }
+      },
+      "availability": {
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset",
+        "matlab": "none",
+        "native": "full"
+      },
+      "required_gates": [
+        "io_workspace",
+        "io_dagml_path_override",
+        "dataset_package_v2"
+      ],
+      "version_sources": [
+        {
+          "key": "rust_workspace",
+          "kind": "toml",
+          "path": "Cargo.toml",
+          "field": "workspace.package.version"
+        },
+        {
+          "key": "python",
+          "kind": "toml",
+          "path": "bindings/python/Cargo.toml",
+          "field": "package.version"
+        },
+        {
+          "key": "r",
+          "kind": "description",
+          "path": "bindings/r/DESCRIPTION",
+          "field": "Version"
+        }
+      ]
+    },
+    {
+      "key": "lite",
+      "repo_path": "nirs4all-lite",
+      "repo_url": "GBeurier/nirs4all-lite",
+      "role": "Portable aggregate bindings, future nirs4all-core",
+      "owner_boundary": "aggregate",
+      "default_inclusion": "base",
+      "optional": false,
+      "private": false,
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "packages": {
+        "python": {
+          "distribution": "nirs4all-lite",
+          "imports": [
+            "nirs4all_lite"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "nirs4all"
+          ]
+        },
+        "npm": {
+          "packages": [
+            "nirs4all"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4all"
+          ]
+        }
+      },
+      "availability": {
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset",
+        "matlab": "subset",
+        "native": "full"
+      },
+      "required_gates": [
+        "lite_version_guard",
+        "lite_release_source",
+        "lite_pipeline_parity"
+      ],
+      "version_sources": [
+        {
+          "key": "python",
+          "kind": "toml",
+          "path": "bindings/python/pyproject.toml",
+          "field": "project.version"
+        },
+        {
+          "key": "rust",
+          "kind": "toml",
+          "path": "bindings/rust/nirs4all/Cargo.toml",
+          "field": "package.version"
+        },
+        {
+          "key": "npm",
+          "kind": "json",
+          "path": "bindings/wasm/package.json",
+          "field": "version"
+        },
+        {
+          "key": "r",
+          "kind": "description",
+          "path": "bindings/r/DESCRIPTION",
+          "field": "Version"
+        }
+      ]
+    },
+    {
+      "key": "datasets",
+      "repo_path": "nirs4all-datasets",
+      "repo_url": "GBeurier/nirs4all-datasets",
+      "role": "Reference dataset catalog",
+      "owner_boundary": "catalog",
+      "default_inclusion": "external",
+      "optional": true,
+      "private": false,
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "packages": {
+        "python": {
+          "distribution": "nirs4all-datasets",
+          "imports": [
+            "nirs4all_datasets"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4alldatasets"
+          ]
+        },
+        "npm": {
+          "packages": [
+            "@nirs4all/datasets-wasm"
+          ]
+        }
+      },
+      "availability": {
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset",
+        "matlab": "none",
+        "native": "full"
+      },
+      "required_gates": [
+        "datasets_catalog_checksums"
+      ],
+      "version_sources": [
+        {
+          "key": "rust_workspace",
+          "kind": "toml",
+          "path": "Cargo.toml",
+          "field": "workspace.package.version"
+        },
+        {
+          "key": "python",
+          "kind": "toml",
+          "path": "pyproject.toml",
+          "field": "project.version"
+        },
+        {
+          "key": "r",
+          "kind": "description",
+          "path": "bindings/r/nirs4alldatasets/DESCRIPTION",
+          "field": "Version"
+        }
+      ]
+    }
+  ]
+}
