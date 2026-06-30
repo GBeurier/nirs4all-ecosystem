@@ -31,6 +31,20 @@ Follow-up inspection:
   `ps` are MCP servers attached to Codex/Claude tooling or old app-server
   sessions. They are not first-wave refactoring agents and were left untouched.
 
+Fresh audit 2026-07-01:
+
+- `208304` and `208423` are still the two relevant external interactive Claude
+  CLI sessions at the workspace root.
+- Each has a CodeGraph MCP child and Claude threads. No separate OS-level
+  `pytest`, `cargo`, `npm`, Vite preview, `codex exec`, or `claude -p` worker was
+  attached at inspection time.
+- If these Claude sessions created Claude `Task` subagents, they remain internal
+  to the Claude process and are not distinguishable as independent Unix
+  processes. They are therefore tracked as external interactive sessions, not as
+  managed Wave-2B agents.
+- Multiple `claude-code-mcp` server processes are still alive. They are tooling
+  servers, not lane agents, and were also left untouched.
+
 ## First-wave reports found
 
 All expected first-wave reports exist and are non-empty:
@@ -231,18 +245,18 @@ Committed base tips used for W2B:
 | L15 | `nirs4all-cluster/refactor/L15-rbac` | `259d598` |
 | L16 | `dag-ml/refactor/L16-controller-manifests` | `2143c57` |
 
-| Agent | Session ID | Scope | Worktree / cwd | Status at launch | Report |
-|---|---|---|---|---|---|
-| `W1` | `597c2cdf-0e98-40c5-a64d-5b54ef7d8bac` | B-010 fallback coverage meter | `_worktrees/W1-nirs4all` | stopped by Claude session limit; no diff | `docs/agent_reports/W1_FALLBACK_METER.md` |
-| `W2` | `8b54536f-ce87-4e33-ae11-b7d179fe30b4` | B-010 native fallback lowering | `_worktrees/W2-nirs4all` | stopped by Claude session limit; no diff | `docs/agent_reports/W2_NATIVE_FALLBACK.md` |
-| `W3` | `d9749b9f-9c4a-44c2-9059-cdb0ec0c1657` | B-010 native `.n4a` export | `_worktrees/W3-nirs4all` + `_worktrees/W3-dagml` | stopped by Claude session limit; no diff | `docs/agent_reports/W3_NATIVE_EXPORT.md` |
-| `W4` | `23618bd3-1c71-4899-bca7-31aa62beabf6` | B-011 cross-engine parity | `_worktrees/W4-nirs4all` | stopped by Claude session limit; no diff | `docs/agent_reports/W4_CROSS_ENGINE.md` |
-| `W5` | `039683db-68ce-4993-b610-4d246e2e3ded` | B-014 lockstep contracts | `_worktrees/W5-dmd` + `_worktrees/W5-dagml` | completed by supervisor after session limit | `docs/agent_reports/W5_CONTRACTS_LOCKSTEP_SUPERVISED.md` |
-| `W6` | `ba11ad50-88e3-4fcd-9f9a-025236eb930f` | B-014 controller `data_requirements` | `_worktrees/W6-dagml` | stopped by Claude session limit; no diff | `docs/agent_reports/W6_DATA_REQUIREMENTS.md` |
-| `W7` | `4325df06-2b5e-4c33-87b3-26c0ba5520d4` | B-018 runtime envelopes | `_worktrees/W7-nirs4all` | stopped by Claude session limit; draft `nirs4all/pipeline/dagml/rt.py` left untracked | `docs/agent_reports/W7_RT_ENVELOPES.md` |
-| `W8` | `512b108d-4394-4177-bf78-805cd7d4446d` | B-017/B-018 Studio routing | `_worktrees/W8-studio` | stopped by Claude session limit; no diff | `docs/agent_reports/W8_STUDIO_ROUTING.md` |
-| `W9` | `8e6f6cbd-cba0-4dfc-bf60-47a8d22a67c2` | B-018 Web RtError | `_worktrees/W9-web` | stopped by Claude session limit; no diff | `docs/agent_reports/W9_WEB_RT.md` |
-| `W10` | `ceae37ad-37e7-473b-a076-2fccdd6a2165` | L14 providers scaffold | `nirs4all-providers` | stopped by Claude session limit; no diff | `docs/agent_reports/W10_PROVIDERS.md` |
+| Agent | Session ID(s) | Scope | Worktree / cwd | Final state | Code commit(s) | Report |
+|---|---|---|---|---|---|---|
+| `W1` | `597c2cdf-0e98-40c5-a64d-5b54ef7d8bac` | B-010 fallback coverage meter | `_worktrees/W1-nirs4all` | committed | `nirs4all/refactor/W1-fallback-meter` `b135baef` | `docs/agent_reports/W1_FALLBACK_METER.md` |
+| `W2` | `8b54536f-ce87-4e33-ae11-b7d179fe30b4` | B-010 native fallback lowering | `_worktrees/W2-nirs4all` | committed | `nirs4all/refactor/W2-native-fallback` `2f2f9c40` | `docs/agent_reports/W2_NATIVE_FALLBACK.md` |
+| `W3` | `d9749b9f-9c4a-44c2-9059-cdb0ec0c1657`, `2caf0e76-83d7-4c4f-9345-35a812d7ee57` | B-010/B-011 native `.n4a` parity coverage | `_worktrees/W3-nirs4all` | committed after resume | `nirs4all/refactor/W3-native-export` `c708b02e` | `docs/agent_reports/W3_NATIVE_EXPORT.md` |
+| `W4` | `23618bd3-1c71-4899-bca7-31aa62beabf6` | B-011 cross-engine parity | `_worktrees/W4-nirs4all` | committed despite MCP `maxTurns` after useful work | `nirs4all/refactor/W4-cross-engine` `01bfb809` | `docs/agent_reports/W4_CROSS_ENGINE.md` |
+| `W5` | `039683db-68ce-4993-b610-4d246e2e3ded` | B-014 lockstep contracts | `_worktrees/W5-dmd` + `_worktrees/W5-dagml` | completed by supervisor after session limit | `dag-ml-data/refactor/W5-contracts-dmd` `4f858c3`; `dag-ml/refactor/W5-contracts-dagml` `e55d8aa` | `docs/agent_reports/W5_CONTRACTS_LOCKSTEP_SUPERVISED.md` |
+| `W6` | `ba11ad50-88e3-4fcd-9f9a-025236eb930f` | B-014 controller `data_requirements` | `_worktrees/W6-dagml` | committed | `dag-ml/refactor/W6-data-requirements` `77f50df` | `docs/agent_reports/W6_DATA_REQUIREMENTS.md` |
+| `W7` | `4325df06-2b5e-4c33-87b3-26c0ba5520d4` | B-018 runtime envelopes | `_worktrees/W7-nirs4all` | committed by supervisor from W7 draft | `nirs4all/refactor/W7-rt-envelopes` `7f8cfe69`; ecosystem contracts/report `2e93a16` | `docs/agent_reports/W7_RT_ENVELOPES.md` |
+| `W8` | `512b108d-4394-4177-bf78-805cd7d4446d`, `0e6c7b20-dc66-4714-9c8d-d885c982ac46` | B-017/B-018 Studio routing | `_worktrees/W8-studio` | committed; final MCP hit `maxTurns` after commit | `nirs4all-studio/refactor/W8-studio-routing` `5cb98f2` | `docs/agent_reports/W8_STUDIO_ROUTING.md` |
+| `W9` | `8e6f6cbd-cba0-4dfc-bf60-47a8d22a67c2`, `9e04cf1e-c6bc-427c-8d4c-3a53e2b60c53` | B-018 Web RtError contract alignment | `_worktrees/W9-web` | committed | `nirs4all-web/refactor/W9-web-rt` `5cc8d8c` | `docs/agent_reports/W9_WEB_RT.md` |
+| `W10` | `ceae37ad-37e7-473b-a076-2fccdd6a2165` | L14 providers scaffold | `nirs4all-providers` | committed | `nirs4all-providers/main` `3ecc679` | `docs/agent_reports/W10_PROVIDERS.md` |
 
 Launch notes:
 
@@ -253,15 +267,18 @@ Launch notes:
   untouched; no visible `pytest`/`cargo`/`npm run` children were attached at the
   launch audit.
 
-Observed 2026-07-01 00:42 CEST:
+Final Wave-2B state after reset/resume supervision:
 
-- Claude Opus hit the account session limit before most W2B agents could write
-  reports or patches; reset message: `resets 12:50am (Europe/Paris)`.
-- `W5` left a valid lockstep diff. The supervisor verified both cross-repo
-  validators and committed:
-  - `dag-ml-data/refactor/W5-contracts-dmd` -> `4f858c3`
-  - `dag-ml/refactor/W5-contracts-dagml` -> `e55d8aa`
-  - `nirs4all-ecosystem/main` report -> `a02ddea`
-- `W7` left an untracked `nirs4all/pipeline/dagml/rt.py` draft. It is
-  syntax-valid (`python3 -m py_compile`) but not integrated or committed.
-- All other W2B worktrees were clean at the 00:42 audit.
+- All `W1..W10` reports are present and have been force-added to ecosystem
+  history despite `/docs/` being gitignored. Latest report commits include
+  `c1c9d8e` (W1/W2/W6), `c8c1657` (W3), `3385009` (W4), `2e93a16` (W7
+  runtime schemas/report), `2f8f4ad` (W10), `98c459c` (W9), and `003b0d5`
+  (W8).
+- `W8` and `W9` were resumed/managed directly after the manual terminal
+  windows failed. `W8` reached `maxTurns` after the Studio commit; the
+  supervisor independently verified the branch, hash, clean tree, report, and
+  process state.
+- External Claude CLI processes `208304` and `208423` remain running at the
+  workspace root and were not killed. Latest process audit showed only those two
+  top-level external Claude sessions plus MCP server processes; no lingering
+  Vite/codex preview server was left running.
