@@ -108,5 +108,5 @@ Do not launch W99 until W90-W98 reports exist or have explicitly failed.
 | W100 | review complete | report commit `7793ba2`; found Studio/Web runtime contract gaps around launch payloads, store summaries, fallback-policy extraction, and Web fallback defaults. |
 | W101 | review complete | report commit `fb5c780`; found central release-lock/topology, methods generated metadata, lite R license, tools golden, and IO/datasets cross-repo test gaps. |
 | W102 | running | ChatGPT worker Galileo (`019f1c97-86e5-7093-be50-2c7d0c5803a2`) owns Studio/Web runtime contract fixes. |
-| W103 | running | ChatGPT worker Euler (`019f1c97-b8eb-72f2-ad5f-d03909c55506`) owns ecosystem release-lock/topology fixes. |
-| W104 | running | ChatGPT worker Bacon (`019f1c98-2521-7c32-a314-1a3010ac9053`) owns `nirs4all-tools` migration golden cleanup. |
+| W103 | complete in ecosystem | report/implementation commit `255bd86`; release-lock sources now reject ignored/untracked metadata by default, methods generated package versions read tracked metadata, and lite W94 topology is wired as a git-HEAD `python_function_json` contract artifact. Final aggregation-lock regeneration remains blocked on selected clean release heads. |
+| W104 | complete in tools/ecosystem | tools commit `9dc0c62`, report commit `5f85aa1`; Parquet golden is now a valid reduced fixture, DuckDB fixture is explicitly documented/tested as an opaque preservation sentinel. |
