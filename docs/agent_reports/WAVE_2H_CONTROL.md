@@ -23,7 +23,7 @@ The internal agent limit allowed six concurrent workers. These are the live impl
 | Wave | Agent ID | Nickname | Target | Status |
 | --- | --- | --- | --- | --- |
 | W62 | `019f1bc4-fcb7-7061-a5d4-0b879d83ea2c` | Bernoulli | `branch_dup_three_way_merge_predictions` | running |
-| W63 | `019f1bc5-7c62-7c71-b642-362f3fb8acfe` | Singer | `branch_dup_named_with_metamodel` | running |
+| W63 | `019f1bc5-7c62-7c71-b642-362f3fb8acfe` | Singer | `branch_dup_named_with_metamodel` | blocked; report merged |
 | W64 | `019f1bc5-dc42-7c73-aca0-f1160c2ed19e` | Kuhn | `branch_dup_merge_all` | running |
 | W65 | `019f1bc6-50b1-7533-bc68-166724671ea7` | Raman | `multi_source_by_source_branch_distinct_preproc` | running |
 | W66 | `019f1bc7-19cf-7b02-8a43-262eca47cfa7` | Mencius | `multi_source_per_source_models_stacking` | running |
@@ -39,6 +39,12 @@ Launch these when one or more active agents finish and are closed:
 | W69 | worker | Source-layout contract audit for W65/W67 across `dag-ml-data`, `dag-ml`, and `nirs4all`. |
 | W70 | worker | Coverage gates/readiness update once any fallback is removed. |
 | W71 | reviewer | Integration review of W62-W67 patches before merging into `refactor/integration-nirs4all`. |
+
+## Completed / Blocked Outcomes
+
+| Wave | Outcome |
+| --- | --- |
+| W63 | Blocked intentionally. The case is not equivalent to simple collect-all stacking: legacy runs a branch-local `Ridge_MetaModel`, then a structured per-branch best-by-RMSE prediction selector into features, then final `Ridge`. `EXPECTED_FALLBACK` remains unchanged. Report: `W63_BRANCH_DUP_NAMED_METAMODEL.md`. |
 
 ## Coordination Rules
 
