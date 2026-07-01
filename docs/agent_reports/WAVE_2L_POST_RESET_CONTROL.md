@@ -254,13 +254,14 @@ passed native parity and remains promoted. `multi_source_per_source_models_stack
 failed parity as native (`rmse` delta `4.770e-02` > `1e-03`) and remains an
 explicit fallback.
 
-Code changed in current `nirs4all/refactor/L17-pyref` checkout:
+Code changed in current `nirs4all/refactor/L17-pyref` checkout and committed:
 
 - `docs/compatibility.json`
 - `nirs4all/pipeline/dagml/detect.py`
 - `nirs4all/pipeline/dagml/run_backend.py`
 - `nirs4all/pipeline/dagml/run_paths.py`
 - `tests/integration/parity/test_conformance_dual_engine.py`
+- commit `13157d79d378` (`fix(dagml): run source concat merge natively`)
 
 Agent gates passed:
 
