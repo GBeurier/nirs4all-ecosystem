@@ -426,7 +426,17 @@ Final Wave-2D state after quota interruption:
 - Supervisor-created reports now exist for `W21..W30`.
 - `W24` left a small coherent diff; the supervisor tested and committed it as
   `nirs4all-studio/refactor/W24-runtime-routes` `455e1f3`.
+- The W24 commit was merged into `nirs4all-studio/refactor/integration-studio`
+  as `f0b0906` and re-gated on the integration branch.
 - `W21`, `W22`, `W23`, `W25`, `W26`, `W27`, `W28`, `W29`, and `W30` left clean
   worktrees and no code commits.
 - External interactive Claude CLI processes `208304` and `208423` remain
   untouched.
+
+W24 integration gates:
+
+- `PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m pytest tests/test_runs_engine_routing.py -k retry_run_preserves_requested_engine -q`
+  -> `2 passed, 11 deselected`
+- `PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m compileall -q api/runs.py tests/test_runs_engine_routing.py`
+- `ruff check api/runs.py tests/test_runs_engine_routing.py` -> all checks
+  passed
