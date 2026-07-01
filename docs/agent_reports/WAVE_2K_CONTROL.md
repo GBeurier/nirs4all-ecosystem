@@ -65,7 +65,7 @@ The dirty main checkout `nirs4all/` is not an integration base.
 | W93 | Codex worker | `019f1c74-dfc1-7040-ae9e-2c0f3bbbd9ec` / Darwin | `_worktrees/W93-io-datasets-bridge` + datasets/formats worktrees | Formats/IO/datasets reference dataset bridge. | `W93_IO_DATASETS_REFERENCE_BRIDGE.md` |
 | W94 | Codex worker | `019f1c74-f4a6-7632-9ec2-645e02fa106b` / Fermat | `_worktrees/W94-lite-release-topology` | Lite/core release topology manifest consumer readiness. | `W94_LITE_RELEASE_TOPOLOGY.md` |
 | W95 | Codex worker | `019f1c7e-83e6-78e2-b1d5-0f9c2ab838c4` / Bohr | `_worktrees/W95-studio-strict-runtime` | Studio strict fallback default. | `W95_STUDIO_STRICT_RUNTIME.md` |
-| W96 | queued | pending | `_worktrees/W96-studio-runtime-e2e` + `_worktrees/W96-web-runtime-e2e` | Runtime UX/E2E smoke for Studio/Web. | `W96_RUNTIME_UX_E2E.md` |
+| W96 | Codex worker | `019f1c7f-d079-75d2-9bc5-de154dabd751` / Boole | `_worktrees/W96-studio-runtime-e2e` + `_worktrees/W96-web-runtime-e2e` | Runtime UX/E2E smoke for Studio/Web. | `W96_RUNTIME_UX_E2E.md` |
 | W97 | queued | pending | `_worktrees/W97-tools-real-goldens` | Real legacy converter golden fixtures. | `W97_TOOLS_REAL_GOLDENS.md` |
 | W98 | queued | pending | `_worktrees/W98-nirs4all-full-parity` | Full Python-reference parity and cutover runner. | `W98_FULL_PYREF_PARITY.md` |
 | W99 | queued | pending | ecosystem report only | Post-W2K integration review. | `W99_POST_W2K_REVIEW.md` |
@@ -99,9 +99,9 @@ Do not launch W99 until W90-W98 reports exist or have explicitly failed.
 | W91 | report complete | report commit `4afaad0`; paired dag-ml/dag-ml-data validation passed after aligning data side to integration head `818616e`; no new dag-ml commit. |
 | W92 | running | launched as Pasteur (`019f1c74-c574-73a1-ba33-5e3b3ea01b74`). |
 | W93 | running | launched as Darwin (`019f1c74-dfc1-7040-ae9e-2c0f3bbbd9ec`). |
-| W94 | running | launched as Fermat (`019f1c74-f4a6-7632-9ec2-645e02fa106b`). |
+| W94 | report complete | lite commit `d9d92d7`, ecosystem report commit `5caa4b1`; topology manifest consumer-readiness tests passed. |
 | W95 | running | launched as Bohr (`019f1c7e-83e6-78e2-b1d5-0f9c2ab838c4`). |
-| W96 | queued | - |
+| W96 | running | launched as Boole (`019f1c7f-d079-75d2-9bc5-de154dabd751`). |
 | W97 | queued | - |
 | W98 | queued | - |
 | W99 | queued | - |
