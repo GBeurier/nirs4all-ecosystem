@@ -1,0 +1,113 @@
+name: cutover-gates
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/cutover-gates.yml"
+      - "scripts/n4a_cutover_gates.py"
+      - "docs/contracts/cutover/drop-gates.n4a.json"
+      - "docs/CUTOVER_GATE_RUNNER.md"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/cutover-gates.yml"
+      - "scripts/n4a_cutover_gates.py"
+      - "docs/contracts/cutover/drop-gates.n4a.json"
+      - "docs/CUTOVER_GATE_RUNNER.md"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "validate only, advisory run, or strict run"
+        required: true
+        default: "validate"
+        type: choice
+        options:
+          - validate
+          - advisory
+          - strict
+      gates:
+        description: "Optional comma-separated gate ids to run"
+        required: false
+        default: ""
+      timeout:
+        description: "Per-gate timeout in seconds for run modes"
+        required: false
+        default: "900"
+
+permissions:
+  contents: read
+
+jobs:
+  tooling:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: nirs4all-ecosystem
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate cutover gate tooling
+        working-directory: nirs4all-ecosystem
+        run: |
+          python -m py_compile scripts/n4a_cutover_gates.py
+          python -m json.tool docs/contracts/cutover/drop-gates.n4a.json >/dev/null
+          python scripts/n4a_cutover_gates.py --workspace-root "$GITHUB_WORKSPACE" validate
+          python scripts/n4a_cutover_gates.py --workspace-root "$GITHUB_WORKSPACE" list --json > cutover-gates-list.json
+      - name: Upload gate inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: cutover-gates-list
+          path: nirs4all-ecosystem/cutover-gates-list.json
+
+  dispatch-run:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode != 'validate'
+    runs-on: ubuntu-latest
+    needs: tooling
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: nirs4all-ecosystem
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build gate arguments
+        id: args
+        shell: python
+        run: |
+          import os
+          raw = "${{ inputs.gates }}".strip()
+          args = []
+          for gate in [part.strip() for part in raw.split(",") if part.strip()]:
+              args.extend(["--gate", gate])
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"gate_args={' '.join(args)}\n")
+      - name: Run cutover gates
+        working-directory: nirs4all-ecosystem
+        run: |
+          if [ "${{ inputs.mode }}" = "advisory" ]; then
+            python scripts/n4a_cutover_gates.py \
+              --workspace-root "$GITHUB_WORKSPACE" \
+              run \
+              --advisory \
+              --missing-cwd skip \
+              --timeout "${{ inputs.timeout }}" \
+              --json \
+              ${{ steps.args.outputs.gate_args }} \
+              > cutover-gate-report.json
+          else
+            python scripts/n4a_cutover_gates.py \
+              --workspace-root "$GITHUB_WORKSPACE" \
+              run \
+              --timeout "${{ inputs.timeout }}" \
+              --json \
+              ${{ steps.args.outputs.gate_args }} \
+              > cutover-gate-report.json
+          fi
+      - name: Upload gate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cutover-gate-report-${{ inputs.mode }}
+          path: nirs4all-ecosystem/cutover-gate-report.json

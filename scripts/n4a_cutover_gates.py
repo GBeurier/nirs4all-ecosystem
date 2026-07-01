@@ -128,10 +128,20 @@ def list_gates(gates: list[dict[str, Any]], workspace_root: Path, json_out: bool
     return 0
 
 
-def run_gate(gate: dict[str, Any], workspace_root: Path, timeout: int | None) -> dict[str, Any]:
+def run_gate(gate: dict[str, Any], workspace_root: Path, timeout: int | None, missing_cwd: str = "error") -> dict[str, Any]:
     cwd = gate_cwd(gate, workspace_root)
     cmd = command_for(gate, workspace_root)
     if not cwd.exists():
+        if missing_cwd == "skip":
+            return {
+                "id": gate["id"],
+                "status": "skipped",
+                "returncode": None,
+                "duration_s": 0.0,
+                "cwd": str(cwd),
+                "command": cmd,
+                "stderr": f"cwd does not exist: {cwd}",
+            }
         return {
             "id": gate["id"],
             "status": "error",
@@ -176,8 +186,8 @@ def run_gate(gate: dict[str, Any], workspace_root: Path, timeout: int | None) ->
         }
 
 
-def run_gates(gates: list[dict[str, Any]], workspace_root: Path, timeout: int | None, json_out: bool) -> int:
-    results = [run_gate(gate, workspace_root, timeout) for gate in gates]
+def run_gates(gates: list[dict[str, Any]], workspace_root: Path, timeout: int | None, json_out: bool, missing_cwd: str, advisory: bool) -> int:
+    results = [run_gate(gate, workspace_root, timeout, missing_cwd) for gate in gates]
     failed_required = {
         result["id"]
         for result, gate in zip(results, gates, strict=True)
@@ -186,6 +196,7 @@ def run_gates(gates: list[dict[str, Any]], workspace_root: Path, timeout: int | 
     report = {
         "schema_version": "n4a.cutover-gate-report/v1",
         "workspace_root": str(workspace_root),
+        "advisory": advisory,
         "passed": not failed_required,
         "failed_required": sorted(failed_required),
         "results": results,
@@ -201,7 +212,9 @@ def run_gates(gates: list[dict[str, Any]], workspace_root: Path, timeout: int | 
                 if stderr:
                     print(stderr[-2000:])
         print(f"required gates passed: {not failed_required}")
-    return 0 if not failed_required else 1
+        if advisory and failed_required:
+            print("advisory mode: failures are reported but do not fail this command")
+    return 0 if advisory or not failed_required else 1
 
 
 def _add_common_options(parser: argparse.ArgumentParser, *, suppress_defaults: bool = False) -> None:
@@ -232,6 +245,17 @@ def build_parser() -> argparse.ArgumentParser:
     run = sub.add_parser("run", help="Execute selected gates. This can be slow.")
     _add_common_options(run, suppress_defaults=True)
     run.add_argument("--timeout", type=int, default=None, help="Per-gate timeout in seconds.")
+    run.add_argument(
+        "--missing-cwd",
+        choices=("error", "skip"),
+        default="error",
+        help="How to handle a selected gate whose cwd is absent.",
+    )
+    run.add_argument(
+        "--advisory",
+        action="store_true",
+        help="Report required-gate failures but exit 0. Intended for non-blocking CI visibility before cutover.",
+    )
     return parser
 
 
@@ -255,7 +279,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"selected gates: {', '.join(gate['id'] for gate in gates)}")
             return 0
         if command == "run":
-            return run_gates(gates, workspace_root, args.timeout, args.json)
+            return run_gates(gates, workspace_root, args.timeout, args.json, args.missing_cwd, args.advisory)
         return list_gates(gates, workspace_root, args.json)
     except GateError as exc:
         print(f"error: {exc}", file=sys.stderr)
