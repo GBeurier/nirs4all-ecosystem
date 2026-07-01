@@ -186,6 +186,24 @@ Coordinator integration:
   `python3 scripts/n4a_release_lock.py --workspace-root /tmp/n4a-w2k-root validate --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json` -> passed.
 - `pytest -q tests/test_release_lock.py` -> 5 passed.
 
+Cutover-gate follow-up:
+
+- The full `n4a_cutover_gates.py run` was interrupted after it spent over 25
+  minutes in `pyref_oracle_full`; reserve that full parity gate for larger
+  integration batches.
+- `n4a_cutover_gates.py run --skip pyref_oracle_full` passed all selected gates
+  except `release_lock_validation` before the Web gate fix. The Web failure was
+  a bad gate cwd, not a Web runtime failure.
+- Fixed `docs/contracts/cutover/drop-gates.n4a.json` so
+  `web_runtime_contract` runs from `_worktrees/INT-web/studio-lite`; rerun of
+  `--gate web_runtime_contract` passed.
+- Remaining caveat: `release_lock_validation` inside cutover gates still
+  validates against `/home/delete/nirs4all`, where primary checkouts are reset
+  or dirty. The regenerated lock validates against the selected clean root
+  `/tmp/n4a-w2k-root`; either move primary checkouts to the selected heads or
+  teach the cutover gate to use a selected release root before treating the full
+  cutover gate as green from the workspace root.
+
 ### Lane H - Studio/Web Runtime
 
 Status: complete, no code changes.
