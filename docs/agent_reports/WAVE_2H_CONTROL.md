@@ -26,7 +26,7 @@ The internal agent limit allowed six concurrent workers. These are the live impl
 | W63 | `019f1bc5-7c62-7c71-b642-362f3fb8acfe` | Singer | `branch_dup_named_with_metamodel` | blocked; report merged |
 | W64 | `019f1bc5-dc42-7c73-aca0-f1160c2ed19e` | Kuhn | `branch_dup_merge_all` | green; report committed |
 | W65 | `019f1bc6-50b1-7533-bc68-166724671ea7` | Raman | `multi_source_by_source_branch_distinct_preproc` | green; report committed |
-| W66 | `019f1bc7-19cf-7b02-8a43-262eca47cfa7` | Mencius | `multi_source_per_source_models_stacking` | running |
+| W66 | `019f1bc7-19cf-7b02-8a43-262eca47cfa7` | Mencius | `multi_source_per_source_models_stacking` | blocked; report committed |
 | W67 | `019f1bc7-ab90-7122-998e-20486fd007e6` | Ptolemy | `multi_source_sources_concat_then_rf` | green; report committed; core staged/uncommitted |
 
 ## Queued Agents
@@ -50,6 +50,7 @@ Launch these when one or more active agents finish and are closed:
 | W67 | Green by targeted tests. `multi_source_sources_concat_then_rf` native path passed targeted conformance, selector, py_compile, and ruff. Core hunks were left staged/uncommitted in the shared `nirs4all` working branch and need integration review/extraction before landing. Report: `W67_MULTISOURCE_SOURCES_CONCAT_RF.md`. |
 | W62 | Green in its worktree. `branch_dup_three_way_merge_predictions` was removed from `EXPECTED_FALLBACK`; coverage meter reported `fallback=5, target=0`. Core commit: `5d41b52c`; report: `W62_BRANCH_DUP_THREE_WAY.md`. |
 | W65 | Green in the shared `nirs4all/refactor/L17-pyref` branch. `multi_source_by_source_branch_distinct_preproc` native path passed targeted conformance and selector tests. Core commit: `5e00e400`; report: `W65_MULTISOURCE_DISTINCT_PREPROC.md`. |
+| W66 | Blocked intentionally. Boundary can run native, but parity fails because legacy Ridge fits on a cumulative `10755`-feature post-merge source layout, not a 3-column OOF matrix. Keep fallback. Report: `W66_MULTISOURCE_PER_SOURCE_STACKING.md`. |
 
 ## Queued / Running Support Agents
 
