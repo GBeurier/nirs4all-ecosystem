@@ -42,7 +42,7 @@ from `/tmp/w98_full_parity.log`.
 
 Clean current checkouts:
 
-- `nirs4all-ecosystem/main@cc36031674d7`
+- `nirs4all-ecosystem/main` is clean after the W2M board commits
 - `dag-ml/refactor/L20-lockstep@618ffb220b5f`
 - `nirs4all-io/refactor/L7-io-dagml-sibling@e52eecd827a0`
 - `nirs4all-lite/main@922fdd114231`
