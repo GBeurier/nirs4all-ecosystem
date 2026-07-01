@@ -48,14 +48,14 @@ The dirty main checkout `nirs4all/` is not an integration base.
 
 | Wave | Engine | Agent/session | Worktree | Target | Report |
 | --- | --- | --- | --- | --- | --- |
-| W82 | Codex worker | pending | `_worktrees/W82-nirs4all-cutover-strict` | Legacy-DROP cutover branch: default dag-ml, explicit fallback only. | `W82_LEGACY_DROP_CUTOVER.md` |
-| W83 | Codex worker | pending | `_worktrees/W83-nirs4all-export-no-legacy` | Remove implicit dag-ml export legacy refit bridge from V1 path. | `W83_EXPORT_NO_LEGACY_REFIT.md` |
-| W84 | Codex worker | pending | `_worktrees/W84-tools-legacy-converter` | Harden standalone converter for old predictions/pipelines/workspaces. | `W84_TOOLS_LEGACY_CONVERTER.md` |
-| W85 | Codex worker | pending | `_worktrees/W85-studio-runtime-v1` | Studio backend runtime envelope as source of truth. | `W85_STUDIO_RUNTIME_V1.md` |
-| W86 | Codex worker | pending | `_worktrees/W86-studio-ui-runtime` | Studio reusable runtime UI components. | `W86_STUDIO_UI_RUNTIME_COMPONENTS.md` |
-| W87 | Codex worker | pending | `_worktrees/W87-web-runtime-v1` | Web runtime V1 cutover, no silent fallback diagnostics. | `W87_WEB_RUNTIME_V1.md` |
-| W88 | Codex worker | pending | `_worktrees/W88-cluster-v1-dag` | Cluster V1 DAG scheduling, rights and worker-loss semantics. | `W88_CLUSTER_V1_DAG.md` |
-| W89 | Codex worker | pending | `_worktrees/W89-providers-pipeline-services` | Repository/benchmarks pipeline service contracts. | `W89_PROVIDERS_PIPELINE_SERVICES.md` |
+| W82 | Codex worker | `019f1c53-e127-72f0-bc9a-38504eec27e5` / Schrodinger | `_worktrees/W82-nirs4all-cutover-strict` | Legacy-DROP cutover branch: default dag-ml, explicit fallback only. | `W82_LEGACY_DROP_CUTOVER.md` |
+| W83 | Codex worker | `019f1c53-e206-77b2-9424-037d4eeef52b` / Locke | `_worktrees/W83-nirs4all-export-no-legacy` | Remove implicit dag-ml export legacy refit bridge from V1 path. | `W83_EXPORT_NO_LEGACY_REFIT.md` |
+| W84 | Codex worker | `019f1c53-e31e-7e62-9d59-d2a59121bfa0` / Anscombe | `_worktrees/W84-tools-legacy-converter` | Harden standalone converter for old predictions/pipelines/workspaces. | `W84_TOOLS_LEGACY_CONVERTER.md` |
+| W85 | Codex worker | `019f1c53-e495-7ca0-a6f5-329c56ec56e9` / Wegener | `_worktrees/W85-studio-runtime-v1` | Studio backend runtime envelope as source of truth. | `W85_STUDIO_RUNTIME_V1.md` |
+| W86 | Codex worker | `019f1c53-e5db-7c03-a963-3eda84af3d3e` / Gauss | `_worktrees/W86-studio-ui-runtime` | Studio reusable runtime UI components. | `W86_STUDIO_UI_RUNTIME_COMPONENTS.md` |
+| W87 | Codex worker | queued; agent thread limit reached at launch | `_worktrees/W87-web-runtime-v1` | Web runtime V1 cutover, no silent fallback diagnostics. | `W87_WEB_RUNTIME_V1.md` |
+| W88 | Codex worker | queued; agent thread limit reached at launch | `_worktrees/W88-cluster-v1-dag` | Cluster V1 DAG scheduling, rights and worker-loss semantics. | `W88_CLUSTER_V1_DAG.md` |
+| W89 | Codex worker | queued; agent thread limit reached at launch | `_worktrees/W89-providers-pipeline-services` | Repository/benchmarks pipeline service contracts. | `W89_PROVIDERS_PIPELINE_SERVICES.md` |
 
 ## Coordination Rules
 
@@ -68,3 +68,9 @@ The dirty main checkout `nirs4all/` is not an integration base.
    read-side `get_pipeline_list` / `get_pipeline`.
 5. The coordinator integrates only scoped, committed, green changes and records
    test evidence here after agents finish.
+
+## Launch Notes
+
+- The integrated agent backend accepted five concurrent workers (W82-W86).
+- W87-W89 are queued and should be launched as soon as one worker slot is
+  released.
