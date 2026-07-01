@@ -316,7 +316,7 @@
       "role": "Data provider contracts and DMD representations",
       "state": {
         "branch": "refactor/integration-dmd",
-        "commit": "818616e9a2c28ae940b9a21543d666c058361dfb",
+        "commit": "e6816854365350722777056ccfc8d26184940ef1",
         "dirty": false,
         "exact_tag": null
       },
