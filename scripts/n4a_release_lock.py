@@ -560,8 +560,17 @@ def validate_lock(manifest_path: Path, lock_path: Path, workspace_root: Path) ->
     actual = load_json(lock_path)
     if actual != expected:
         raise RelError(
-            "lockfile is stale or inconsistent; regenerate with "
-            f"{Path(sys.argv[0]).name} generate --manifest {manifest_path} --output {lock_path}"
+            "lockfile is stale or inconsistent for "
+            f"workspace_root={workspace_root}. "
+            "If the live sibling workspace contains reset or superseded branches, "
+            "validate the lock against a selected-member workspace instead: "
+            f"{Path(sys.argv[0]).name} checkout-members --manifest {manifest_path} "
+            f"--lock {lock_path} --output <selected-root>; then rerun "
+            f"{Path(sys.argv[0]).name} --workspace-root <selected-root> validate "
+            f"--manifest {manifest_path} --lock {lock_path}. "
+            "Cutover gate runs may keep their main --workspace-root and set "
+            "N4A_RELEASE_WORKSPACE_ROOT=<selected-root> for release_lock_validation. "
+            "Regenerate the lock only after intentionally selecting new member commits."
         )
     if not expected["verification"]["all_lockstep_groups_valid"]:
         raise RelError("one or more lockstep groups are invalid")

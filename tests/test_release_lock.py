@@ -90,6 +90,31 @@ def _write_fetchability_fixture(tmp_path: Path) -> tuple[ModuleType, Path, Path]
     return release_lock, manifest_path, lock_path
 
 
+def _write_minimal_manifest(tmp_path: Path) -> tuple[ModuleType, Path, Path]:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_path = manifest_dir / "aggregation-manifest.n4a.json"
+    lock_path = manifest_dir / "aggregation-lock.n4a.lock.json"
+    manifest_dir.mkdir(parents=True)
+    _write_json(
+        manifest_path,
+        {
+            "schema_version": release_lock.MANIFEST_SCHEMA_VERSION,
+            "release_train": "test",
+            "status": "test",
+            "components": [
+                {
+                    "key": "member",
+                    "repo_path": "member",
+                    "role": "test fixture",
+                    "required_gates": ["release_lock_validation"],
+                }
+            ],
+        },
+    )
+    return release_lock, manifest_path, lock_path
+
+
 def test_audit_fetchability_reports_unfetchable_members(tmp_path: Path) -> None:
     release_lock, manifest_path, lock_path = _write_fetchability_fixture(tmp_path)
 
@@ -104,6 +129,35 @@ def test_audit_fetchability_reports_unfetchable_members(tmp_path: Path) -> None:
     by_key = {row["key"]: row for row in report["members"]}
     assert by_key["ok"]["status"] == "ok"
     assert by_key["missing"]["status"] == "checkout_failed"
+
+
+def test_validate_lock_mismatch_error_mentions_selected_workspace(tmp_path: Path) -> None:
+    release_lock, manifest_path, lock_path = _write_minimal_manifest(tmp_path)
+    selected_root = tmp_path / "selected"
+    selected_root.mkdir()
+    selected_repo = selected_root / "member"
+    _init_repo(selected_repo)
+    (selected_repo / "README.md").write_text("selected\n", encoding="utf-8")
+    _commit_all(selected_repo, "selected")
+
+    live_root = tmp_path / "live"
+    live_root.mkdir()
+    live_repo = live_root / "member"
+    _init_repo(live_repo)
+    (live_repo / "README.md").write_text("live\n", encoding="utf-8")
+    _commit_all(live_repo, "live")
+
+    _write_json(lock_path, release_lock.generate_lock(manifest_path, selected_root))
+
+    with pytest.raises(release_lock.RelError) as excinfo:
+        release_lock.validate_lock(manifest_path, lock_path, live_root)
+
+    message = str(excinfo.value)
+    assert f"workspace_root={live_root}" in message
+    assert "checkout-members" in message
+    assert "--workspace-root <selected-root> validate" in message
+    assert "N4A_RELEASE_WORKSPACE_ROOT=<selected-root>" in message
+    assert "superseded branches" in message
 
 
 def test_audit_fetchability_cli_only_fails_when_requested(tmp_path: Path) -> None:

@@ -15,6 +15,32 @@ python3 scripts/n4a_cutover_gates.py --gate pyref_coverage_zero run --workspace-
 python3 scripts/n4a_cutover_gates.py run --workspace-root /home/delete/nirs4all --json > cutover-gate-report.json
 ```
 
+## Workspace Roots
+
+Most gates read the live sibling workspace through `--workspace-root`. The
+aggregation lock is different: it must validate the intentionally selected
+member commits, not whatever reset or superseded branches happen to be checked
+out in the live workspace.
+
+Validate the lock directly against a prepared selected-member root:
+
+```bash
+python3 scripts/n4a_release_lock.py --workspace-root /tmp/n4a-lock-ws validate --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json
+```
+
+When running the full cutover gate runner, keep the live workspace root for
+other gates and override only the release-lock root:
+
+```bash
+N4A_RELEASE_WORKSPACE_ROOT=/tmp/n4a-lock-ws python3 scripts/n4a_cutover_gates.py --gate release_lock_validation run --workspace-root /home/delete/nirs4all --json
+```
+
+If a selected-member root is missing, recreate one from the lock with
+`scripts/n4a_release_lock.py checkout-members --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json --output <selected-root>`
+before validating. Do not regenerate the lock from `/home/delete/nirs4all`
+unless the release train has intentionally selected those current sibling
+commits.
+
 `readiness` reads `docs/contracts/cutover/readiness-matrix.n4a.json`. It maps
 each blocker to one owning repo, one evidence command, expected evidence, and the
 exact missing contract. Rows with `required_for_cutover=false` are advisory V1
