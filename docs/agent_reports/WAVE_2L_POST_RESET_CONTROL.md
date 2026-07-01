@@ -197,12 +197,21 @@ Cutover-gate follow-up:
 - Fixed `docs/contracts/cutover/drop-gates.n4a.json` so
   `web_runtime_contract` runs from `_worktrees/INT-web/studio-lite`; rerun of
   `--gate web_runtime_contract` passed.
-- Remaining caveat: `release_lock_validation` inside cutover gates still
-  validates against `/home/delete/nirs4all`, where primary checkouts are reset
-  or dirty. The regenerated lock validates against the selected clean root
-  `/tmp/n4a-w2k-root`; either move primary checkouts to the selected heads or
-  teach the cutover gate to use a selected release root before treating the full
-  cutover gate as green from the workspace root.
+- Follow-up after the post-reset audit: `release_lock_validation` now supports a
+  separate selected member root via `N4A_RELEASE_WORKSPACE_ROOT`, while keeping
+  `nirs4all-ecosystem` as the gate cwd. The local durable selected root is
+  `/home/delete/nirs4all/_release_roots/W2L-selected`, symlinked to the clean
+  release member heads. `N4A_RELEASE_WORKSPACE_ROOT=/home/delete/nirs4all/_release_roots/W2L-selected python3 scripts/n4a_cutover_gates.py run --workspace-root /home/delete/nirs4all --gate release_lock_validation --json`
+  -> passed.
+- Current-root lock regeneration remains intentionally disallowed: primary
+  checkouts are still reset/stale for several surfaces and `dag-ml-data/` still
+  contains a dirty generated `_dag_ml_data.abi3.so`.
+- Non-full-parity cutover batch passed after the gate fix:
+  `N4A_RELEASE_WORKSPACE_ROOT=/home/delete/nirs4all/_release_roots/W2L-selected python3 scripts/n4a_cutover_gates.py run --workspace-root /home/delete/nirs4all --skip pyref_oracle_full --json`
+  -> passed. This reran contract self-check, post-W2J state, coverage zero,
+  native `.n4a` export, Studio runtime routes, Web runtime contract, dag-ml
+  lockstep, dag-ml-data lockstep, migration smoke, and release-lock validation.
+  Full parity was intentionally not rerun in this small follow-up.
 
 ### Lane H - Studio/Web Runtime
 
@@ -298,3 +307,53 @@ Coordinator rerun:
 
 Limit: `test_native_fallback_boundary.py` is absent from this older branch; run
 that gate on `_worktrees/INT-nirs4all` or the final selected integration root.
+
+## Post-Reminder Preexisting State Audit
+
+Triggered by the user reminder that the previous conversation had context about
+old non-merged Claude/agent work.
+
+Read-only Codex subagents audited branches, worktrees, reports, and `/tmp`
+artifacts. No Claude tools were used.
+
+Current authoritative evidence:
+
+- tracked release manifest and lock in `nirs4all-ecosystem/docs/contracts/release/`;
+- tracked cutover gate manifest and readiness matrix in
+  `nirs4all-ecosystem/docs/contracts/cutover/`;
+- W2L post-reset board plus this follow-up;
+- W98 historical full parity log `/tmp/w98_full_parity.log`:
+  `804 passed, 32 skipped, 11 xfailed` in `1885.90s`.
+
+Stale or lower-authority evidence:
+
+- `/tmp/n4a-current.lock.json` and `/tmp/n4a_release_lock_probe.json` pin
+  current dirty/stale checkouts and are not release evidence;
+- `/tmp/n4a-w2k.lock.json` is valid but stale because it predates the W2L lite
+  fix (`lite=0486e1fc255f`);
+- `/tmp/n4a-readiness-main.json`, `/tmp/n4a-readiness-json.txt`, and
+  `/tmp/n4a-cutover-list.json` predate later tracked contract fixes;
+- `W2L_LANE_K_FINAL_REVIEW.md` is useful historical review but predates later
+  W2L commits and the release-lock gate fix.
+
+Preexisting Git state classification:
+
+- `dag-ml-data/refactor/L20-lockstep@2214f75aa3c7` remains dirty only because of
+  generated `_dag_ml_data.abi3.so`; do not commit or discard it without an
+  explicit controlled decision.
+- `nirs4all/.claude/worktrees/agent-a5af0970d430760ab` is an old Claude
+  worktree. Its branch head is already an ancestor of the integration head, but
+  it has untracked parity/conformance tests. Do not merge those files; they are
+  stale against W98.
+- `nirs4all/refactor/L17-pyref@13157d79d378` is clean but not the selected final
+  core head. Its source-concat native work is already superseded/subsumed by
+  `_worktrees/INT-nirs4all@17ed929eeb77`, where `EXPECTED_FALLBACK` is empty and
+  `docs/compatibility.json` records `fallback=0`, `native=87`.
+- Non-ancestor W/L branches in `nirs4all`, Studio, Web, cluster, providers, and
+  lite should be kept for review rather than bulk-deleted. Inspection indicates
+  several are intermediate patch-equivalent states superseded by integration
+  commits, but they are not safe cleanup targets without an explicit pruning
+  pass.
+- `nirs4all-tools` W78/W84 are superseded by `main@9dc0c628c97d`: `git log
+  --left-right --cherry-pick main...refactor/W78-migration-complete` and the
+  W84 equivalent show only newer main-side commits.

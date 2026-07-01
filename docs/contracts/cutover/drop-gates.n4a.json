@@ -189,18 +189,12 @@
       "required": true,
       "cwd": "nirs4all-ecosystem",
       "command": [
-        "python3",
-        "scripts/n4a_release_lock.py",
-        "--workspace-root",
-        "{workspace_root}",
-        "validate",
-        "--manifest",
-        "docs/contracts/release/aggregation-manifest.n4a.json",
-        "--lock",
-        "docs/contracts/release/aggregation-lock.n4a.lock.json"
+        "bash",
+        "-lc",
+        "release_root=\"${{N4A_RELEASE_WORKSPACE_ROOT:-{workspace_root}}}\"; python3 scripts/n4a_release_lock.py --workspace-root \"$release_root\" validate --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json"
       ],
       "evidence": [
-        "release manifest and lockfile agree with current member contract artifacts"
+        "release manifest and lockfile agree with selected member contract artifacts"
       ]
     }
   ]
