@@ -160,3 +160,10 @@ next implementation batch is split across disjoint write scopes:
 
 Full parity should run only after these implementation slices have landed and
 passed their targeted gates.
+
+## Active Implementation Agents
+
+| Lane | Agent | Write Scope | Task |
+| --- | --- | --- | --- |
+| B/E/H | `019f1d64-aea5-7310-8671-b1899f76ea74` / Popper | `_worktrees/INT-dagml` only | expose HostControllerSpec manifest derivation through binding-facing JSON helpers |
+| F | `019f1d64-af5f-7341-a3a8-335d2fd37ed5` / Aristotle | `_worktrees/INT-nirs4all` only | add opt-in safe-subset SNV routing to `n4m`/`MethodsSNV` |
