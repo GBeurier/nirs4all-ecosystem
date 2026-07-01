@@ -329,3 +329,29 @@ Launch notes:
 - All agents were started with `effort=max`; the MCP resolved model as
   `claude-opus-4-8`.
 - External interactive Claude CLI PIDs `208304` and `208423` remain untouched.
+
+Final Wave-2C state after supervisor salvage:
+
+- All `W11..W20` MCP sessions have ended. Most ended by `maxTurns`; useful
+  patches were inspected, fixed where needed, independently verified, committed,
+  and reported by the supervisor.
+- No managed `pytest`, `cargo`, `npm`, `vite preview`, `codex exec`, or Claude
+  worker process remains running. The W16 Vite preview was verified closed after
+  the smoke runner teardown.
+- External interactive Claude CLI processes `208304` and `208423` are still
+  running at the workspace root and were left untouched.
+- Worktrees `_worktrees/W11-*` through `_worktrees/W20-*` are clean after
+  integration.
+
+| Agent | Final state | Code commit(s) | Verification summary |
+|---|---|---|---|
+| `W11` | no commit; temporary probe removed | none | worktree clean |
+| `W12` | committed | `nirs4all/refactor/W12-multisource-fallback` `bea5323d` | `py_compile` + `ruff check` on conformance file |
+| `W13` | committed | `nirs4all/refactor/W13-native-n4a-export` `97eb7585` | ruff clean; 9 bundle/native export tests passed |
+| `W14` | committed | `nirs4all-studio/refactor/W14-studio-bypass-parity` `83b0580` | ruff clean; 59 backend tests passed |
+| `W15` | committed by agent | `nirs4all-studio/refactor/W15-studio-compute` `7c131d5` | agent report present |
+| `W16` | committed | `nirs4all-web/refactor/W16-web-rt-smoke` `1a1bdba` | typecheck; 115 Vitest tests; build; 23 browser smokes; preview closed |
+| `W17` | committed | `nirs4all-io/refactor/W17-dataset-package` `0a06943` | fmt; targeted core/dagml tests; clippy; workspace tests passed |
+| `W18` | committed | `nirs4all-providers/refactor/W18-providers-phase2` `2411568` | ruff; pytest; mypy passed |
+| `W19` | committed | `nirs4all-cluster/refactor/W19-cluster-client` `7a8d48f` | ruff; full pytest `116 passed, 1 skipped`; mypy passed |
+| `W20` | committed by agent | `nirs4all-lite/refactor/W20-lite-core` `2f379ef` | agent-reported unit, ruff, build and wheel import gates |
