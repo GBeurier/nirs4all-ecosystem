@@ -15,7 +15,8 @@ Wave 2H integration baseline:
 - `nirs4all-cluster` integration head: `51ee2a6`
 - `nirs4all-providers` integration head: `8476a3f`
 - `nirs4all-lite` integration head: `2f379ef`
-- current fallback meter target: `fallback=3 -> 0`
+- current fallback meter target: `fallback=3 -> 0` achieved in
+  `refactor/integration-nirs4all` (`coverage_meter OK (fallback=0, target=0)`).
 
 ## Preserved External Sessions
 
@@ -54,7 +55,34 @@ controlled Codex CLI sessions instead.
 
 | Wave | Status | Evidence |
 | --- | --- | --- |
-| W76 | integrated into `refactor/integration-studio` | commit `96f9239`; `tests/test_runtime_engine.py` 12 passed; Ruff passed; `tests/test_runs_engine_routing.py` 14 passed |
+| W72 | integrated into `refactor/integration-nirs4all` | commits `612ff25f`, `410d8fda`; named-dict stacking now native after coordinator repair; targeted dynamic tests passed. |
+| W73 | integrated into `refactor/integration-nirs4all` | commit `77c5afb1`; named branch-local MetaModel stack now native; targeted dynamic tests passed. |
+| W74 | integrated into `refactor/integration-nirs4all` | commit `8f29a304`; multi-source per-source stacking now native; targeted dynamic tests passed. |
+| W75 | integrated into `refactor/integration-nirs4all` | commit `f65d3a72`; native Rt projection parity added; workspace cross-engine tests passed. |
+| W76 | integrated into `refactor/integration-studio` | commit `96f9239`; `tests/test_runtime_engine.py` 12 passed; Ruff passed; `tests/test_runs_engine_routing.py` 14 passed. |
+| W77 | integrated into `refactor/integration-web` | commit `b498159`; WSL Node typecheck and focused Vitest passed. |
+| W78 | integrated into `nirs4all-tools/main` | commit `3f8c34f`; focused pytest and Ruff passed in integration. |
+| W79 | integrated into `refactor/integration-cluster` | commit `ffad507`; `tests/test_rbac.py tests/test_scheduler.py`, Ruff, and mypy passed. |
+| W80 | integrated into `refactor/integration-providers` | commit `a9fb457`; pytest, Ruff, and mypy passed. |
+| W81 | integrated into `refactor/integration-lite` | commit `0dad1c6`; unittest suite and Python build passed. |
+
+## Final Integration Snapshot
+
+| Repo | Branch | Head |
+| --- | --- | --- |
+| `nirs4all` | `refactor/integration-nirs4all` | `77c5afb1` |
+| `nirs4all-studio` | `refactor/integration-studio` | `96f9239` |
+| `nirs4all-web` | `refactor/integration-web` | `b498159` |
+| `nirs4all-tools` | `main` | `3f8c34f` |
+| `nirs4all-cluster` | `refactor/integration-cluster` | `ffad507` |
+| `nirs4all-providers` | `refactor/integration-providers` | `a9fb457` |
+| `nirs4all-lite` | `refactor/integration-lite` | `0dad1c6` |
+
+`nirs4all` integration required one coordinator repair after W72: the worker's
+claimed `cv_only` dag-ml metadata path still hit runtime refit validation in the
+current local dag-ml extension. The integration commit `410d8fda` keeps the same
+public contract by replaying the narrow named-dict CV-only row surface host-side
+inside the dag-ml backend, matching the W74 replay pattern.
 
 ## Integration Rules
 
