@@ -87,9 +87,27 @@ Core oracle checkout:
 
 | Lane | Agent | Scope | Status |
 | --- | --- | --- | --- |
-| K | `019f1d5b-7c52-7e42-be11-f21df34236f3` / Euclid | Fresh final reviewer, read-only | running |
+| K | `019f1d5b-7c52-7e42-be11-f21df34236f3` / Euclid | Fresh final reviewer, read-only | complete |
 | B/E/H | `019f1d5c-4e07-7d42-8ee9-ff236f3a24ed` / Mill | Controller surface/adapters, read-only | running |
 | F | `019f1d5c-4eab-7512-a7cf-870f8ac476fe` / Gauss | methods/n4m execution path, read-only | running |
+
+## Lane K Fresh Review
+
+Euclid confirmed the current distinction:
+
+- `_release_roots/W2L-selected` is the only valid release-lock proof root today;
+- validating the lock against `/home/delete/nirs4all` still fails as expected
+  because `dag-ml-data` is dirty and current branch identities differ from the
+  INT branch identities encoded in the lock;
+- `nirs4all/refactor/L17-pyref` is not the V1 proof checkout. L17 remains at
+  `fallback=9/native=78`, while `_worktrees/INT-nirs4all` carries the W98 strict
+  proof with `fallback=0/native=87`;
+- short gates passed in the review: selected-root lock validation,
+  `release_lock_validation` with `N4A_RELEASE_WORKSPACE_ROOT`, release-lock unit
+  tests, cutover gate manifest validation, and post-W2J state check.
+
+Decision reinforced: do not regenerate the release lock from the current root,
+and do not treat L17 as equivalent to the W98 integration tree.
 
 ## Next Integration Decision
 
