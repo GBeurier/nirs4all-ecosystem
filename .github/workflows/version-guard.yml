@@ -122,12 +122,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - run: python -m pip install --quiet pytest
       - name: Check release lock tooling and JSON syntax
         run: |
           python -m py_compile scripts/n4a_release_lock.py
+          python -m py_compile scripts/n4a_release_surface_matrix.py
           python -m json.tool docs/contracts/release/aggregation-manifest.n4a.json >/dev/null
           python -m json.tool docs/contracts/release/aggregation-lock.n4a.lock.json >/dev/null
+          python -m json.tool docs/contracts/release/public-v1-surface-matrix.n4a.json >/dev/null
           python scripts/n4a_release_lock.py --help >/dev/null
+          python scripts/n4a_release_surface_matrix.py validate
+          python -m pytest tests/test_release_surface_matrix.py -q
 
   release-lock-validation:
     runs-on: ubuntu-latest
