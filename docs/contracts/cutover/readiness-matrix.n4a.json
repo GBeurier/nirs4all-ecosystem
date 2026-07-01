@@ -44,8 +44,8 @@
         "coverage_meter.summary.fallback == 0",
         "no remaining EXPECTED_FALLBACK entry relies on implicit legacy execution"
       ],
-      "missing_contract": "Native parity is still missing for duplicate-branch stacking and by-source multi-source pipelines: branch_dup_three_way_merge_predictions, branch_dup_named_with_metamodel, branch_dup_merge_all, multi_source_by_source_branch_distinct_preproc, multi_source_per_source_models_stacking, and multi_source_sources_concat_then_rf.",
-      "next_owner_action": "Consume W51, W53, and W54 contract decisions, then remove fallback entries only after strict parity passes.",
+      "missing_contract": "The dag-ml OOF/refit and dag-ml-data source-layout contracts now exist, but nirs4all still needs native lowering/parity consumption for the six remaining fallback cases: branch_dup_three_way_merge_predictions, branch_dup_named_with_metamodel, branch_dup_merge_all, multi_source_by_source_branch_distinct_preproc, multi_source_per_source_models_stacking, and multi_source_sources_concat_then_rf.",
+      "next_owner_action": "Consume the W51/W53/W61 contracts in nirs4all, then remove fallback entries only after strict parity passes.",
       "depends_on": [
         "STACKING-OOF-001",
         "DMD-SOURCE-LAYOUT-001"
@@ -56,7 +56,7 @@
       "title": "Native .n4a export covers stacking replay without legacy bridge",
       "lane": "B-011/L19",
       "owner_repo": "nirs4all",
-      "status": "blocked",
+      "status": "ready",
       "required_for_cutover": true,
       "primary_gate_id": "native_n4a_export",
       "gate_ids": [
@@ -67,8 +67,8 @@
         "base producer order and meta-feature construction are persisted",
         "bundle prediction from raw X matches the Python reference path"
       ],
-      "missing_contract": "Native results persist base and meta refit artifacts, but do not yet persist the replay graph and column-order manifest needed to build stacking meta-features from raw bundle input.",
-      "next_owner_action": "Implement W52 after W51 fixes the dag-ml stacking OOF/refit semantics.",
+      "missing_contract": "No remaining blocker for the handled duplication-branch stacking native bundle shape. Richer unsupported stacking layouts still intentionally fall through to the bridge until they gain explicit replay contracts.",
+      "next_owner_action": "Keep the native bundle gate green; broaden replay only after richer stacking layout contracts exist.",
       "depends_on": [
         "STACKING-OOF-001"
       ]
@@ -78,7 +78,7 @@
       "title": "dag-ml stacking OOF/refit semantics match legacy sklearn behavior",
       "lane": "LOCK-LOCKSTEP/L20",
       "owner_repo": "dag-ml",
-      "status": "blocked",
+      "status": "ready",
       "required_for_cutover": true,
       "primary_gate_id": "dagml_lockstep",
       "gate_ids": [
@@ -90,15 +90,15 @@
         "refit-skip or validation-coverage behavior is no longer implicit",
         "dag-ml and dag-ml-data lockstep validation still passes"
       ],
-      "missing_contract": "The current runtime rejects duplicate-branch stacking when OOF predictions do not cover the refit sample universe, while legacy may skip or tolerate that path depending on merge/model shape.",
-      "next_owner_action": "Finish W51 and publish the contract artifact consumed by nirs4all."
+      "missing_contract": "None for the dag-ml runtime contract. W51 added explicit require_full_coverage, cv_only, and skip_refit_on_incomplete_oof semantics with stable diagnostics.",
+      "next_owner_action": "Consume the contract from nirs4all fallback-drain work; keep lockstep validation green."
     },
     {
       "id": "DMD-SOURCE-LAYOUT-001",
       "title": "By-source feature layout is stable across dag-ml-data and nirs4all",
       "lane": "LOCK-LOCKSTEP/L20",
       "owner_repo": "dag-ml-data",
-      "status": "blocked",
+      "status": "ready",
       "required_for_cutover": true,
       "primary_gate_id": "dagml_data_lockstep",
       "gate_ids": [
@@ -110,15 +110,15 @@
         "nirs4all by-source parity probes no longer infer feature layout heuristically",
         "lockstep validation passes against the dag-ml integration tip"
       ],
-      "missing_contract": "Legacy by-source pipelines reassemble source dictionaries and preprocessed blocks in a layout that the current native lowering approximates but does not reproduce within parity tolerance.",
-      "next_owner_action": "Finish W53, then let W54 consume the exact layout contract in nirs4all."
+      "missing_contract": "None for the shared dag-ml-data/dag-ml contract. W53 added source_layout and W61 synchronized the dag-ml mirror.",
+      "next_owner_action": "Consume source_layout in nirs4all by-source lowering; W54 keeps strict xfail probes until that consumption is implemented."
     },
     {
       "id": "B-017-STUDIO-ROUTES",
       "title": "Studio compute routes preserve runtime provenance and fallback diagnostics",
       "lane": "B-017/B-018",
       "owner_repo": "nirs4all-studio",
-      "status": "blocked",
+      "status": "ready",
       "required_for_cutover": true,
       "primary_gate_id": "studio_runtime_routes",
       "gate_ids": [
@@ -129,15 +129,15 @@
         "remaining compute paths are runtime-backed or listed as explicit blockers",
         "bypass parity tests fail if legacy is called silently"
       ],
-      "missing_contract": "Studio still needs a route-bypass parity gate that prevents UI/backend paths from dropping runtime provenance while dag-ml is selected.",
-      "next_owner_action": "Finish W55 and keep route tests in the cutover gate."
+      "missing_contract": "No remaining W55 route-bypass blocker. Strict release validation must still run the Studio gate in the prepared cutover workspace.",
+      "next_owner_action": "Keep W55 route-level parity in the cutover gate and add new bypass cases only when new routes are introduced."
     },
     {
       "id": "B-018-WEB-RUNTIME",
       "title": "Web runtime exposes no-fallback behavior and smoke coverage",
       "lane": "B-018",
       "owner_repo": "nirs4all-web",
-      "status": "blocked",
+      "status": "ready",
       "required_for_cutover": true,
       "primary_gate_id": "web_runtime_contract",
       "gate_ids": [
@@ -148,15 +148,15 @@
         "single-file build carries runtime metadata",
         "served smoke covers fallback diagnostics"
       ],
-      "missing_contract": "Web still needs an adoption gate proving runtime metadata survives build and smoke paths, not only unit-level runtime fallback tests.",
-      "next_owner_action": "Finish W56 and keep the smoke command in strict cutover validation."
+      "missing_contract": "No remaining W56 adoption blocker. Served worker smoke now checks Python-compatible RtResult/RtError wire shapes.",
+      "next_owner_action": "Keep typecheck, runtime tests, build, single-file build, and served smoke in strict cutover validation."
     },
     {
       "id": "L18-MIGRATION-TOOLS",
       "title": "Standalone toolbox can lower or preserve legacy outputs safely",
       "lane": "LOCK-MIG/L18",
       "owner_repo": "nirs4all-tools",
-      "status": "blocked",
+      "status": "ready",
       "required_for_cutover": true,
       "primary_gate_id": "migration_tool_smoke",
       "gate_ids": [
@@ -167,8 +167,8 @@
         "strict conversions refuse unsafe data before output",
         "native result sidecars are either semantically lowered or preserved with checksums"
       ],
-      "missing_contract": "W49 lowered prediction arrays to runtime-readable Parquet sidecars; semantic lowering for newer native result metadata still needs a preview path and refusal contract.",
-      "next_owner_action": "Finish W59 and update the toolbox smoke if the preview command becomes canonical."
+      "missing_contract": "No remaining blocker for the W59 metadata preview/refusal contract. Native prediction arrays remain preserved in the source predictions.parquet until a future sidecar lowering slice.",
+      "next_owner_action": "Keep strict native-results preflight and CLI migrate/verify smoke green; extend to array sidecars only after the workspace grouping contract is fixed."
     },
     {
       "id": "LOCK-REL-001",
@@ -211,7 +211,7 @@
       "title": "Providers expose real-service read adapters without write coupling",
       "lane": "V1-PROVIDERS",
       "owner_repo": "nirs4all-providers",
-      "status": "advisory",
+      "status": "ready",
       "required_for_cutover": false,
       "cwd": "nirs4all-providers",
       "command": [
@@ -224,15 +224,15 @@
         "repository and benchmarks adapters can read/list/get pipelines without write coupling",
         "tests prove read-only boundaries and service failure behavior"
       ],
-      "missing_contract": "The provider bridge must keep repository, benchmarks, and future plugin services read-oriented until upload/write APIs are explicitly designed.",
-      "next_owner_action": "Finish W57; keep it advisory for DEFAULT_ENGINE cutover but required for broader V1 service release."
+      "missing_contract": "No blocker for the W57 benchmarks read bridge. Upload/write APIs remain intentionally out of scope.",
+      "next_owner_action": "Keep providers advisory for DEFAULT_ENGINE cutover and required for broader V1 service release planning."
     },
     {
       "id": "CLUSTER-DAG-001",
       "title": "Cluster scheduler contract covers DAG rights and result provenance",
       "lane": "V1-CLUSTER",
       "owner_repo": "nirs4all-cluster",
-      "status": "advisory",
+      "status": "ready",
       "required_for_cutover": false,
       "cwd": "_worktrees/INT-cluster",
       "command": [
@@ -246,8 +246,8 @@
         "client-submitted jobs preserve runtime/result provenance",
         "distributed parity tests cover the scheduler contract"
       ],
-      "missing_contract": "Cluster needs a scheduler-level rights/result contract aligned with the nirs4all DAG runtime rather than only local client parity.",
-      "next_owner_action": "Finish W58; promote to a strict release gate when cluster is included in the V1 artifact set."
+      "missing_contract": "No blocker for the W58 whole-run DAG rights/result provenance contract. Fine-grained DAG node/fold scheduling remains deferred.",
+      "next_owner_action": "Keep cluster advisory for DEFAULT_ENGINE cutover; promote to a strict release gate when cluster is included in the V1 artifact set."
     }
   ]
 }
