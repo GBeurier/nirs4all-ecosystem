@@ -571,3 +571,72 @@ Remaining Wave-2E facts:
 - No managed Wave-2E worker or test process remains running at final audit.
 - External Claude CLI PIDs `208304` and `208423` remain external interactive
   sessions and were not controlled by the supervisor.
+
+## Managed Wave-2F implementation sessions
+
+Started 2026-07-01 from the Wave-2E integration tips. Six Codex worker agents
+were launched first (`W41..W46`), then slots were reused for `W47` and `W48`;
+`W49` and `W50` were executed locally by the supervisor. The two external Claude
+CLI sessions (`208304`, `208423`) stayed external and were not killed or
+controlled.
+
+| Agent | Scope | Worktree / cwd | Final state | Code commit(s) | Report |
+|---|---|---|---|---|---|
+| `W41` | final fallback drain probe | `_worktrees/W41-nirs4all-fallback-final` | no code commit; blocker report | none | `docs/agent_reports/W41_FALLBACK_FINAL.md` |
+| `W42` | native `.n4a` export expansion | `_worktrees/W42-nirs4all-native-export2` | committed | `nirs4all/refactor/W42-native-export2` `8bba1f51` | `docs/agent_reports/W42_NATIVE_EXPORT2.md` |
+| `W43` | Python runtime goldens | `_worktrees/W43-nirs4all-rt-goldens` | committed | `nirs4all/refactor/W43-rt-goldens` `379ede0a` | `docs/agent_reports/W43_PY_RT_GOLDENS.md` |
+| `W44` | Studio compute push-down 3 | `_worktrees/W44-studio-compute3` | committed | `nirs4all-studio/refactor/W44-compute-pushdown3` `13bd36f` | `docs/agent_reports/W44_STUDIO_COMPUTE_PUSHDOWN3.md` |
+| `W45` | Studio UI runtime/status helpers | `_worktrees/W45-studio-ui-runtime` | committed | `nirs4all-studio/refactor/W45-ui-runtime` `8654ea7` | `docs/agent_reports/W45_STUDIO_UI_RUNTIME.md` |
+| `W46` | Web cross-runtime fixtures | `_worktrees/W46-web-cross-rt` | committed | `nirs4all-web/refactor/W46-cross-rt` `a7b98bd` | `docs/agent_reports/W46_WEB_CROSS_RT.md` |
+| `W47` | cluster real-DAG parity | `_worktrees/W47-cluster-real-dag` | committed | `nirs4all-cluster/refactor/W47-real-dag-parity` `e2a99c2` | `docs/agent_reports/W47_CLUSTER_REAL_DAG.md` |
+| `W48` | providers service/adapters hardening | `_worktrees/W48-providers-services` | committed | `nirs4all-providers/refactor/W48-provider-services` `074d07d` | `docs/agent_reports/W48_PROVIDER_SERVICES.md` |
+| `W49` | tools runtime-readable result lowering | `_worktrees/W49-tools-results-lowering` | committed by supervisor | `nirs4all-tools/refactor/W49-results-lowering` `7b2e390` | `docs/agent_reports/W49_TOOLS_RESULTS_LOWERING.md` |
+| `W50` | cutover gate CI integration | `_worktrees/W50-ecosystem-cutover-ci` | committed by supervisor | `nirs4all-ecosystem/refactor/W50-cutover-ci` `adde4ef` | `docs/agent_reports/W50_CUTOVER_CI.md` |
+
+Merged integration tips after Wave-2F:
+
+| Repo | Integration branch / worktree | Tip | Notes |
+|---|---|---|---|
+| `nirs4all` | `refactor/integration-nirs4all` / `_worktrees/INT-nirs4all` | `c12fea5d` | W42 + W43 merged; W41 report only |
+| `nirs4all-studio` | `refactor/integration-studio` / `_worktrees/INT-studio` | `609f756` | W44 + W45 merged |
+| `nirs4all-web` | `refactor/integration-web` / `_worktrees/INT-web` | `1adc71c` | W46 merged |
+| `nirs4all-cluster` | `refactor/integration-cluster` / `_worktrees/INT-cluster` | `297aec1` | W47 merged |
+| `nirs4all-providers` | `refactor/integration-providers` / `_worktrees/INT-providers` | `818fbd0` | W48 merged |
+| `nirs4all-tools` | `main` / `nirs4all-tools` | `a9fd589` | W49 merged into main |
+| `nirs4all-ecosystem` | `main` / `nirs4all-ecosystem` | `395f9b7` | W50 merged into main |
+
+Post-merge Wave-2F gates reported by workers/supervisor:
+
+- `nirs4all` W42: native bundle tests `7 passed, 1 xfailed`;
+  cross-engine `.n4a` tests `3 passed`; focused artifact round-trip/tamper
+  tests `2 passed`; targeted Ruff/py_compile passed.
+- `nirs4all` W43: runtime golden tests `10 passed`; fallback/ledger tests
+  `10 passed`; JSON parse, Ruff, py_compile passed.
+- `nirs4all` W41: fallback boundary and ledger tests `14 passed`;
+  `coverage_meter --check` OK with `fallback=6`; exploratory drains failed
+  parity and were not merged.
+- `nirs4all-studio` W44: preprocessing runtime tests, spectra perf tests,
+  targeted playground tests, compileall, and Ruff passed.
+- `nirs4all-studio` W45: targeted Vitest `21 passed`, `npm run lint:tsc`,
+  targeted ESLint, and diff-check passed.
+- `nirs4all-web` W46: targeted Vitest runtime tests, typecheck, build, full
+  test, and diff-check passed.
+- `nirs4all-cluster` W47: full pytest `126 passed, 1 skipped`, Ruff, format
+  check, and mypy passed.
+- `nirs4all-providers` W48: full pytest `56 passed, 4 skipped`, focused pytest
+  `36 passed, 4 skipped`, Ruff, and mypy passed.
+- `nirs4all-tools` W49: full pytest `70 passed`, Ruff, mypy, py_compile, and
+  diff-check passed using `/home/delete/miniconda3/bin/python3`.
+- `nirs4all-ecosystem` W50: py_compile, JSON validation, gate-runner validate,
+  list/selfcheck/advisory smoke, workflow YAML parse, and Ruff passed.
+
+Remaining Wave-2F facts:
+
+- `EXPECTED_FALLBACK` remains `6`; W41 records the exact native-contract
+  blockers instead of making unsafe lowering changes.
+- Native stacking `.n4a` export remains xfailed until a replay graph /
+  column-order manifest exists for base predictions into the meta-model.
+- `DEFAULT_ENGINE` was not flipped.
+- No managed Wave-2F worker or test process remains running at final audit.
+- External Claude CLI PIDs `208304` and `208423` remain external interactive
+  sessions and were not controlled by the supervisor.
