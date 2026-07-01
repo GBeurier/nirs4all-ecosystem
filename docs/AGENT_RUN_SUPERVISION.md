@@ -389,7 +389,7 @@ Post-merge gates:
 - `nirs4all-lite`: ruff clean, Python tests `22 passed, 1 skipped,
   56 subtests passed`, sdist + wheel build passed.
 
-## Wave-2D active launch
+## Wave-2D launch and quota interruption
 
 Wave-2D branches were created from the Wave-2C integration tips on
 2026-07-01. The prompt source is
@@ -440,3 +440,67 @@ W24 integration gates:
 - `PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m compileall -q api/runs.py tests/test_runs_engine_routing.py`
 - `ruff check api/runs.py tests/test_runs_engine_routing.py` -> all checks
   passed
+
+## Wave-2D Codex continuation and integration
+
+After the Claude quota stop, the supervisor resumed W21-W30 with Codex workers
+and one local W30 continuation. External interactive Claude CLI PIDs `208304`
+and `208423` were still left untouched.
+
+Final worker commits:
+
+| Agent | Repo(s) | Commit(s) | Result |
+|---|---|---|---|
+| `W21` | `nirs4all` | `b8205343` | fallback boundary hardened; `EXPECTED_FALLBACK` still 10 |
+| `W22` | `nirs4all` | `303ded0e` | dag-ml-data JSON envelope builder compatibility for artifact/workspace parity |
+| `W23` | `nirs4all` | `e3335e56` | error/refusal parity + shared `RtError` mappings |
+| `W24` | `nirs4all-studio` | `69f576a` on top of prior `455e1f3` | requested/actual engine and runtime route metadata preserved |
+| `W25` | `nirs4all-studio` | `f83d6c4` | spectra statistics centralized through shared compute helper |
+| `W26` | `nirs4all-web` | `d501734` | served runtime fallback/`allowFallback=false` smokes |
+| `W27` | `nirs4all-io`, `nirs4all-providers` | `5e0d35e`, `55f79cd` | public DatasetPackage API + provider bridge |
+| `W28` | `nirs4all-cluster` | `bd8ce70` | core nirs4all run adapter + CLI contract |
+| `W29` | `dag-ml`, `dag-ml-data` | `beef11b`, `2a850a5` | consumed controller data requirements + registry-backed model-input validation |
+| `W30` | `nirs4all-tools` | `082765f` | first real SQLite legacy-arrays migration transform |
+
+Merged integration tips:
+
+| Repo | Integration branch / worktree | Tip | Notes |
+|---|---|---|---|
+| `nirs4all` | `refactor/integration-nirs4all` / `_worktrees/INT-nirs4all` | `3e291992` | W21 + W22 + W23 merged; `envelope.py` conflict resolved with W23 factorized helper |
+| `nirs4all-studio` | `refactor/integration-studio` / `_worktrees/INT-studio` | `8f3b944` | W24 + W25 merged |
+| `nirs4all-web` | `refactor/integration-web` / `_worktrees/INT-web` | `4d724bd` | W26 merged |
+| `nirs4all-io` | `refactor/integration-io` / `_worktrees/INT-io` | `ccfea29` | W27 IO half merged |
+| `nirs4all-providers` | `refactor/integration-providers` / `_worktrees/INT-providers` | `6b9324a` | W27 providers half merged |
+| `nirs4all-cluster` | `refactor/integration-cluster` / `_worktrees/INT-cluster` | `686374d` | W28 merged |
+| `dag-ml` | `refactor/integration-dagml` / `_worktrees/INT-dagml` | `4982d5a` | W29 dag-ml half merged |
+| `dag-ml-data` | `refactor/integration-dmd` / `_worktrees/INT-dmd` | `9131cdf` | W29 dag-ml-data half merged |
+| `nirs4all-tools` | `main` / `nirs4all-tools` | `b392660` | W30 merged into main |
+
+Post-merge gates:
+
+- `nirs4all`: W22 artifact/workspace parity tests `15 passed, 2 warnings`;
+  W21/W23 boundary/error/dataplane/RT tests `54 passed`; `coverage_meter OK
+  (fallback=10, target=0)`; py_compile and Ruff clean on touched files.
+- `nirs4all-studio`: combined W24/W25 pytest subset `73 passed, 2 warnings`;
+  compileall and Ruff clean.
+- `nirs4all-web`: Node pinned to WSL nvm path; typecheck passed; focused
+  Vitest `4 passed`; build and build:single passed; served `rt-fallback`
+  smoke passed after rebuilding fresh assets.
+- `nirs4all-io`: Ruff clean; mypy clean; full pytest with
+  `PYTHONPATH=/home/delete/nirs4all/_worktrees/INT-io/src` -> `228 passed`.
+- `nirs4all-providers`: Ruff clean; mypy clean; pytest -> `50 passed,
+  4 skipped`.
+- `nirs4all-cluster`: full pytest -> `124 passed, 1 skipped, 1 warning`;
+  Ruff clean; mypy clean.
+- `dag-ml`: fmt check; targeted data-requirements tests; full
+  `dag-ml-core` crate tests -> `433 passed, 2 ignored`; touched-crate clippy;
+  CLI `validate-execution-plan` and `validate-graph`; cross-repo
+  `validate_contracts.py` against `INT-dmd`.
+- `dag-ml-data`: fmt check; targeted registry tests; full
+  `dag-ml-data-core` crate tests -> `202 passed, 2 ignored`; CLI crate tests;
+  touched-crate clippy; CLI `validate-model-input` and `fingerprint-schema`;
+  cross-repo `validate_contracts.py` against `INT-dagml`.
+- `nirs4all-tools`: pytest -> `66 passed`; compileall/Ruff/diff-check clean;
+  CLI smoke `legacy migrate --verify` on inline SQLite legacy-arrays fixture
+  returned expected exit `10` and produced `store.sqlite`, contracts, and
+  `preserved/legacy-prediction-arrays.jsonl`.

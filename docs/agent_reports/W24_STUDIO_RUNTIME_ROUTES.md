@@ -1,33 +1,57 @@
 # W24 report - Studio runtime routes
 
 Summary:
-Claude session `e84bd37a-9ec0-4851-a2c3-480bfa336725` stopped when the Claude weekly limit was reached, but left a small coherent Studio fix. Supervisor inspected, tested, and committed the slice.
+Continued W24 after `455e1f3`. The broader slice now preserves the requested
+ML engine through Studio execution-driver route metadata and durable execution
+job snapshots, and exposes unavailable execution-backend refusals as the neutral
+`RtError` envelope instead of collapsing them to plain strings.
 
 Code changed:
-`retry_run` now preserves the original run's requested `engine` when constructing the retry run, preventing a `dag-ml` run from silently falling back to the library default on retry.
+- `ExecutionRequest` now carries `requested_engine` and includes it in
+  `execution_request` metadata when a non-default engine is requested.
+- `_start_run_job` passes `Run.engine` into the execution request, covering
+  create, quick, retry, and native run-group submissions.
+- Workspace execution job records now persist `request.requested_engine` when
+  present.
+- Shared store-run config now preserves `requested_engine` for runs launched
+  with an explicit ML engine.
+- Create-run, retry, and native run-group unavailable-backend responses now use
+  `RtError` detail shape: `verb`, `cause`, `message`, and `mitigation`.
+- Unavailable driver cancel refusals keep the same success/message behavior and
+  now include `metadata.rt_error` for callers that understand the runtime
+  envelope.
 
 Files touched:
-`api/runs.py`
-`tests/test_runs_engine_routing.py`
+- `api/execution_driver.py`
+- `api/runs.py`
+- `tests/test_runs_execution_backend.py`
 
 Commits:
-`nirs4all-studio/refactor/W24-runtime-routes` `455e1f3` (`fix(runs): preserve requested engine on retry`)
+- `455e1f3` `fix(runs): preserve requested engine on retry`
+- `69f576a` `fix(runs): preserve runtime engine route metadata`
 
 Tests run:
-`PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m pytest tests/test_runs_engine_routing.py -k retry_run_preserves_requested_engine -q` -> `2 passed, 11 deselected`
-`PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m compileall -q api/runs.py tests/test_runs_engine_routing.py`
-`ruff check api/runs.py tests/test_runs_engine_routing.py` -> all checks passed
+- `PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m pytest tests/test_runs_execution_backend.py tests/test_runs_engine_routing.py tests/test_runtime_engine.py tests/test_operators_manifests.py -q`
+  - `66 passed, 1 skipped, 6 warnings`
+- `PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m pytest tests/test_runtime_errors.py -q`
+  - `12 passed`
+- `PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m compileall -q api/execution_driver.py api/runs.py tests/test_runs_execution_backend.py`
+  - passed
+- `ruff check api/execution_driver.py api/runs.py tests/test_runs_execution_backend.py`
+  - passed
 
 Tests not run and why:
-Full Studio backend suite not run in this salvage pass; only the targeted retry-engine route regression was changed.
+Full Studio backend/frontend suites were not run; W24 touched only backend route
+runtime metadata/refusal wiring, so targeted backend route, runtime-engine,
+operator-manifest, runtime-error, compile, and Ruff gates were run.
 
 Blockers:
-Claude quota exhaustion prevented the broader W24 runtime-route adoption scope.
+None for this W24 slice.
 
 Impact on blockers/locks:
-Small advancement for `B-017`/`B-018`; retry now preserves requested engine. Route-level runtime adoption remains incomplete.
-
-Next action:
-Integrate `455e1f3` into the Studio integration branch if accepted, then resume broader W24 after quota reset or via Codex/manual work.
+Advances `B-017`/`B-018`: Studio routes now retain requested ML-engine context
+for future/local execution drivers and durable job records, preserve the prior
+retry engine fix, and expose execution-backend refusals in the shared runtime
+error shape.
 
 Sync doc updated: no
