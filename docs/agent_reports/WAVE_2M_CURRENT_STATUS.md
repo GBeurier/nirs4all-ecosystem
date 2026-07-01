@@ -165,5 +165,41 @@ passed their targeted gates.
 
 | Lane | Agent | Write Scope | Task |
 | --- | --- | --- | --- |
-| B/E/H | `019f1d64-aea5-7310-8671-b1899f76ea74` / Popper | `_worktrees/INT-dagml` only | expose HostControllerSpec manifest derivation through binding-facing JSON helpers |
-| F | `019f1d64-af5f-7341-a3a8-335d2fd37ed5` / Aristotle | `_worktrees/INT-nirs4all` only | add opt-in safe-subset SNV routing to `n4m`/`MethodsSNV` |
+| B/E/H | `019f1d64-aea5-7310-8671-b1899f76ea74` / Popper | `_worktrees/INT-dagml` only | complete, committed as `8b226bed0b6c` |
+| F | `019f1d64-af5f-7341-a3a8-335d2fd37ed5` / Aristotle | `_worktrees/INT-nirs4all` only | complete, pending coordinator review |
+
+## Lane B/E/H Implementation Result
+
+Committed in `_worktrees/INT-dagml`:
+
+- commit `8b226bed0b6c` (`feat(bindings): expose controller manifest derivation`);
+- additive PyO3 exports: `derive_controller_manifest_json` and
+  `derive_controller_manifest_list_json`;
+- additive Python facade wrappers: `HostControllerSpec`,
+  `HostControllerSpecs`, `derive_controller_manifest`, and
+  `derive_controller_manifests`;
+- additive WASM exports for the same JSON helpers;
+- Python/WASM smoke scripts now assert the new surface.
+
+Coordinator-reviewed gates:
+
+- `cargo test -p dag-ml-core controller_adapter` -> 18 passed;
+- `PYO3_PYTHON=/usr/bin/python3.11 cargo test --manifest-path
+  crates/dag-ml-py/Cargo.toml derives_controller` -> 2 passed;
+- `cargo test -p dag-ml-wasm derives_controller` -> 2 passed;
+- `cargo fmt --all --check` -> passed;
+- `cargo fmt --manifest-path crates/dag-ml-py/Cargo.toml --all --check` ->
+  passed;
+- `cargo clippy -p dag-ml-wasm --all-targets -- -D warnings` -> passed;
+- `PYO3_PYTHON=/usr/bin/python3.11 cargo clippy --manifest-path
+  crates/dag-ml-py/Cargo.toml --all-targets -- -D warnings` -> passed;
+- `python3 scripts/validate_contracts.py` -> passed;
+- `DAG_ML_DATA_REPO=/home/delete/nirs4all/_worktrees/INT-dmd python3
+  scripts/validate_contracts.py` -> passed;
+- `python3.11 -m py_compile` on touched Python files -> passed;
+- `/home/delete/.nvm/versions/node/v22.21.1/bin/node --check` on touched JS
+  smoke files -> passed;
+- `git diff --check` -> passed.
+
+Risk: `_dag_ml.abi3.so` was not regenerated; consumers importing an old built
+extension will not see the new PyO3 symbols until the extension/wheel is rebuilt.
