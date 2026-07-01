@@ -1163,7 +1163,7 @@
       "role": "Portable aggregate bindings, future nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "272e07fb82d252269474f30bd6b5a5e89271d8a8",
+        "commit": "12612f444baa4fdf2734bf777781af5355160e58",
         "dirty": false,
         "exact_tag": null
       },
