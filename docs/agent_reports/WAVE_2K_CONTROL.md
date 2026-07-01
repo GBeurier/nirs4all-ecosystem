@@ -66,9 +66,9 @@ The dirty main checkout `nirs4all/` is not an integration base.
 | W94 | Codex worker | `019f1c74-f4a6-7632-9ec2-645e02fa106b` / Fermat | `_worktrees/W94-lite-release-topology` | Lite/core release topology manifest consumer readiness. | `W94_LITE_RELEASE_TOPOLOGY.md` |
 | W95 | Codex worker | `019f1c7e-83e6-78e2-b1d5-0f9c2ab838c4` / Bohr | `_worktrees/W95-studio-strict-runtime` | Studio strict fallback default. | `W95_STUDIO_STRICT_RUNTIME.md` |
 | W96 | Codex worker | `019f1c7f-d079-75d2-9bc5-de154dabd751` / Boole | `_worktrees/W96-studio-runtime-e2e` + `_worktrees/W96-web-runtime-e2e` | Runtime UX/E2E smoke for Studio/Web. | `W96_RUNTIME_UX_E2E.md` |
-| W97 | queued | pending | `_worktrees/W97-tools-real-goldens` | Real legacy converter golden fixtures. | `W97_TOOLS_REAL_GOLDENS.md` |
-| W98 | queued | pending | `_worktrees/W98-nirs4all-full-parity` | Full Python-reference parity and cutover runner. | `W98_FULL_PYREF_PARITY.md` |
-| W99 | queued | pending | ecosystem report only | Post-W2K integration review. | `W99_POST_W2K_REVIEW.md` |
+| W97 | Codex worker | `019f1c81-07e7-7512-977d-29aea46d5272` / Halley | `_worktrees/W97-tools-real-goldens` | Real legacy converter golden fixtures. | `W97_TOOLS_REAL_GOLDENS.md` |
+| W98 | Codex worker | `019f1c82-75c8-74f2-afb0-cedbf297a06f` / Arendt | `_worktrees/W98-nirs4all-full-parity` | Full Python-reference parity and cutover runner. | `W98_FULL_PYREF_PARITY.md` |
+| W99 | Codex worker | `019f1c82-ffd9-7b21-9221-88135c437fcf` / Ramanujan | ecosystem report only | Post-W2K integration review. | `W99_POST_W2K_REVIEW.md` |
 
 ## Launch Policy
 
@@ -95,13 +95,13 @@ Do not launch W99 until W90-W98 reports exist or have explicitly failed.
 
 | Wave | Status | Evidence |
 | --- | --- | --- |
-| W90 | running | launched as Meitner (`019f1c74-9911-7022-a1b4-f17d01efc6b6`). |
+| W90 | integrated in ecosystem | cutover gate commit `9acdf09`; post-W2J state gate passed locally. |
 | W91 | report complete | report commit `4afaad0`; paired dag-ml/dag-ml-data validation passed after aligning data side to integration head `818616e`; no new dag-ml commit. |
-| W92 | running | launched as Pasteur (`019f1c74-c574-73a1-ba33-5e3b3ea01b74`). |
-| W93 | running | launched as Darwin (`019f1c74-dfc1-7040-ae9e-2c0f3bbbd9ec`). |
+| W92 | report complete | methods commit `d077ea5f`, ecosystem report commit `e7d4877`; package/import surface and ABI/parity gates passed. |
+| W93 | report complete | IO commit `ac7809d`, datasets commit `20b41824`, ecosystem report commit `d0fcdbf`; reference dataset bridge verified. |
 | W94 | report complete | lite commit `d9d92d7`, ecosystem report commit `5caa4b1`; topology manifest consumer-readiness tests passed. |
 | W95 | running | launched as Bohr (`019f1c7e-83e6-78e2-b1d5-0f9c2ab838c4`). |
 | W96 | running | launched as Boole (`019f1c7f-d079-75d2-9bc5-de154dabd751`). |
-| W97 | queued | - |
-| W98 | queued | - |
-| W99 | queued | - |
+| W97 | running | launched as Halley (`019f1c81-07e7-7512-977d-29aea46d5272`). |
+| W98 | running | launched as Arendt (`019f1c82-75c8-74f2-afb0-cedbf297a06f`). |
+| W99 | running | launched as Ramanujan (`019f1c82-ffd9-7b21-9221-88135c437fcf`), with instruction to treat unfinished W95-W98 as pending. |
