@@ -4,7 +4,7 @@
   "description": "Owner, evidence, and missing-contract map for the dag-ml cutover and adjacent V1 ecosystem blockers.",
   "policy": {
     "mutates_repositories": false,
-    "default_engine_flip_condition": "All required_for_cutover blockers are ready or passed, every referenced required gate passes, coverage_meter.summary.fallback == 0, and default_engine_postflip is the only pre-flip expected failure.",
+    "default_engine_flip_condition": "Post-W2J integration already has DEFAULT_ENGINE=dag-ml. Keep the release gate strict: all required_for_cutover blockers must be ready or passed, every referenced required gate must pass, coverage_meter.summary.fallback must stay 0, fallback must remain explicit opt-in only, and dag-ml export must not perform an implicit legacy refit.",
     "advisory_scope": "Advisory blockers track V1 ecosystem readiness that should not by itself block the nirs4all DEFAULT_ENGINE cutover."
   },
   "blockers": [
@@ -32,10 +32,11 @@
       "title": "Full Python reference fallback ledger is empty",
       "lane": "B-010/L19",
       "owner_repo": "nirs4all",
-      "status": "blocked",
+      "status": "passed",
       "required_for_cutover": true,
       "primary_gate_id": "pyref_coverage_zero",
       "gate_ids": [
+        "post_w2j_cutover_state",
         "pyref_coverage_zero",
         "pyref_oracle_full"
       ],
@@ -44,31 +45,29 @@
         "coverage_meter.summary.fallback == 0",
         "no remaining EXPECTED_FALLBACK entry relies on implicit legacy execution"
       ],
-      "missing_contract": "The dag-ml OOF/refit and dag-ml-data source-layout contracts now exist, but nirs4all still needs native lowering/parity consumption for the six remaining fallback cases: branch_dup_three_way_merge_predictions, branch_dup_named_with_metamodel, branch_dup_merge_all, multi_source_by_source_branch_distinct_preproc, multi_source_per_source_models_stacking, and multi_source_sources_concat_then_rf.",
-      "next_owner_action": "Consume the W51/W53/W61 contracts in nirs4all, then remove fallback entries only after strict parity passes.",
-      "depends_on": [
-        "STACKING-OOF-001",
-        "DMD-SOURCE-LAYOUT-001"
-      ]
+      "missing_contract": "None for the fallback ledger at the current post-W2J integration tip: docs/compatibility.json records coverage_meter.fallback == 0 and expected_fallback is empty.",
+      "next_owner_action": "Keep post_w2j_cutover_state and pyref_coverage_zero green; any new fallback must be recorded as a regression, not a new release default."
     },
     {
       "id": "B-011-NATIVE-EXPORT-STACKING",
       "title": "Native .n4a export covers stacking replay without legacy bridge",
       "lane": "B-011/L19",
       "owner_repo": "nirs4all",
-      "status": "ready",
+      "status": "passed",
       "required_for_cutover": true,
       "primary_gate_id": "native_n4a_export",
       "gate_ids": [
+        "post_w2j_cutover_state",
         "native_n4a_export"
       ],
       "expected_evidence": [
         "native .n4a bundle tests pass without xfailed stacking replay",
         "base producer order and meta-feature construction are persisted",
-        "bundle prediction from raw X matches the Python reference path"
+        "bundle prediction from raw X matches the Python reference path",
+        "RunResult.export() and export_model() refuse unsupported dag-ml exports unless compatibility=\"legacy-refit\" is explicitly named"
       ],
-      "missing_contract": "No remaining blocker for the handled duplication-branch stacking native bundle shape. Richer unsupported stacking layouts still intentionally fall through to the bridge until they gain explicit replay contracts.",
-      "next_owner_action": "Keep the native bundle gate green; broaden replay only after richer stacking layout contracts exist.",
+      "missing_contract": "None for the V1 no-implicit-refit contract. Unsupported dag-ml export shapes now raise a structured refusal by default; the legacy-refit bridge is only a named compatibility opt-in.",
+      "next_owner_action": "Keep the native bundle and post-W2J source gates green; broaden replay only after richer stacking layout contracts exist.",
       "depends_on": [
         "STACKING-OOF-001"
       ]
@@ -185,26 +184,28 @@
         "aggregation-manifest.n4a.json validates",
         "aggregation-lock.n4a.lock.json agrees with current member artifacts"
       ],
-      "missing_contract": "None for the current lock runner; rerun after integrating W51-W59 because member contract artifacts may change.",
+      "missing_contract": "None for the current lock runner; rerun after selecting the final Wave 2K release heads because member contract artifacts may change.",
       "next_owner_action": "Refresh the release lock only after final integration branches are selected."
     },
     {
       "id": "DROP-002-DEFAULT-ENGINE",
-      "title": "Final default engine flip is isolated to the release commit",
+      "title": "Post-W2J default engine and strict fallback/export state is verified",
       "lane": "DROP-002",
       "owner_repo": "nirs4all",
-      "status": "expected-fail",
+      "status": "passed",
       "required_for_cutover": true,
-      "primary_gate_id": "default_engine_postflip",
+      "primary_gate_id": "post_w2j_cutover_state",
       "gate_ids": [
-        "default_engine_postflip"
+        "post_w2j_cutover_state"
       ],
       "expected_evidence": [
-        "pre-flip this gate fails because DEFAULT_ENGINE is not dag-ml",
-        "post-flip this gate passes in the same strict run as every other required gate"
+        "refactor/integration-nirs4all declares DEFAULT_ENGINE = \"dag-ml\"",
+        "nirs4all.api.run.run defaults allow_fallback to false",
+        "fallback compatibility remains explicit through engine=\"legacy\" or allow_fallback=True",
+        "dag-ml export compatibility remains explicit through compatibility=\"legacy-refit\""
       ],
-      "missing_contract": "No code contract is missing; this is an intentional final release action after all other blockers are closed.",
-      "next_owner_action": "Flip DEFAULT_ENGINE only in the final cutover commit, never as part of an exploratory branch."
+      "missing_contract": "None for the post-W2J default-engine state. This row no longer represents a pre-flip expected failure.",
+      "next_owner_action": "Do not reintroduce a legacy default or implicit legacy fallback/export bridge; run the strict full gate set in a prepared release workspace before claiming V1 release readiness."
     },
     {
       "id": "PROV-READ-001",

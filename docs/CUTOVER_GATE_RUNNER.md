@@ -10,6 +10,7 @@ Typical usage from the ecosystem repo:
 python3 scripts/n4a_cutover_gates.py list --workspace-root /home/delete/nirs4all
 python3 scripts/n4a_cutover_gates.py readiness --workspace-root /home/delete/nirs4all
 python3 scripts/n4a_cutover_gates.py validate --workspace-root /home/delete/nirs4all
+python3 scripts/n4a_cutover_gates.py post-w2j-state --workspace-root /home/delete/nirs4all
 python3 scripts/n4a_cutover_gates.py --gate pyref_coverage_zero run --workspace-root /home/delete/nirs4all
 python3 scripts/n4a_cutover_gates.py run --workspace-root /home/delete/nirs4all --json > cutover-gate-report.json
 ```
@@ -20,10 +21,20 @@ exact missing contract. Rows with `required_for_cutover=false` are advisory V1
 ecosystem rows; they should not block the `nirs4all` default-engine flip unless a
 release manager explicitly promotes them into `drop-gates.n4a.json`.
 
-The final cutover is not ready until all required gates pass. Today,
-`pyref_coverage_zero` is expected to fail because `coverage_meter.summary.fallback`
-is still `6`, and `default_engine_postflip` is expected to fail before the final
-commit that changes `DEFAULT_ENGINE` to `dag-ml`.
+The post-W2J integration state is checked by `post_w2j_cutover_state`, which is a
+direct source/ledger inspection rather than a long parity run. It asserts that
+`refactor/integration-nirs4all` now declares `DEFAULT_ENGINE = "dag-ml"`,
+`nirs4all.api.run.run` defaults to `allow_fallback=False`, explicit legacy
+fallback remains opt-in, dag-ml export reaches the legacy-refit bridge only via
+`compatibility="legacy-refit"`, and the compatibility ledger reports
+`coverage_meter.fallback == 0`. It also checks that the Studio, Web, tools,
+cluster, and providers integration heads contain the Wave 2J source markers used
+for L19 accounting.
+
+The final V1 release is still not ready until all required gates pass in a
+prepared release workspace. The current docs no longer treat
+`DEFAULT_ENGINE="legacy"` or `fallback=6` as the expected state; any failure of
+`post_w2j_cutover_state` or `pyref_coverage_zero` is a regression.
 
 ## CI Modes
 
@@ -49,9 +60,9 @@ integration worktrees exist.
 The matrix currently separates hard cutover blockers from adjacent V1 ecosystem
 readiness:
 
-- Required rows cover Python-reference parity, native `.n4a` export, dag-ml /
-  dag-ml-data lockstep contracts, Studio/Web runtime adoption, migration tooling,
-  release locks, and the final `DEFAULT_ENGINE` flip.
+- Required rows cover the post-W2J cutover state, Python-reference parity,
+  native `.n4a` export, dag-ml / dag-ml-data lockstep contracts, Studio/Web
+  runtime adoption, migration tooling, and release locks.
 - Advisory rows track provider and cluster readiness. They remain visible because
   they matter for the V1 ecosystem release, but they are not prerequisites for
   replacing the default `nirs4all` pipeline engine.

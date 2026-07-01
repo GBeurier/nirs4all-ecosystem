@@ -1,13 +1,13 @@
 {
   "schema_version": "n4a.cutover-gates/v1",
   "gate_set": "LOCK-DROP",
-  "description": "Non-mutating evidence commands required before switching nirs4all DEFAULT_ENGINE to dag-ml.",
+  "description": "Non-mutating evidence commands for verifying the post-W2J nirs4all DEFAULT_ENGINE=dag-ml cutover state and release readiness.",
   "workspace_root_hint": "/home/delete/nirs4all",
   "policy": {
     "default_mode": "list",
     "mutates_repositories": false,
     "requires_clean_worktrees": true,
-    "cutover_condition": "All required gates pass, coverage_meter.summary.fallback == 0, and no gate relies on implicit legacy fallback."
+    "cutover_condition": "All required gates pass, coverage_meter.summary.fallback == 0, dag-ml fallback remains explicit opt-in only, and dag-ml export never performs an implicit legacy refit."
   },
   "gates": [
     {
@@ -26,6 +26,28 @@
       "evidence": [
         "cutover gate manifest validates",
         "runner can be executed in CI without sibling repositories"
+      ]
+    },
+    {
+      "id": "post_w2j_cutover_state",
+      "title": "Post-W2J cutover state direct source check",
+      "lane": "LOCK-DROP/L19",
+      "required": true,
+      "cwd": "nirs4all-ecosystem",
+      "command": [
+        "python3",
+        "scripts/n4a_cutover_gates.py",
+        "post-w2j-state",
+        "--workspace-root",
+        "{workspace_root}"
+      ],
+      "evidence": [
+        "INT-nirs4all is on refactor/integration-nirs4all",
+        "DEFAULT_ENGINE is dag-ml",
+        "nirs4all.api.run.run defaults allow_fallback to false",
+        "legacy fallback and legacy-refit export are reachable only through named opt-ins",
+        "coverage_meter fallback is zero",
+        "Studio/Web/tools/cluster/providers integration heads contain the Wave 2J source markers used for L19 accounting"
       ]
     },
     {
@@ -179,21 +201,6 @@
       ],
       "evidence": [
         "release manifest and lockfile agree with current member contract artifacts"
-      ]
-    },
-    {
-      "id": "default_engine_postflip",
-      "title": "Post-flip default engine is dag-ml",
-      "lane": "DROP-002",
-      "required": true,
-      "cwd": "_worktrees/INT-nirs4all",
-      "command": [
-        "python3",
-        "-c",
-        "from nirs4all.pipeline.engine import DEFAULT_ENGINE; assert DEFAULT_ENGINE == 'dag-ml', DEFAULT_ENGINE"
-      ],
-      "evidence": [
-        "This gate is expected to fail before the final cutover commit."
       ]
     }
   ]

@@ -9,6 +9,7 @@ gates when the caller explicitly passes ``run``.
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import os
 import subprocess
@@ -21,6 +22,7 @@ from typing import Any
 DEFAULT_MANIFEST = Path("docs/contracts/cutover/drop-gates.n4a.json")
 DEFAULT_READINESS_MATRIX = Path("docs/contracts/cutover/readiness-matrix.n4a.json")
 READINESS_STATUSES = {"blocked", "expected-fail", "ready", "advisory", "passed"}
+POST_W2J_STATE_SCHEMA = "n4a.post-w2j-cutover-state/v1"
 
 
 class GateError(RuntimeError):
@@ -147,6 +149,364 @@ def selected_gates(manifest: dict[str, Any], include: set[str] | None, skip: set
 
 def command_for(gate: dict[str, Any], workspace_root: Path) -> list[str]:
     return [str(part) for part in format_value(gate["command"], workspace_root)]
+
+
+def _check(checks: list[dict[str, Any]], check_id: str, passed: bool, evidence: str, detail: str | None = None) -> None:
+    row: dict[str, Any] = {
+        "id": check_id,
+        "status": "passed" if passed else "failed",
+        "evidence": evidence,
+    }
+    if detail:
+        row["detail"] = detail
+    checks.append(row)
+
+
+def _read_text(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise GateError(f"cannot read {path}: {exc}") from exc
+
+
+def _parse_python(path: Path) -> ast.Module:
+    try:
+        return ast.parse(_read_text(path), filename=str(path))
+    except SyntaxError as exc:
+        raise GateError(f"cannot parse Python source {path}: {exc}") from exc
+
+
+def _literal_assignment(module: ast.Module, name: str) -> Any:
+    for node in module.body:
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) and node.target.id == name:
+            value = node.value
+        elif isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == name for target in node.targets):
+            value = node.value
+        else:
+            continue
+        if isinstance(value, ast.Constant):
+            return value.value
+        return None
+    return None
+
+
+def _find_function(nodes: list[ast.stmt], name: str) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+    for node in nodes:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name:
+            return node
+    return None
+
+
+def _find_class(module: ast.Module, name: str) -> ast.ClassDef | None:
+    for node in module.body:
+        if isinstance(node, ast.ClassDef) and node.name == name:
+            return node
+    return None
+
+
+def _argument_default(function: ast.FunctionDef | ast.AsyncFunctionDef, name: str) -> ast.expr | None:
+    args = [*function.args.posonlyargs, *function.args.args]
+    defaults: list[ast.expr | None] = [None] * (len(args) - len(function.args.defaults)) + list(function.args.defaults)
+    for arg, default in zip(args, defaults, strict=True):
+        if arg.arg == name:
+            return default
+    for arg, default in zip(function.args.kwonlyargs, function.args.kw_defaults, strict=True):
+        if arg.arg == name:
+            return default
+    return None
+
+
+def _is_literal(value: ast.expr | None, expected: Any) -> bool:
+    return isinstance(value, ast.Constant) and value.value == expected
+
+
+def _is_not_name(node: ast.AST, name: str) -> bool:
+    return isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not) and isinstance(node.operand, ast.Name) and node.operand.id == name
+
+
+def _is_call_name(node: ast.AST, name: str) -> bool:
+    return isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == name
+
+
+def _is_self_method_call(node: ast.AST, method: str) -> bool:
+    return (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == method
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "self"
+    )
+
+
+def _body_contains_raise(body: list[ast.stmt]) -> bool:
+    return any(isinstance(node, ast.Raise) for stmt in body for node in ast.walk(stmt))
+
+
+def _test_mentions_name(node: ast.AST, name: str) -> bool:
+    return any(isinstance(child, ast.Name) and child.id == name for child in ast.walk(node))
+
+
+def _delegate_calls_are_guarded(function: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
+    violations: list[ast.Call] = []
+
+    def visit(node: ast.AST, guarded: bool) -> None:
+        if isinstance(node, ast.If):
+            body_guarded = guarded or _test_mentions_name(node.test, "legacy_refit_compatibility")
+            for child in node.body:
+                visit(child, body_guarded)
+            for child in node.orelse:
+                visit(child, guarded)
+            return
+        if _is_self_method_call(node, "_dagml_export_delegate") and not guarded:
+            violations.append(node)
+        for child in ast.iter_child_nodes(node):
+            visit(child, guarded)
+
+    for stmt in function.body:
+        visit(stmt, False)
+    return not violations
+
+
+def _git_output(repo: Path, *args: str) -> str:
+    proc = subprocess.run(["git", "-C", str(repo), *args], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    if proc.returncode != 0:
+        raise GateError(f"git -C {repo} {' '.join(args)} failed: {proc.stderr.strip()}")
+    return proc.stdout.strip()
+
+
+def _check_repo_branch_and_head(
+    checks: list[dict[str, Any]],
+    check_id: str,
+    repo: Path,
+    expected_branch: str,
+) -> str:
+    branch = _git_output(repo, "branch", "--show-current")
+    head = _git_output(repo, "rev-parse", "--short=8", "HEAD")
+    _check(
+        checks,
+        f"{check_id}.branch",
+        branch == expected_branch,
+        f"{repo.name} is on {branch or '<detached>'}@{head}",
+        None if branch == expected_branch else f"expected branch {expected_branch!r}",
+    )
+    return head
+
+
+def _check_required_source_patterns(
+    checks: list[dict[str, Any]],
+    check_id: str,
+    repo: Path,
+    patterns: dict[str, list[str]],
+) -> None:
+    missing: list[str] = []
+    for rel, needles in patterns.items():
+        path = repo / rel
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError as exc:
+            missing.append(f"{rel}: cannot read ({exc})")
+            continue
+        for needle in needles:
+            if needle not in text:
+                missing.append(f"{rel}: missing {needle!r}")
+    _check(
+        checks,
+        f"{check_id}.source",
+        not missing,
+        f"{repo.name} contains the Wave 2J source/test markers required for L19 accounting",
+        "; ".join(missing) if missing else None,
+    )
+
+
+def _check_nirs4all_cutover_state(nirs4all_root: Path) -> list[dict[str, Any]]:
+    checks: list[dict[str, Any]] = []
+
+    engine_module = _parse_python(nirs4all_root / "nirs4all" / "pipeline" / "engine.py")
+    default_engine = _literal_assignment(engine_module, "DEFAULT_ENGINE")
+    _check(
+        checks,
+        "nirs4all.default_engine",
+        default_engine == "dag-ml",
+        f"DEFAULT_ENGINE literal is {default_engine!r}",
+        None if default_engine == "dag-ml" else "expected 'dag-ml'",
+    )
+
+    run_module = _parse_python(nirs4all_root / "nirs4all" / "api" / "run.py")
+    run_function = _find_function(run_module.body, "run")
+    allow_default = _argument_default(run_function, "allow_fallback") if run_function else None
+    _check(
+        checks,
+        "nirs4all.run.allow_fallback_default",
+        run_function is not None and _is_literal(allow_default, False),
+        "nirs4all.api.run.run has allow_fallback default False",
+        None if run_function is not None and _is_literal(allow_default, False) else "expected allow_fallback=False",
+    )
+
+    fallback_function = None
+    if run_function is not None:
+        fallback_function = next(
+            (
+                node
+                for node in ast.walk(run_function)
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == "_fallback"
+            ),
+            None,
+        )
+    strict_raise = False
+    legacy_call_count = 0
+    if fallback_function is not None:
+        strict_raise = any(
+            isinstance(node, ast.If) and _is_not_name(node.test, "allow_fallback") and _body_contains_raise(node.body)
+            for node in ast.walk(fallback_function)
+        )
+        legacy_call_count = sum(1 for node in ast.walk(fallback_function) if _is_call_name(node, "_run_legacy"))
+    _check(
+        checks,
+        "nirs4all.fallback_explicit_opt_in",
+        fallback_function is not None and strict_raise and legacy_call_count == 1,
+        "dag-ml fallback helper raises when allow_fallback is false and calls legacy only in that explicit fallback helper",
+        None
+        if fallback_function is not None and strict_raise and legacy_call_count == 1
+        else f"_fallback={fallback_function is not None}, strict_raise={strict_raise}, legacy_call_count={legacy_call_count}",
+    )
+
+    result_module = _parse_python(nirs4all_root / "nirs4all" / "api" / "result.py")
+    compat_literal = _literal_assignment(result_module, "_DAGML_LEGACY_REFIT_COMPATIBILITY")
+    result_class = _find_class(result_module, "RunResult")
+    export_function = _find_function(result_class.body, "export") if result_class else None
+    export_model_function = _find_function(result_class.body, "export_model") if result_class else None
+    _check(
+        checks,
+        "nirs4all.export.compatibility_literal",
+        compat_literal == "legacy-refit",
+        f"legacy-refit compatibility literal is {compat_literal!r}",
+        None if compat_literal == "legacy-refit" else "expected 'legacy-refit'",
+    )
+    for name, function in (("export", export_function), ("export_model", export_model_function)):
+        default = _argument_default(function, "compatibility") if function else None
+        _check(
+            checks,
+            f"nirs4all.{name}.compatibility_default",
+            function is not None and _is_literal(default, None),
+            f"RunResult.{name} compatibility default is None",
+            None if function is not None and _is_literal(default, None) else "expected compatibility=None",
+        )
+        _check(
+            checks,
+            f"nirs4all.{name}.legacy_refit_guard",
+            function is not None and _delegate_calls_are_guarded(function),
+            f"RunResult.{name} reaches _dagml_export_delegate only below the legacy_refit_compatibility guard",
+            None if function is not None and _delegate_calls_are_guarded(function) else "unguarded _dagml_export_delegate call found",
+        )
+
+    try:
+        compatibility = json.loads((nirs4all_root / "docs" / "compatibility.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        _check(checks, "nirs4all.coverage_meter", False, "docs/compatibility.json is readable JSON", str(exc))
+    else:
+        coverage_meter = compatibility.get("coverage_meter", {})
+        expected_fallback = compatibility.get("expected_fallback", [])
+        fallback = coverage_meter.get("fallback")
+        target = coverage_meter.get("expected_fallback_target")
+        _check(
+            checks,
+            "nirs4all.coverage_meter.fallback_zero",
+            fallback == 0 and target == 0 and expected_fallback == [],
+            f"coverage_meter fallback={fallback!r}, target={target!r}, expected_fallback entries={len(expected_fallback) if isinstance(expected_fallback, list) else 'non-list'}",
+            None if fallback == 0 and target == 0 and expected_fallback == [] else "expected fallback=0, target=0, expected_fallback=[]",
+        )
+
+    return checks
+
+
+def check_post_w2j_state(workspace_root: Path) -> dict[str, Any]:
+    workspace_root = workspace_root.expanduser().resolve()
+    checks: list[dict[str, Any]] = []
+    heads: dict[str, str] = {}
+
+    nirs4all_root = workspace_root / "_worktrees" / "INT-nirs4all"
+    heads["nirs4all"] = _check_repo_branch_and_head(checks, "nirs4all", nirs4all_root, "refactor/integration-nirs4all")
+    checks.extend(_check_nirs4all_cutover_state(nirs4all_root))
+
+    product_repos = [
+        (
+            "studio",
+            workspace_root / "_worktrees" / "INT-studio",
+            "refactor/integration-studio",
+            {
+                "api/runtime_errors.py": ["class RtError", "unsupported_capability", "unavailable_backend"],
+                "tests/test_runs_engine_routing.py": ["allow_fallback is False", "fallback_policy", "structured refusal"],
+                "src/types/runs.ts": ["runtime_result"],
+            },
+        ),
+        (
+            "web",
+            workspace_root / "_worktrees" / "INT-web",
+            "refactor/integration-web",
+            {
+                "studio-lite/src/engine/main-engine.runtime-v1.test.ts": [
+                    "without silently running the direct pipeline",
+                    "RtErrorException",
+                ],
+                "studio-lite/src/engine/worker.ts": ["rtResult", "rtErrorToWire"],
+                "studio-lite/tests/rt-fallback-smoke.mjs": ["allowFallback:false", "typed RtErrorException"],
+            },
+        ),
+        (
+            "tools",
+            workspace_root / "nirs4all-tools",
+            "main",
+            {
+                "README.md": ["no-in-place", "native-results-v1", "unsupported-report.json"],
+                "src/nirs4all_tools/commands.py": ["legacy {inspect,migrate,verify}", "strict", "native-results-v1"],
+            },
+        ),
+        (
+            "cluster",
+            workspace_root / "_worktrees" / "INT-cluster",
+            "refactor/integration-cluster",
+            {
+                "tests/test_rbac.py": ["dag_shaped_whole_run", "server_attested_worker_report", "executor_principal"],
+                "tests/test_scheduler.py": ["dead_worker_tasks_requeue", "worker lost"],
+                "tests/test_distributed_parity.py": ["DAG-shaped inline pipeline", "dag_trace"],
+            },
+        ),
+        (
+            "providers",
+            workspace_root / "_worktrees" / "INT-providers",
+            "refactor/integration-providers",
+            {
+                "src/nirs4all_providers/repository.py": ["get_pipeline_list", "list_pipelines", "get_pipeline"],
+                "src/nirs4all_providers/benchmarks.py": ["get_pipeline_list", "get_pipeline", "queue_pipeline_test"],
+            },
+        ),
+    ]
+    for repo_id, repo_path, branch, patterns in product_repos:
+        heads[repo_id] = _check_repo_branch_and_head(checks, repo_id, repo_path, branch)
+        _check_required_source_patterns(checks, repo_id, repo_path, patterns)
+
+    passed = all(check["status"] == "passed" for check in checks)
+    return {
+        "schema_version": POST_W2J_STATE_SCHEMA,
+        "workspace_root": str(workspace_root),
+        "passed": passed,
+        "heads": heads,
+        "checks": checks,
+    }
+
+
+def post_w2j_state(workspace_root: Path, json_out: bool) -> int:
+    report = check_post_w2j_state(workspace_root)
+    if json_out:
+        json.dump(report, sys.stdout, ensure_ascii=True, indent=2)
+        sys.stdout.write("\n")
+    else:
+        for row in report["checks"]:
+            print(f"{row['status']}: {row['id']} - {row['evidence']}")
+            if row["status"] != "passed" and row.get("detail"):
+                print(f"  {row['detail']}")
+        print(f"post-W2J cutover state passed: {report['passed']}")
+    return 0 if report["passed"] else 1
 
 
 def gate_summary(gate: dict[str, Any], workspace_root: Path) -> dict[str, Any]:
@@ -345,6 +705,8 @@ def build_parser() -> argparse.ArgumentParser:
     validate.set_defaults(validate_only=True)
     readiness = sub.add_parser("readiness", help="List cutover blockers with owners and evidence commands.")
     _add_common_options(readiness, suppress_defaults=True)
+    post_w2j = sub.add_parser("post-w2j-state", help="Assert the directly-inspected post-Wave-2J cutover state.")
+    _add_common_options(post_w2j, suppress_defaults=True)
     run = sub.add_parser("run", help="Execute selected gates. This can be slow.")
     _add_common_options(run, suppress_defaults=True)
     run.add_argument("--timeout", type=int, default=None, help="Per-gate timeout in seconds.")
@@ -403,6 +765,8 @@ def main(argv: list[str] | None = None) -> int:
                 if not args.gate or set(blocker.get("gate_ids", [])) & selected_gate_ids
             ]
             return list_readiness(blockers, gates_by_id, workspace_root, args.json)
+        if command == "post-w2j-state":
+            return post_w2j_state(workspace_root, args.json)
         if command == "run":
             return run_gates(gates, workspace_root, args.timeout, args.json, args.missing_cwd, args.advisory)
         return list_gates(gates, workspace_root, args.json)
