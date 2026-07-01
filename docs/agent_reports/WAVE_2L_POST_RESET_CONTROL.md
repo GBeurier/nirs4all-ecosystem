@@ -357,3 +357,37 @@ Preexisting Git state classification:
 - `nirs4all-tools` W78/W84 are superseded by `main@9dc0c628c97d`: `git log
   --left-right --cherry-pick main...refactor/W78-migration-complete` and the
   W84 equivalent show only newer main-side commits.
+
+## Primary Checkout Alignment Batch
+
+After the selected-root gate fix, four clean primary `main` checkouts were
+fast-forwarded to their reviewed integration heads:
+
+| Repo | Previous primary head | New primary head | Integration head | Result |
+| --- | ---: | ---: | ---: | --- |
+| `nirs4all-studio` | `2ccbf68e03a7` | `83aab1c18108` | `83aab1c18108` | fast-forward, clean |
+| `nirs4all-web` | `745eef89406e` | `ee8ea7a95946` | `ee8ea7a95946` | fast-forward, clean |
+| `nirs4all-cluster` | `dcced303543e` | `eac4d0b8a62a` | `eac4d0b8a62a` | fast-forward, clean |
+| `nirs4all-providers` | `3ecc67915786` | `1e289a9ee96d` | `1e289a9ee96d` | fast-forward, clean |
+
+Review notes:
+
+- Codex read-only reviewers confirmed these were pure fast-forwards with no
+  main-only commits lost.
+- Remotes were not pushed in this wave.
+- `nirs4all-io`, `dag-ml`, and `dag-ml-data` are also ancestors of selected
+  integration heads, but they are on refactor branches. `dag-ml-data` remains
+  dirty because of the generated `_dag_ml_data.abi3.so`, so it needs a separate
+  controlled decision.
+
+Post-fast-forward targeted gates on primary checkouts:
+
+- `nirs4all-studio`: runtime-route pytest selection -> 82 passed, 2 warnings;
+  compileall API and Ruff -> passed.
+- `nirs4all-web/studio-lite`: typecheck -> passed; `dagml-engine.rt-fallback`
+  Vitest -> 6 passed; `npm run build`, `npm run build:single`, and
+  `node scripts/run-smokes.mjs rt-fallback` -> passed.
+- `nirs4all-cluster`: `uv run --extra dev pytest tests/test_scheduler.py
+  tests/test_server_api.py -q` -> 42 passed, 1 warning.
+- `nirs4all-providers`: `PYTHONPATH=src python3.11 -m pytest -q` -> 65
+  collected with 61 passed and 4 skipped.
