@@ -88,8 +88,8 @@ Core oracle checkout:
 | Lane | Agent | Scope | Status |
 | --- | --- | --- | --- |
 | K | `019f1d5b-7c52-7e42-be11-f21df34236f3` / Euclid | Fresh final reviewer, read-only | complete |
-| B/E/H | `019f1d5c-4e07-7d42-8ee9-ff236f3a24ed` / Mill | Controller surface/adapters, read-only | running |
-| F | `019f1d5c-4eab-7512-a7cf-870f8ac476fe` / Gauss | methods/n4m execution path, read-only | running |
+| B/E/H | `019f1d5c-4e07-7d42-8ee9-ff236f3a24ed` / Mill | Controller surface/adapters, read-only | complete |
+| F | `019f1d5c-4eab-7512-a7cf-870f8ac476fe` / Gauss | methods/n4m execution path, read-only | complete |
 
 ## Lane K Fresh Review
 
@@ -109,10 +109,54 @@ Euclid confirmed the current distinction:
 Decision reinforced: do not regenerate the release lock from the current root,
 and do not treat L17 as equivalent to the W98 integration tree.
 
+## Controller Surface Audit
+
+Mill confirmed that the T2 blocker is only partially reduced:
+
+- `dag-ml` has a real `HostControllerSpec -> ControllerManifest` derivation
+  helper in `crates/dag-ml-core/src/controller_adapter.rs`, covered for the five
+  nirs4all bridge shapes;
+- binding-facing helpers are still missing for Python/WASM, so consumers can
+  validate manifests but cannot derive them from host specs through a stable
+  binding API;
+- `nirs4all` still uses a static five-manifest list in `dagml_bridge.py`, with
+  no public `nirs4all.runtime.list_controller_manifests()`;
+- Studio has `GET /api/operators/manifests`, but it remains a soft proxy until
+  nirs4all exposes the producer;
+- Web hand-authors a manifest and still lacks shared controller registration for
+  multi-node scheduler coverage.
+
+Recommended next slice: `dag-ml` only, expose the existing derivation through
+binding-facing JSON helpers for Python and WASM, then gate with targeted
+controller adapter/Python/WASM tests and `scripts/validate_contracts.py`.
+
+## Methods/N4M Execution Audit
+
+Gauss confirmed that T3 remains open:
+
+- `nirs4all-methods` exposes working SNV/PLS ABI and Python wrappers;
+- explicit `MethodsSNV` / `MethodsPLS` operators can invoke `n4m`;
+- native `dag-ml` execution does not directly invoke `n4m`; it calls host
+  controllers, and the nirs4all dag-ml router still maps common operators to
+  sklearn/import-path handlers;
+- methods-installed tests remain optional/import-skipped, no ABI/version gate is
+  enforced in dag-ml routing, and portable n4m model persistence remains
+  unresolved.
+
+Recommended next slice: `nirs4all` only on the selected integration checkout,
+add an opt-in safe-subset SNV route through `MethodsSNV` with explicit
+availability checks and fallback before execution. Defer PLS auto-routing until
+SNV proves the path because PLS has higher parameter and artifact risk.
+
 ## Next Integration Decision
 
 Do not integrate old stopped branches or worktrees without a focused audit. The
-next safe implementation batch should be chosen after the three active Codex
-audits return, with disjoint write ownership and short targeted gates. Full
-parity should run only after that larger implementation batch, not for this
-status/documentation update.
+next implementation batch is split across disjoint write scopes:
+
+- Lane B/E/H implementation: `dag-ml` integration worktree only, binding-facing
+  controller-manifest derivation helpers.
+- Lane F implementation: `nirs4all` integration worktree only, opt-in SNV
+  methods routing.
+
+Full parity should run only after these implementation slices have landed and
+passed their targeted gates.
