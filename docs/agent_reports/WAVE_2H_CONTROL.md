@@ -51,7 +51,7 @@ Launch these when one or more active agents finish and are closed:
 
 | Wave | Status |
 | --- | --- |
-| W69 | running; source-layout contract audit for W65/W67. |
+| W69 | complete; source-layout emitted in nirs4all working branch and report committed. |
 
 ## Coordination Rules
 
