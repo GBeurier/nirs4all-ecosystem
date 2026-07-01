@@ -45,6 +45,13 @@ Launch these when one or more active agents finish and are closed:
 | Wave | Outcome |
 | --- | --- |
 | W63 | Blocked intentionally. The case is not equivalent to simple collect-all stacking: legacy runs a branch-local `Ridge_MetaModel`, then a structured per-branch best-by-RMSE prediction selector into features, then final `Ridge`. `EXPECTED_FALLBACK` remains unchanged. Report: `W63_BRANCH_DUP_NAMED_METAMODEL.md`. |
+| W68 | Complete. dag-ml already had the OOF/refit contract; nirs4all should emit `stacking_oof_refit_contract={"policy": "require_full_coverage"}` for full-coverage stacking meta nodes. W63 remains blocked because metadata alone does not implement branch-local MetaModel or structured selectors. Report: `W68_STACKING_OOF_CONTRACT_AUDIT.md`. |
+
+## Queued / Running Support Agents
+
+| Wave | Status |
+| --- | --- |
+| W69 | running; source-layout contract audit for W65/W67. |
 
 ## Coordination Rules
 
