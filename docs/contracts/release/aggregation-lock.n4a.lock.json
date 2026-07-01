@@ -1257,7 +1257,7 @@
       "role": "Portable methods kernels and C ABI",
       "state": {
         "branch": "main",
-        "commit": "0f328018348b97880551d8d36d2f298de0b46064",
+        "commit": "98148c14bbe548c23db8d68903c445de8d8b82b8",
         "dirty": false,
         "exact_tag": null
       },
