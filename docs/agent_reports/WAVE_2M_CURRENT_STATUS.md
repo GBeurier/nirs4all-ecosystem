@@ -176,14 +176,17 @@ passed their targeted gates.
 
 | Lane | Agent | Write Scope | Task |
 | --- | --- | --- | --- |
-| B/E/H | `019f1d64-aea5-7310-8671-b1899f76ea74` / Popper | `_worktrees/INT-dagml` only | complete, committed as `8b226bed0b6c` |
-| F | `019f1d64-af5f-7341-a3a8-335d2fd37ed5` / Aristotle | `_worktrees/INT-nirs4all` only | complete, pending coordinator review |
+| B/E/H | `019f1d64-aea5-7310-8671-b1899f76ea74` / Popper | `_worktrees/INT-dagml` only | complete, committed through `a428926cf8b4` |
+| F | `019f1d64-af5f-7341-a3a8-335d2fd37ed5` / Aristotle | `_worktrees/INT-nirs4all` only | complete, committed as `06b574cf6239` |
 
 ## Lane B/E/H Implementation Result
 
 Committed in `_worktrees/INT-dagml`:
 
 - commit `8b226bed0b6c` (`feat(bindings): expose controller manifest derivation`);
+- follow-up commit `a428926cf8b4` (`build(py): refresh dag ml extension
+  binary`) after coordinator review found that the source-tree Python facade
+  imported new PyO3 symbols not present in the old tracked `_dag_ml.abi3.so`;
 - additive PyO3 exports: `derive_controller_manifest_json` and
   `derive_controller_manifest_list_json`;
 - additive Python facade wrappers: `HostControllerSpec`,
@@ -210,7 +213,48 @@ Coordinator-reviewed gates:
 - `python3.11 -m py_compile` on touched Python files -> passed;
 - `/home/delete/.nvm/versions/node/v22.21.1/bin/node --check` on touched JS
   smoke files -> passed;
+- after rebuilding the extension, `python3 scripts/check_so_freshness.py` ->
+  passed and importing `dag_ml.derive_controller_manifest` from the source tree
+  succeeded;
 - `git diff --check` -> passed.
 
-Risk: `_dag_ml.abi3.so` was not regenerated; consumers importing an old built
-extension will not see the new PyO3 symbols until the extension/wheel is rebuilt.
+The primary `dag-ml/refactor/L20-lockstep` checkout was fast-forwarded to
+`a428926cf8b4` after the selected integration root passed review.
+
+## Lane F Implementation Result
+
+Committed in `_worktrees/INT-nirs4all`:
+
+- commit `06b574cf6239` (`feat(dagml): add opt-in methods SNV route`);
+- `N4A_DAGML_METHODS_SNV` opt-in route for
+  `StandardNormalVariate(axis=1, copy=True)` to `MethodsSNV`;
+- fail-closed n4m binding/ABI/library checks before execution;
+- no automatic PLS routing in this slice;
+- default behavior without the env flag remains the Python/oracle route.
+
+Coordinator-reviewed gates:
+
+- `uv run --no-project --with pytest --with numpy --with matplotlib pytest
+  tests/unit/pipeline/test_dagml_operator_routing.py -q` -> 3 passed;
+- `ruff check` on touched files -> passed;
+- `mypy --follow-imports=skip nirs4all/pipeline/dagml/operator_routing.py` ->
+  passed;
+- `git diff --check` -> passed;
+- with INT `dag_ml` / `dag_ml_data` on `PYTHONPATH`,
+  `pytest -q tests/integration/parity/test_dagml_dataplane.py
+  tests/integration/parity/test_dagml_run_selector.py` -> 34 passed;
+- `tests/unit/operators/methods/test_n4m_ops.py -m methods` was skipped in the
+  local environment because the `n4m` binding is not installed/loadable.
+
+## Post-Batch Release Evidence
+
+- `docs/contracts/release/aggregation-lock.n4a.lock.json` was regenerated from
+  `/home/delete/nirs4all/_release_roots/W2L-selected` and now pins
+  `dag_ml` to `a428926cf8b412ebe30931a6e5349c73d4f4c764`.
+- Selected-root release-lock validation passed.
+- Non-full cutover batch passed with `pyref_oracle_full` skipped:
+  `N4A_RELEASE_WORKSPACE_ROOT=/home/delete/nirs4all/_release_roots/W2L-selected
+  python3 scripts/n4a_cutover_gates.py run --workspace-root /home/delete/nirs4all
+  --skip pyref_oracle_full --json`.
+- The full Python-reference parity gate was intentionally not rerun in this
+  batch.
