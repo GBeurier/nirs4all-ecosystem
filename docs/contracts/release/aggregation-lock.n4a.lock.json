@@ -173,7 +173,7 @@
       "role": "DAG runtime and native execution contracts",
       "state": {
         "branch": "refactor/integration-dagml",
-        "commit": "618ffb220b5f541bc26b3ce485517e566a2e45df",
+        "commit": "a428926cf8b412ebe30931a6e5349c73d4f4c764",
         "dirty": false,
         "exact_tag": null
       },
