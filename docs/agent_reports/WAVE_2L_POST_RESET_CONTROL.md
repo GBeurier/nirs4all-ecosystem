@@ -481,6 +481,15 @@ Ancestry:
   corresponding broader commits (`0aa2a674`, `362c2d79`, `4ef0b3fe`,
   `63976243`, `8f29a304`, and later W98 gates).
 
+Reviewer note:
+
+- `8ef94242` is patch-equivalent to integration commit `0aa2a674`;
+- `8eff3b57`, `5e00e400`, and `13157d79` are not exact patch-equivalent, but
+  range-diff maps them to rewritten integration commits `362c2d79`, `4ef0b3fe`,
+  and `63976243`;
+- the L17 source-concat work is therefore functionally superseded by the INT
+  series, but Git will still treat it as divergent history.
+
 Local non-mutating merge check:
 
 - merging `17ed929eeb77` into a temporary clone at `13157d79` produces conflicts
@@ -493,6 +502,8 @@ Conclusion:
 
 - do not merge or reset `refactor/L17-pyref` mechanically;
 - treat `_worktrees/INT-nirs4all@17ed929eeb77` as the current V1 core proof;
+- if a release checkout is needed, create it from `17ed929eeb77` and optionally
+  record L17 ancestry with an `ours` merge only on that release branch;
 - any attempt to unify the primary checkout with W98 needs a dedicated conflict
   resolution batch and should end with targeted parity gates plus the full
   Python-reference parity gate, because this touches core runtime/parity
