@@ -59,11 +59,11 @@ The dirty main checkout `nirs4all/` is not an integration base.
 
 | Wave | Engine | Agent/session | Worktree | Target | Report |
 | --- | --- | --- | --- | --- | --- |
-| W90 | pending | pending | ecosystem docs/scripts | Cutover state gate and stale roadmap sync. | `W90_CUTOVER_STATE_GATE.md` |
-| W91 | pending | pending | `_worktrees/W91-dagml-lockstep` + `_worktrees/W91-dagml-data-lockstep` | dag-ml/dag-ml-data contract freshness and lockstep validation. | `W91_DAGML_LOCKSTEP_FRESHNESS.md` |
-| W92 | pending | pending | `_worktrees/W92-methods-release-surface` | nirs4all-methods package/binding namespace and parity gate. | `W92_METHODS_RELEASE_SURFACE.md` |
-| W93 | pending | pending | `_worktrees/W93-io-datasets-bridge` + datasets/formats worktrees | Formats/IO/datasets reference dataset bridge. | `W93_IO_DATASETS_REFERENCE_BRIDGE.md` |
-| W94 | pending | pending | `_worktrees/W94-lite-release-topology` | Lite/core release topology manifest consumer readiness. | `W94_LITE_RELEASE_TOPOLOGY.md` |
+| W90 | Codex worker | `019f1c74-9911-7022-a1b4-f17d01efc6b6` / Meitner | ecosystem docs/scripts | Cutover state gate and stale roadmap sync. | `W90_CUTOVER_STATE_GATE.md` |
+| W91 | Codex worker | `019f1c74-af0e-79a3-a222-c419b42e39d7` / Leibniz | `_worktrees/W91-dagml-lockstep` + `_worktrees/W91-dagml-data-lockstep` | dag-ml/dag-ml-data contract freshness and lockstep validation. | `W91_DAGML_LOCKSTEP_FRESHNESS.md` |
+| W92 | Codex worker | `019f1c74-c574-73a1-ba33-5e3b3ea01b74` / Pasteur | `_worktrees/W92-methods-release-surface` | nirs4all-methods package/binding namespace and parity gate. | `W92_METHODS_RELEASE_SURFACE.md` |
+| W93 | Codex worker | `019f1c74-dfc1-7040-ae9e-2c0f3bbbd9ec` / Darwin | `_worktrees/W93-io-datasets-bridge` + datasets/formats worktrees | Formats/IO/datasets reference dataset bridge. | `W93_IO_DATASETS_REFERENCE_BRIDGE.md` |
+| W94 | Codex worker | `019f1c74-f4a6-7632-9ec2-645e02fa106b` / Fermat | `_worktrees/W94-lite-release-topology` | Lite/core release topology manifest consumer readiness. | `W94_LITE_RELEASE_TOPOLOGY.md` |
 | W95 | queued | pending | `_worktrees/W95-studio-strict-runtime` | Studio strict fallback default. | `W95_STUDIO_STRICT_RUNTIME.md` |
 | W96 | queued | pending | `_worktrees/W96-studio-runtime-e2e` + `_worktrees/W96-web-runtime-e2e` | Runtime UX/E2E smoke for Studio/Web. | `W96_RUNTIME_UX_E2E.md` |
 | W97 | queued | pending | `_worktrees/W97-tools-real-goldens` | Real legacy converter golden fixtures. | `W97_TOOLS_REAL_GOLDENS.md` |
@@ -95,11 +95,11 @@ Do not launch W99 until W90-W98 reports exist or have explicitly failed.
 
 | Wave | Status | Evidence |
 | --- | --- | --- |
-| W90 | pending | - |
-| W91 | pending | - |
-| W92 | pending | - |
-| W93 | pending | - |
-| W94 | pending | - |
+| W90 | running | launched as Meitner (`019f1c74-9911-7022-a1b4-f17d01efc6b6`). |
+| W91 | running | launched as Leibniz (`019f1c74-af0e-79a3-a222-c419b42e39d7`). |
+| W92 | running | launched as Pasteur (`019f1c74-c574-73a1-ba33-5e3b3ea01b74`). |
+| W93 | running | launched as Darwin (`019f1c74-dfc1-7040-ae9e-2c0f3bbbd9ec`). |
+| W94 | running | launched as Fermat (`019f1c74-f4a6-7632-9ec2-645e02fa106b`). |
 | W95 | queued | - |
 | W96 | queued | - |
 | W97 | queued | - |
