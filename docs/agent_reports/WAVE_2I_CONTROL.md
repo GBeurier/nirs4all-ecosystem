@@ -40,11 +40,21 @@ Claude sessions.
 | W74 | Codex worker | `019f1c27-d737-74a2-b258-62b5bce984b1` / McClintock | `_worktrees/W74-nirs4all-multisource-stacking` | Drain or re-block `multi_source_per_source_models_stacking`. | `W74_MULTISOURCE_PER_SOURCE_STACKING.md` |
 | W75 | Codex worker | `019f1c27-d89a-7543-aeac-bda7ba51ee80` / Sartre | `_worktrees/W75-nirs4all-artifact-error-parity` | Advance B-011 artifact/workspace/error parity. | `W75_ARTIFACT_ERROR_PARITY.md` |
 | W76 | Codex worker | `019f1c27-d9b6-7d92-b2ae-6a8aee92d630` / Dirac | `_worktrees/W76-studio-runtime-bypass` | Advance Studio runtime/bypass parity. | `W76_STUDIO_RUNTIME_BYPASS.md` |
-| W77 | Claude Code | `e0ae7bda-5cc3-49c5-87ae-7c76374fec96` | `_worktrees/W77-web-runtime-cutover` | Advance Web runtime/RtResult/RtError adoption. | `W77_WEB_RUNTIME_CUTOVER.md` |
-| W78 | Claude Code | `fd60cc43-d7f9-4b66-9dff-37307d0f1e55` | `_worktrees/W78-tools-migration-complete` | Advance `nirs4all-tools` migration completeness. | `W78_TOOLS_MIGRATION_COMPLETE.md` |
-| W79 | Claude Code | `90142a62-8cc6-4d70-9dc5-a0b431288e78` | `_worktrees/W79-cluster-scheduler-dag` | Advance cluster real-DAG scheduler/RBAC behavior. | `W79_CLUSTER_SCHEDULER_DAG.md` |
-| W80 | Claude Code | `e197d0f5-5474-4776-98c4-164084091f13` | `_worktrees/W80-providers-real-services` | Advance provider real service contracts. | `W80_PROVIDERS_REAL_SERVICES.md` |
-| W81 | Claude Code | `89dc5d08-70a8-4289-841b-43f719a30983` | `_worktrees/W81-core-release-topology` | Advance core/release topology and additive facades. | `W81_CORE_RELEASE_TOPOLOGY.md` |
+| W77 | Codex CLI | exec `64309`, Codex `019f1c30-9fe1-7f93-9624-fee77c9897e1` | `_worktrees/W77-web-runtime-cutover` | Advance Web runtime/RtResult/RtError adoption. | `W77_WEB_RUNTIME_CUTOVER.md` |
+| W78 | Codex CLI | exec `66194`, Codex `019f1c31-5291-7ae0-80f9-110431d32474` | `_worktrees/W78-tools-migration-complete` | Advance `nirs4all-tools` migration completeness. | `W78_TOOLS_MIGRATION_COMPLETE.md` |
+| W79 | Codex CLI | exec `83733`, Codex `019f1c31-52d1-7d52-88dd-1cb434fa2b0b` | `_worktrees/W79-cluster-scheduler-dag` | Advance cluster real-DAG scheduler/RBAC behavior. | `W79_CLUSTER_SCHEDULER_DAG.md` |
+| W80 | Codex CLI | exec `78950`, Codex `019f1c31-5371-7513-8690-2b06020270ab` | `_worktrees/W80-providers-real-services` | Advance provider real service contracts. | `W80_PROVIDERS_REAL_SERVICES.md` |
+| W81 | Codex CLI | exec `73940`, Codex `019f1c31-53a8-7243-a4c4-abbd330c7774` | `_worktrees/W81-core-release-topology` | Advance core/release topology and additive facades. | `W81_CORE_RELEASE_TOPOLOGY.md` |
+
+Claude Code sessions were attempted for W77-W81 first, but each hit the weekly
+Claude limit (`resets Jul 3, 7am Europe/Paris`). Those tasks were relaunched as
+controlled Codex CLI sessions instead.
+
+## Integrated During Wave
+
+| Wave | Status | Evidence |
+| --- | --- | --- |
+| W76 | integrated into `refactor/integration-studio` | commit `96f9239`; `tests/test_runtime_engine.py` 12 passed; Ruff passed; `tests/test_runs_engine_routing.py` 14 passed |
 
 ## Integration Rules
 
@@ -66,4 +76,3 @@ Claude sessions.
 | Runtime/product adoption | W76/W77 should move Studio/Web away from backend-specific interpretation toward runtime contracts. |
 | Migration safety | W78 should improve standalone conversion/verification without adding runtime legacy readers. |
 | Ecosystem services | W79/W80/W81 should advance cluster/providers/core-release topology without breaking existing imports/APIs. |
-
