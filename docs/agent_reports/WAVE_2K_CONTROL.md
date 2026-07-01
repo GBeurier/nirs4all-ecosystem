@@ -97,11 +97,16 @@ Do not launch W99 until W90-W98 reports exist or have explicitly failed.
 | --- | --- | --- |
 | W90 | integrated in ecosystem | cutover gate commit `9acdf09`; post-W2J state gate passed locally. |
 | W91 | report complete | report commit `4afaad0`; paired dag-ml/dag-ml-data validation passed after aligning data side to integration head `818616e`; no new dag-ml commit. |
-| W92 | report complete | methods commit `d077ea5f`, ecosystem report commit `e7d4877`; package/import surface and ABI/parity gates passed. |
-| W93 | report complete | IO commit `ac7809d`, datasets commit `20b41824`, ecosystem report commit `d0fcdbf`; reference dataset bridge verified. |
-| W94 | report complete | lite commit `d9d92d7`, ecosystem report commit `5caa4b1`; topology manifest consumer-readiness tests passed. |
+| W92 | integrated into `nirs4all-methods/main` | worker commit `d077ea5f`, merge commit `46912485`; coordinator reran focused release-surface pytest and Ruff. |
+| W93 | integrated into `refactor/integration-io` and `nirs4all-datasets/main` | IO merge `e52eecd`; datasets merge `028fb1d7`; coordinator added direct real `NirsDataset` -> `nirs4all_io.load(..., target="dataset_package")` coverage in `ac455f32`; focused IO/datasets tests and Ruff passed. |
+| W94 | integrated into `refactor/integration-lite` | worker commit `d9d92d7`, merge commit `a08d91a`; coordinator fixed R license metadata/topology test in `6c08b92`; focused topology unittest/discover, Ruff, py_compile, and diff check passed. |
 | W95 | integrated into `refactor/integration-studio` | worker commit `88fbd99`, merge commit `b265ac4`; coordinator backend gate passed (`67 passed`) plus Ruff. |
 | W96 | integrated into `refactor/integration-studio` and `refactor/integration-web` | Studio worker commit `a32fbb9`, Web worker commit `f3ba05e`; Studio merge `ad2ec5e`, Web merge `977d1da`; coordinator added Studio test fix `0623042`; focused Vitest/typecheck/Web build gates passed. |
 | W97 | integrated into `nirs4all-tools/main` | worker commit `c10934a`, merge commit `0ff31c2`; coordinator reran tools pytest (`82 passed`), Ruff, mypy, and diff check. |
 | W98 | running | launched as Arendt (`019f1c82-75c8-74f2-afb0-cedbf297a06f`). |
-| W99 | running | launched as Ramanujan (`019f1c82-ffd9-7b21-9221-88135c437fcf`), with instruction to treat unfinished W95-W98 as pending. |
+| W99 | stale review complete | report commit `b45c7c2`; completed before W95/W96/W98 integration, so it is not final release evidence. |
+| W100 | review complete | report commit `7793ba2`; found Studio/Web runtime contract gaps around launch payloads, store summaries, fallback-policy extraction, and Web fallback defaults. |
+| W101 | review complete | report commit `fb5c780`; found central release-lock/topology, methods generated metadata, lite R license, tools golden, and IO/datasets cross-repo test gaps. |
+| W102 | running | ChatGPT worker Galileo (`019f1c97-86e5-7093-be50-2c7d0c5803a2`) owns Studio/Web runtime contract fixes. |
+| W103 | running | ChatGPT worker Euler (`019f1c97-b8eb-72f2-ad5f-d03909c55506`) owns ecosystem release-lock/topology fixes. |
+| W104 | running | ChatGPT worker Bacon (`019f1c98-2521-7c32-a314-1a3010ac9053`) owns `nirs4all-tools` migration golden cleanup. |
