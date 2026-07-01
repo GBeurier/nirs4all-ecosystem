@@ -391,3 +391,32 @@ Post-fast-forward targeted gates on primary checkouts:
   tests/test_server_api.py -q` -> 42 passed, 1 warning.
 - `nirs4all-providers`: `PYTHONPATH=src python3.11 -m pytest -q` -> 65
   collected with 61 passed and 4 skipped.
+
+Second alignment slice:
+
+| Repo | Previous primary head | New primary head | Integration head | Result |
+| --- | ---: | ---: | ---: | --- |
+| `dag-ml` | `4f0a3b5a7a96` | `618ffb220b5f` | `618ffb220b5f` | fast-forward, clean |
+| `nirs4all-io` | `5651da51fe74` | `e52eecd827a0` | `e52eecd827a0` | fast-forward, clean |
+
+Post-fast-forward targeted gates:
+
+- `dag-ml`: `cargo fmt --all --check`; `cargo clippy -p dag-ml-core -p
+  dag-ml-cli --all-targets -- -D warnings`; `cargo test -p dag-ml-core` ->
+  446 passed, 2 ignored; `DAG_ML_DATA_REPO=/home/delete/nirs4all/_worktrees/INT-dmd
+  python3 scripts/validate_contracts.py` -> passed.
+- `nirs4all-io`: `PYTHONPATH=src /home/delete/miniconda3/bin/python -m pytest
+  -q tests/test_dataset_package.py` -> 4 passed; `cargo test -p
+  nirs4all-io-core --lib` -> 93 passed.
+- A first `nirs4all-io` Python test attempt with `python3.11` failed at import
+  because that interpreter lacks `numpy`; a second attempt with `python3` failed
+  because it is Python 3.10 and lacks `StrEnum`. These were environment
+  selection issues, not test failures against the code.
+
+Not aligned:
+
+- `dag-ml-data` remains on `refactor/L20-lockstep@2214f75aa3c7` with the
+  preexisting dirty generated `_dag_ml_data.abi3.so`. The selected clean release
+  proof continues to use `_worktrees/INT-dmd@818616e9a2c2`.
+- `nirs4all` primary remains on `refactor/L17-pyref@13157d79d378`; it is not a
+  fast-forward to `_worktrees/INT-nirs4all@17ed929eeb77`.
