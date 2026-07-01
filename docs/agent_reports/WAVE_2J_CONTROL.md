@@ -53,9 +53,9 @@ The dirty main checkout `nirs4all/` is not an integration base.
 | W84 | Codex worker | `019f1c53-e31e-7e62-9d59-d2a59121bfa0` / Anscombe | `_worktrees/W84-tools-legacy-converter` | Harden standalone converter for old predictions/pipelines/workspaces. | `W84_TOOLS_LEGACY_CONVERTER.md` |
 | W85 | Codex worker | `019f1c53-e495-7ca0-a6f5-329c56ec56e9` / Wegener | `_worktrees/W85-studio-runtime-v1` | Studio backend runtime envelope as source of truth. | `W85_STUDIO_RUNTIME_V1.md` |
 | W86 | Codex worker | `019f1c53-e5db-7c03-a963-3eda84af3d3e` / Gauss | `_worktrees/W86-studio-ui-runtime` | Studio reusable runtime UI components. | `W86_STUDIO_UI_RUNTIME_COMPONENTS.md` |
-| W87 | Codex worker | queued; agent thread limit reached at launch | `_worktrees/W87-web-runtime-v1` | Web runtime V1 cutover, no silent fallback diagnostics. | `W87_WEB_RUNTIME_V1.md` |
-| W88 | Codex worker | queued; agent thread limit reached at launch | `_worktrees/W88-cluster-v1-dag` | Cluster V1 DAG scheduling, rights and worker-loss semantics. | `W88_CLUSTER_V1_DAG.md` |
-| W89 | Codex worker | queued; agent thread limit reached at launch | `_worktrees/W89-providers-pipeline-services` | Repository/benchmarks pipeline service contracts. | `W89_PROVIDERS_PIPELINE_SERVICES.md` |
+| W87 | Codex worker | `019f1c60-281d-7ea3-a86b-467d954efdd9` / Copernicus | `_worktrees/W87-web-runtime-v1` | Web runtime V1 cutover, no silent fallback diagnostics. | `W87_WEB_RUNTIME_V1.md` |
+| W88 | Codex worker | `019f1c61-ac69-7361-af40-2d81dbcacee9` / Newton | `_worktrees/W88-cluster-v1-dag` | Cluster V1 DAG scheduling, rights and worker-loss semantics. | `W88_CLUSTER_V1_DAG.md` |
+| W89 | Codex worker | `019f1c62-6f50-7c50-b020-89ae8e59e6e7` / Lagrange | `_worktrees/W89-providers-pipeline-services` | Repository/benchmarks pipeline service contracts. | `W89_PROVIDERS_PIPELINE_SERVICES.md` |
 
 ## Coordination Rules
 
@@ -72,5 +72,14 @@ The dirty main checkout `nirs4all/` is not an integration base.
 ## Launch Notes
 
 - The integrated agent backend accepted five concurrent workers (W82-W86).
-- W87-W89 are queued and should be launched as soon as one worker slot is
-  released.
+- W82 completed and its slot was reused for W87.
+- W84 completed and its slot was reused for W88.
+- W85 completed and its slot was reused for W89.
+
+## Integrated During Wave
+
+| Wave | Status | Evidence |
+| --- | --- | --- |
+| W82 | integrated into `refactor/integration-nirs4all` | worker commit `72c375e8`, integration commit `450d18e4`; coordinator reran focused selector/runtime/fallback tests (`42 passed, 1 skipped`), representative conformance selector (`2 passed`), Ruff, and mypy. |
+| W84 | integrated into `nirs4all-tools/main` | worker commit `b01eae3`, integration commit `44ce7a3`; coordinator reran tools pytest (`78 passed`), Ruff, mypy, and diff-check. |
+| W85 | integrated into `refactor/integration-studio` | worker commit `b7a90f9`, integration commit `0e2282a`; coordinator reran focused Studio runtime/runs/execution pytest (`95 passed`) and Ruff. |
