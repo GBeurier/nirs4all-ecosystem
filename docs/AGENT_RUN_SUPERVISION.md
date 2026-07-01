@@ -630,6 +630,35 @@ Post-merge Wave-2F gates reported by workers/supervisor:
 - `nirs4all-ecosystem` W50: py_compile, JSON validation, gate-runner validate,
   list/selfcheck/advisory smoke, workflow YAML parse, and Ruff passed.
 
+Supervisor post-merge recheck on integration tips:
+
+- `INT-nirs4all`: using the existing main-repo venv with
+  `PYTHONPATH=_worktrees/INT-nirs4all`, targeted export/RT/fallback/ledger tests
+  -> `31 passed, 1 xfailed`; `coverage_meter --check` -> `fallback=6`.
+- `INT-studio`: Python backend py_compile and Ruff on W44 preprocessing files
+  passed. TypeScript/Vitest were not rerun from this shell because WSL-local
+  `node` was not in `PATH`; W45's worker evidence remains the TS/Vitest gate.
+- `INT-cluster`: `tests/test_distributed_parity.py` -> `2 passed`; Ruff and
+  mypy passed.
+- `INT-providers`: full pytest completed with `56 passed, 4 skipped`; Ruff and
+  mypy passed, using the existing INT venv rather than `uv` resolver.
+- `nirs4all-tools/main`: full pytest -> `70 passed`; Ruff and mypy passed.
+- `nirs4all-ecosystem/main`: cutover gate manifest validation, py_compile,
+  JSON validation, and diff-check passed.
+- `INT-web`: WSL-local `node` was not available from this shell, so Web
+  TypeScript/Vitest/build were not rerun post-merge; W46's worker evidence
+  remains the Web gate.
+
+Environment notes from post-merge recheck:
+
+- `uv run` in `INT-nirs4all` could not resolve local unpublished dependency
+  `dag-ml>=0.2.1`; the recheck used an existing venv and explicit
+  `PYTHONPATH`.
+- `uv run` in `INT-providers` could not resolve local unpublished
+  `nirs4all-benchmarks`; the recheck used the existing INT venv.
+- Running Python Ruff on TypeScript files is invalid; Studio TS checks must use
+  the Node toolchain (`npm`/`tsc`/Vitest), not Python Ruff.
+
 Remaining Wave-2F facts:
 
 - `EXPECTED_FALLBACK` remains `6`; W41 records the exact native-contract
