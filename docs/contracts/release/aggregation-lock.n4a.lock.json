@@ -572,7 +572,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:7529158d18ff54415b668b17b8f27712891c0857d4bba2433e6ef4d84a03476c",
+          "canonical_json_sha256": "sha256:c585381853acab282a4666fb5a50a92b0454a5fe011db8434c2e6271c219a592",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -1081,12 +1081,44 @@
                 "repo": "GBeurier/nirs4all-methods",
                 "role": "Portable C ABI PLS/NIRS numerical engine"
               }
+            ],
+            "v1_release_surfaces": [
+              {
+                "distribution": "nirs4all-lite",
+                "ecosystem": "python",
+                "local_gate": "test-python",
+                "namespace": "nirs4all_lite",
+                "package_manifest": "bindings/python/pyproject.toml",
+                "registry": "pypi",
+                "release_workflow": "release-python.yml",
+                "tool_policy": "required"
+              },
+              {
+                "distribution": "nirs4all",
+                "ecosystem": "javascript_wasm",
+                "local_gate": "test-wasm",
+                "namespace": "nirs4all",
+                "package_manifest": "bindings/wasm/package.json",
+                "registry": "npm",
+                "release_workflow": "release-npm.yml",
+                "tool_policy": "required"
+              },
+              {
+                "distribution": "nirs4all",
+                "ecosystem": "r",
+                "local_gate": "test-r-if-available",
+                "namespace": "library(nirs4all)",
+                "package_manifest": "bindings/r/DESCRIPTION",
+                "registry": "cran/r-universe",
+                "release_workflow": "release-r.yml",
+                "tool_policy": "skip-locally-if-r-missing"
+              }
             ]
           },
           "json_schema": "nirs4all-lite.release-topology.v1",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_lite/_topology.py",
-          "raw_sha256": "sha256:5a754141b588185a6a50963f847d8afb2ff32c5d40529d095825d79485841630",
+          "raw_sha256": "sha256:c38e7faa8b5610e16d888965a397cc69e7bff3956923c5ecc17660cace49e282",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -1131,7 +1163,7 @@
       "role": "Portable aggregate bindings, future nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "922fdd11423101abeb12d7b321d2fc5aecd43e65",
+        "commit": "8fa133bfe4606e7e2d4dda2d10f7272b75a350e5",
         "dirty": false,
         "exact_tag": null
       },
