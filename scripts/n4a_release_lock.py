@@ -4,11 +4,18 @@
 This is the first implementation slice for LOCK-REL. The manifest is reviewed
 by humans; the lockfile is generated from the current sibling repositories and
 consumes the contract/ABI artifacts those repositories already own.
+
+Release version sources are read only from git-tracked files unless the manifest
+explicitly opts out with ``allow_untracked``. This prevents stale ignored package
+outputs from entering the lock. Python function contract artifacts are read from
+the committed ``HEAD:<path>`` source, then executed with an import allow-list, so
+dirty working-tree code is not imported as release evidence.
 """
 
 from __future__ import annotations
 
 import argparse
+import ast
 import fnmatch
 import hashlib
 import json
@@ -20,7 +27,7 @@ try:
     import tomllib
 except ModuleNotFoundError:  # Python 3.10 in the current workspace.
     import tomli as tomllib  # type: ignore[no-redef]
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 
@@ -65,6 +72,16 @@ def run(cmd: list[str], cwd: Path, allow_fail: bool = False) -> str | None:
     return proc.stdout.strip()
 
 
+def run_bytes(cmd: list[str], cwd: Path, allow_fail: bool = False) -> bytes | None:
+    proc = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if proc.returncode != 0:
+        if allow_fail:
+            return None
+        stderr = proc.stderr.decode("utf-8", errors="replace").strip()
+        raise RelError(f"command failed in {cwd}: {' '.join(cmd)}\n{stderr}")
+    return proc.stdout
+
+
 def git_url(repo_url: str) -> str:
     if "://" in repo_url or repo_url.startswith("git@"):
         return repo_url
@@ -107,6 +124,39 @@ def get_nested(data: Any, dotted: str) -> Any:
     return current
 
 
+def repo_relative_path(path: str) -> str:
+    rel = PurePosixPath(path)
+    if rel.is_absolute() or not rel.parts or any(part == ".." for part in rel.parts):
+        raise RelError(f"repository-relative path required: {path!r}")
+    return rel.as_posix()
+
+
+def git_tracked_path(repo_path: Path, rel_path: str) -> bool:
+    rel_path = repo_relative_path(rel_path)
+    return (
+        run(["git", "ls-files", "--error-unmatch", "--", rel_path], repo_path, allow_fail=True)
+        is not None
+    )
+
+
+def require_tracked_source(repo_path: Path, rel_path: str, label: str) -> str:
+    rel_path = repo_relative_path(rel_path)
+    if git_tracked_path(repo_path, rel_path):
+        return rel_path
+    ignored_by = run(
+        ["git", "check-ignore", "-v", "--", rel_path],
+        repo_path,
+        allow_fail=True,
+    )
+    ignored_hint = f"; ignored by {ignored_by}" if ignored_by else ""
+    raise RelError(f"{label} path is not tracked by git: {rel_path}{ignored_hint}")
+
+
+def git_head_file_bytes(repo_path: Path, rel_path: str) -> bytes | None:
+    rel_path = repo_relative_path(rel_path)
+    return run_bytes(["git", "show", f"HEAD:{rel_path}"], repo_path, allow_fail=True)
+
+
 def read_toml_version(path: Path, field: str) -> Any:
     with path.open("rb") as handle:
         data = tomllib.load(handle)
@@ -128,6 +178,25 @@ def read_description(path: Path) -> dict[str, str]:
         current_key = key.strip()
         values[current_key] = value.strip()
     return values
+
+
+def version_metadata(source: dict[str, Any], path: str, kind: str, value: Any) -> dict[str, Any]:
+    entry = {
+        "value": value,
+        "source": path,
+        "kind": kind,
+        "read_from": "tracked_worktree",
+    }
+    for optional_key in (
+        "distribution",
+        "module",
+        "generated_by",
+        "generated_output_path",
+        "metadata_source",
+    ):
+        if optional_key in source:
+            entry[optional_key] = source[optional_key]
+    return entry
 
 
 def parse_c_header_macros(path: Path) -> dict[str, Any]:
@@ -174,47 +243,142 @@ def collect_versions(repo_path: Path, component: dict[str, Any]) -> dict[str, An
     versions: dict[str, Any] = {}
     for source in component.get("version_sources", []):
         key = source["key"]
-        path = repo_path / source["path"]
+        rel_path = source["path"]
+        if not source.get("allow_untracked", False):
+            rel_path = require_tracked_source(
+                repo_path,
+                rel_path,
+                f"{component['key']}.{key} version source",
+            )
+        else:
+            rel_path = repo_relative_path(rel_path)
+        path = repo_path / rel_path
         if not path.exists():
-            versions[key] = {"missing": source["path"]}
+            versions[key] = {"missing": rel_path}
             continue
         kind = source["kind"]
         try:
             if kind == "toml":
-                versions[key] = {
-                    "value": read_toml_version(path, source["field"]),
-                    "source": source["path"],
-                    "kind": kind,
-                }
+                versions[key] = version_metadata(
+                    source,
+                    rel_path,
+                    kind,
+                    read_toml_version(path, source["field"]),
+                )
             elif kind == "description":
-                versions[key] = {
-                    "value": read_description(path).get(source.get("field", "Version")),
-                    "source": source["path"],
-                    "kind": kind,
-                }
+                versions[key] = version_metadata(
+                    source,
+                    rel_path,
+                    kind,
+                    read_description(path).get(source.get("field", "Version")),
+                )
             elif kind == "json":
-                versions[key] = {
-                    "value": get_nested(load_json(path), source["field"]),
-                    "source": source["path"],
-                    "kind": kind,
-                }
+                versions[key] = version_metadata(
+                    source,
+                    rel_path,
+                    kind,
+                    get_nested(load_json(path), source["field"]),
+                )
             elif kind == "c_header_macros":
-                versions[key] = {
-                    "value": parse_c_header_macros(path),
-                    "source": source["path"],
-                    "kind": kind,
-                }
+                versions[key] = version_metadata(
+                    source,
+                    rel_path,
+                    kind,
+                    parse_c_header_macros(path),
+                )
             else:
                 raise RelError(f"unsupported version source kind: {kind}")
         except RelError as exc:
             raise RelError(
                 f"{component['key']}.{key} version source failed "
-                f"({source['path']}): {exc}"
+                f"({rel_path}): {exc}"
             ) from exc
     return versions
 
 
+def validate_python_imports(
+    source_text: str,
+    *,
+    rel_path: str,
+    allowed_imports: set[str],
+) -> None:
+    tree = ast.parse(source_text, filename=f"HEAD:{rel_path}")
+    allowed_imports = set(allowed_imports)
+    allowed_imports.add("__future__")
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imports = [alias.name.split(".", 1)[0] for alias in node.names]
+        elif isinstance(node, ast.ImportFrom):
+            if node.level:
+                raise RelError(
+                    f"{rel_path} uses a relative import; "
+                    "python_function_json artifacts forbid that"
+                )
+            imports = [((node.module or "").split(".", 1)[0])]
+        else:
+            continue
+        blocked = sorted(
+            name for name in imports if name and name not in allowed_imports
+        )
+        if blocked:
+            raise RelError(
+                f"{rel_path} imports {blocked}; allowed_imports is {sorted(allowed_imports)}"
+            )
+
+
+def collect_python_function_json_artifact(
+    repo_path: Path,
+    artifact: dict[str, Any],
+) -> dict[str, Any]:
+    rel_path = repo_relative_path(artifact["path"])
+    function_name = artifact["function"]
+    read_from = artifact.get("read_from", "git_head")
+    if read_from != "git_head":
+        raise RelError(
+            f"python_function_json artifact {artifact['id']} must read_from git_head"
+        )
+
+    base: dict[str, Any] = {
+        "id": artifact["id"],
+        "kind": artifact["kind"],
+        "path": rel_path,
+        "function": function_name,
+        "read_from": read_from,
+        "source_ref": "HEAD",
+    }
+    source_bytes = git_head_file_bytes(repo_path, rel_path)
+    if source_bytes is None:
+        return {**base, "missing": True}
+
+    source_text = source_bytes.decode("utf-8")
+    allowed_imports = set(artifact.get("allowed_imports", []))
+    validate_python_imports(source_text, rel_path=rel_path, allowed_imports=allowed_imports)
+    namespace: dict[str, Any] = {
+        "__name__": "_n4a_release_contract",
+        "__file__": f"HEAD:{rel_path}",
+    }
+    exec(compile(source_text, f"HEAD:{rel_path}", "exec"), namespace)
+    function = namespace.get(function_name)
+    if not callable(function):
+        raise RelError(f"{rel_path} does not define callable {function_name}()")
+    data = function()
+    canonical = canonical_json(data)
+    base.update(
+        {
+            "raw_sha256": sha256_bytes(source_bytes),
+            "canonical_json_sha256": sha256_bytes(canonical),
+            "json_schema": data.get("schema") if isinstance(data, dict) else None,
+        }
+    )
+    if artifact.get("include_json", False):
+        base["json"] = data
+    return base
+
+
 def collect_contract_artifact(repo_path: Path, artifact: dict[str, Any]) -> dict[str, Any]:
+    if artifact["kind"] == "python_function_json":
+        return collect_python_function_json_artifact(repo_path, artifact)
+
     path = repo_path / artifact["path"]
     if not path.exists():
         return {"id": artifact["id"], "kind": artifact["kind"], "path": artifact["path"], "missing": True}

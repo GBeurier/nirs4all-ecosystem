@@ -268,14 +268,24 @@
         {
           "key": "python_nirs4all_methods",
           "kind": "toml",
-          "path": "bindings/python_nirs4all_methods/pyproject.toml",
-          "field": "project.version"
+          "path": "bindings/python/pyproject.toml",
+          "field": "project.version",
+          "distribution": "nirs4all-methods",
+          "module": "n4m",
+          "generated_by": "bindings/python/scripts/make_python_package.py",
+          "generated_output_path": "bindings/python_nirs4all_methods/pyproject.toml",
+          "metadata_source": "tracked source metadata for generated package"
         },
         {
           "key": "python_pls4all",
           "kind": "toml",
-          "path": "bindings/python_pls4all/pyproject.toml",
-          "field": "project.version"
+          "path": "bindings/python/pyproject.toml",
+          "field": "project.version",
+          "distribution": "pls4all",
+          "module": "pls4all",
+          "generated_by": "bindings/python/scripts/make_python_package.py",
+          "generated_output_path": "bindings/python_pls4all/pyproject.toml",
+          "metadata_source": "tracked source metadata for generated package"
         },
         {
           "key": "r_n4m",
@@ -475,6 +485,7 @@
       },
       "required_gates": [
         "lite_version_guard",
+        "lite_release_topology_manifest",
         "lite_release_source",
         "lite_pipeline_parity"
       ],
@@ -502,6 +513,20 @@
           "kind": "description",
           "path": "bindings/r/DESCRIPTION",
           "field": "Version"
+        }
+      ],
+      "contract_artifacts": [
+        {
+          "id": "release_topology_manifest",
+          "kind": "python_function_json",
+          "path": "bindings/python/src/nirs4all_lite/_topology.py",
+          "function": "release_topology_manifest",
+          "read_from": "git_head",
+          "allowed_imports": [
+            "copy",
+            "typing"
+          ],
+          "include_json": true
         }
       ]
     },
