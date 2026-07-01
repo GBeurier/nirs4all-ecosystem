@@ -105,3 +105,84 @@ Validation:
 - `git diff --check`
 
 `pyref_oracle_full` was not run.
+
+### 2026-07-01T16:08:43+02:00
+
+Lane E (`nirs4all-lite`) completed and was reviewed.
+
+- Commit: `272e07fb82d252269474f30bd6b5a5e89271d8a8`
+  (`test(release): lock V1 surface gates`).
+- Files modified:
+  - `bindings/python/tests/test_release_topology.py`
+  - `bindings/r/tests/upstreams.R`
+- Decision: the existing public V1 surfaces were already correctly declared:
+  Python `nirs4all-lite`/facades, npm/WASM `nirs4all`, and R `nirs4all`.
+  W2T adds a regression test that `test-v1-surfaces` depends on
+  `test-python`, `test-wasm`, and `test-r-if-available`, plus an explicit
+  `library(nirs4all)` load in the R upstream test.
+- Review tests run by the coordinator:
+  - `PYTHONPATH=bindings/python/src python3 -m unittest discover -s bindings/python/tests`
+    passed: 35 tests, 1 skipped.
+  - `PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm test --prefix bindings/wasm`
+    passed: 12 tests.
+  - `make test-r-if-available` skipped because `R` is not installed locally.
+  - `PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH PYTHONPATH=bindings/python/src make test-v1-surfaces`
+    passed; R skipped only through `test-r-if-available`.
+  - `git diff --check` passed; worktree clean.
+- Risk: the R `library(nirs4all)` proof was not executed locally because R is
+  unavailable; it remains a release-infrastructure obligation.
+
+Lane K read-only audit completed.
+
+- Already integrated or superseded, do not remerge: W92 methods (`d077ea5f`
+  already in `nirs4all-methods/main@00ca8467`), W94 lite (`d9d92d7` already in
+  `nirs4all-lite/main@272e07f`), W95/W96 Studio, W96 Web, W97 tools, W98 full
+  parity gate, W93 IO/datasets/formats, and W2S providers.
+- Still requires a dedicated future audit before any merge:
+  `nirs4all/refactor/L17-pyref@13157d79` diverges from
+  `_worktrees/INT-nirs4all@7ab1ec1e` and contains multisource/stacking commits
+  that may overlap current INT work.
+- Dirty or local states to preserve and not merge blindly:
+  `dag-ml-data/refactor/L20-lockstep` has a generated
+  `_dag_ml_data.abi3.so`; a Claude-era nirs4all worktree has untracked parity
+  files; old W1-W89 worktrees remain audit-only.
+- The audit confirmed the public V1 matrix still contains:
+  `nirs4all.python.oracle`, `nirs4all.r.aggregate`,
+  `nirs4all.browser_wasm.aggregate`,
+  `nirs4all.browser_wasm.methods_scoped`, and
+  `nirs4all.browser_wasm.datasets_scoped`.
+
+Coordinator integration after all lanes:
+
+- Regenerated `docs/contracts/release/aggregation-lock.n4a.lock.json` against
+  `/home/delete/nirs4all/_release_roots/W2L-selected` to select
+  `nirs4all-lite@272e07fb82d2`; this was the only lock delta.
+- Release lock validation passed against the selected root.
+- `python3 scripts/n4a_release_surface_matrix.py validate` passed.
+- `python3 scripts/n4a_release_surface_matrix.py report` confirmed:
+  - `nirs4all.python.oracle`
+  - `nirs4all.r.aggregate`
+  - `nirs4all.browser_wasm.aggregate`
+  - `nirs4all.browser_wasm.methods_scoped`
+  - `nirs4all.browser_wasm.datasets_scoped`
+- `python3 -m pytest tests -q` passed: 13 passed.
+- `python3 -m pytest tests/test_release_surface_matrix.py tests/test_release_lock.py tests/test_cutover_state_gate.py -q`
+  passed: 13 passed.
+- `python3 scripts/n4a_cutover_gates.py validate --workspace-root /home/delete/nirs4all`
+  passed and listed the promoted gates:
+  `installed_n4m_proof`, `providers_local_sibling_release`,
+  `lite_v1_surfaces`.
+- Targeted W2T gates passed:
+  `python3 scripts/n4a_cutover_gates.py run --workspace-root /home/delete/nirs4all --gate installed_n4m_proof --gate providers_local_sibling_release --gate lite_v1_surfaces --skip pyref_oracle_full --timeout 2400 --json`.
+  - `installed_n4m_proof`: `NIRS4ALL_INSTALLED_N4M_OK`, ABI 2.0.0,
+    prediction checksum `27.92499999999999`.
+  - `providers_local_sibling_release`: `ok: true` with explicit
+    datasets/repository venv dependency paths.
+  - `lite_v1_surfaces`: Python and WASM gates passed; R skipped only because R
+    is not installed locally.
+- Full non-`pyref_oracle_full` cutover passed:
+  `N4A_RELEASE_WORKSPACE_ROOT=/home/delete/nirs4all/_release_roots/W2L-selected python3 scripts/n4a_cutover_gates.py run --workspace-root /home/delete/nirs4all --skip pyref_oracle_full --json`.
+  The report returned `passed: true` with no required gate failures.
+
+`pyref_oracle_full` remains deferred. The last full proof remains W98; W2T adds
+release proof gates but does not replace a final full parity run.
