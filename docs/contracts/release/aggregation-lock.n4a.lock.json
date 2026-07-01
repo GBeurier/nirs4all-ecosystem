@@ -388,7 +388,7 @@
       "role": "Reference dataset catalog",
       "state": {
         "branch": "main",
-        "commit": "ac455f321144ea7064b38fce131d0ad6482592f7",
+        "commit": "44662562b0073afa08b350b0f360166ebc819a91",
         "dirty": false,
         "exact_tag": null
       },
@@ -537,7 +537,7 @@
       "role": "Dataset assembly and DatasetPackage bridge",
       "state": {
         "branch": "refactor/integration-io",
-        "commit": "eae8263f0c5f6a9b4751950a308c3bf3d3d483b1",
+        "commit": "7e90b4d2161caf990d87bccc872280b9acbb0587",
         "dirty": false,
         "exact_tag": null
       },
@@ -1163,7 +1163,7 @@
       "role": "Portable aggregate bindings, future nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "12612f444baa4fdf2734bf777781af5355160e58",
+        "commit": "786688d2ee4aec905c8deda17d0ec888d12c43ad",
         "dirty": false,
         "exact_tag": null
       },
@@ -1257,7 +1257,7 @@
       "role": "Portable methods kernels and C ABI",
       "state": {
         "branch": "main",
-        "commit": "00ca846705bc6ca30ec34ad9e8452e241dda6945",
+        "commit": "0f328018348b97880551d8d36d2f298de0b46064",
         "dirty": false,
         "exact_tag": null
       },
