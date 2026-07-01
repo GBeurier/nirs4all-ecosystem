@@ -444,6 +444,11 @@ Still not a clean current-root release proof:
 
 - current `/home/delete/nirs4all/dag-ml-data` still has modified
   `crates/dag-ml-data-py/python/dag_ml_data/_dag_ml_data.abi3.so`;
+- a temporary current-root lock generated after alignment differs from the
+  selected lock in branch identity for `dag_ml` (`refactor/L20-lockstep` vs
+  `refactor/integration-dagml`), `dag_ml_data` (`refactor/L20-lockstep` vs
+  `refactor/integration-dmd`), and `io` (`refactor/L7-io-dagml-sibling` vs
+  `refactor/integration-io`), and it records `dag_ml_data.dirty=true`;
 - selected release proof continues to use the clean `_worktrees/INT-dmd`
   checkout through `_release_roots/W2L-selected`.
 
@@ -460,3 +465,35 @@ Final short checks after this alignment batch:
 Full parity was not rerun in this follow-up per the user instruction to reserve
 it for large integration batches. The current full-parity evidence remains W98:
 `804 passed, 32 skipped, 11 xfailed` from `/tmp/w98_full_parity.log`.
+
+## Core Primary Checkout Audit
+
+`nirs4all` primary remains on `refactor/L17-pyref@13157d79d378`. It is not a
+fast-forward candidate for `refactor/integration-nirs4all@17ed929eeb77`.
+
+Ancestry:
+
+- merge-base: `1e4d8043bb568ceccf20bc6f6485d32f197ff1f6`;
+- L17-only commits after the merge-base:
+  `8ef94242` (stacking refit coverage), `8eff3b57` (source layout),
+  `5e00e400` (by-source distinct preprocessing), `13157d79` (source concat);
+- integration-only commits include the W98 strict cutover/parity stack plus
+  corresponding broader commits (`0aa2a674`, `362c2d79`, `4ef0b3fe`,
+  `63976243`, `8f29a304`, and later W98 gates).
+
+Local non-mutating merge check:
+
+- merging `17ed929eeb77` into a temporary clone at `13157d79` produces conflicts
+  in `docs/compatibility.json`, `nirs4all/pipeline/dagml/detect.py`,
+  `envelope.py`, `node_runner.py`, `run_backend.py`, `run_paths.py`,
+  `tests/integration/parity/test_conformance_dual_engine.py`,
+  `test_dagml_cli_runner.py`, and related runtime/parity files.
+
+Conclusion:
+
+- do not merge or reset `refactor/L17-pyref` mechanically;
+- treat `_worktrees/INT-nirs4all@17ed929eeb77` as the current V1 core proof;
+- any attempt to unify the primary checkout with W98 needs a dedicated conflict
+  resolution batch and should end with targeted parity gates plus the full
+  Python-reference parity gate, because this touches core runtime/parity
+  semantics.
