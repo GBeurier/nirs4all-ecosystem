@@ -537,7 +537,7 @@
       "role": "Dataset assembly and DatasetPackage bridge",
       "state": {
         "branch": "refactor/integration-io",
-        "commit": "e52eecd827a0d68afd0d4ecd05b65651e9747928",
+        "commit": "b958a290df3d09b17548228c6e5cda4a19da2e42",
         "dirty": false,
         "exact_tag": null
       },
