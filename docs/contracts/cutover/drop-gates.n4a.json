@@ -232,6 +232,22 @@
       ]
     },
     {
+      "id": "release_lock_fetchability_audit",
+      "title": "Aggregation release lock remote fetchability audit",
+      "lane": "LOCK-REL/L3",
+      "required": true,
+      "cwd": "nirs4all-ecosystem",
+      "command": [
+        "bash",
+        "-lc",
+        "python3 scripts/n4a_release_lock.py audit-fetchability --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json --fail-on-unfetchable"
+      ],
+      "evidence": [
+        "every locked member commit is fetchable from its configured repo_url",
+        "release lock pins are reproducible from clean remote clones"
+      ]
+    },
+    {
       "id": "lite_v1_surfaces",
       "title": "Lite aggregate Python/R/WASM V1 surfaces",
       "lane": "W2N/W2T-E",

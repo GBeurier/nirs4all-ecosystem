@@ -23,6 +23,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 try:
     import tomllib
 except ModuleNotFoundError:  # Python 3.10 in the current workspace.
@@ -33,6 +34,7 @@ from typing import Any
 
 LOCK_SCHEMA_VERSION = "n4a.aggregation-lock/v1"
 MANIFEST_SCHEMA_VERSION = "n4a.aggregation-manifest/v1"
+FETCHABILITY_SCHEMA_VERSION = "n4a.release-lock-fetchability/v1"
 
 
 class RelError(RuntimeError):
@@ -600,6 +602,147 @@ def checkout_members(manifest_path: Path, lock_path: Path, output_root: Path) ->
         print(f"checked out {key} at {commit}")
 
 
+def run_audit_command(cmd: list[str], cwd: Path) -> tuple[int, str]:
+    proc = subprocess.run(cmd, cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    message = "\n".join(part for part in (proc.stdout.strip(), proc.stderr.strip()) if part)
+    return proc.returncode, message[-4000:]
+
+
+def audit_member_fetchability(
+    key: str,
+    component: dict[str, Any] | None,
+    member: dict[str, Any],
+    checkout_root: Path,
+) -> dict[str, Any]:
+    state = member.get("state", {})
+    commit = state.get("commit")
+    branch = state.get("branch")
+    report: dict[str, Any] = {
+        "key": key,
+        "commit": commit,
+        "branch": branch,
+    }
+    if component is None:
+        return {
+            **report,
+            "status": "missing_manifest_component",
+            "message": "member is absent from manifest",
+        }
+    repo_path = component.get("repo_path")
+    repo_url = component.get("repo_url")
+    report.update(
+        {
+            "repo_path": repo_path,
+            "repo_url": repo_url,
+        }
+    )
+    if not repo_path:
+        return {
+            **report,
+            "status": "missing_repo_path",
+            "message": "manifest component has no repo_path",
+        }
+    if not repo_url:
+        return {
+            **report,
+            "status": "missing_repo_url",
+            "message": "manifest component has no repo_url",
+        }
+    if not commit:
+        return {**report, "status": "missing_commit", "message": "lock member has no state.commit"}
+    try:
+        resolved_url = git_url(repo_url)
+    except RelError as exc:
+        return {**report, "status": "invalid_repo_url", "message": str(exc)}
+    report["resolved_url"] = resolved_url
+
+    target = checkout_root / repo_path
+    report["checkout_path"] = str(target)
+    if target.exists():
+        return {
+            **report,
+            "status": "target_exists",
+            "message": f"checkout target already exists: {target}",
+        }
+    target.parent.mkdir(parents=True, exist_ok=True)
+    code, message = run_audit_command(
+        ["git", "clone", "--filter=blob:none", "--no-checkout", resolved_url, str(target)],
+        checkout_root,
+    )
+    if code != 0:
+        return {**report, "status": "clone_failed", "message": message}
+    checkout_cmd = (
+        ["git", "checkout", "-B", branch, commit]
+        if branch
+        else ["git", "checkout", "--detach", commit]
+    )
+    code, message = run_audit_command(checkout_cmd, target)
+    if code != 0:
+        return {**report, "status": "checkout_failed", "message": message}
+    return {**report, "status": "ok", "message": "checked out locked commit"}
+
+
+def build_fetchability_report(
+    manifest_path: Path,
+    lock_path: Path,
+    checkout_root: Path,
+) -> dict[str, Any]:
+    manifest = load_json(manifest_path)
+    lock = load_json(lock_path)
+    if manifest.get("schema_version") != MANIFEST_SCHEMA_VERSION:
+        raise RelError(f"unexpected manifest schema_version: {manifest.get('schema_version')!r}")
+    if lock.get("schema_version") != LOCK_SCHEMA_VERSION:
+        raise RelError(f"unexpected lock schema_version: {lock.get('schema_version')!r}")
+    members = lock.get("members", {})
+    if not isinstance(members, dict) or not members:
+        raise RelError("lock must contain a non-empty members object")
+    by_key = {component["key"]: component for component in manifest.get("components", [])}
+    checkout_root.mkdir(parents=True, exist_ok=True)
+    rows = [
+        audit_member_fetchability(key, by_key.get(key), member, checkout_root)
+        for key, member in members.items()
+    ]
+    fetchable = sum(1 for row in rows if row["status"] == "ok")
+    return {
+        "schema_version": FETCHABILITY_SCHEMA_VERSION,
+        "manifest_path": str(manifest_path),
+        "lock_path": str(lock_path),
+        "checkout_root": str(checkout_root),
+        "totals": {
+            "members": len(rows),
+            "fetchable": fetchable,
+            "unfetchable": len(rows) - fetchable,
+        },
+        "members": rows,
+    }
+
+
+def audit_fetchability(
+    manifest_path: Path,
+    lock_path: Path,
+    checkout_root: Path | None = None,
+) -> dict[str, Any]:
+    if checkout_root is not None:
+        return build_fetchability_report(manifest_path, lock_path, checkout_root)
+    with tempfile.TemporaryDirectory(prefix="n4a-release-lock-fetch-") as tmp:
+        return build_fetchability_report(manifest_path, lock_path, Path(tmp))
+
+
+def print_fetchability_summary(report: dict[str, Any]) -> None:
+    totals = report["totals"]
+    print(
+        "fetchability: "
+        f"{totals['fetchable']}/{totals['members']} member commits checked out "
+        f"({totals['unfetchable']} unfetchable)"
+    )
+    for row in report["members"]:
+        if row["status"] == "ok":
+            continue
+        message = row.get("message") or ""
+        first_line = message.splitlines()[0] if message else row["status"]
+        print(f"{row['key']}: {row['status']}: {first_line}")
+
+
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -622,6 +765,24 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     checkout.add_argument("--manifest", type=Path, required=True)
     checkout.add_argument("--lock", type=Path, required=True)
     checkout.add_argument("--output", type=Path, required=True)
+
+    audit = sub.add_parser(
+        "audit-fetchability",
+        help="Audit that every lockfile member commit can be cloned from its configured repo_url.",
+    )
+    audit.add_argument("--manifest", type=Path, required=True)
+    audit.add_argument("--lock", type=Path, required=True)
+    audit.add_argument(
+        "--checkout-root",
+        type=Path,
+        help="Optional root for temporary member clones. If omitted, clones are deleted after the audit.",
+    )
+    audit.add_argument("--output-json", type=Path, help="Write the full audit report to JSON.")
+    audit.add_argument(
+        "--fail-on-unfetchable",
+        action="store_true",
+        help="Return a non-zero status when any locked commit is not fetchable.",
+    )
     return parser.parse_args(argv)
 
 
@@ -640,6 +801,16 @@ def main(argv: list[str]) -> int:
             return 0
         if args.command == "checkout-members":
             checkout_members(args.manifest.resolve(), args.lock.resolve(), args.output.resolve())
+            return 0
+        if args.command == "audit-fetchability":
+            checkout_root = args.checkout_root.resolve() if args.checkout_root else None
+            report = audit_fetchability(args.manifest.resolve(), args.lock.resolve(), checkout_root)
+            if args.output_json:
+                write_json(args.output_json.resolve(), report)
+                print(f"wrote {args.output_json}")
+            print_fetchability_summary(report)
+            if args.fail_on_unfetchable and report["totals"]["unfetchable"]:
+                return 1
             return 0
     except RelError as exc:
         print(f"error: {exc}", file=sys.stderr)

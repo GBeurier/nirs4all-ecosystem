@@ -32,6 +32,18 @@ def _git(repo: Path, *args: str) -> None:
     )
 
 
+def _git_output(repo: Path, *args: str) -> str:
+    proc = subprocess.run(
+        ["git", *args],
+        cwd=repo,
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    return proc.stdout.strip()
+
+
 def _init_repo(repo: Path) -> None:
     repo.mkdir()
     _git(repo, "init")
@@ -42,6 +54,91 @@ def _init_repo(repo: Path) -> None:
 def _commit_all(repo: Path, message: str = "fixture") -> None:
     _git(repo, "add", ".")
     _git(repo, "commit", "-m", message)
+
+
+def _write_json(path: Path, data: object) -> None:
+    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
+def _write_fetchability_fixture(tmp_path: Path) -> tuple[ModuleType, Path, Path]:
+    release_lock = _load_release_lock()
+    repo = tmp_path / "remote"
+    _init_repo(repo)
+    (repo / "README.md").write_text("fixture\n", encoding="utf-8")
+    _commit_all(repo)
+    commit = _git_output(repo, "rev-parse", "HEAD")
+    repo_url = repo.resolve().as_uri()
+
+    manifest = {
+        "schema_version": release_lock.MANIFEST_SCHEMA_VERSION,
+        "components": [
+            {"key": "ok", "repo_path": "ok-repo", "repo_url": repo_url},
+            {"key": "missing", "repo_path": "missing-repo", "repo_url": repo_url},
+        ],
+    }
+    lock = {
+        "schema_version": release_lock.LOCK_SCHEMA_VERSION,
+        "members": {
+            "ok": {"state": {"commit": commit, "branch": "main"}},
+            "missing": {"state": {"commit": "0" * 40, "branch": "main"}},
+        },
+    }
+    manifest_path = tmp_path / "manifest.json"
+    lock_path = tmp_path / "lock.json"
+    _write_json(manifest_path, manifest)
+    _write_json(lock_path, lock)
+    return release_lock, manifest_path, lock_path
+
+
+def test_audit_fetchability_reports_unfetchable_members(tmp_path: Path) -> None:
+    release_lock, manifest_path, lock_path = _write_fetchability_fixture(tmp_path)
+
+    report = release_lock.audit_fetchability(
+        manifest_path,
+        lock_path,
+        tmp_path / "checkouts",
+    )
+
+    assert report["schema_version"] == release_lock.FETCHABILITY_SCHEMA_VERSION
+    assert report["totals"] == {"members": 2, "fetchable": 1, "unfetchable": 1}
+    by_key = {row["key"]: row for row in report["members"]}
+    assert by_key["ok"]["status"] == "ok"
+    assert by_key["missing"]["status"] == "checkout_failed"
+
+
+def test_audit_fetchability_cli_only_fails_when_requested(tmp_path: Path) -> None:
+    release_lock, manifest_path, lock_path = _write_fetchability_fixture(tmp_path)
+    output_json = tmp_path / "fetchability.json"
+
+    assert (
+        release_lock.main(
+            [
+                "audit-fetchability",
+                "--manifest",
+                str(manifest_path),
+                "--lock",
+                str(lock_path),
+                "--output-json",
+                str(output_json),
+            ]
+        )
+        == 0
+    )
+    assert json.loads(output_json.read_text(encoding="utf-8"))["totals"]["unfetchable"] == 1
+
+    assert (
+        release_lock.main(
+            [
+                "audit-fetchability",
+                "--manifest",
+                str(manifest_path),
+                "--lock",
+                str(lock_path),
+                "--fail-on-unfetchable",
+            ]
+        )
+        == 1
+    )
 
 
 def test_collect_versions_rejects_ignored_generated_package_source(tmp_path: Path) -> None:
