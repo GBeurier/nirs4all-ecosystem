@@ -1,0 +1,182 @@
+{
+  "schema_version": "n4a.cutover-gates/v1",
+  "gate_set": "LOCK-DROP",
+  "description": "Non-mutating evidence commands required before switching nirs4all DEFAULT_ENGINE to dag-ml.",
+  "workspace_root_hint": "/home/delete/nirs4all",
+  "policy": {
+    "default_mode": "list",
+    "mutates_repositories": false,
+    "requires_clean_worktrees": true,
+    "cutover_condition": "All required gates pass, coverage_meter.summary.fallback == 0, and no gate relies on implicit legacy fallback."
+  },
+  "gates": [
+    {
+      "id": "pyref_coverage_zero",
+      "title": "PYREF fallback meter is empty",
+      "lane": "B-010/L19",
+      "required": true,
+      "cwd": "_worktrees/INT-nirs4all",
+      "command": [
+        "bash",
+        "-lc",
+        "tmp=$(mktemp); PYTHONPATH={workspace_root}/dag-ml/crates/dag-ml-py/python:. PATH={workspace_root}/dag-ml/target/release:$PATH /home/delete/miniconda3/bin/python -m tests.integration.parity.coverage_meter --json \"$tmp\" --check && python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d[\"summary\"][\"fallback\"] == 0, d[\"summary\"]' \"$tmp\""
+      ],
+      "evidence": [
+        "coverage_meter --check passes",
+        "coverage_meter.summary.fallback == 0"
+      ]
+    },
+    {
+      "id": "pyref_oracle_full",
+      "title": "Full Python reference parity oracle",
+      "lane": "LOCK-PYREF/B-011",
+      "required": true,
+      "cwd": "_worktrees/INT-nirs4all",
+      "command": [
+        "bash",
+        "-lc",
+        "PYTHONPATH={workspace_root}/dag-ml/crates/dag-ml-py/python:. PATH={workspace_root}/dag-ml/target/release:$PATH /home/delete/miniconda3/bin/python -m pytest tests/integration/parity/ -m parity -p no:cacheprovider"
+      ],
+      "evidence": [
+        "strict xfail inventory unchanged or intentionally updated",
+        "native boundary test is not xfailed",
+        "legacy vs dag-ml parity passes for every non-fallback runnable case"
+      ]
+    },
+    {
+      "id": "native_n4a_export",
+      "title": "Native .n4a export and cross-engine bundle parity",
+      "lane": "B-011/L19",
+      "required": true,
+      "cwd": "_worktrees/INT-nirs4all",
+      "command": [
+        "bash",
+        "-lc",
+        "PYTHONPATH={workspace_root}/dag-ml/crates/dag-ml-py/python:. PATH={workspace_root}/dag-ml/target/release:$PATH /home/delete/miniconda3/bin/python -m pytest -q tests/integration/parity/test_dagml_native_n4a_bundle.py tests/integration/parity/test_conformance_n4a_cross_engine.py tests/integration/parity/test_cross_engine_export_surface.py"
+      ],
+      "evidence": [
+        "dag-ml native export does not call the legacy engine for supported native artifacts",
+        "legacy and dag-ml bundles load through the public predict path",
+        "unsupported export selectors fail before bridge materialization"
+      ]
+    },
+    {
+      "id": "studio_runtime_routes",
+      "title": "Studio route-level runtime adoption",
+      "lane": "B-017/B-018",
+      "required": true,
+      "cwd": "_worktrees/INT-studio",
+      "command": [
+        "bash",
+        "-lc",
+        "PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m pytest -q tests/test_runs_engine_routing.py tests/test_runs_execution_backend.py tests/test_runtime_errors.py tests/test_spectra_perf.py tests/test_playground.py::TestStatisticsAndPCA::test_statistics_computation && PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m compileall -q api && ruff check api tests/test_runs_engine_routing.py tests/test_runs_execution_backend.py tests/test_runtime_errors.py tests/test_spectra_perf.py"
+      ],
+      "evidence": [
+        "requested engine, actual engine, fallback status, and RtError metadata survive route retries",
+        "remaining Studio compute paths are either runtime-backed or explicitly listed as blockers"
+      ]
+    },
+    {
+      "id": "web_runtime_contract",
+      "title": "Web runtime contract and browser smoke",
+      "lane": "B-018",
+      "required": true,
+      "cwd": "_worktrees/INT-web",
+      "command": [
+        "bash",
+        "-lc",
+        "export PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH; npm run typecheck && npm run test -- dagml-engine.rt-fallback.test.ts && npm run build && npm run build:single && node scripts/run-smokes.mjs rt-fallback"
+      ],
+      "evidence": [
+        "allowFallback=false is observable in Web runtime errors",
+        "served browser smoke covers fallback diagnostics",
+        "single-file build still carries runtime metadata"
+      ]
+    },
+    {
+      "id": "dagml_lockstep",
+      "title": "dag-ml lockstep contracts against dag-ml-data",
+      "lane": "LOCK-LOCKSTEP/L20",
+      "required": true,
+      "cwd": "_worktrees/INT-dagml",
+      "command": [
+        "bash",
+        "-lc",
+        "cargo fmt --all --check && cargo clippy -p dag-ml-core -p dag-ml-cli --all-targets -- -D warnings && cargo test -p dag-ml-core && DAG_ML_DATA_REPO={workspace_root}/_worktrees/INT-dmd python3 scripts/validate_contracts.py"
+      ],
+      "evidence": [
+        "shared contract artifacts validate against the sibling dag-ml-data integration tip",
+        "data-requirements consumers still compile and test"
+      ]
+    },
+    {
+      "id": "dagml_data_lockstep",
+      "title": "dag-ml-data lockstep contracts against dag-ml",
+      "lane": "LOCK-LOCKSTEP/L20",
+      "required": true,
+      "cwd": "_worktrees/INT-dmd",
+      "command": [
+        "bash",
+        "-lc",
+        "cargo fmt --all --check && cargo clippy -p dag-ml-data-core -p dag-ml-data-cli --all-targets -- -D warnings && cargo test -p dag-ml-data-core && DAG_ML_REPO={workspace_root}/_worktrees/INT-dagml python3 scripts/validate_contracts.py"
+      ],
+      "evidence": [
+        "shared contract artifacts validate against the sibling dag-ml integration tip",
+        "registry-backed model-input validation still passes"
+      ]
+    },
+    {
+      "id": "migration_tool_smoke",
+      "title": "Standalone migration toolbox smoke",
+      "lane": "LOCK-MIG/L18",
+      "required": true,
+      "cwd": "nirs4all-tools",
+      "command": [
+        "bash",
+        "-lc",
+        "PYTHONPATH=src /home/delete/.local/bin/pytest tests -q && python3 -m compileall -q src tests && ruff check src tests"
+      ],
+      "evidence": [
+        "legacy artifacts are never migrated in place",
+        "strict conversions refuse unsafe legacy data before output",
+        "best-effort conversions preserve opaque payloads with checksums"
+      ]
+    },
+    {
+      "id": "release_lock_validation",
+      "title": "Aggregation release lock validation",
+      "lane": "LOCK-REL/L3",
+      "required": true,
+      "cwd": "nirs4all-ecosystem",
+      "command": [
+        "python3",
+        "scripts/n4a_release_lock.py",
+        "--workspace-root",
+        "{workspace_root}",
+        "validate",
+        "--manifest",
+        "docs/contracts/release/aggregation-manifest.n4a.json",
+        "--lock",
+        "docs/contracts/release/aggregation-lock.n4a.lock.json"
+      ],
+      "evidence": [
+        "release manifest and lockfile agree with current member contract artifacts"
+      ]
+    },
+    {
+      "id": "default_engine_postflip",
+      "title": "Post-flip default engine is dag-ml",
+      "lane": "DROP-002",
+      "required": true,
+      "cwd": "_worktrees/INT-nirs4all",
+      "command": [
+        "python3",
+        "-c",
+        "from nirs4all.pipeline.engine import DEFAULT_ENGINE; assert DEFAULT_ENGINE == 'dag-ml', DEFAULT_ENGINE"
+      ],
+      "evidence": [
+        "This gate is expected to fail before the final cutover commit."
+      ]
+    }
+  ]
+}
