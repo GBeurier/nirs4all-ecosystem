@@ -129,7 +129,7 @@ The final cutover gate passed on these selected heads:
 | `nirs4all-studio` | `refactor/integration-studio` | `83aab1c18108` | clean |
 | `nirs4all-web` | `refactor/integration-web` | `ee8ea7a95946` | clean |
 | `nirs4all-io` | `refactor/integration-io` | `e52eecd827a0` | clean |
-| `nirs4all-lite` | `refactor/integration-lite` | `6c08b92bd5f1` | clean |
+| `nirs4all-lite` | `main` | `0486e1fc255f` | clean; `refactor/integration-lite` merged after review |
 | `nirs4all-methods` | `main` | `469124855ff1` | clean, ahead of origin |
 | `nirs4all-datasets` | `main` | `ac455f321144` | clean, ahead of origin |
 | `nirs4all-tools` | `main` | `9dc0c628c97d` | clean |
@@ -146,24 +146,18 @@ plus `coverage_meter --check` at `fallback=0, target=0` after merge into
 Do not regenerate the central aggregation lock as a purely mechanical cleanup
 until these choices are made:
 
-1. Select the `nirs4all-lite` release head. The current workspace checkout
-   `nirs4all-lite/main@c14dcca88fe6` is clean but does not contain
-   `bindings/python/src/nirs4all_lite/_topology.py`. The integrated topology
-   file exists on `refactor/integration-lite@6c08b92bd5f1`. The release
-   manifest currently reads `repo_path: nirs4all-lite` from git `HEAD`, so a
-   lock generated against the root `main` checkout would record a missing
-   topology artifact unless the intended integration head is selected first.
-2. Decide whether `lite_release_topology_manifest` is mandatory for this train.
-   If yes, release from the head that contains `_topology.py` and its tests. If
-   no, explicitly defer or remove the manifest gate before regenerating the
-   lock.
-3. Clean or commit `dag-ml-data` before final locking. The current checkout
+1. `nirs4all-lite` topology is no longer an open selection issue:
+   `refactor/integration-lite` was merged into `nirs4all-lite/main` as
+   `0486e1fc255f`. The root checkout now contains
+   `bindings/python/src/nirs4all_lite/_topology.py`, and a release-lock probe
+   reads `release_topology_manifest()` as a real contract artifact.
+2. Clean or commit `dag-ml-data` before final locking. The current checkout
    still has a modified generated binary:
    `crates/dag-ml-data-py/python/dag_ml_data/_dag_ml_data.abi3.so`.
-4. Select final pins for `dag-ml`, `dag-ml-data`, `nirs4all-io`,
+3. Select final pins for `dag-ml`, `dag-ml-data`, `nirs4all-io`,
    `nirs4all-methods`, and `nirs4all-datasets`. The checked-in lock predates
    W92/W93/W103/W104 and still pins older heads.
-5. After the selected heads are clean, regenerate
+4. After the selected heads are clean, regenerate
    `docs/contracts/release/aggregation-lock.n4a.lock.json` and rerun the
    release-lock validation gate.
 
