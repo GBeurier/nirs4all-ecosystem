@@ -355,3 +355,36 @@ Final Wave-2C state after supervisor salvage:
 | `W18` | committed | `nirs4all-providers/refactor/W18-providers-phase2` `2411568` | ruff; pytest; mypy passed |
 | `W19` | committed | `nirs4all-cluster/refactor/W19-cluster-client` `7a8d48f` | ruff; full pytest `116 passed, 1 skipped`; mypy passed |
 | `W20` | committed by agent | `nirs4all-lite/refactor/W20-lite-core` `2f379ef` | agent-reported unit, ruff, build and wheel import gates |
+
+## Wave-2C integration branches
+
+After the W11-W20 salvage, the supervisor merged the successful Wave-2C commits
+into integration branches so the next wave can branch from combined, tested
+state instead of independent lane branches.
+
+| Repo | Integration branch / worktree | Tip | Included Wave-2C commits |
+|---|---|---|---|
+| `nirs4all` | `refactor/integration-nirs4all` / `_worktrees/INT-nirs4all` | `1cecf6a5` | W12 `bea5323d`, W13 `97eb7585` on top of W1/W2/W3/W4/W7 |
+| `nirs4all-studio` | `refactor/integration-studio` / `_worktrees/INT-studio` | `fb6f413` | W14 `83b0580`, W15 `7c131d5` on top of L11/L12/W8 |
+| `nirs4all-web` | `refactor/integration-web` / `_worktrees/INT-web` | `1a1bdba` | W16 `1a1bdba` on top of L13/W9 |
+| `nirs4all-io` | `refactor/integration-io` / `_worktrees/INT-io` | `0a06943` | W17 `0a06943` on top of L7 |
+| `nirs4all-cluster` | `refactor/integration-cluster` / `_worktrees/INT-cluster` | `7a8d48f` | W19 `7a8d48f` on top of L15 |
+| `nirs4all-providers` | `refactor/integration-providers` / `_worktrees/INT-providers` | `2411568` | W18 `2411568` on top of W10 |
+| `nirs4all-lite` | `refactor/integration-lite` / `_worktrees/INT-lite` | `2f379ef` | W20 `2f379ef` on top of main |
+
+Post-merge gates:
+
+- `nirs4all`: ruff clean on touched files; `36 passed` for native bundle,
+  native `.n4a`, runtime envelopes, and native fallback boundary tests.
+- `nirs4all-studio`: ruff clean; `63 passed` for engine routing, runtime engine,
+  run execution backend, and prediction metrics.
+- `nirs4all-web`: `npm ci`, typecheck, `115` Vitest tests, Vite build,
+  `23/23` browser smokes, preview port closed.
+- `nirs4all-io`: `cargo fmt --all --check`, clippy targeted clean,
+  `cargo test --workspace` passed.
+- `nirs4all-cluster`: ruff clean, full pytest `116 passed, 1 skipped`,
+  targeted mypy success.
+- `nirs4all-providers`: ruff clean, pytest with expected optional-extra skips,
+  mypy success.
+- `nirs4all-lite`: ruff clean, Python tests `22 passed, 1 skipped,
+  56 subtests passed`, sdist + wheel build passed.
