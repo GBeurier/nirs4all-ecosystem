@@ -537,7 +537,7 @@
       "role": "Dataset assembly and DatasetPackage bridge",
       "state": {
         "branch": "refactor/integration-io",
-        "commit": "b958a290df3d09b17548228c6e5cda4a19da2e42",
+        "commit": "eae8263f0c5f6a9b4751950a308c3bf3d3d483b1",
         "dirty": false,
         "exact_tag": null
       },
@@ -1257,7 +1257,7 @@
       "role": "Portable methods kernels and C ABI",
       "state": {
         "branch": "main",
-        "commit": "469124855ff129a2b591accfc0d1bdb5d90f29d7",
+        "commit": "00ca846705bc6ca30ec34ad9e8452e241dda6945",
         "dirty": false,
         "exact_tag": null
       },
