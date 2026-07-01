@@ -111,3 +111,68 @@ Do not launch W99 until W90-W98 reports exist or have explicitly failed.
 | W103 | complete in ecosystem | report/implementation commit `255bd86`; release-lock sources now reject ignored/untracked metadata by default, methods generated package versions read tracked metadata, and lite W94 topology is wired as a git-HEAD `python_function_json` contract artifact. Final aggregation-lock regeneration remains blocked on selected clean release heads. |
 | W104 | complete in tools/ecosystem | tools commit `9dc0c62`, report commit `5f85aa1`; Parquet golden is now a valid reduced fixture, DuckDB fixture is explicitly documented/tested as an opaque preservation sentinel. |
 | W105 | review complete | read-only ChatGPT reviewer checked W98's initial parity-test diff, rejected it as-is, and required the final ledger/diagnostic/no-partial-export additions now included in W98. |
+
+## Final Coordinator Gate Snapshot
+
+Recorded after W98, W102, W103, and W104 integration.
+
+| Gate | Command | Result |
+| --- | --- | --- |
+| Cutover contract self-check + post-W2J state | `python3 scripts/n4a_cutover_gates.py --gate cutover_gate_contract_selfcheck --gate post_w2j_cutover_state run --workspace-root /home/delete/nirs4all --json` | passed |
+| Release aggregation lock validation | `python3 scripts/n4a_release_lock.py --workspace-root /home/delete/nirs4all validate --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json` | failed: checked-in lock is stale or inconsistent |
+
+The final cutover gate passed on these selected heads:
+
+| Surface | Branch | Head | State |
+| --- | --- | ---: | --- |
+| `nirs4all` | `refactor/integration-nirs4all` | `17ed929eeb77` | clean |
+| `nirs4all-studio` | `refactor/integration-studio` | `83aab1c18108` | clean |
+| `nirs4all-web` | `refactor/integration-web` | `ee8ea7a95946` | clean |
+| `nirs4all-io` | `refactor/integration-io` | `e52eecd827a0` | clean |
+| `nirs4all-lite` | `refactor/integration-lite` | `6c08b92bd5f1` | clean |
+| `nirs4all-methods` | `main` | `469124855ff1` | clean, ahead of origin |
+| `nirs4all-datasets` | `main` | `ac455f321144` | clean, ahead of origin |
+| `nirs4all-tools` | `main` | `9dc0c628c97d` | clean |
+| `cluster` | `refactor/integration-cluster` | `eac4d0b8a62a` | clean |
+| `providers` | `refactor/integration-providers` | `1e289a9ee96d` | clean |
+
+The full Python-reference parity gate is W98 evidence:
+`804 passed, 32 skipped, 11 xfailed` for `tests/integration/parity`,
+plus `coverage_meter --check` at `fallback=0, target=0` after merge into
+`refactor/integration-nirs4all`.
+
+## Remaining Release-Lock Decisions
+
+Do not regenerate the central aggregation lock as a purely mechanical cleanup
+until these choices are made:
+
+1. Select the `nirs4all-lite` release head. The current workspace checkout
+   `nirs4all-lite/main@c14dcca88fe6` is clean but does not contain
+   `bindings/python/src/nirs4all_lite/_topology.py`. The integrated topology
+   file exists on `refactor/integration-lite@6c08b92bd5f1`. The release
+   manifest currently reads `repo_path: nirs4all-lite` from git `HEAD`, so a
+   lock generated against the root `main` checkout would record a missing
+   topology artifact unless the intended integration head is selected first.
+2. Decide whether `lite_release_topology_manifest` is mandatory for this train.
+   If yes, release from the head that contains `_topology.py` and its tests. If
+   no, explicitly defer or remove the manifest gate before regenerating the
+   lock.
+3. Clean or commit `dag-ml-data` before final locking. The current checkout
+   still has a modified generated binary:
+   `crates/dag-ml-data-py/python/dag_ml_data/_dag_ml_data.abi3.so`.
+4. Select final pins for `dag-ml`, `dag-ml-data`, `nirs4all-io`,
+   `nirs4all-methods`, and `nirs4all-datasets`. The checked-in lock predates
+   W92/W93/W103/W104 and still pins older heads.
+5. After the selected heads are clean, regenerate
+   `docs/contracts/release/aggregation-lock.n4a.lock.json` and rerun the
+   release-lock validation gate.
+
+## Preserved Dirty Non-Release State
+
+These dirty states were observed but intentionally not reverted:
+
+| Path | Branch | Head | Dirty state |
+| --- | --- | ---: | --- |
+| `nirs4all/` | `refactor/L17-pyref` | `5e00e40029ab` | modified `docs/compatibility.json`, `nirs4all/pipeline/dagml/detect.py`, `run_backend.py`, `run_paths.py`, and `tests/integration/parity/test_conformance_dual_engine.py` |
+| `dag-ml-data/` | `refactor/L20-lockstep` | `2214f75aa3c7` | modified generated `_dag_ml_data.abi3.so` |
+| `nirs4all/.claude/worktrees/agent-a5af0970d430760ab` | `worktree-agent-a5af0970d430760ab` | `4e9dfe1ca0c0` | external Claude worktree with untracked parity paths |
