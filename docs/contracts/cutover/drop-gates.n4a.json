@@ -121,7 +121,7 @@
       "title": "Web runtime contract and browser smoke",
       "lane": "B-018",
       "required": true,
-      "cwd": "_worktrees/INT-web",
+      "cwd": "_worktrees/INT-web/studio-lite",
       "command": [
         "bash",
         "-lc",
