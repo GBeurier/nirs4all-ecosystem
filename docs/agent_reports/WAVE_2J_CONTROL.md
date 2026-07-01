@@ -81,5 +81,21 @@ The dirty main checkout `nirs4all/` is not an integration base.
 | Wave | Status | Evidence |
 | --- | --- | --- |
 | W82 | integrated into `refactor/integration-nirs4all` | worker commit `72c375e8`, integration commit `450d18e4`; coordinator reran focused selector/runtime/fallback tests (`42 passed, 1 skipped`), representative conformance selector (`2 passed`), Ruff, and mypy. |
+| W83 | integrated into `refactor/integration-nirs4all` | worker commit `dd640c14`, integration commit `f970bf0e`; coordinator reran cross-engine export tests (`8 passed`), focused native/export parity (`25 passed`), W82 fallback/cutover regression (`35 passed, 1 skipped`), Ruff, and mypy. |
 | W84 | integrated into `nirs4all-tools/main` | worker commit `b01eae3`, integration commit `44ce7a3`; coordinator reran tools pytest (`78 passed`), Ruff, mypy, and diff-check. |
 | W85 | integrated into `refactor/integration-studio` | worker commit `b7a90f9`, integration commit `0e2282a`; coordinator reran focused Studio runtime/runs/execution pytest (`95 passed`) and Ruff. |
+| W86 | integrated into `refactor/integration-studio` | worker commit `6211ab6`, integration commit `1979b72`; coordinator installed frontend deps in `INT-studio`, then reran focused Vitest (`23 passed`), `lint:tsc`, `lint:eslint`, `lint:parallel`, and `test:frontend` (`3690 passed, 1 skipped`). |
+| W87 | integrated into `refactor/integration-web` | worker commit `825b7c2`, integration commit `60a0967`; coordinator reran typecheck, focused Vitest (`16 passed`), build, and browser smoke (`SMOKE PASSED`). |
+| W88 | integrated into `refactor/integration-cluster` | worker commit `260c753`, integration commit `eac4d0b`; coordinator reran scheduler/RBAC/API pytest (`62 passed`), mypy, Ruff, and full cluster pytest (`133 passed, 1 skipped`). |
+| W89 | integrated into `refactor/integration-providers` | worker commit `701b5c4`, integration commit `1e289a9`; coordinator reran provider pytest with optional service skips, Ruff, and mypy. |
+
+## Final Integration Snapshot
+
+| Repo | Branch | Head after Wave 2J |
+| --- | --- | --- |
+| `nirs4all` | `refactor/integration-nirs4all` | `f970bf0e` |
+| `nirs4all-studio` | `refactor/integration-studio` | `1979b72` |
+| `nirs4all-web` | `refactor/integration-web` | `60a0967` |
+| `nirs4all-tools` | `main` | `44ce7a3` |
+| `nirs4all-cluster` | `refactor/integration-cluster` | `eac4d0b` |
+| `nirs4all-providers` | `refactor/integration-providers` | `1e289a9` |
