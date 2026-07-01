@@ -415,11 +415,37 @@ Post-fast-forward targeted gates:
 
 Not aligned:
 
-- `dag-ml-data` remains on `refactor/L20-lockstep@2214f75aa3c7` with the
-  preexisting dirty generated `_dag_ml_data.abi3.so`. The selected clean release
-  proof continues to use `_worktrees/INT-dmd@818616e9a2c2`.
 - `nirs4all` primary remains on `refactor/L17-pyref@13157d79d378`; it is not a
   fast-forward to `_worktrees/INT-nirs4all@17ed929eeb77`.
+
+Third alignment slice:
+
+| Repo | Previous primary head | New primary head | Integration head | Result |
+| --- | ---: | ---: | ---: | --- |
+| `dag-ml-data` | `2214f75aa3c7` | `818616e9a2c2` | `818616e9a2c2` | fast-forward, dirty `.so` preserved |
+
+The tracked `_dag_ml_data.abi3.so` blob is identical between the old and new
+heads (`42fbdf05f7d276cc1f44377bd671a5a30821c71c`), so the fast-forward did not
+overwrite the preexisting working-tree binary (`82ed40f59575d4cf78d9e7525d1c1636b311f2f7`,
+2051128 bytes). The checkout remains dirty by design.
+
+Post-fast-forward targeted gates:
+
+- `dag-ml-data`: `cargo fmt --all --check`; `cargo clippy -p
+  dag-ml-data-core -p dag-ml-data-cli --all-targets -- -D warnings`; `cargo
+  test -p dag-ml-data-core` -> 206 passed, 2 ignored; `DAG_ML_REPO=/home/delete/nirs4all/dag-ml
+  python3 scripts/validate_contracts.py` -> passed.
+- `python3 scripts/n4a_release_lock.py --workspace-root
+  /home/delete/nirs4all/_release_roots/W2L-selected validate --manifest
+  docs/contracts/release/aggregation-manifest.n4a.json --lock
+  docs/contracts/release/aggregation-lock.n4a.lock.json` -> passed.
+
+Still not a clean current-root release proof:
+
+- current `/home/delete/nirs4all/dag-ml-data` still has modified
+  `crates/dag-ml-data-py/python/dag_ml_data/_dag_ml_data.abi3.so`;
+- selected release proof continues to use the clean `_worktrees/INT-dmd`
+  checkout through `_release_roots/W2L-selected`.
 
 Final short checks after this alignment batch:
 
