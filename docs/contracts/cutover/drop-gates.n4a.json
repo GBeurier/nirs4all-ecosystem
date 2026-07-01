@@ -11,6 +11,24 @@
   },
   "gates": [
     {
+      "id": "cutover_gate_contract_selfcheck",
+      "title": "Cutover gate manifest and runner self-check",
+      "lane": "LOCK-DROP/L19",
+      "required": true,
+      "cwd": "nirs4all-ecosystem",
+      "command": [
+        "python3",
+        "scripts/n4a_cutover_gates.py",
+        "validate",
+        "--workspace-root",
+        "{workspace_root}"
+      ],
+      "evidence": [
+        "cutover gate manifest validates",
+        "runner can be executed in CI without sibling repositories"
+      ]
+    },
+    {
       "id": "pyref_coverage_zero",
       "title": "PYREF fallback meter is empty",
       "lane": "B-010/L19",
