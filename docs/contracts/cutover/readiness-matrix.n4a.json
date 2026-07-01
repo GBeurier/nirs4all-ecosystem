@@ -49,6 +49,25 @@
       "next_owner_action": "Keep post_w2j_cutover_state and pyref_coverage_zero green; any new fallback must be recorded as a regression, not a new release default."
     },
     {
+      "id": "W2S-INSTALLED-N4M-001",
+      "title": "Installed n4m proof is release-gated with explicit local dependencies",
+      "lane": "W2R/W2S-CF",
+      "owner_repo": "nirs4all",
+      "status": "passed",
+      "required_for_cutover": true,
+      "primary_gate_id": "installed_n4m_proof",
+      "gate_ids": [
+        "installed_n4m_proof"
+      ],
+      "expected_evidence": [
+        "scripts/prove_installed_n4m.py runs in _worktrees/INT-nirs4all",
+        "the proof installs and consumes n4m/libn4m from the proof virtualenv",
+        "dag-ml and dag-ml-data are supplied through explicit local sibling paths"
+      ],
+      "missing_contract": "None for the W2S local dependency proof. The gate remains strict: unresolved unpublished dependencies or missing Rust-backed local packages fail instead of falling back to ambient PYTHONPATH.",
+      "next_owner_action": "Keep installed_n4m_proof in the non-full release gate run; do not replace it with the default ambient proof."
+    },
+    {
       "id": "B-011-NATIVE-EXPORT-STACKING",
       "title": "Native .n4a export covers stacking replay without legacy bridge",
       "lane": "B-011/L19",
@@ -188,6 +207,26 @@
       "next_owner_action": "Refresh the release lock only after final integration branches are selected."
     },
     {
+      "id": "LITE-V1-SURFACE-001",
+      "title": "Lite aggregate exposes the required Python/R/WASM V1 surfaces",
+      "lane": "W2N/W2T-E",
+      "owner_repo": "nirs4all-lite",
+      "status": "passed",
+      "required_for_cutover": true,
+      "primary_gate_id": "lite_v1_surfaces",
+      "gate_ids": [
+        "lite_v1_surfaces",
+        "release_lock_validation"
+      ],
+      "expected_evidence": [
+        "make test-v1-surfaces runs the Python aggregate surface",
+        "make test-v1-surfaces runs the WASM/browser aggregate surface",
+        "the R aggregate surface is governed only by the existing test-r-if-available policy"
+      ],
+      "missing_contract": "None for the current lite V1 surface accounting. A local missing-R skip remains a release risk to report, not a substitute for an R proof on release infrastructure.",
+      "next_owner_action": "Keep lite_v1_surfaces green with the selected Node path and PYTHONPATH; do not add ad hoc R skips outside test-r-if-available."
+    },
+    {
       "id": "DROP-002-DEFAULT-ENGINE",
       "title": "Post-W2J default engine and strict fallback/export state is verified",
       "lane": "DROP-002",
@@ -209,24 +248,22 @@
     },
     {
       "id": "PROV-READ-001",
-      "title": "Providers expose real-service read adapters without write coupling",
-      "lane": "V1-PROVIDERS",
+      "title": "Providers local sibling release gate passes without write coupling",
+      "lane": "W2R/W2S-JG",
       "owner_repo": "nirs4all-providers",
-      "status": "ready",
-      "required_for_cutover": false,
-      "cwd": "nirs4all-providers",
-      "command": [
-        "bash",
-        "-lc",
-        "PYTHONPATH=src pytest -q && ruff check src tests"
+      "status": "passed",
+      "required_for_cutover": true,
+      "primary_gate_id": "providers_local_sibling_release",
+      "gate_ids": [
+        "providers_local_sibling_release"
       ],
-      "gate_ids": [],
       "expected_evidence": [
         "repository and benchmarks adapters can read/list/get pipelines without write coupling",
-        "tests prove read-only boundaries and service failure behavior"
+        "the local release gate verifies sibling source layouts before adding them to sys.path",
+        "datasets and repository transitive dependencies come from explicit local venv dependency paths"
       ],
-      "missing_contract": "No blocker for the W57 benchmarks read bridge. Upload/write APIs remain intentionally out of scope.",
-      "next_owner_action": "Keep providers advisory for DEFAULT_ENGINE cutover and required for broader V1 service release planning."
+      "missing_contract": "None for the W2S local sibling provider release proof. Bare missing-dependency failures remain strict and must not be papered over with fake imports.",
+      "next_owner_action": "Keep providers_local_sibling_release in the non-full release gate run; upload/write APIs remain intentionally out of scope."
     },
     {
       "id": "CLUSTER-DAG-001",

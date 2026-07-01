@@ -62,4 +62,46 @@ changes this scope.
 
 ## Integration Log
 
-Pending.
+### 2026-07-01T16:02:29+02:00
+
+Lane A/C/F/J/G/E completed in `nirs4all-ecosystem` only.
+
+- Added required non-full release gates to
+  `docs/contracts/cutover/drop-gates.n4a.json`:
+  - `installed_n4m_proof`, bounded by `timeout 1800`, running
+    `python3.11 scripts/prove_installed_n4m.py --install-deps` in
+    `_worktrees/INT-nirs4all` with explicit local `dag-ml` and `dag-ml-data`
+    paths.
+  - `providers_local_sibling_release`, bounded by `timeout 900`, running
+    `nirs4all_providers.local_release_gate` in `_worktrees/INT-providers` with
+    explicit dependency venv paths for `nirs4all-datasets` and
+    `nirs4all-repository`.
+  - `lite_v1_surfaces`, bounded by `timeout 1800`, running
+    `make test-v1-surfaces` in `nirs4all-lite` with the selected Node path and
+    `PYTHONPATH=bindings/python/src`.
+- Promoted the corresponding readiness rows:
+  - new `W2S-INSTALLED-N4M-001`;
+  - promoted `PROV-READ-001` from advisory/readiness command to required
+    `providers_local_sibling_release`;
+  - new `LITE-V1-SURFACE-001`.
+- Added ecosystem tests asserting the new required gates, command shapes, and
+  readiness links.
+
+Validation:
+
+- `python3 -m json.tool docs/contracts/cutover/drop-gates.n4a.json`
+- `python3 -m json.tool docs/contracts/cutover/readiness-matrix.n4a.json`
+- `python3 scripts/n4a_cutover_gates.py validate --workspace-root /home/delete/nirs4all`
+- `python3 -m pytest tests/test_cutover_state_gate.py -q` (`4 passed`)
+- `python3 scripts/n4a_cutover_gates.py run --workspace-root /home/delete/nirs4all --gate installed_n4m_proof --gate providers_local_sibling_release --gate lite_v1_surfaces --skip pyref_oracle_full --timeout 2400 --json` passed.
+  - `installed_n4m_proof` reported `NIRS4ALL_INSTALLED_N4M_OK`.
+  - `providers_local_sibling_release` reported `ok: true`.
+  - `lite_v1_surfaces` ran Python and WASM; R skipped only through the existing
+    `test-r-if-available` policy because `R` is not installed locally.
+- `python3 -m pytest tests -q` (`13 passed`)
+- `python3 scripts/n4a_release_surface_matrix.py validate`
+- `python3 scripts/n4a_release_surface_matrix.py report`
+- `python3 scripts/n4a_cutover_gates.py readiness --workspace-root /home/delete/nirs4all --gate installed_n4m_proof --gate providers_local_sibling_release --gate lite_v1_surfaces --json`
+- `git diff --check`
+
+`pyref_oracle_full` was not run.

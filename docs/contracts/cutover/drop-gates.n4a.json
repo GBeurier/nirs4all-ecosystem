@@ -67,6 +67,23 @@
       ]
     },
     {
+      "id": "installed_n4m_proof",
+      "title": "Installed n4m proof with local dag-ml dependencies",
+      "lane": "W2R/W2S-CF",
+      "required": true,
+      "cwd": "_worktrees/INT-nirs4all",
+      "command": [
+        "bash",
+        "-lc",
+        "timeout 1800 python3.11 scripts/prove_installed_n4m.py --install-deps --dag-ml-path {workspace_root}/dag-ml --dag-ml-data-path {workspace_root}/dag-ml-data"
+      ],
+      "evidence": [
+        "nirs4all consumes installed n4m and libn4m from the proof virtualenv",
+        "dag-ml and dag-ml-data dependencies resolve from explicit local sibling paths",
+        "unpublished dependency resolution is not faked by PYTHONPATH or ambient editable checkouts"
+      ]
+    },
+    {
       "id": "pyref_oracle_full",
       "title": "Full Python reference parity oracle",
       "lane": "LOCK-PYREF/B-011",
@@ -114,6 +131,23 @@
       "evidence": [
         "requested engine, actual engine, fallback status, and RtError metadata survive route retries",
         "remaining Studio compute paths are either runtime-backed or explicitly listed as blockers"
+      ]
+    },
+    {
+      "id": "providers_local_sibling_release",
+      "title": "Providers local sibling release gate",
+      "lane": "W2R/W2S-JG",
+      "required": true,
+      "cwd": "_worktrees/INT-providers",
+      "command": [
+        "bash",
+        "-lc",
+        "timeout 900 ./.venv/bin/python -m nirs4all_providers.local_release_gate --workspace-root {workspace_root} --dependency-path {workspace_root}/nirs4all-datasets/.venv --dependency-path {workspace_root}/nirs4all-repository/.venv --json"
+      ],
+      "evidence": [
+        "providers release gate runs against verified local sibling source layouts",
+        "datasets and repository transitive dependencies are supplied by explicit local venv paths",
+        "bare missing-dependency failures remain strict and diagnosable outside this local release proof"
       ]
     },
     {
@@ -195,6 +229,23 @@
       ],
       "evidence": [
         "release manifest and lockfile agree with selected member contract artifacts"
+      ]
+    },
+    {
+      "id": "lite_v1_surfaces",
+      "title": "Lite aggregate Python/R/WASM V1 surfaces",
+      "lane": "W2N/W2T-E",
+      "required": true,
+      "cwd": "nirs4all-lite",
+      "command": [
+        "bash",
+        "-lc",
+        "PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH PYTHONPATH=bindings/python/src timeout 1800 make test-v1-surfaces"
+      ],
+      "evidence": [
+        "nirs4all-lite V1 Python aggregate surface gate passes",
+        "nirs4all-lite V1 WASM/browser aggregate surface gate passes",
+        "R is exercised by the existing test-r-if-available policy and may skip only when R is unavailable"
       ]
     }
   ]

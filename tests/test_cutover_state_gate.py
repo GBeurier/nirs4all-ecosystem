@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 from types import ModuleType
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 def _load_runner() -> ModuleType:
-    path = Path(__file__).resolve().parents[1] / "scripts" / "n4a_cutover_gates.py"
+    path = ROOT / "scripts" / "n4a_cutover_gates.py"
     spec = importlib.util.spec_from_file_location("n4a_cutover_gates", path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
@@ -83,3 +87,45 @@ def test_nirs4all_cutover_state_rejects_stale_default_and_fallback(tmp_path: Pat
 
     assert "nirs4all.default_engine" in failures
     assert "nirs4all.coverage_meter.fallback_zero" in failures
+
+
+def test_release_non_full_gates_promote_w2s_and_lite_evidence() -> None:
+    manifest = json.loads((ROOT / "docs" / "contracts" / "cutover" / "drop-gates.n4a.json").read_text(encoding="utf-8"))
+    gates = {gate["id"]: gate for gate in manifest["gates"]}
+
+    assert gates["installed_n4m_proof"]["required"] is True
+    assert gates["installed_n4m_proof"]["cwd"] == "_worktrees/INT-nirs4all"
+    installed_command = " ".join(gates["installed_n4m_proof"]["command"])
+    assert "timeout 1800 python3.11 scripts/prove_installed_n4m.py --install-deps" in installed_command
+    assert "--dag-ml-path {workspace_root}/dag-ml" in installed_command
+    assert "--dag-ml-data-path {workspace_root}/dag-ml-data" in installed_command
+
+    assert gates["providers_local_sibling_release"]["required"] is True
+    assert gates["providers_local_sibling_release"]["cwd"] == "_worktrees/INT-providers"
+    providers_command = " ".join(gates["providers_local_sibling_release"]["command"])
+    assert "nirs4all_providers.local_release_gate" in providers_command
+    assert "--dependency-path {workspace_root}/nirs4all-datasets/.venv" in providers_command
+    assert "--dependency-path {workspace_root}/nirs4all-repository/.venv" in providers_command
+
+    assert gates["lite_v1_surfaces"]["required"] is True
+    assert gates["lite_v1_surfaces"]["cwd"] == "nirs4all-lite"
+    lite_command = " ".join(gates["lite_v1_surfaces"]["command"])
+    assert "PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH" in lite_command
+    assert "PYTHONPATH=bindings/python/src" in lite_command
+    assert "make test-v1-surfaces" in lite_command
+
+
+def test_readiness_matrix_requires_promoted_release_gates() -> None:
+    matrix = json.loads((ROOT / "docs" / "contracts" / "cutover" / "readiness-matrix.n4a.json").read_text(encoding="utf-8"))
+    blockers = {blocker["id"]: blocker for blocker in matrix["blockers"]}
+
+    expected = {
+        "W2S-INSTALLED-N4M-001": "installed_n4m_proof",
+        "PROV-READ-001": "providers_local_sibling_release",
+        "LITE-V1-SURFACE-001": "lite_v1_surfaces",
+    }
+    for blocker_id, gate_id in expected.items():
+        blocker = blockers[blocker_id]
+        assert blocker["required_for_cutover"] is True
+        assert blocker["primary_gate_id"] == gate_id
+        assert gate_id in blocker["gate_ids"]
