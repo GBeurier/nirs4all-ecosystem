@@ -66,6 +66,10 @@ Ces contraintes viennent des docs existantes et doivent etre repetees aux agents
   dans `dag-ml`.
 - Les kernels numeriques portables restent dans `nirs4all-methods`.
 - `nirs4all` Python conserve l'API riche et les controllers Python.
+- Le nom public `nirs4all` V1 couvre explicitement trois surfaces a piloter
+  ensemble: le package Python historique/oracle, l'aggregate R `nirs4all`, et
+  la distribution browser/WASM `nirs4all`/`@nirs4all/*`. Une lane ne peut pas
+  conclure "nirs4all done" si elle n'a verifie que Python.
 - La version Python actuelle de `nirs4all` est l'oracle Tier 1 de parite: un
   pipeline actuel execute avec des operators sklearn doit produire les memes
   splits, predictions, scores, artifacts et erreurs attendues apres migration,
@@ -412,13 +416,20 @@ Taches:
   predict, replay, explain, export.
 - `RT-003`: error model et unsupported diagnostics.
 - `RT-PY-001`: runtime Python sur `nirs4all`.
+- `RT-R-001`: runtime/binding R `nirs4all` aggregate, avec les memes schemas
+  request/response et diagnostics `unsupported` que Python pour le portable
+  subset.
 - `RT-WASM-001`: runtime WASM/browser sur core/WASM.
+- `RT-N4A-001`: matrice commune `nirs4all` Python/R/WASM indiquant pour chaque
+  capability si elle est executable, inspect-only, ou unsupported avec cause.
 - `RT-CLI-001`: runtime CLI smoke/automation.
 - `RT-CON-001`: smokes cross-runtime sur les memes bundles/capabilities.
 
 Sortie:
 
 - Studio et Web ne consomment plus des internals divergents;
+- les surfaces publiques `nirs4all` Python, R et WASM partagent les memes
+  contrats runtime/capability pour le portable subset;
 - un agent produit peut ajouter un ecran sans connaitre la pile native.
 
 ### `L11` `nirs4all-ui`
@@ -589,7 +600,10 @@ Taches:
 - `CTRL-004`: transport policy: JSONL process adapter, C ABI native vtable,
   WASM direct, runtime-python internal, cluster worker.
 - `CTRL-005`: controller authoring guide par binding: manifest, data bridge,
-  artifact policy, idiomatic method wrapper, conformance fixtures.
+  artifact policy, idiomatic method wrapper, conformance fixtures. Ce guide doit
+  avoir des sections explicites pour `nirs4all` Python, `nirs4all` R et
+  `nirs4all` WASM/browser, avec les differences d'artifact host-owned
+  documentees.
 - `CTRL-006`: unsupported diagnostics par node: missing controller, unsupported
   phase, data representation mismatch, artifact not replayable.
 - `CTRL-007`: conformance pack controller: manifest validation, resolution,
@@ -1012,6 +1026,7 @@ Pour limiter les conflits:
 | Studio | `npm run lint:parallel`, `npm run test:parallel`, Playwright/screenshot si UI visible |
 | Extraction `nirs4all-ui` | lint/typecheck/test composants, fixtures de props runtime/core, screenshots baseline Studio pour composants extraits, adoption reelle dans Studio |
 | Web | typecheck, Vitest, build, browser smoke selon repo |
+| `nirs4all` R/WASM surfaces | R package smoke si toolchain disponible ou CI exception documentee, WASM typecheck/build/browser smoke, meme capability matrix que Python |
 | IO/formats/datasets | validation schemas/goldens, fixtures, binding smokes touches |
 | ABI/bindings | ABI snapshot, cross-binding smoke, version matrix |
 | Docs/spec only | link check manuel, consistency avec roadmap/sync, decision IDs |
@@ -1037,14 +1052,16 @@ Le refactoring massif est "MVP done" quand:
    bout, puis cube/time-series selon scope MVP;
 8. Studio utilise runtime Python + premiers composants `nirs4all-ui`;
 9. Web utilise runtime WASM + les memes concepts UI/capabilities;
-10. un bundle Python est inspectable hors Python avec warnings portabilite;
-11. un cas scientifique multimodal est reproductible ou publiable;
-12. les anciens workspaces/bundles supportes migrent via `nirs4all-tools` sans
+10. les distributions publiques `nirs4all` Python, R et WASM/browser sont dans
+    la matrice de release, avec gates ou exceptions explicites pour chacune;
+11. un bundle Python est inspectable hors Python avec warnings portabilite;
+12. un cas scientifique multimodal est reproductible ou publiable;
+13. les anciens workspaces/bundles supportes migrent via `nirs4all-tools` sans
     perte silencieuse de predictions/pipelines/metrics;
-13. le cutover `DEFAULT_ENGINE="dag-ml"` est possede par `LOCK-DROP`, ou sinon
+14. le cutover `DEFAULT_ENGINE="dag-ml"` est possede par `LOCK-DROP`, ou sinon
     explicitement marque hors MVP avec default legacy maintenu;
-14. les contrats `dag-ml`/`dag-ml-data` sont verifies en lockstep;
-15. les claims publics correspondent aux gates executes.
+15. les contrats `dag-ml`/`dag-ml-data` sont verifies en lockstep;
+16. les claims publics correspondent aux gates executes.
 
 ## 13. Sources locales utilisees
 

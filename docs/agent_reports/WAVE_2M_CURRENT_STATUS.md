@@ -83,6 +83,17 @@ Core oracle checkout:
 4. Full parity should remain deferred until a substantial core/runtime/native
    batch lands.
 
+## Roadmap Scope Update
+
+The active roadmap now states that public `nirs4all` V1 covers Python, R, and
+WASM/browser surfaces together. A lane cannot mark `nirs4all` complete by
+checking only the Python package/oracle; the release matrix and runtime gates
+must account for:
+
+- Python `nirs4all` full API and parity oracle;
+- R aggregate package `nirs4all`;
+- browser/WASM distribution `nirs4all` / `@nirs4all/*`.
+
 ## Active Codex Agents
 
 | Lane | Agent | Scope | Status |
