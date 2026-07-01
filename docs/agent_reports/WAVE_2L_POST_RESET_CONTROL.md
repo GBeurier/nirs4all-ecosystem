@@ -420,3 +420,17 @@ Not aligned:
   proof continues to use `_worktrees/INT-dmd@818616e9a2c2`.
 - `nirs4all` primary remains on `refactor/L17-pyref@13157d79d378`; it is not a
   fast-forward to `_worktrees/INT-nirs4all@17ed929eeb77`.
+
+Final short checks after this alignment batch:
+
+- `python3 scripts/n4a_cutover_gates.py validate --workspace-root
+  /home/delete/nirs4all` -> passed.
+- `python3 scripts/n4a_cutover_gates.py post-w2j-state --workspace-root
+  /home/delete/nirs4all` -> passed.
+- `N4A_RELEASE_WORKSPACE_ROOT=/home/delete/nirs4all/_release_roots/W2L-selected
+  python3 scripts/n4a_cutover_gates.py run --workspace-root /home/delete/nirs4all
+  --gate release_lock_validation --json` -> passed.
+
+Full parity was not rerun in this follow-up per the user instruction to reserve
+it for large integration batches. The current full-parity evidence remains W98:
+`804 passed, 32 skipped, 11 xfailed` from `/tmp/w98_full_parity.log`.
