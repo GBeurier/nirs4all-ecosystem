@@ -8,10 +8,17 @@ Typical usage from the ecosystem repo:
 
 ```bash
 python3 scripts/n4a_cutover_gates.py list --workspace-root /home/delete/nirs4all
+python3 scripts/n4a_cutover_gates.py readiness --workspace-root /home/delete/nirs4all
 python3 scripts/n4a_cutover_gates.py validate --workspace-root /home/delete/nirs4all
 python3 scripts/n4a_cutover_gates.py --gate pyref_coverage_zero run --workspace-root /home/delete/nirs4all
 python3 scripts/n4a_cutover_gates.py run --workspace-root /home/delete/nirs4all --json > cutover-gate-report.json
 ```
+
+`readiness` reads `docs/contracts/cutover/readiness-matrix.n4a.json`. It maps
+each blocker to one owning repo, one evidence command, expected evidence, and the
+exact missing contract. Rows with `required_for_cutover=false` are advisory V1
+ecosystem rows; they should not block the `nirs4all` default-engine flip unless a
+release manager explicitly promotes them into `drop-gates.n4a.json`.
 
 The final cutover is not ready until all required gates pass. Today,
 `pyref_coverage_zero` is expected to fail because `coverage_meter.summary.fallback`
@@ -36,3 +43,22 @@ Manual `workflow_dispatch` supports:
 Use `advisory` while the ecosystem is still pre-cutover. Use `strict` only on a
 prepared release workspace where the expected sibling repositories or
 integration worktrees exist.
+
+## Reading The Matrix
+
+The matrix currently separates hard cutover blockers from adjacent V1 ecosystem
+readiness:
+
+- Required rows cover Python-reference parity, native `.n4a` export, dag-ml /
+  dag-ml-data lockstep contracts, Studio/Web runtime adoption, migration tooling,
+  release locks, and the final `DEFAULT_ENGINE` flip.
+- Advisory rows track provider and cluster readiness. They remain visible because
+  they matter for the V1 ecosystem release, but they are not prerequisites for
+  replacing the default `nirs4all` pipeline engine.
+
+Use JSON output when coordinating agents:
+
+```bash
+python3 scripts/n4a_cutover_gates.py readiness --workspace-root /home/delete/nirs4all --json
+python3 scripts/n4a_cutover_gates.py --gate pyref_coverage_zero readiness --workspace-root /home/delete/nirs4all --json
+```

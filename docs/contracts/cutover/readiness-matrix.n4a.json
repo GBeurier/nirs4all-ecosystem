@@ -1,0 +1,253 @@
+{
+  "schema_version": "n4a.cutover-readiness/v1",
+  "matrix_id": "LOCK-DROP/W60",
+  "description": "Owner, evidence, and missing-contract map for the dag-ml cutover and adjacent V1 ecosystem blockers.",
+  "policy": {
+    "mutates_repositories": false,
+    "default_engine_flip_condition": "All required_for_cutover blockers are ready or passed, every referenced required gate passes, coverage_meter.summary.fallback == 0, and default_engine_postflip is the only pre-flip expected failure.",
+    "advisory_scope": "Advisory blockers track V1 ecosystem readiness that should not by itself block the nirs4all DEFAULT_ENGINE cutover."
+  },
+  "blockers": [
+    {
+      "id": "CUTOVER-SELF-001",
+      "title": "Cutover gate runner and contracts are self-validating",
+      "lane": "LOCK-DROP/L19",
+      "owner_repo": "nirs4all-ecosystem",
+      "status": "ready",
+      "required_for_cutover": true,
+      "primary_gate_id": "cutover_gate_contract_selfcheck",
+      "gate_ids": [
+        "cutover_gate_contract_selfcheck"
+      ],
+      "expected_evidence": [
+        "drop-gates.n4a.json validates",
+        "readiness-matrix.n4a.json validates",
+        "runner can list gates and readiness from a plain ecosystem checkout"
+      ],
+      "missing_contract": "None for tooling; this row guards future edits to the cutover contracts.",
+      "next_owner_action": "Keep this gate green whenever cutover docs or runner code changes."
+    },
+    {
+      "id": "B-010-FALLBACK-ZERO",
+      "title": "Full Python reference fallback ledger is empty",
+      "lane": "B-010/L19",
+      "owner_repo": "nirs4all",
+      "status": "blocked",
+      "required_for_cutover": true,
+      "primary_gate_id": "pyref_coverage_zero",
+      "gate_ids": [
+        "pyref_coverage_zero",
+        "pyref_oracle_full"
+      ],
+      "expected_evidence": [
+        "coverage_meter --check passes",
+        "coverage_meter.summary.fallback == 0",
+        "no remaining EXPECTED_FALLBACK entry relies on implicit legacy execution"
+      ],
+      "missing_contract": "Native parity is still missing for duplicate-branch stacking and by-source multi-source pipelines: branch_dup_three_way_merge_predictions, branch_dup_named_with_metamodel, branch_dup_merge_all, multi_source_by_source_branch_distinct_preproc, multi_source_per_source_models_stacking, and multi_source_sources_concat_then_rf.",
+      "next_owner_action": "Consume W51, W53, and W54 contract decisions, then remove fallback entries only after strict parity passes.",
+      "depends_on": [
+        "STACKING-OOF-001",
+        "DMD-SOURCE-LAYOUT-001"
+      ]
+    },
+    {
+      "id": "B-011-NATIVE-EXPORT-STACKING",
+      "title": "Native .n4a export covers stacking replay without legacy bridge",
+      "lane": "B-011/L19",
+      "owner_repo": "nirs4all",
+      "status": "blocked",
+      "required_for_cutover": true,
+      "primary_gate_id": "native_n4a_export",
+      "gate_ids": [
+        "native_n4a_export"
+      ],
+      "expected_evidence": [
+        "native .n4a bundle tests pass without xfailed stacking replay",
+        "base producer order and meta-feature construction are persisted",
+        "bundle prediction from raw X matches the Python reference path"
+      ],
+      "missing_contract": "Native results persist base and meta refit artifacts, but do not yet persist the replay graph and column-order manifest needed to build stacking meta-features from raw bundle input.",
+      "next_owner_action": "Implement W52 after W51 fixes the dag-ml stacking OOF/refit semantics.",
+      "depends_on": [
+        "STACKING-OOF-001"
+      ]
+    },
+    {
+      "id": "STACKING-OOF-001",
+      "title": "dag-ml stacking OOF/refit semantics match legacy sklearn behavior",
+      "lane": "LOCK-LOCKSTEP/L20",
+      "owner_repo": "dag-ml",
+      "status": "blocked",
+      "required_for_cutover": true,
+      "primary_gate_id": "dagml_lockstep",
+      "gate_ids": [
+        "dagml_lockstep",
+        "dagml_data_lockstep"
+      ],
+      "expected_evidence": [
+        "dag-ml exposes an explicit contract for incomplete OOF coverage",
+        "refit-skip or validation-coverage behavior is no longer implicit",
+        "dag-ml and dag-ml-data lockstep validation still passes"
+      ],
+      "missing_contract": "The current runtime rejects duplicate-branch stacking when OOF predictions do not cover the refit sample universe, while legacy may skip or tolerate that path depending on merge/model shape.",
+      "next_owner_action": "Finish W51 and publish the contract artifact consumed by nirs4all."
+    },
+    {
+      "id": "DMD-SOURCE-LAYOUT-001",
+      "title": "By-source feature layout is stable across dag-ml-data and nirs4all",
+      "lane": "LOCK-LOCKSTEP/L20",
+      "owner_repo": "dag-ml-data",
+      "status": "blocked",
+      "required_for_cutover": true,
+      "primary_gate_id": "dagml_data_lockstep",
+      "gate_ids": [
+        "dagml_data_lockstep",
+        "dagml_lockstep"
+      ],
+      "expected_evidence": [
+        "source/block order is serialized in a shared contract artifact",
+        "nirs4all by-source parity probes no longer infer feature layout heuristically",
+        "lockstep validation passes against the dag-ml integration tip"
+      ],
+      "missing_contract": "Legacy by-source pipelines reassemble source dictionaries and preprocessed blocks in a layout that the current native lowering approximates but does not reproduce within parity tolerance.",
+      "next_owner_action": "Finish W53, then let W54 consume the exact layout contract in nirs4all."
+    },
+    {
+      "id": "B-017-STUDIO-ROUTES",
+      "title": "Studio compute routes preserve runtime provenance and fallback diagnostics",
+      "lane": "B-017/B-018",
+      "owner_repo": "nirs4all-studio",
+      "status": "blocked",
+      "required_for_cutover": true,
+      "primary_gate_id": "studio_runtime_routes",
+      "gate_ids": [
+        "studio_runtime_routes"
+      ],
+      "expected_evidence": [
+        "route retries preserve requested engine, actual engine, fallback status, and RtError metadata",
+        "remaining compute paths are runtime-backed or listed as explicit blockers",
+        "bypass parity tests fail if legacy is called silently"
+      ],
+      "missing_contract": "Studio still needs a route-bypass parity gate that prevents UI/backend paths from dropping runtime provenance while dag-ml is selected.",
+      "next_owner_action": "Finish W55 and keep route tests in the cutover gate."
+    },
+    {
+      "id": "B-018-WEB-RUNTIME",
+      "title": "Web runtime exposes no-fallback behavior and smoke coverage",
+      "lane": "B-018",
+      "owner_repo": "nirs4all-web",
+      "status": "blocked",
+      "required_for_cutover": true,
+      "primary_gate_id": "web_runtime_contract",
+      "gate_ids": [
+        "web_runtime_contract"
+      ],
+      "expected_evidence": [
+        "allowFallback=false is observable in browser/runtime errors",
+        "single-file build carries runtime metadata",
+        "served smoke covers fallback diagnostics"
+      ],
+      "missing_contract": "Web still needs an adoption gate proving runtime metadata survives build and smoke paths, not only unit-level runtime fallback tests.",
+      "next_owner_action": "Finish W56 and keep the smoke command in strict cutover validation."
+    },
+    {
+      "id": "L18-MIGRATION-TOOLS",
+      "title": "Standalone toolbox can lower or preserve legacy outputs safely",
+      "lane": "LOCK-MIG/L18",
+      "owner_repo": "nirs4all-tools",
+      "status": "blocked",
+      "required_for_cutover": true,
+      "primary_gate_id": "migration_tool_smoke",
+      "gate_ids": [
+        "migration_tool_smoke"
+      ],
+      "expected_evidence": [
+        "legacy artifacts are never migrated in place",
+        "strict conversions refuse unsafe data before output",
+        "native result sidecars are either semantically lowered or preserved with checksums"
+      ],
+      "missing_contract": "W49 lowered prediction arrays to runtime-readable Parquet sidecars; semantic lowering for newer native result metadata still needs a preview path and refusal contract.",
+      "next_owner_action": "Finish W59 and update the toolbox smoke if the preview command becomes canonical."
+    },
+    {
+      "id": "LOCK-REL-001",
+      "title": "Aggregation release lock matches member contract artifacts",
+      "lane": "LOCK-REL/L3",
+      "owner_repo": "nirs4all-ecosystem",
+      "status": "ready",
+      "required_for_cutover": true,
+      "primary_gate_id": "release_lock_validation",
+      "gate_ids": [
+        "release_lock_validation"
+      ],
+      "expected_evidence": [
+        "aggregation-manifest.n4a.json validates",
+        "aggregation-lock.n4a.lock.json agrees with current member artifacts"
+      ],
+      "missing_contract": "None for the current lock runner; rerun after integrating W51-W59 because member contract artifacts may change.",
+      "next_owner_action": "Refresh the release lock only after final integration branches are selected."
+    },
+    {
+      "id": "DROP-002-DEFAULT-ENGINE",
+      "title": "Final default engine flip is isolated to the release commit",
+      "lane": "DROP-002",
+      "owner_repo": "nirs4all",
+      "status": "expected-fail",
+      "required_for_cutover": true,
+      "primary_gate_id": "default_engine_postflip",
+      "gate_ids": [
+        "default_engine_postflip"
+      ],
+      "expected_evidence": [
+        "pre-flip this gate fails because DEFAULT_ENGINE is not dag-ml",
+        "post-flip this gate passes in the same strict run as every other required gate"
+      ],
+      "missing_contract": "No code contract is missing; this is an intentional final release action after all other blockers are closed.",
+      "next_owner_action": "Flip DEFAULT_ENGINE only in the final cutover commit, never as part of an exploratory branch."
+    },
+    {
+      "id": "PROV-READ-001",
+      "title": "Providers expose real-service read adapters without write coupling",
+      "lane": "V1-PROVIDERS",
+      "owner_repo": "nirs4all-providers",
+      "status": "advisory",
+      "required_for_cutover": false,
+      "cwd": "nirs4all-providers",
+      "command": [
+        "bash",
+        "-lc",
+        "PYTHONPATH=src pytest -q && ruff check src tests"
+      ],
+      "gate_ids": [],
+      "expected_evidence": [
+        "repository and benchmarks adapters can read/list/get pipelines without write coupling",
+        "tests prove read-only boundaries and service failure behavior"
+      ],
+      "missing_contract": "The provider bridge must keep repository, benchmarks, and future plugin services read-oriented until upload/write APIs are explicitly designed.",
+      "next_owner_action": "Finish W57; keep it advisory for DEFAULT_ENGINE cutover but required for broader V1 service release."
+    },
+    {
+      "id": "CLUSTER-DAG-001",
+      "title": "Cluster scheduler contract covers DAG rights and result provenance",
+      "lane": "V1-CLUSTER",
+      "owner_repo": "nirs4all-cluster",
+      "status": "advisory",
+      "required_for_cutover": false,
+      "cwd": "_worktrees/INT-cluster",
+      "command": [
+        "bash",
+        "-lc",
+        "PYTHONPATH=. pytest -q tests/test_distributed_parity.py && ruff check nirs4all_cluster tests/test_distributed_parity.py"
+      ],
+      "gate_ids": [],
+      "expected_evidence": [
+        "server can schedule DAG-shaped jobs to registered clients with rights metadata",
+        "client-submitted jobs preserve runtime/result provenance",
+        "distributed parity tests cover the scheduler contract"
+      ],
+      "missing_contract": "Cluster needs a scheduler-level rights/result contract aligned with the nirs4all DAG runtime rather than only local client parity.",
+      "next_owner_action": "Finish W58; promote to a strict release gate when cluster is included in the V1 artifact set."
+    }
+  ]
+}

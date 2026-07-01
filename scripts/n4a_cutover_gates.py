@@ -19,6 +19,8 @@ from typing import Any
 
 
 DEFAULT_MANIFEST = Path("docs/contracts/cutover/drop-gates.n4a.json")
+DEFAULT_READINESS_MATRIX = Path("docs/contracts/cutover/readiness-matrix.n4a.json")
+READINESS_STATUSES = {"blocked", "expected-fail", "ready", "advisory", "passed"}
 
 
 class GateError(RuntimeError):
@@ -63,6 +65,51 @@ def load_manifest(path: Path) -> dict[str, Any]:
             raise GateError(f"{gate_id}: command must be a non-empty list")
         if not isinstance(gate.get("cwd"), str) or not gate["cwd"]:
             raise GateError(f"{gate_id}: cwd must be a non-empty string")
+    return data
+
+
+def load_readiness_matrix(path: Path, known_gate_ids: set[str]) -> dict[str, Any]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        raise GateError(f"cannot read readiness matrix {path}: {exc}") from exc
+    except json.JSONDecodeError as exc:
+        raise GateError(f"invalid JSON readiness matrix {path}: {exc}") from exc
+    if data.get("schema_version") != "n4a.cutover-readiness/v1":
+        raise GateError(f"unsupported readiness matrix schema: {data.get('schema_version')!r}")
+    blockers = data.get("blockers")
+    if not isinstance(blockers, list) or not blockers:
+        raise GateError("readiness matrix must contain a non-empty blockers list")
+    seen: set[str] = set()
+    for blocker in blockers:
+        blocker_id = blocker.get("id")
+        if not isinstance(blocker_id, str) or not blocker_id:
+            raise GateError("each readiness blocker needs a non-empty id")
+        if blocker_id in seen:
+            raise GateError(f"duplicate readiness blocker id: {blocker_id}")
+        seen.add(blocker_id)
+        for field in ("title", "lane", "owner_repo", "status", "missing_contract"):
+            if not isinstance(blocker.get(field), str) or not blocker[field]:
+                raise GateError(f"{blocker_id}: {field} must be a non-empty string")
+        if blocker["status"] not in READINESS_STATUSES:
+            raise GateError(f"{blocker_id}: unsupported status {blocker['status']!r}")
+        evidence = blocker.get("expected_evidence")
+        if not isinstance(evidence, list) or not all(isinstance(item, str) for item in evidence):
+            raise GateError(f"{blocker_id}: expected_evidence must be a list of strings")
+        gate_ids = blocker.get("gate_ids", [])
+        if not isinstance(gate_ids, list) or not all(isinstance(item, str) for item in gate_ids):
+            raise GateError(f"{blocker_id}: gate_ids must be a list of strings")
+        unknown = sorted(set(gate_ids) - known_gate_ids)
+        if unknown:
+            raise GateError(f"{blocker_id}: unknown gate id(s): {', '.join(unknown)}")
+        primary_gate_id = blocker.get("primary_gate_id")
+        command = blocker.get("command")
+        cwd = blocker.get("cwd")
+        if primary_gate_id is not None:
+            if primary_gate_id not in known_gate_ids:
+                raise GateError(f"{blocker_id}: unknown primary_gate_id {primary_gate_id!r}")
+        elif not isinstance(command, list) or not command or not isinstance(cwd, str) or not cwd:
+            raise GateError(f"{blocker_id}: needs primary_gate_id or cwd plus command")
     return data
 
 
@@ -114,6 +161,37 @@ def gate_summary(gate: dict[str, Any], workspace_root: Path) -> dict[str, Any]:
     }
 
 
+def readiness_summary(
+    blocker: dict[str, Any],
+    gates_by_id: dict[str, dict[str, Any]],
+    workspace_root: Path,
+) -> dict[str, Any]:
+    primary_gate_id = blocker.get("primary_gate_id")
+    if primary_gate_id:
+        gate = gates_by_id[primary_gate_id]
+        cwd = str(gate_cwd(gate, workspace_root))
+        command = command_for(gate, workspace_root)
+    else:
+        cwd = str(gate_cwd(blocker, workspace_root))
+        command = command_for(blocker, workspace_root)
+    return {
+        "id": blocker["id"],
+        "title": blocker["title"],
+        "lane": blocker["lane"],
+        "owner_repo": blocker["owner_repo"],
+        "status": blocker["status"],
+        "required_for_cutover": bool(blocker.get("required_for_cutover", True)),
+        "primary_gate_id": primary_gate_id,
+        "gate_ids": blocker.get("gate_ids", []),
+        "cwd": cwd,
+        "command": command,
+        "expected_evidence": blocker["expected_evidence"],
+        "missing_contract": blocker["missing_contract"],
+        "next_owner_action": blocker.get("next_owner_action"),
+        "depends_on": blocker.get("depends_on", []),
+    }
+
+
 def list_gates(gates: list[dict[str, Any]], workspace_root: Path, json_out: bool) -> int:
     rows = [gate_summary(gate, workspace_root) for gate in gates]
     if json_out:
@@ -125,6 +203,27 @@ def list_gates(gates: list[dict[str, Any]], workspace_root: Path, json_out: bool
         print(f"[{required}] {row['id']} - {row['title']}")
         print(f"  cwd: {row['cwd']}")
         print(f"  cmd: {' '.join(row['command'])}")
+    return 0
+
+
+def list_readiness(
+    blockers: list[dict[str, Any]],
+    gates_by_id: dict[str, dict[str, Any]],
+    workspace_root: Path,
+    json_out: bool,
+) -> int:
+    rows = [readiness_summary(blocker, gates_by_id, workspace_root) for blocker in blockers]
+    if json_out:
+        json.dump({"blockers": rows}, sys.stdout, ensure_ascii=True, indent=2)
+        sys.stdout.write("\n")
+        return 0
+    for row in rows:
+        required = "required" if row["required_for_cutover"] else "advisory"
+        print(f"[{required}/{row['status']}] {row['id']} - {row['title']}")
+        print(f"  owner: {row['owner_repo']} ({row['lane']})")
+        print(f"  cwd: {row['cwd']}")
+        print(f"  cmd: {' '.join(row['command'])}")
+        print(f"  missing: {row['missing_contract']}")
     return 0
 
 
@@ -220,8 +319,10 @@ def run_gates(gates: list[dict[str, Any]], workspace_root: Path, timeout: int | 
 def _add_common_options(parser: argparse.ArgumentParser, *, suppress_defaults: bool = False) -> None:
     default: Any = argparse.SUPPRESS if suppress_defaults else None
     manifest_default: Any = argparse.SUPPRESS if suppress_defaults else DEFAULT_MANIFEST
+    readiness_default: Any = argparse.SUPPRESS if suppress_defaults else DEFAULT_READINESS_MATRIX
     workspace_default: Any = argparse.SUPPRESS if suppress_defaults else default_workspace_root()
     parser.add_argument("--manifest", type=Path, default=manifest_default)
+    parser.add_argument("--readiness-matrix", type=Path, default=readiness_default)
     parser.add_argument("--workspace-root", type=Path, default=workspace_default)
     parser.add_argument(
         "--gate",
@@ -242,6 +343,8 @@ def build_parser() -> argparse.ArgumentParser:
     validate = sub.add_parser("validate", help="Validate the manifest and selected gate ids.")
     _add_common_options(validate, suppress_defaults=True)
     validate.set_defaults(validate_only=True)
+    readiness = sub.add_parser("readiness", help="List cutover blockers with owners and evidence commands.")
+    _add_common_options(readiness, suppress_defaults=True)
     run = sub.add_parser("run", help="Execute selected gates. This can be slow.")
     _add_common_options(run, suppress_defaults=True)
     run.add_argument("--timeout", type=int, default=None, help="Per-gate timeout in seconds.")
@@ -267,17 +370,39 @@ def main(argv: list[str] | None = None) -> int:
         if not manifest_path.is_absolute():
             manifest_path = repo_root() / manifest_path
         manifest = load_manifest(manifest_path)
+        readiness_path = args.readiness_matrix
+        if not readiness_path.is_absolute():
+            readiness_path = repo_root() / readiness_path
+        gates_by_id = {gate["id"]: gate for gate in manifest["gates"]}
+        readiness_matrix = load_readiness_matrix(readiness_path, set(gates_by_id))
         workspace_root = args.workspace_root.expanduser().resolve()
         gates = selected_gates(manifest, set(args.gate) if args.gate else None, set(args.skip or []))
         command = args.command or "list"
         if command == "validate":
             if args.json:
-                json.dump({"valid": True, "selected_gates": [gate["id"] for gate in gates]}, sys.stdout, indent=2)
+                json.dump(
+                    {
+                        "valid": True,
+                        "selected_gates": [gate["id"] for gate in gates],
+                        "readiness_blockers": [blocker["id"] for blocker in readiness_matrix["blockers"]],
+                    },
+                    sys.stdout,
+                    indent=2,
+                )
                 sys.stdout.write("\n")
             else:
                 print(f"manifest OK: {manifest_path}")
+                print(f"readiness matrix OK: {readiness_path}")
                 print(f"selected gates: {', '.join(gate['id'] for gate in gates)}")
             return 0
+        if command == "readiness":
+            selected_gate_ids = {gate["id"] for gate in gates}
+            blockers = [
+                blocker
+                for blocker in readiness_matrix["blockers"]
+                if not args.gate or set(blocker.get("gate_ids", [])) & selected_gate_ids
+            ]
+            return list_readiness(blockers, gates_by_id, workspace_root, args.json)
         if command == "run":
             return run_gates(gates, workspace_root, args.timeout, args.json, args.missing_cwd, args.advisory)
         return list_gates(gates, workspace_root, args.json)
