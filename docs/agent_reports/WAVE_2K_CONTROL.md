@@ -100,8 +100,8 @@ Do not launch W99 until W90-W98 reports exist or have explicitly failed.
 | W92 | report complete | methods commit `d077ea5f`, ecosystem report commit `e7d4877`; package/import surface and ABI/parity gates passed. |
 | W93 | report complete | IO commit `ac7809d`, datasets commit `20b41824`, ecosystem report commit `d0fcdbf`; reference dataset bridge verified. |
 | W94 | report complete | lite commit `d9d92d7`, ecosystem report commit `5caa4b1`; topology manifest consumer-readiness tests passed. |
-| W95 | running | launched as Bohr (`019f1c7e-83e6-78e2-b1d5-0f9c2ab838c4`). |
-| W96 | running | launched as Boole (`019f1c7f-d079-75d2-9bc5-de154dabd751`). |
-| W97 | report complete | tools commit `c10934a`; golden legacy fixtures and converter tests passed (`82 passed`). |
+| W95 | integrated into `refactor/integration-studio` | worker commit `88fbd99`, merge commit `b265ac4`; coordinator backend gate passed (`67 passed`) plus Ruff. |
+| W96 | integrated into `refactor/integration-studio` and `refactor/integration-web` | Studio worker commit `a32fbb9`, Web worker commit `f3ba05e`; Studio merge `ad2ec5e`, Web merge `977d1da`; coordinator added Studio test fix `0623042`; focused Vitest/typecheck/Web build gates passed. |
+| W97 | integrated into `nirs4all-tools/main` | worker commit `c10934a`, merge commit `0ff31c2`; coordinator reran tools pytest (`82 passed`), Ruff, mypy, and diff check. |
 | W98 | running | launched as Arendt (`019f1c82-75c8-74f2-afb0-cedbf297a06f`). |
 | W99 | running | launched as Ramanujan (`019f1c82-ffd9-7b21-9221-88135c437fcf`), with instruction to treat unfinished W95-W98 as pending. |
