@@ -504,3 +504,70 @@ Post-merge gates:
   CLI smoke `legacy migrate --verify` on inline SQLite legacy-arrays fixture
   returned expected exit `10` and produced `store.sqlite`, contracts, and
   `preserved/legacy-prediction-arrays.jsonl`.
+
+## Wave-2E Codex continuation and integration
+
+Wave-2E was executed after the user reported that external Claude CLI sessions
+were still running. The supervisor audited the process tree first and left the
+external interactive Claude CLI PIDs `208304` and `208423` untouched. These
+sessions have CodeGraph MCP children and Claude threads, but no separately
+visible managed `pytest`/`cargo`/`npm` worker process at the latest audit.
+
+Wave-2E final commits:
+
+| Agent | Repo(s) | Commit(s) | Result |
+|---|---|---|---|
+| `W31` | `nirs4all` | `b6cd230f` | safe preprocessing modifiers run native |
+| `W32` | `nirs4all` | `0f772104` | duplication `merge="features"` runs native |
+| `W33` | `nirs4all` | `03fbc1c` | native branch/fusion `.n4a` export subset |
+| `W34` | `nirs4all` | `4ffff0d` | shared by-source preprocessing + concat runs native |
+| `W35` | `dag-ml` | `a1b9697` | multi-source/source-index runtime contract hardened |
+| `W36` | `nirs4all-studio` | `f5094c2` | Studio spectral stats prefer core runtime helper |
+| `W37` | `nirs4all-web` | `02a3570` | Web runtime result/error goldens |
+| `W38` | `nirs4all-cluster` | `4ffda1d` | live distributed parity harness |
+| `W39` | `nirs4all-tools` | `ce8ed47` | native result artifacts preserved by toolbox |
+| `W40` | `nirs4all-ecosystem` | `80e6ac6` | non-mutating cutover gate runner |
+
+Merged integration tips after Wave-2E:
+
+| Repo | Integration branch / worktree | Tip | Notes |
+|---|---|---|---|
+| `nirs4all` | `refactor/integration-nirs4all` / `_worktrees/INT-nirs4all` | `e6299d52` | W31 + W34 + W33 + W32 merged; `coverage_meter OK (fallback=6, target=0)` |
+| `dag-ml` | `refactor/integration-dagml` / `_worktrees/INT-dagml` | `35e9e00` | W35 merged |
+| `nirs4all-studio` | `refactor/integration-studio` / `_worktrees/INT-studio` | `64b43c7` | W36 merged |
+| `nirs4all-web` | `refactor/integration-web` / `_worktrees/INT-web` | `94ccc66` | W37 merged |
+| `nirs4all-cluster` | `refactor/integration-cluster` / `_worktrees/INT-cluster` | `afacc0e` | W38 merged |
+| `nirs4all-tools` | `main` / `nirs4all-tools` | `b76458d` | W39 merged into main |
+| `nirs4all-ecosystem` | `main` / `nirs4all-ecosystem` | `9c97948` | W40 merged into main |
+
+Post-merge Wave-2E gates:
+
+- `nirs4all`: full native/fallback boundary selection
+  `test_conformance_dual_engine.py -k 'branch_dup_two_way_merge_features or native_fallback_boundary'`
+  -> `88 passed`; `test_native_fallback_boundary.py` -> `12 passed`;
+  `test_compatibility_ledger.py` -> `2 passed`; `coverage_meter --check` ->
+  `fallback=6`; targeted Ruff/py_compile/JSON validation passed.
+- `dag-ml`: fmt, `dag-ml-core` tests (`439 passed, 2 ignored`), touched
+  clippy, and cross-repo `validate_contracts.py` passed.
+- `nirs4all-studio`: `tests/test_spectra_perf.py` -> `10 passed`; targeted
+  compileall/Ruff passed.
+- `nirs4all-web`: focused runtime Vitest target -> `21 passed`; typecheck and
+  build passed.
+- `nirs4all-cluster`: full pytest -> `125 passed, 1 skipped`; Ruff and mypy
+  passed.
+- `nirs4all-tools`: pytest -> `69 passed`; compileall/Ruff/diff-check and
+  native-results migrate/verify smoke passed.
+- `nirs4all-ecosystem`: cutover gate runner validate/list, compileall,
+  `json.tool`, Ruff, and diff-check passed.
+
+Remaining Wave-2E facts:
+
+- `EXPECTED_FALLBACK` is not empty. Remaining cases are
+  `branch_dup_three_way_merge_predictions`, `branch_dup_named_with_metamodel`,
+  `branch_dup_merge_all`, `multi_source_by_source_branch_distinct_preproc`,
+  `multi_source_per_source_models_stacking`, and
+  `multi_source_sources_concat_then_rf`.
+- `DEFAULT_ENGINE` was not flipped.
+- No managed Wave-2E worker or test process remains running at final audit.
+- External Claude CLI PIDs `208304` and `208423` remain external interactive
+  sessions and were not controlled by the supervisor.
