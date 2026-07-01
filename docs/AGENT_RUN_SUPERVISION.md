@@ -400,7 +400,7 @@ and `208423` remain running at the workspace root and must stay untouched.
 |---|---|---|---|---|---|
 | `W21` | `27195ede-e318-4e78-acff-b01c3a37d30a` | B-010 fallback drain audit + safe lowering | `_worktrees/W21-nirs4all-fallback` | `docs/agent_reports/W21_FALLBACK_DRAIN.md` | running |
 | `W22` | `c3f99c7d-afe6-45c7-a372-fa14cd58348e` | B-011 workspace/artifact `.n4a` parity | `_worktrees/W22-nirs4all-artifacts` | `docs/agent_reports/W22_ARTIFACT_PARITY.md` | running |
-| `W23` | pending launch | B-011/B-018 error and refusal parity | `_worktrees/W23-nirs4all-errors` | `docs/agent_reports/W23_ERROR_PARITY.md` | pending; Claude init timed out under launch load |
+| `W23` | `3b6c5119-1bcd-414c-9d93-67283c48b986` | B-011/B-018 error and refusal parity | `_worktrees/W23-nirs4all-errors` | `docs/agent_reports/W23_ERROR_PARITY.md` | running after delayed relaunch |
 | `W24` | `e84bd37a-9ec0-4851-a2c3-480bfa336725` | Studio runtime route adoption | `_worktrees/W24-studio-runtime` | `docs/agent_reports/W24_STUDIO_RUNTIME_ROUTES.md` | running |
 | `W25` | `7c18896f-d655-4a4b-ba62-a858dd3b4b3c` | Studio compute push-down slice 2 | `_worktrees/W25-studio-compute2` | `docs/agent_reports/W25_STUDIO_COMPUTE_PUSHDOWN2.md` | running |
 | `W26` | `8b470fc8-0b7e-4c23-b72b-3841fc82d1f0` | Web runtime adoption + served failure smokes | `_worktrees/W26-web-runtime` | `docs/agent_reports/W26_WEB_RUNTIME_ADOPTION.md` | running |
@@ -414,6 +414,6 @@ Launch notes:
 - All successful `claude_code` calls used
   `allowedTools=["Bash","Read","Write","Edit","Glob","Grep","Task"]`.
 - All successful agents resolved as `claude-opus-4-8` with `effort=max`.
-- `W23` launch attempts timed out during Claude session initialization before
-  any session ID was created; relaunch after one active W2D session finishes or
-  capacity drops.
+- `W23` launch attempts initially timed out during Claude session
+  initialization before any session ID was created, then succeeded with a longer
+  init timeout.
