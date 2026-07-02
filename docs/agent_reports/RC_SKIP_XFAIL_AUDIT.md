@@ -19,26 +19,28 @@ No files were modified by the audit agent.
 - Studio operator fixture debt has been burned down after the original audit:
   - `tests/test_operator_definitions.py` now passes with `445 passed` and 0 skips after replacing skipped fixture families with deterministic local inputs;
   - the combined Studio runtime/operator/quick-run RC stack gate passes with `464 passed`.
-- The older Studio full-backend result `2276 passed, 54 skipped` is stale for operator-definition accounting and must be refreshed after the current batch.
+- Studio full-backend result is refreshed after the current batch: `2324 passed, 6 skipped` in `1465.99s`. Remaining skips are Windows-only/env/example-access categories, not operator-definition fixture debt.
 - Studio frontend `1 skipped` is Windows-only path behavior in `electron/portable-paths.test.ts`.
 - Benchmarks `1 skipped` is optional CI/runtime coverage and should be rerun in the service-extra environment if zero skips is required.
-- Python parity `30 skipped / 11 xfailed` is now stale for live PipelineCase registry-skip accounting:
+- Python parity `30 skipped / 11 xfailed` is stale. Current targeted accounting after `99d57b7e` is stricter on real parity debt:
   - `1234db31 fix(parity): remove registry skip debt` implements the four registry cases previously listed here;
+  - `99d57b7e fix(parity): burn down native xfail debt` removes five strict xfails from `KNOWN_DIVERGENCES`;
   - targeted four-case parity gate passed with `20 passed`;
+  - targeted dual-engine burn-down gate passed with `10 passed`;
   - broader compile/smoke/fallback gate passed with `203 passed, 6 skipped`;
   - marker audit still reports sanctioned `registry_skip` call sites by AST, which are distinct from live disabled `PipelineCase` entries;
-  - xfails include known divergences plus legacy-bug cases.
+  - strict xfails are now 6: 4 known divergences plus 2 branch native-boundary cases.
 
 Xfail classification after the RC reviewer audit:
 
-- Fix first: `sample_augmentation_gaussian`, `sample_augmentation_chained`, `sample_augmentation_after_savgol`, `feature_augmentation_replace_three_views`, `concat_transform_pca_svd_plsr`, `generator_finetune_params_optuna`.
+- Fix first: `concat_transform_pca_svd_plsr`.
 - Justify or replace with a non-equivalence contract: `generator_sample_log_uniform_alpha`, `rep_to_sources_basic`, `rep_to_pp_basic`.
-- Correct if V1 keeps the DSL path: `branch_separation_by_tag`, `branch_separation_by_filter`.
+- Correct or reclassify native-boundary behavior if V1 keeps the DSL path: `branch_separation_by_tag`, `branch_separation_by_filter`. The explicit legacy path is now locked by dedicated tests.
 
 ## Required Follow-Up
 
-- Refresh full Studio backend pytest after current Studio head `1d1ded5`.
-- Refresh full Python parity after current Python head `1234db31`.
+- Track remaining Studio skips as optional/environment gates, not operator debt.
+- Refresh full Python parity after current Python head `99d57b7e`.
 - Classify the remaining 6 targeted parity skips:
   - legacy-bug skips for `branch_separation_by_tag` and `branch_separation_by_filter`;
   - optional SHAP dependency skip;

@@ -73,9 +73,9 @@ This is not a temporary cut. The target is the final project topology:
 
 | Gate | Latest evidence | Release interpretation |
 | --- | --- | --- |
-| Python targeted parity harness | After `1234db31`, live PipelineCase registry skip debt is 0. Targeted four-case gate: `20 passed`; broader compile/smoke/fallback gate: `203 passed, 6 skipped`. Marker audit still reports sanctioned `registry_skip` call sites by AST. Strict xfails remain 11. | Improved RC evidence, but not production-flip evidence until the remaining skips/xfails are fixed or explicitly justified and full parity is rerun. |
+| Python targeted parity harness | After `99d57b7e`, live PipelineCase registry skip debt is 0 and strict xfails are 6. Five former strict xfails now pass targeted dual-engine gates: augmentation x3, feature-augmentation replace views, and Optuna finetune. Broader compile/smoke/fallback gate: `203 passed, 6 skipped`. Marker audit still reports sanctioned `registry_skip` call sites by AST. | Improved RC evidence, but not production-flip evidence until the remaining skips/xfails are fixed or explicitly justified and full parity is rerun. |
 | `dag-ml` workspace | `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings` passed | Native runtime baseline is usable for RC work. |
-| Studio | Operator-definition fixture gate now has 0 skips: `445 passed`. Runtime/operator/quick-run RC stack gate after import-precedence fix: `464 passed`. Prior full backend pytest: `2276 passed, 54 skipped`. | Studio RC default `dag-ml` route is covered by focused tests; full backend must be rerun after the current batch to refresh the old skip count. |
+| Studio | Operator-definition fixture gate now has 0 skips: `445 passed`. Runtime/operator/quick-run RC stack gate after import-precedence fix: `464 passed`. Full backend pytest after current Python/Web batch: `2324 passed, 6 skipped` in `1465.99s`. | Studio RC default `dag-ml` route is covered by focused tests; the old operator skip debt is gone from the full backend gate. |
 | Web | After `ae507ab`, client-side-only contract test: `2 passed`; full Vitest: `134 passed`; typecheck, `validate:catalog`, `build`, and `build:single` passed. | Web RC is a static/browser-only app with no backend runtime and no intentional third-party runtime requests. |
 | Python non-parity tests under strict dag-ml | targeted failures in workspace/session/predict/explain/retrain | Blocks dag-ml production flip. Legacy mode targeted rerun passed. |
 | Providers | Ruff, mypy, pytest passed with optional-extra skips | Providers must become neutral contract clients, not a Python-only dependency for core/language packages. |
@@ -85,17 +85,18 @@ This is not a temporary cut. The target is the final project topology:
 
 - Python `nirs4all` RC head now includes `8b69fd4f fix(dagml): accept canonical studio pipeline steps`, covering Studio/editor canonical strings and dict class refs on the dag-ml default path.
 - Python `nirs4all` RC head now includes `1234db31 fix(parity): remove registry skip debt`; the four registry-skip cases are live and covered by targeted parity gates.
+- Python `nirs4all` RC head now includes `99d57b7e fix(parity): burn down native xfail debt`; strict xfails are reduced from 11 to 6 while preserving `concat_transform_pca_svd_plsr`, `generator_sample_log_uniform_alpha`, `rep_to_sources_basic`, `rep_to_pp_basic`, and the two branch separation native-boundary cases as explicit debt.
 - Studio RC head now includes `0653ee0 test(runtime): align Studio default engine contract`; targeted backend runtime/native/quick-run checks passed with RC dag-ml and dag-ml-data on `PYTHONPATH`.
 - Studio RC head now includes `9190ccc test(studio): cover operator definition fixtures` and `1d1ded5 fix(tests): preserve RC nirs4all import precedence`; operator definitions no longer skip missing fixtures, and combined runtime/operator/quick-run verification passes against the RC Python worktree.
 - Web RC head now includes `ae507ab fix(web): remove third-party runtime requests`; the public `web.nirs4all.org` build remains GitHub Pages/static/WASM-only and the client-only contract now rejects remote runtime scripts and remote CSS imports.
-- Studio backend full pytest passed with the same RC Python/dag-ml/dag-ml-data stack: `2276 passed, 54 skipped` in `1275.74s`. The 54 skips are tracked as release debt in `RC_SKIP_XFAIL_AUDIT.md`.
+- Studio backend full pytest passed with the current RC Python/dag-ml/dag-ml-data stack: `2324 passed, 6 skipped` in `1465.99s`. Remaining skips are Windows-only/env/example-access categories rather than operator fixture debt.
 - Benchmarks RC head now includes `45f4cf7 fix(benchmarks): keep perf harness lint-clean`; `n4a-benchmarks perf-compare` records both Python legacy-vs-dag-ml and Studio legacy-vs-dag-ml timings with fallback disabled.
 - Methods RC head now includes `44cc9489 test(bindings): add methods release gate entrypoints`; local ABI freshness, wheel install smoke, Python installed smoke, shell syntax, and Makefile help passed. JS/WASM/R/Octave/MATLAB remain environment gates because Emscripten/R/Octave/MATLAB are unavailable locally.
 - Ecosystem RC head now includes `cb1a0bd docs(release): lock selected rc topology`; lock generation validates selected `rc/v1-*` worktrees while preserving canonical public repo paths and nirs4all-core aliases.
 - Ecosystem RC head now includes `89e8c63 docs(release): tighten topology accounting`; release surface validation documents `nirs4all-core`, `nirs4all-python`, R/JS-WASM/Rust/MATLAB language surfaces, `nirs4all-ui`, client-side-only Web, providers/cockpit/org, and the narrower aggregate lock boundary.
 - Cluster GitGuardian remediation is complete for published refs: obsolete tags `v0.1.0`, `v0.1.1`, and `n4a-cluster-2026.07-refactor` were deleted from origin; `rc/v1-full-refactor` and clean tag `n4a-v1-rc1-2026.07-refactor` now point to `ee94a77`.
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for ecosystem, Python, Studio, Web, shared UI, tools, providers, repository, benchmarks, papers, cluster, cockpit, org, and core.
-- Latest pushed/tagged heads after the parity/perf refresh batch: Python `8abbbfb5`, Studio `1d1ded5`, Web `ae507ab`, Benchmarks `45f4cf7`; Ecosystem uses the current board HEAD for this note.
+- Latest pushed/tagged heads after the parity/perf refresh batch: Python `99d57b7e`, Studio `1d1ded5`, Web `ae507ab`, Benchmarks `45f4cf7`; Ecosystem uses the current board HEAD for this note.
 - `aggregation-lock` remains limited to the aggregate core/runtime members. Studio/Web/UI/tools/providers/benchmarks/papers/cluster are tracked by the surface matrix, cutover gates, and agent reports rather than forced into the aggregate lock without an ownership contract.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator skips and Python registry skips have been burned down in focused gates; remaining skips/xfails still block production-flip proof until refreshed full gates classify them.
 
@@ -104,11 +105,6 @@ This is not a temporary cut. The target is the final project topology:
 Known parity xfails to fix:
 
 - `concat_transform_pca_svd_plsr`
-- `feature_augmentation_replace_three_views`
-- `generator_finetune_params_optuna`
-- `sample_augmentation_after_savgol`
-- `sample_augmentation_chained`
-- `sample_augmentation_gaussian`
 
 Known parity xfails to justify or replace with a non-equivalence contract:
 
