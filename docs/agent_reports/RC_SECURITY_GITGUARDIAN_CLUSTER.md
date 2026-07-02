@@ -105,6 +105,20 @@ Validation:
 Local note: superseded local `refactor/*` refs were rewritten by the same local
 filter pass and are still not selected RC integration branches.
 
+## Hidden Pull Request Refs
+
+Follow-up after the user received the GitGuardian alert timestamped
+2026-07-02 09:41:03 UTC:
+
+- GitHub still exposes hidden read-only refs for merged PR #1 and PR #2:
+  `refs/pull/1/head` (`e5a70fd`) and `refs/pull/2/head` (`d530536`).
+- Those refs are not branch or tag heads and GitHub rejects deletion attempts
+  against `refs/pull/*/head`.
+- A read-only Claude Code audit confirmed that the GitGuardian secret is not
+  present in those PR refs. The later docs/tests that contained the cleaned
+  token examples do not exist at those PR commits; only deterministic unit-test
+  token literals remain.
+
 ## Decision
 
 Treat as false positive / dummy placeholder from the local evidence, not a known
@@ -112,5 +126,6 @@ production credential. If any value shown by GitGuardian is an actual deployed
 credential, it must still be rotated because it was published before the rewrite.
 
 If GitGuardian continues to report the same alert after the force-push, request
-a rescan or mark the historical placeholder as remediated/false-positive; GitHub
-may retain unreachable objects and cache scan results after refs are rewritten.
+a rescan or mark the historical placeholder as remediated/false-positive.
+Optionally open a GitHub Support ticket to purge unreachable objects/cache state
+from the earlier force-push window.

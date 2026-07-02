@@ -20,8 +20,12 @@ Follow-up after the GitGuardian "Generic CLI Option Secret" alert reported for
   - `refs/pull/2/head` -> `d530536723cfd121faa716b472e254807fd013c3`
 - PR #1 and PR #2 were merged on 2026-06-04 and their source branches no
   longer exist on the remote.
-- The old PR heads contain placeholder CLI/token examples. The current
-  branch/tag refs do not contain those examples.
+- A second read-only audit with Claude Code confirmed that the specific
+  GitGuardian secret is not present in those PR refs. The later files that
+  carried the cleaned examples (`docs/quickstart.md`, `docs/operations.md`,
+  `tests/conftest.py`, `CLAUDE.md`) do not exist at the PR commits; the only
+  remaining secret-shaped values are deterministic test literals in
+  `tests/test_server_api.py`.
 - Attempting to delete the GitHub pull refs with `git push origin
   :refs/pull/1/head :refs/pull/2/head` was rejected by GitHub because they are
   hidden refs.
@@ -38,10 +42,10 @@ Follow-up after the GitGuardian "Generic CLI Option Secret" alert reported for
 ## Decision
 
 No further git rewrite is available from the repository side for the hidden PR
-refs. If GitGuardian continues to flag the repository after the branch/tag
-rewrite, the remaining remediation path is to mark the placeholder as
-revoked/false-positive in GitGuardian or request GitHub support to purge the
-cached pull refs.
+refs. The practical remediation path is outside git: rotate any value that was
+ever real, request a GitGuardian rescan/closure as remediated, and optionally
+ask GitHub Support to purge unreachable object/cache state from the earlier
+force-push window.
 
 No production credential was identified in the current published branch/tag
-surface during this audit.
+surface or in the remaining hidden PR refs during this audit.

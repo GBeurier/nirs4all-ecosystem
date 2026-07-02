@@ -1215,7 +1215,7 @@
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "state": {
         "branch": "rc/v1-full-refactor-core",
-        "commit": "29d6d04a5bb0ebfffeef92bf7dfcaa6d47643853",
+        "commit": "cdba11ef2bb24f4d37e2c144cd414db77f8b67c8",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
