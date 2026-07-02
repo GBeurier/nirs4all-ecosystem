@@ -118,6 +118,11 @@ Follow-up after the user received the GitGuardian alert timestamped
   present in those PR refs. The later docs/tests that contained the cleaned
   token examples do not exist at those PR commits; only deterministic unit-test
   token literals remain.
+- A later Codex read-only follow-up confirmed the current `main`,
+  `rc/v1-full-refactor`, and RC tag tips are still clean for the checked CLI
+  secret-option patterns. Superseded `refactor/*` tips and hidden PR refs can
+  still contain placeholder-looking examples such as environment-token,
+  `dev`, or `T` values; no production credential was identified locally.
 
 ## Decision
 
@@ -126,6 +131,8 @@ production credential. If any value shown by GitGuardian is an actual deployed
 credential, it must still be rotated because it was published before the rewrite.
 
 If GitGuardian continues to report the same alert after the force-push, request
-a rescan or mark the historical placeholder as remediated/false-positive.
-Optionally open a GitHub Support ticket to purge unreachable objects/cache state
-from the earlier force-push window.
+a rescan/support review against `main`, `rc/v1-full-refactor`, and
+`n4a-v1-rc1-2026.07-refactor`, noting that stale PR refs are read-only hidden
+refs and current branch/tag tips are clean. Optionally open a GitHub Support
+ticket to purge unreachable objects/cache state from the earlier force-push
+window.
