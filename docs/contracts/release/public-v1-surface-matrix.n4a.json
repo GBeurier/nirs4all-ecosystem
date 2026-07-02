@@ -16,7 +16,8 @@
     "docs/agent_reports/WAVE_4K_CORE_LANGUAGE_GATES.md",
     "docs/agent_reports/WAVE_4L_WEB_COCKPIT_GATE_REFRESH.md",
     "docs/agent_reports/WAVE_4M_WEB_CATALOG_STRICTNESS.md",
-    "docs/agent_reports/WAVE_4N_CLUSTER_GITGUARDIAN_PR_REFS.md"
+    "docs/agent_reports/WAVE_4N_CLUSTER_GITGUARDIAN_PR_REFS.md",
+    "docs/agent_reports/WAVE_4O_PYTHON_COMPATIBILITY_LEDGER_REFRESH.md"
   ],
   "aggregation_lock": {
     "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
