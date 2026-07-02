@@ -79,7 +79,7 @@ This is not a temporary cut. The target is the final project topology:
 | Web | After `ae507ab`, client-side-only contract test: `2 passed`; full Vitest: `134 passed`; typecheck, `validate:catalog`, `build`, and `build:single` passed. | Web RC is a static/browser-only app with no backend runtime and no intentional third-party runtime requests. |
 | Python non-parity tests under strict dag-ml | targeted failures in workspace/session/predict/explain/retrain | Blocks dag-ml production flip. Legacy mode targeted rerun passed. |
 | Providers | Ruff, mypy, pytest passed with optional-extra skips | Providers must become neutral contract clients, not a Python-only dependency for core/language packages. |
-| Performance comparison | `n4a-benchmarks perf-compare --repeats 1` after `45f4cf7`: Python `dag-ml/legacy` run ratio `1.075x`, Studio run ratio `0.804x`, Studio total ratio `0.943x`. | First RC harness evidence only; repeat count is intentionally low and must be rerun with higher repeats before production flip. |
+| Performance comparison | `n4a-benchmarks perf-compare --repeats 3 --assert-max-ratio python_run=1.0 --assert-max-ratio studio_run=1.0` after `45f4cf7`: Python `dag-ml/legacy` run ratio `0.762x` and total ratio `0.806x`; Studio run ratio `0.702x` and total ratio `0.753x`. | RC harness evidence with fallback disabled, child Python `/home/delete/nirs4all/nirs4all-studio/.venv/bin/python`, RC Python root `_worktrees/RC-v1-nirs4all-python`; JSON/Markdown saved under `/tmp/n4a_perf_compare_rc_gate_20260702.*`. |
 
 ## Coordination Update - 2026-07-02
 
