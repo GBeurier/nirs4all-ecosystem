@@ -204,3 +204,24 @@ a rescan/support review against `main`, `rc/v1-full-refactor`, and
 refs and current branch/tag tips are clean. Optionally open a GitHub Support
 ticket to purge unreachable objects/cache state from the earlier force-push
 window.
+
+## Repeated Alert Recheck
+
+The user reported the same GitGuardian class again for pushed date
+2026-07-02 09:41:03 UTC. A fresh fetch of branch, tag, and hidden PR refs found:
+
+- `origin/main` -> `97b2b38`
+- `origin/rc/v1-full-refactor` -> `9d6ab34`
+- `n4a-v1-rc1-2026.07-refactor` -> `9d6ab34`
+- hidden PR refs: `refs/pull/1/head` -> `e5a70fd`,
+  `refs/pull/2/head` -> `d530536`
+
+The selected branch and tag refs have zero literal CLI option values for
+`--token`, `--api-key`, `--secret`, `--password`, `--auth`, or bearer-style
+patterns. The hidden PR refs still contain only placeholder documentation values
+such as `--token dev` / `TOKEN`. These PR refs are not selected release heads
+and cannot be deleted through normal Git pushes.
+
+Operational conclusion is unchanged: current selected refs are clean for the
+checked class. Treat continued alerts as GitGuardian stale-cache / hidden-PR-ref
+review unless the UI reveals a real non-placeholder value.

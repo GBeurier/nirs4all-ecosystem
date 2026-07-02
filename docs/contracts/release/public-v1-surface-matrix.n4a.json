@@ -20,7 +20,10 @@
     "docs/agent_reports/WAVE_4O_PYTHON_COMPATIBILITY_LEDGER_REFRESH.md",
     "docs/agent_reports/WAVE_4P_RELEASE_LOCK_AND_PROVIDER_GATE_REFRESH.md",
     "docs/agent_reports/WAVE_4Q_RC_PUBLICATION_REAUDIT.md",
-    "docs/agent_reports/WAVE_4R_IO_DATASETS_BRIDGE_RC_CI.md"
+    "docs/agent_reports/WAVE_4R_IO_DATASETS_BRIDGE_RC_CI.md",
+    "docs/agent_reports/WAVE_4S_RC_CI_WEB_UI_SECURITY.md",
+    "docs/agent_reports/WAVE_4T_DOCS_UI_SHARED_STATUS.md",
+    "docs/agent_reports/WAVE_4U_PARITY_PROVIDERS_PERF_CORE_PINS.md"
   ],
   "aggregation_lock": {
     "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
