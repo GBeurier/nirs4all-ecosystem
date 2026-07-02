@@ -1,7 +1,7 @@
 # RC Skip / Xfail Audit
 
 Date: 2026-07-02  
-Agent: Codex/Laplace, read-only; coordinator refresh after Python `42448821`
+Agent: Codex/Laplace, read-only; coordinator refresh after Python `3d568ab`
 
 ## Scope
 
@@ -13,7 +13,8 @@ Read-only audit of skip/xfail debt visible in the current RC gates:
 - prior targeted benchmarks result
 
 The initial audit was read-only. The coordinator later refreshed this report
-after the full Python parity rerun on `42448821`.
+after the full Python parity rerun on the selected RC Python head `3d568ab`
+with RC `dag-ml` `7f86a9b` and RC `dag-ml-data` `e681685` on `PYTHONPATH`.
 
 ## Findings
 
@@ -23,37 +24,33 @@ after the full Python parity rerun on `42448821`.
 - Studio full-backend result is refreshed after the current batch: `2324 passed, 6 skipped` in `1465.99s`. Remaining skips are Windows-only/env/example-access categories, not operator-definition fixture debt.
 - Studio frontend `1 skipped` is Windows-only path behavior in `electron/portable-paths.test.ts`.
 - Benchmarks `1 skipped` is optional CI/runtime coverage and should be rerun in the service-extra environment if zero skips is required.
-- Python parity `30 skipped / 11 xfailed` is stale. Current targeted accounting after `99d57b7e` was stricter on real parity debt:
-  - `1234db31 fix(parity): remove registry skip debt` implements the four registry cases previously listed here;
-  - `99d57b7e fix(parity): burn down native xfail debt` removes five strict xfails from `KNOWN_DIVERGENCES`;
-  - targeted four-case parity gate passed with `20 passed`;
-  - targeted dual-engine burn-down gate passed with `10 passed`;
-  - broader compile/smoke/fallback gate passed with `203 passed, 6 skipped`;
-  - marker audit still reports sanctioned `registry_skip` call sites by AST, which are distinct from live disabled `PipelineCase` entries;
-  - strict xfails are now 6: 4 known divergences plus 2 branch native-boundary cases.
-- Python full parity was refreshed after `42448821 fix(parity): handle disabled chart steps in dagml`:
-  - `tests/integration/parity`: `853 passed, 14 skipped, 6 xfailed` in `2281.65s`;
-  - the previous four failures are closed: disabled chart-only example steps, public example refusal ledger drift, and two sample-augmentation direct-baseline mismatches;
-  - remaining skips are explicit: missing local `n4m` binding, empty fallback-boundary sentinel, six legacy-bug branch instances across baseline/compile/smoke, optional SHAP, and optional `referencing` for RT schema goldens;
-  - remaining strict xfails are unchanged at 6 and listed below.
-
-Xfail classification after the RC reviewer audit:
-
-- Fix first: `concat_transform_pca_svd_plsr`.
-- Justify or replace with a non-equivalence contract: `generator_sample_log_uniform_alpha`, `rep_to_sources_basic`, `rep_to_pp_basic`.
-- Correct or reclassify native-boundary behavior if V1 keeps the DSL path: `branch_separation_by_tag`, `branch_separation_by_filter`. The explicit legacy path is now locked by dedicated tests.
+- Python parity `30 skipped / 11 xfailed` is stale, and the intermediate
+  `853 passed, 14 skipped, 6 xfailed` result is now superseded.
+- Full Python parity on the selected RC heads now passes without parity skip or
+  xfail debt:
+  - command:
+    `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/delete/nirs4all/_worktrees/RC-v1-dagml/crates/dag-ml-py/python:/home/delete/nirs4all/_worktrees/RC-v1-dmd/crates/dag-ml-data-py/python:. PATH=/home/delete/nirs4all/_worktrees/RC-v1-dagml/target/debug:$PATH /home/delete/nirs4all/nirs4all/.venv/bin/python -m pytest tests/integration/parity/ -m parity -p no:cacheprovider -ra`
+  - result:
+    `659 passed, 227 deselected, 1530 warnings in 2037.46s (0:33:57)`.
+  - `227 deselected` are tests outside the `parity` marker, not skipped tests.
+  - No `skipped`, no `xfailed`, and no `failed` tests were reported in this gate.
+- The fallback coverage meter was checked before the full run:
+  - `coverage_meter OK (fallback=0, target=0)`;
+  - summary:
+    `registered=95, non_runnable=0, runnable=95, fallback=0, native=95, xfail_strict=0, skip=0, num_predictions_divergence=2, run_only_nondeterministic=1, expected_fallback_target=0`.
 
 ## Required Follow-Up
 
 - Track remaining Studio skips as optional/environment gates, not operator debt.
-- Full Python parity has been refreshed on `42448821`; do not cite `99d57b7e` as the current proof head.
-- Decide release treatment for the 14 skipped instances:
-  - install/prove `n4m` for methods binding parity instead of accepting the local environment skip;
-  - either keep the two branch legacy-bug cases as legacy-oracle defects or implement the bridge path and remove the skips;
-  - install SHAP / `referencing` in the release-proof environment or move them to explicit optional-environment gates with replacement coverage;
-  - keep the empty fallback-boundary sentinel only while `EXPECTED_FALLBACK` is empty.
-- Do not force dag-ml to reproduce documented legacy double-count bugs for `rep_to_sources_basic` / `rep_to_pp_basic`; adapt/remove those dual-engine expectations when the legacy layer is retired.
+- Do not cite `99d57b7e` or `42448821` as the current parity proof head; the
+  current proof was run on RC Python `3d568ab`.
+- Keep methods binding proof separate: JS/WASM/R/Octave/MATLAB methods gates
+  still depend on their release environments even though Python parity is green.
+- Preserve the distinction between `deselected` and `skipped` in release notes.
 
 ## Risk
 
-The audited skip/xfail counts remain release blockers unless each item is either implemented or moved to a clearly separate optional-environment gate with replacement coverage.
+Python-reference parity no longer has unexplained skip/xfail debt in the
+selected `-m parity` gate. Remaining skip risk is outside this gate: Studio
+environment skips and methods/language binding environments still need their
+own final release proofs.

@@ -8,7 +8,8 @@
     "docs/RELEASE_DISTRIBUTION_MATRIX.md",
     "../RELEASE_DISTRIBUTION_INVENTORY.md",
     "docs/agent_reports/WAVE_2O_CLUSTER_IO_TOOLS.md",
-    "docs/agent_reports/WAVE_2P_RELEASE_PROOF_AND_PARITY.md"
+    "docs/agent_reports/WAVE_2P_RELEASE_PROOF_AND_PARITY.md",
+    "docs/agent_reports/WAVE_4H_CI_AND_FULL_PARITY_REFRESH.md"
   ],
   "aggregation_lock": {
     "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
@@ -87,7 +88,7 @@
       "lock_member_key": null,
       "required_for_nirs4all_v1": true,
       "proof_boundary": "Tier-1 behavioral oracle and compatibility API; full pyref parity remains a separate gate, not implied by the aggregation lock.",
-      "local_gate_policy": "pyref_oracle_full is deferred in W2P; targeted gates are not release-equivalent."
+      "local_gate_policy": "pyref_oracle_full passed on selected RC heads in Wave 4H; rerun on any later final selected heads."
     },
     {
       "id": "nirs4all.python.core",
