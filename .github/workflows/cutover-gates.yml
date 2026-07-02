@@ -2,14 +2,14 @@ name: cutover-gates
 
 on:
   push:
-    branches: [main]
+    branches: [main, rc/**]
     paths:
       - ".github/workflows/cutover-gates.yml"
       - "scripts/n4a_cutover_gates.py"
       - "docs/contracts/cutover/drop-gates.n4a.json"
       - "docs/CUTOVER_GATE_RUNNER.md"
   pull_request:
-    branches: [main]
+    branches: [main, rc/**]
     paths:
       - ".github/workflows/cutover-gates.yml"
       - "scripts/n4a_cutover_gates.py"

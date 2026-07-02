@@ -124,6 +124,41 @@ Follow-up after the user received the GitGuardian alert timestamped
   still contain placeholder-looking examples such as environment-token,
   `dev`, or `T` values; no production credential was identified locally.
 
+## Alert Timestamp Follow-up
+
+Additional follow-up at `2026-07-02T22:31:02Z` tied the reported push window to
+historical commit `1027e641dd4d92d75ad806d550b58825f307cf2e`
+(`fix(cluster): requeue running-task failures through failed state`). That
+commit is currently contained by `main` and `origin/main` history, but not by the
+RC tag.
+
+Evidence collected without printing secret values:
+
+- `main`, `origin/main`, `rc/v1-full-refactor`, `origin/rc/v1-full-refactor`,
+  and the RC tag tip have zero matches for concrete CLI secret-option values
+  matching `--token/--secret/--api-key/--password` followed by a literal
+  alphanumeric value.
+- The broad option/env scan still finds documentation and code surfaces that
+  mention token options or environment variables. Those are expected API
+  references, not proof of an exposed value.
+- The GitHub pull refs still visible remotely are `refs/pull/1/head` and
+  `refs/pull/2/head`; they are hidden/read-only PR refs, not selected release
+  heads.
+- `gh pr list --repo GBeurier/nirs4all-cluster --state all` confirms PR #1
+  (`feat/cluster-prototype`) and PR #2
+  (`docs/distributed-execution-design`) are both merged PRs from 2026-06-04,
+  not open integration branches.
+- The workspace root contains untracked local token files outside the child Git
+  repositories. Their values were not read. A root `.gitignore` guard was added
+  locally to reduce accidental `git add -A` risk if the workspace root is ever
+  treated as a repository.
+
+Operational conclusion: the selected published tips and RC tag are clean for the
+checked patterns, but GitGuardian may still flag history or cached/stale refs.
+Do not mark the incident fully closed from local evidence alone; request a
+GitGuardian rescan/support review and rotate any value that GitGuardian shows as
+real rather than placeholder/example text.
+
 ## Decision
 
 Treat as false positive / dummy placeholder from the local evidence, not a known

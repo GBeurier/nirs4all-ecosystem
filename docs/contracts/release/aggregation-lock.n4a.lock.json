@@ -178,7 +178,7 @@
       "selected_workspace_path": "RC-v1-dagml",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "7f86a9b3db6683ca9a52892758d5cac58506b389",
+        "commit": "a8f6cb3845fcb19f81450b4776094f21978cf2b7",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
@@ -328,7 +328,7 @@
       "selected_workspace_path": "RC-v1-dmd",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "e6816854365350722777056ccfc8d26184940ef1",
+        "commit": "95e56a7fa3d82ea00fda7ecfcd950a22ab526d21",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
@@ -489,7 +489,7 @@
       "selected_workspace_path": "RC-v1-formats",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "86218e633d13b86f8651a2a66be5c75a1f17ef31",
+        "commit": "32fc87f58abf13851028433f690b91428a6b991e",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
@@ -570,7 +570,7 @@
       "selected_workspace_path": "RC-v1-io",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "dac4841c6573559e57da8bd545ed6a7863fa383f",
+        "commit": "0d20c80ec727d9b9d4a545937d86350451e86328",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
@@ -1215,7 +1215,7 @@
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "state": {
         "branch": "rc/v1-full-refactor-core",
-        "commit": "cdba11ef2bb24f4d37e2c144cd414db77f8b67c8",
+        "commit": "0a516e26f54a80b77d6346075162d45586a233c8",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
@@ -1316,7 +1316,7 @@
       "selected_workspace_path": "RC-v1-methods",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "44cc94891348e0ba3c8ca84ef32073147894cf1c",
+        "commit": "d918c5ee6fe35dc102b64458dab2a2cd46be0ddc",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },

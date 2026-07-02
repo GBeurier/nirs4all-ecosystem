@@ -103,11 +103,30 @@ This is not a temporary cut. The target is the final project topology:
 - `nirs4all-cockpit` RC head now includes `8b8e1a4 chore(data): mark dag-ml-data rc stale targets`; planned RC surfaces include `nirs4all-ui` `8f9f2f6`, `nirs4all-providers` `7c7c6e9`, `nirs4all-tools` `7c5070f`, plus planned Python/WASM/R binding targets for `dag-ml` and `dag-ml-data`.
 - `nirs4all-io` RC head now includes `dac4841 feat(python): expose dataset package bridge`; the pyo3 binding exposes `to_dataset_package`, `describe_dataset_package`, `load(..., target="dataset_package"|"package")`, and `nirs4all_io.materialize` package re-exports with canonical JSON and metadata dtype hashing aligned to the MVP/Rust package contract.
 - `nirs4all-datasets` RC head now includes `cac8742 ci(datasets): resolve rc sibling deps`; `ensure_rust_deps.sh` understands `rc/**` sibling refs and local `RC-v1-*` worktrees, normal datasets CI/version/ABI gates cover `rc/**`, and the Python binding lock is refreshed for the selected IO RC dependency graph.
+- Wave 4S covered normal `rc/**` CI triggers across the remaining selected
+  repos without widening release/manual/pages/scheduled/long parity workflows.
+  The aggregate lock now pins CI-only heads for `dag-ml` `a8f6cb3`,
+  `dag-ml-data` `95e56a7`, `nirs4all-formats` `32fc87f`,
+  `nirs4all-io` `0d20c80`, `nirs4all-methods` `d918c5e`, and
+  `nirs4all-core` `0a516e2`.
+- Web/Studio clean-runner UI dependency resolution is fixed after Wave 4S.
+  `nirs4all-web` now vendors `nirs4all-ui` and validates fresh Linux
+  `npm ci --ignore-scripts`, `check:ui-shim`, typecheck, and client-only
+  Vitest (`2 passed`) at `cdb43cc`. `nirs4all-studio` now vendors
+  `nirs4all-ui`, sets `install-links=true` for deterministic local package
+  installs, and validates fresh Linux `npm ci --ignore-scripts`,
+  `check:ui-shim`, and `lint:tsc` at `0d8b3cb`.
 - Ecosystem RC head now includes `cb1a0bd docs(release): lock selected rc topology`; lock generation validates selected `rc/v1-*` worktrees while preserving canonical public repo paths and nirs4all-core aliases.
 - Ecosystem RC head now includes `89e8c63 docs(release): tighten topology accounting`; release surface validation documents `nirs4all-core`, `nirs4all-python`, R/JS-WASM/Rust/MATLAB language surfaces, `nirs4all-ui`, client-side-only Web, providers/cockpit/org, and the narrower aggregate lock boundary.
 - Cluster GitGuardian remediation was upgraded from tip cleanup to a targeted history rewrite and refreshed after the latest alert. Published branch/tag refs now point to rewritten clean history: `main` `97b2b38`, `rc/v1-full-refactor` `e843073`, tag `n4a-v1-rc1-2026.07-refactor` `60c1b5a` peeled to `e843073`. Strict scanner-pattern checks over the branch/tag refs are empty; cluster gates are `142 passed, 1 skipped, 1 deselected` on `main` and `145 passed, 1 skipped, 1 deselected` on the RC worktree. GitHub still exposes merged hidden PR refs #1/#2 from 2026-06-04; a read-only Claude audit confirmed that the GitGuardian secret is not present there and only deterministic unit-test token literals remain. Source branches are gone and deleting hidden PR refs is rejected by GitHub, so residual alert closure is a GitGuardian/GitHub-support action after token rotation if the value was ever real.
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees. `WAVE_4Q_RC_PUBLICATION_REAUDIT.md` rechecked the post-4P heads after repairing missing tags on Studio/UI/Org/Tools/IO/Datasets; Wave 4R then moved Studio/IO/Datasets and regenerated the aggregation lock for IO/Datasets.
-- Latest pushed/tagged heads after the publication/security/parity/CI refresh batch: Python `a103fd2`, dag-ml `7f86a9b`, dag-ml-data `e681685`, Core `cdba11e`, Studio `fd06d94`, Web `8a5dcff`, UI `8f9f2f6`, Cockpit `8b8e1a4`, Org `9417073`, Ecosystem uses the current board HEAD, Providers `7c7c6e9`, Tools `7c5070f`, Cluster `e843073`, Formats `86218e6`, IO `dac4841`, Datasets `cac8742`, Methods `44cc948`, Repository `534c907`, Benchmarks `45f4cf7`, Papers `acde191`.
+- Latest pushed/tagged heads after the Wave 4S CI/Web/Studio refresh: Python
+  `1fd3f7b`, dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `0a516e2`,
+  Studio `0d8b3cb`, Web `cdb43cc`, UI `8f9f2f6`, Cockpit `f06f7b4`,
+  Org `61074ff`, Ecosystem uses the current board HEAD, Providers `7c7c6e9`,
+  Tools `7c5070f`, Cluster `9d6ab34`, Formats `32fc87f`, IO `0d20c80`,
+  Datasets `cac8742`, Methods `d918c5e`, Repository `ced219f`,
+  Benchmarks `06d4146`, Papers `f1d84f4`.
 - `aggregation-lock` remains limited to the aggregate core/runtime members. Studio/Web/UI/tools/providers/benchmarks/papers/cluster are tracked by the surface matrix, cutover gates, and agent reports rather than forced into the aggregate lock without an ownership contract.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator skips and Python registry skips have been burned down; Python full parity on runtime head `3d568ab` now reports no skipped or xfailed parity tests. The current Python head `a103fd2` is docs-only and did not rerun full parity. Remaining skip risk is outside this gate: Studio optional/environment categories and methods/language binding environments.
 
