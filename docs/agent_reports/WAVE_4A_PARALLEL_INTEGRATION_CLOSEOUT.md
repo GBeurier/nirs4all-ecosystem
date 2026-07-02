@@ -34,7 +34,7 @@ No work was done in `nirs4all-drafts` or `nirs4all-lab`.
 | G / `nirs4all-io` | Claude audit + coordinator fix | Replaced stale `nirs4all_formats.open_path` call with public `open_recordset()` and stripped provenance metadata before assembly. |
 | H / Studio/Web/UI | Coordinator | Shared `nirs4all-ui` repo exists and is consumed by Studio and Web. Studio e2e rerun with correct venv. |
 | I / `nirs4all-cluster` | Claude opus review | Reviewed running-task failure requeue via legal `running -> failed -> queued` transitions, published. |
-| K / final review | Coordinator + agents | Release lock, fetchability, checkout, surface matrix, and targeted parity gates rerun. Full parity intentionally deferred after this batch per operator guidance. |
+| K / final review | Coordinator + agents | Release lock, fetchability, checkout, surface matrix, targeted parity gates, and full Python-reference parity rerun after the integrated batch. |
 
 ## Tests and gates
 
@@ -48,16 +48,17 @@ No work was done in `nirs4all-drafts` or `nirs4all-lab`.
 - `nirs4all-web`: previously completed `typecheck`, `test`, `validate:catalog`, `build`, `build:single`, hosted smoke, file smoke.
 - Release lock: `generate`, `validate`, `audit-fetchability --fail-on-unfetchable` -> `7/7`, `checkout-members` -> all seven members checked out at locked commits.
 - Surface matrix: `python3 scripts/n4a_release_surface_matrix.py validate`; report confirms required `nirs4all` Python, R, and browser/WASM surfaces.
+- Full Python-reference parity: `PYTHONPATH=/home/delete/nirs4all/dag-ml/crates/dag-ml-py/python:/home/delete/nirs4all/dag-ml-data/crates/dag-ml-data-py/python:$PYTHONPATH /usr/bin/python3.11 -m pytest tests/integration/parity -v` in `_worktrees/INT-nirs4all` -> `810 passed, 30 skipped, 11 xfailed` in `1882.37s`.
 
 ## Decisions
 
 - `nirs4all-ui` is now a real shared repo. Studio and Web consume it; this replaces the earlier open decision about whether a shared UI package exists.
-- The current Python `nirs4all` library remains the parity oracle. The previous full parity run had a single missing-baseline failure, fixed by adding the two seeded generator baselines; full parity was not rerun in this wave to avoid an expensive run before the next larger batch.
+- The current Python `nirs4all` library remains the parity oracle. The previous full parity run had a single missing-baseline failure, fixed by adding the two seeded generator baselines; full parity was rerun after the integrated batch and passed.
 - `nirs4all-tools` was created/published because the migration CLI is part of public/accounting but was not yet a GitHub repo.
 - Existing stale worktrees/branches were not merged wholesale; only reviewed commits/heads above were selected.
 
 ## Remaining risks
 
-- Full Python-reference parity still needs the next full run after this integrated batch.
+- The full parity suite still carries its existing documented `30 skipped` and `11 xfailed` cases; no new parity failure remains in this batch.
 - `nirs4all-tools` still has documented non-finite score surfaces outside the fixed runtime-array path.
 - Release lock covers the seven aggregation members; Studio, Web, UI, Tools, and Cluster remain outside the aggregation lock but are tagged and accounted for in the surface matrix/report.
