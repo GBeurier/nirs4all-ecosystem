@@ -82,22 +82,25 @@ Actions taken:
   - `rc/v1-full-refactor`;
   - `n4a-v1-rc1-2026.07-refactor`.
 
-Published refs after the rewrite:
+Published refs after the rewrite and the follow-up GitGuardian hardening
+refresh:
 
-- `origin/main` -> `727480c docs(security): remove literal cluster credentials`
-- `origin/rc/v1-full-refactor` -> `c4df557 docs(security): remove literal cluster credentials`
-- `n4a-v1-rc1-2026.07-refactor` -> tag `e0784fa`, peeled commit `c4df557`
+- `origin/main` -> `97b2b38 docs(security): avoid token-shaped CLI examples`
+- `origin/rc/v1-full-refactor` -> `e843073 docs(security): avoid token-shaped CLI examples`
+- `n4a-v1-rc1-2026.07-refactor` -> tag `60c1b5a`, peeled commit `e843073`
 
 Validation:
 
-- History scan over all local rewritten refs for `N4CLUSTER_TOKEN`,
-  `Authorization/Bearer`, and CLI-option-secret-like patterns:
-  `sensitive_candidate_count 0`.
+- Strict scan over the currently published refs for concrete `N4CLUSTER_TOKEN=...`,
+  `Authorization/Bearer ...`, `--token VALUE`, and old `example-token`
+  patterns: no matches.
 - Remote refs were rechecked with `git ls-remote`: only `main`,
   `rc/v1-full-refactor`, and `n4a-v1-rc1-2026.07-refactor` are published for
   the selected names above.
-- `uv run --extra dev pytest -q` from `nirs4all-cluster`:
+- `uv run --extra dev pytest -q` from `nirs4all-cluster` main:
   `142 passed, 1 skipped, 1 deselected, 3 warnings`.
+- `uv run --extra dev pytest -q` from `RC-v1-cluster`:
+  `145 passed, 1 skipped, 1 deselected, 3 warnings`.
 
 Local note: superseded local `refactor/*` refs were rewritten by the same local
 filter pass and are still not selected RC integration branches.

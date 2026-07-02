@@ -18,8 +18,8 @@ after the last full result.
 | --- | --- | --- | --- |
 | `nirs4all-org` | `rc/v1-full-refactor` | `9417073` / `n4a-v1-rc1-2026.07-refactor` | static site topology docs |
 | `nirs4all-cockpit` | `rc/v1-full-refactor` | `7da47eb` / `n4a-v1-rc1-2026.07-refactor` | `ops/targets.yaml`, `data/current.json`, README/ROADMAP/tests |
-| `nirs4all-cluster` | `main` | `727480c` | rewritten secret-clean history |
-| `nirs4all-cluster` | `rc/v1-full-refactor` | `c4df557` / `n4a-v1-rc1-2026.07-refactor` | rewritten secret-clean history |
+| `nirs4all-cluster` | `main` | `97b2b38` | rewritten secret-clean history plus token-shaped CLI example cleanup |
+| `nirs4all-cluster` | `rc/v1-full-refactor` | `e843073` / `n4a-v1-rc1-2026.07-refactor` | rewritten secret-clean history plus token-shaped CLI example cleanup |
 | `nirs4all-ecosystem` | `rc/v1-full-refactor` | this report commit | security/control reports and this report |
 
 ## Changes
@@ -69,14 +69,16 @@ Org:
 
 Cluster security:
 
-- History scan over rewritten local refs for `N4CLUSTER_TOKEN`,
-  `Authorization/Bearer`, and CLI-option-secret-like patterns ->
-  `sensitive_candidate_count 0`.
+- Strict scan over currently published refs for concrete `N4CLUSTER_TOKEN=...`,
+  `Authorization/Bearer ...`, `--token VALUE`, and old `example-token`
+  patterns -> no matches.
 - `git ls-remote` confirms published refs:
-  `main=727480c`, `rc/v1-full-refactor=c4df557`,
-  `n4a-v1-rc1-2026.07-refactor=e0784fa`.
+  `main=97b2b38`, `rc/v1-full-refactor=e843073`,
+  `n4a-v1-rc1-2026.07-refactor=60c1b5a` peeled to `e843073`.
 - `uv run --extra dev pytest -q` in `nirs4all-cluster` ->
   `142 passed, 1 skipped, 1 deselected, 3 warnings`.
+- `uv run --extra dev pytest -q` in `RC-v1-cluster` ->
+  `145 passed, 1 skipped, 1 deselected, 3 warnings`.
 
 ## Risks and decisions
 
