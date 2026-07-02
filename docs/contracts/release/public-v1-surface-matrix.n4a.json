@@ -194,6 +194,19 @@
       "local_gate_policy": "npm run lint:parallel, npm run test:parallel, and Playwright/screenshot gates when product UI/runtime surfaces change."
     },
     {
+      "id": "nirs4all.ui.package",
+      "display_name": "nirs4all-ui shared React component and view-model package",
+      "ecosystem": "javascript_ui",
+      "distribution": "nirs4all-ui",
+      "namespace": "nirs4all-ui/*",
+      "repo_path": "nirs4all-ui",
+      "lock_relation": "outside_aggregation_lock",
+      "lock_member_key": null,
+      "required_for_nirs4all_v1": false,
+      "proof_boundary": "Shared React UI components and pure TypeScript view-model helpers for Studio/Web consumers; not a member of the aggregation lock and not a backend, parser, persistence, ML, or parity-proof surface.",
+      "local_gate_policy": "npm run typecheck, npm test, npm run build, plus component/visual baseline checks when React UI surfaces change."
+    },
+    {
       "id": "nirs4all.web.product",
       "display_name": "nirs4all-web standalone client-side browser product",
       "ecosystem": "static_web_app",

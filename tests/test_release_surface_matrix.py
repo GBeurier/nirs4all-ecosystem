@@ -117,6 +117,15 @@ def test_public_surface_matrix_accounts_for_web_providers_and_sites() -> None:
     matrix = _read_matrix()
     by_id = {surface["id"]: surface for surface in matrix["public_v1_surfaces"]}
 
+    ui = by_id["nirs4all.ui.package"]
+    assert ui["distribution"] == "nirs4all-ui"
+    assert ui["ecosystem"] == "javascript_ui"
+    assert ui["repo_path"] == "nirs4all-ui"
+    assert ui["lock_relation"] == "outside_aggregation_lock"
+    assert ui["required_for_nirs4all_v1"] is False
+    assert "pure TypeScript view-model helpers" in ui["proof_boundary"]
+    assert "not a backend" in ui["proof_boundary"]
+
     web = by_id["nirs4all.web.product"]
     assert "browser" in web["display_name"]
     assert "client-side-only" in web["proof_boundary"]
