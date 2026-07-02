@@ -172,10 +172,10 @@
       ],
       "role": "DAG runtime and native execution contracts",
       "state": {
-        "branch": "refactor/integration-dagml",
+        "branch": "refactor/L20-lockstep",
         "commit": "a428926cf8b412ebe30931a6e5349c73d4f4c764",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-2026.07-refactor"
       },
       "versions": {
         "abi_snapshot": {
@@ -315,10 +315,10 @@
       ],
       "role": "Data provider contracts and DMD representations",
       "state": {
-        "branch": "refactor/integration-dmd",
+        "branch": "refactor/L20-lockstep",
         "commit": "e6816854365350722777056ccfc8d26184940ef1",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-2026.07-refactor"
       },
       "versions": {
         "abi_snapshot": {
@@ -388,9 +388,9 @@
       "role": "Reference dataset catalog",
       "state": {
         "branch": "main",
-        "commit": "44662562b0073afa08b350b0f360166ebc819a91",
+        "commit": "d72e0be6a7b6ad2bd28a632849fe54f3a909e30e",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-2026.07-refactor"
       },
       "versions": {
         "python": {
@@ -463,9 +463,9 @@
       "role": "Vendor readers and bindings",
       "state": {
         "branch": "main",
-        "commit": "89231b2786efc13f357092c0779a396e429a3158",
+        "commit": "86218e633d13b86f8651a2a66be5c75a1f17ef31",
         "dirty": false,
-        "exact_tag": "v0.2.1"
+        "exact_tag": "n4a-v1-2026.07-refactor"
       },
       "versions": {
         "python": {
@@ -536,10 +536,10 @@
       ],
       "role": "Dataset assembly and DatasetPackage bridge",
       "state": {
-        "branch": "refactor/integration-io",
-        "commit": "7e90b4d2161caf990d87bccc872280b9acbb0587",
+        "branch": "refactor/L7-io-dagml-sibling",
+        "commit": "9468e2e37a18b879de64c9f22d3073b7fc089e39",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-2026.07-refactor"
       },
       "versions": {
         "python": {
@@ -1165,7 +1165,7 @@
         "branch": "main",
         "commit": "786688d2ee4aec905c8deda17d0ec888d12c43ad",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-2026.07-refactor"
       },
       "versions": {
         "npm": {
@@ -1259,7 +1259,7 @@
         "branch": "main",
         "commit": "98148c14bbe548c23db8d68903c445de8d8b82b8",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-2026.07-refactor"
       },
       "versions": {
         "c_header": {
