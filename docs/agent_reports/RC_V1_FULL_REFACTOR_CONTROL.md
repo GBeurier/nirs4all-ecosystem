@@ -87,6 +87,8 @@ This is not a temporary cut. The target is the final project topology:
 - Methods RC head now includes `44cc9489 test(bindings): add methods release gate entrypoints`; local ABI freshness, wheel install smoke, Python installed smoke, shell syntax, and Makefile help passed. JS/WASM/R/Octave/MATLAB remain environment gates because Emscripten/R/Octave/MATLAB are unavailable locally.
 - Ecosystem RC head now includes `cb1a0bd docs(release): lock selected rc topology`; lock generation validates selected `rc/v1-*` worktrees while preserving canonical public repo paths and nirs4all-core aliases.
 - Cluster GitGuardian remediation is complete for published refs: obsolete tags `v0.1.0`, `v0.1.1`, and `n4a-cluster-2026.07-refactor` were deleted from origin; `rc/v1-full-refactor` and clean tag `n4a-v1-rc1-2026.07-refactor` now point to `ee94a77`.
+- RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for ecosystem, Python, Studio, Web, shared UI, tools, providers, benchmarks, papers, and cluster. Providers was created as `GBeurier/nirs4all-providers` because no remote existed.
+- `aggregation-lock` remains limited to the aggregate core/runtime members. Studio/Web/UI/tools/providers/benchmarks/papers/cluster are tracked by the surface matrix, cutover gates, and agent reports rather than forced into the aggregate lock without an ownership contract.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator skips and Python registry skips remain real test debt, not production proof.
 
 ## Parity Debt To Burn Down
