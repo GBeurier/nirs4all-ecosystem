@@ -173,7 +173,7 @@
       "role": "DAG runtime and native execution contracts",
       "state": {
         "branch": "refactor/L20-lockstep",
-        "commit": "a428926cf8b412ebe30931a6e5349c73d4f4c764",
+        "commit": "7f86a9b3db6683ca9a52892758d5cac58506b389",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
@@ -537,7 +537,7 @@
       "role": "Dataset assembly and DatasetPackage bridge",
       "state": {
         "branch": "refactor/L7-io-dagml-sibling",
-        "commit": "9468e2e37a18b879de64c9f22d3073b7fc089e39",
+        "commit": "e2c35f8e3a0e3bf8fd775d1b8af13ff4207a1992",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
@@ -1163,7 +1163,7 @@
       "role": "Portable aggregate bindings, future nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "786688d2ee4aec905c8deda17d0ec888d12c43ad",
+        "commit": "f204ef4b02636ab1af370225f95bdeb2ccf15b43",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
@@ -1257,7 +1257,7 @@
       "role": "Portable methods kernels and C ABI",
       "state": {
         "branch": "main",
-        "commit": "98148c14bbe548c23db8d68903c445de8d8b82b8",
+        "commit": "cfb670ebb41b7bba5be209ad5472687424a8fa07",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
