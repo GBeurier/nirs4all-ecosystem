@@ -180,7 +180,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "7f86a9b3db6683ca9a52892758d5cac58506b389",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -330,7 +330,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "e6816854365350722777056ccfc8d26184940ef1",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -409,7 +409,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "28d08977912d58c5dc7cf5c813b3a60c85ce366d",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -491,7 +491,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "86218e633d13b86f8651a2a66be5c75a1f17ef31",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -572,7 +572,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "90fe63066b1ddaf569db9a4c0d6d0328585c7d36",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1217,7 +1217,7 @@
         "branch": "rc/v1-full-refactor-core",
         "commit": "29d6d04a5bb0ebfffeef92bf7dfcaa6d47643853",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -1318,7 +1318,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "44cc94891348e0ba3c8ca84ef32073147894cf1c",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,

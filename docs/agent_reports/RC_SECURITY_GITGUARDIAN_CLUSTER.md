@@ -41,12 +41,33 @@ Commits:
 
 `main` was pushed to `origin/main`.
 
+After the user-reported GitGuardian alert, the published refs were audited again.
+The remaining `SECRET` matches were only in obsolete public tags:
+
+- `v0.1.0`
+- `v0.1.1`
+- `n4a-cluster-2026.07-refactor`
+
+Those tags were deleted from `origin`, `rc/v1-full-refactor` was pushed, and a
+clean tag was published:
+
+- `n4a-v1-rc1-2026.07-refactor` -> `ee94a77`
+
+Remote refs now exposed by `GBeurier/nirs4all-cluster`:
+
+- `main` -> `8ef2667`
+- `rc/v1-full-refactor` -> `ee94a77`
+- `n4a-v1-rc1-2026.07-refactor` -> `ee94a77`
+
+No `SECRET` placeholder remains in those published refs.
+
 ## Decision
 
 Treat as false positive / dummy placeholder, not credential compromise. No
 secret rotation is required from the local evidence. Do not rewrite history for
-this unless GitGuardian policy requires removing historical false positives
-instead of resolving them as false positive in the GitGuardian UI.
+this unless GitGuardian policy requires removing historical false positives from
+GitHub's retained unreachable objects instead of resolving them as false
+positive in the GitGuardian UI.
 
 Before final RC tag, ensure the selected cluster head includes `75e89e7` or a
 descendant, not the earlier `ac84df7` cluster-only lane head.

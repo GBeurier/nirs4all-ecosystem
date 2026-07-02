@@ -79,6 +79,16 @@ This is not a temporary cut. The target is the final project topology:
 | Python non-parity tests under strict dag-ml | targeted failures in workspace/session/predict/explain/retrain | Blocks dag-ml production flip. Legacy mode targeted rerun passed. |
 | Providers | Ruff, mypy, pytest passed with optional-extra skips | Providers must become neutral contract clients, not a Python-only dependency for core/language packages. |
 
+## Coordination Update - 2026-07-02
+
+- Python `nirs4all` RC head now includes `8b69fd4f fix(dagml): accept canonical studio pipeline steps`, covering Studio/editor canonical strings and dict class refs on the dag-ml default path.
+- Studio RC head now includes `0653ee0 test(runtime): align Studio default engine contract`; targeted backend runtime/native/quick-run checks passed with RC dag-ml and dag-ml-data on `PYTHONPATH`.
+- Studio backend full pytest passed with the same RC Python/dag-ml/dag-ml-data stack: `2276 passed, 54 skipped` in `1275.74s`. The 54 skips are tracked as release debt in `RC_SKIP_XFAIL_AUDIT.md`.
+- Methods RC head now includes `44cc9489 test(bindings): add methods release gate entrypoints`; local ABI freshness, wheel install smoke, Python installed smoke, shell syntax, and Makefile help passed. JS/WASM/R/Octave/MATLAB remain environment gates because Emscripten/R/Octave/MATLAB are unavailable locally.
+- Ecosystem RC head now includes `cb1a0bd docs(release): lock selected rc topology`; lock generation validates selected `rc/v1-*` worktrees while preserving canonical public repo paths and nirs4all-core aliases.
+- Cluster GitGuardian remediation is complete for published refs: obsolete tags `v0.1.0`, `v0.1.1`, and `n4a-cluster-2026.07-refactor` were deleted from origin; `rc/v1-full-refactor` and clean tag `n4a-v1-rc1-2026.07-refactor` now point to `ee94a77`.
+- Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator skips and Python registry skips remain real test debt, not production proof.
+
 ## Parity Debt To Burn Down
 
 Known parity xfails:
