@@ -114,15 +114,30 @@ Follow-up after the user received the GitGuardian alert timestamped
   `refs/pull/1/head` (`e5a70fd`) and `refs/pull/2/head` (`d530536`).
 - Those refs are not branch or tag heads and GitHub rejects deletion attempts
   against `refs/pull/*/head`.
-- A read-only Claude Code audit confirmed that the GitGuardian secret is not
-  present in those PR refs. The later docs/tests that contained the cleaned
-  token examples do not exist at those PR commits; only deterministic unit-test
-  token literals remain.
 - A later Codex read-only follow-up confirmed the current `main`,
-  `rc/v1-full-refactor`, and RC tag tips are still clean for the checked CLI
-  secret-option patterns. Superseded `refactor/*` tips and hidden PR refs can
-  still contain placeholder-looking examples such as environment-token,
-  `dev`, or `T` values; no production credential was identified locally.
+  `rc/v1-full-refactor`, and RC tag histories are still clean for concrete
+  CLI secret-option patterns.
+- A direct scan of the hidden PR refs found the historical documentation
+  placeholder `--token dev` in `PROTOTYPE_DESIGN.md`. It is the only concrete
+  CLI-option value found in the refs still exposed by GitHub, and the commits
+  containing it are reachable only from `refs/pull/1/head` /
+  `refs/pull/2/head`, not from the selected release branches or tag.
+- Superseded local-only `refactor/*` tips can still contain
+  placeholder-looking examples such as environment-token forms. They are not
+  published remote branch heads.
+
+Operational detail: the current remote branch/tag refs scanned clean with:
+
+- `refs/remotes/origin/main`
+- `refs/remotes/origin/rc/v1-full-refactor`
+- `refs/tags/n4a-v1-rc1-2026.07-refactor`
+
+The only remote PR-ref match was:
+
+- `refs/remotes/origin/pull/1`: `PROTOTYPE_DESIGN.md` example
+  `--token dev`
+- `refs/remotes/origin/pull/2`: `PROTOTYPE_DESIGN.md` example
+  `--token dev`
 
 ## Alert Timestamp Follow-up
 
@@ -163,10 +178,10 @@ real rather than placeholder/example text.
 
 A read-only Claude Code review with value-masked searches reached the same
 substantive conclusion: the alert is most likely a false positive on
-documentation/CLI examples using `--token ${N4CLUSTER_TOKEN}`. No high-entropy
-hardcoded secret value was identified in the checked tree/history, and the
-15-character candidate is consistent with the public environment variable name
-`N4CLUSTER_TOKEN`.
+documentation/CLI examples using environment-token placeholders or the old
+`--token dev` example. No high-entropy hardcoded secret value was identified in
+the checked tree/history, and the 15-character candidate is consistent with the
+public environment variable name `N4CLUSTER_TOKEN`.
 
 Coordinator correction to that review: a fresh `git ls-remote origin
 'refs/pull/*'` still shows `refs/pull/1/head` and `refs/pull/2/head`. They are
@@ -178,6 +193,10 @@ reported 2026-07-02 alert window.
 Treat as false positive / dummy placeholder from the local evidence, not a known
 production credential. If any value shown by GitGuardian is an actual deployed
 credential, it must still be rotated because it was published before the rewrite.
+
+If the GitGuardian UI shows `dev` as the exposed value, dismiss it as a
+documentation placeholder on merged PR refs. If it shows any other value, treat
+that as new evidence and rotate that credential before any additional cleanup.
 
 If GitGuardian continues to report the same alert after the force-push, request
 a rescan/support review against `main`, `rc/v1-full-refactor`, and
