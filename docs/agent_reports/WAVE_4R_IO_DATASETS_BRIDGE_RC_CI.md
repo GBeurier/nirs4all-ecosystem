@@ -77,6 +77,12 @@ Datasets/providers bridge:
 Ecosystem:
 
 - `python3.11 scripts/n4a_release_lock.py --workspace-root /home/delete/nirs4all/_worktrees generate --manifest docs/contracts/release/aggregation-manifest.n4a.json --output docs/contracts/release/aggregation-lock.n4a.lock.json`
+- Post-publication audit over the 20 selected RC worktrees checked
+  `git status --porcelain`, local `HEAD`, `git ls-remote --heads origin
+  <branch>`, and peeled remote tag
+  `n4a-v1-rc1-2026.07-refactor^{}`. Result: all 20 worktrees clean, all 20
+  remote RC branches match local `HEAD`, and all 20 peeled tags match local
+  `HEAD`.
 
 ## Parallel Review Inputs
 
