@@ -84,23 +84,23 @@ Actions taken:
 
 Published refs after the rewrite:
 
-- `origin/main` -> `21e16cd docs(security): remove literal cluster credentials`
-- `origin/rc/v1-full-refactor` -> `fef2f5c docs(security): remove literal cluster credentials`
-- `n4a-v1-rc1-2026.07-refactor` -> annotated tag `6d4ce4c`, peeled commit `fef2f5c`
+- `origin/main` -> `727480c docs(security): remove literal cluster credentials`
+- `origin/rc/v1-full-refactor` -> `c4df557 docs(security): remove literal cluster credentials`
+- `n4a-v1-rc1-2026.07-refactor` -> tag `e0784fa`, peeled commit `c4df557`
 
 Validation:
 
-- History scan over `origin/main`, `origin/rc/v1-full-refactor`, and
-  `n4a-v1-rc1-2026.07-refactor^{}` for CLI-option-secret-like patterns:
-  no matches.
-- `uv run --extra dev pytest -q --run-release-smoke` from
-  `_worktrees/RC-v1-cluster`: `146 passed, 1 skipped, 3 warnings`.
-- `python3 -m ruff check tests/conftest.py tests/test_rbac.py
-  tests/test_release_smoke.py tests/test_server_api.py`: passed.
+- History scan over all local rewritten refs for `N4CLUSTER_TOKEN`,
+  `Authorization/Bearer`, and CLI-option-secret-like patterns:
+  `sensitive_candidate_count 0`.
+- Remote refs were rechecked with `git ls-remote`: only `main`,
+  `rc/v1-full-refactor`, and `n4a-v1-rc1-2026.07-refactor` are published for
+  the selected names above.
+- `uv run --extra dev pytest -q` from `nirs4all-cluster`:
+  `142 passed, 1 skipped, 1 deselected, 3 warnings`.
 
-Local note: stale superseded `refactor/*` worktrees may still contain old local
-commits. They were not pushed and were not merged. They should be deleted or
-rebased only after the separate old-worktree audit.
+Local note: superseded local `refactor/*` refs were rewritten by the same local
+filter pass and are still not selected RC integration branches.
 
 ## Decision
 
