@@ -83,11 +83,11 @@ Actions taken:
   - `n4a-v1-rc1-2026.07-refactor`.
 
 Published refs after the rewrite and the follow-up GitGuardian hardening
-refresh:
+refresh, then the Wave 4S CI trigger update:
 
 - `origin/main` -> `97b2b38 docs(security): avoid token-shaped CLI examples`
-- `origin/rc/v1-full-refactor` -> `e843073 docs(security): avoid token-shaped CLI examples`
-- `n4a-v1-rc1-2026.07-refactor` -> tag `60c1b5a`, peeled commit `e843073`
+- `origin/rc/v1-full-refactor` -> `9d6ab34 fix(ci): cover rc branches`
+- `n4a-v1-rc1-2026.07-refactor` -> lightweight tag `9d6ab34`
 
 Validation:
 
@@ -158,6 +158,20 @@ checked patterns, but GitGuardian may still flag history or cached/stale refs.
 Do not mark the incident fully closed from local evidence alone; request a
 GitGuardian rescan/support review and rotate any value that GitGuardian shows as
 real rather than placeholder/example text.
+
+## Second Security Review
+
+A read-only Claude Code review with value-masked searches reached the same
+substantive conclusion: the alert is most likely a false positive on
+documentation/CLI examples using `--token ${N4CLUSTER_TOKEN}`. No high-entropy
+hardcoded secret value was identified in the checked tree/history, and the
+15-character candidate is consistent with the public environment variable name
+`N4CLUSTER_TOKEN`.
+
+Coordinator correction to that review: a fresh `git ls-remote origin
+'refs/pull/*'` still shows `refs/pull/1/head` and `refs/pull/2/head`. They are
+merged PR refs from 2026-06-04, not selected release heads, and they predate the
+reported 2026-07-02 alert window.
 
 ## Decision
 
