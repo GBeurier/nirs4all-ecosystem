@@ -193,7 +193,7 @@
       "title": "Aggregation release lock matches member contract artifacts",
       "lane": "LOCK-REL/L3",
       "owner_repo": "nirs4all-ecosystem",
-      "status": "blocked",
+      "status": "ready",
       "required_for_cutover": true,
       "primary_gate_id": "release_lock_fetchability_audit",
       "gate_ids": [
@@ -206,8 +206,8 @@
         "audit-fetchability --fail-on-unfetchable passes from clean clones",
         "every locked commit is advertised by its configured repo_url"
       ],
-      "missing_contract": "Remote-fetchable immutable refs are not established for all locked commits. Current pins for dag_ml, dag_ml_data, datasets, io, lite, and methods are not fetchable from their configured GitHub repo URLs, while formats is fetchable.",
-      "next_owner_action": "Publish the selected commits or release tags to the configured remotes, or choose fetchable pins, then regenerate the lock and rerun release_lock_validation plus release_lock_fetchability_audit."
+      "missing_contract": "None for the selected RC-v1 lock. On 2026-07-02, release_lock_validation and release_lock_fetchability_audit passed, with 7/7 locked member commits advertised by their configured repo_url.",
+      "next_owner_action": "Keep release_lock_validation and release_lock_fetchability_audit green whenever the manifest, lock, or selected member heads change."
     },
     {
       "id": "LITE-V1-SURFACE-001",
