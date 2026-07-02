@@ -407,7 +407,7 @@
       "selected_workspace_path": "RC-v1-datasets",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "cac87424ddc72c486560390e878d7fdcb64dcd97",
+        "commit": "93e9f39b275f8ac3c0f5744c221f531917a0cf85",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
@@ -1316,7 +1316,7 @@
       "selected_workspace_path": "RC-v1-methods",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "d918c5ee6fe35dc102b64458dab2a2cd46be0ddc",
+        "commit": "6f6a3fa0dace421925502d4c8d5cab5102f56944",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },

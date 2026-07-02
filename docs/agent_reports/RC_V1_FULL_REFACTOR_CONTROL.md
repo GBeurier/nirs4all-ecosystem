@@ -116,16 +116,27 @@ This is not a temporary cut. The target is the final project topology:
   `nirs4all-ui`, sets `install-links=true` for deterministic local package
   installs, and validates fresh Linux `npm ci --ignore-scripts`,
   `check:ui-shim`, and `lint:tsc` at `0d8b3cb`.
+- Wave 4T documents methods binding scope without overclaiming archived PoCs:
+  `nirs4all-methods` `6f6a3fa` now treats Julia, JNI/Android, Go, Rust,
+  .NET, Ruby, Lua, and Nim as archived/on-hold under `bindings/_archive/`.
+  `nirs4all-datasets` `93e9f39` now documents the Rust acquisition core/C ABI
+  as the non-Python surface and the Python package as an optional binding over
+  that core.
+- Wave 4T expands shared runtime UI ownership: `nirs4all-ui` `69501bd`
+  centralizes runtime engine badge title/default/fallback rendering, Studio
+  consumes that shared status rendering at `f1eba56`, and Web syncs its vendored
+  shared UI package at `6924da5`. Validation used Linux Node `v22.21.1` with
+  fresh installs for UI/Web/Studio.
 - Ecosystem RC head now includes `cb1a0bd docs(release): lock selected rc topology`; lock generation validates selected `rc/v1-*` worktrees while preserving canonical public repo paths and nirs4all-core aliases.
 - Ecosystem RC head now includes `89e8c63 docs(release): tighten topology accounting`; release surface validation documents `nirs4all-core`, `nirs4all-python`, R/JS-WASM/Rust/MATLAB language surfaces, `nirs4all-ui`, client-side-only Web, providers/cockpit/org, and the narrower aggregate lock boundary.
 - Cluster GitGuardian remediation was upgraded from tip cleanup to a targeted history rewrite and refreshed after the latest alert. Published branch/tag refs now point to rewritten clean history: `main` `97b2b38`, `rc/v1-full-refactor` `e843073`, tag `n4a-v1-rc1-2026.07-refactor` `60c1b5a` peeled to `e843073`. Strict scanner-pattern checks over the branch/tag refs are empty; cluster gates are `142 passed, 1 skipped, 1 deselected` on `main` and `145 passed, 1 skipped, 1 deselected` on the RC worktree. GitHub still exposes merged hidden PR refs #1/#2 from 2026-06-04; a read-only Claude audit confirmed that the GitGuardian secret is not present there and only deterministic unit-test token literals remain. Source branches are gone and deleting hidden PR refs is rejected by GitHub, so residual alert closure is a GitGuardian/GitHub-support action after token rotation if the value was ever real.
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees. `WAVE_4Q_RC_PUBLICATION_REAUDIT.md` rechecked the post-4P heads after repairing missing tags on Studio/UI/Org/Tools/IO/Datasets; Wave 4R then moved Studio/IO/Datasets and regenerated the aggregation lock for IO/Datasets.
-- Latest pushed/tagged heads after the Wave 4S CI/Web/Studio refresh: Python
+- Latest pushed/tagged heads after the Wave 4T docs/UI refresh: Python
   `1fd3f7b`, dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `0a516e2`,
-  Studio `0d8b3cb`, Web `cdb43cc`, UI `8f9f2f6`, Cockpit `f06f7b4`,
+  Studio `f1eba56`, Web `6924da5`, UI `69501bd`, Cockpit `f06f7b4`,
   Org `61074ff`, Ecosystem uses the current board HEAD, Providers `7c7c6e9`,
   Tools `7c5070f`, Cluster `9d6ab34`, Formats `32fc87f`, IO `0d20c80`,
-  Datasets `cac8742`, Methods `d918c5e`, Repository `ced219f`,
+  Datasets `93e9f39`, Methods `6f6a3fa`, Repository `ced219f`,
   Benchmarks `06d4146`, Papers `f1d84f4`.
 - `aggregation-lock` remains limited to the aggregate core/runtime members. Studio/Web/UI/tools/providers/benchmarks/papers/cluster are tracked by the surface matrix, cutover gates, and agent reports rather than forced into the aggregate lock without an ownership contract.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator skips and Python registry skips have been burned down; Python full parity on runtime head `3d568ab` now reports no skipped or xfailed parity tests. The current Python head `a103fd2` is docs-only and did not rerun full parity. Remaining skip risk is outside this gate: Studio optional/environment categories and methods/language binding environments.
