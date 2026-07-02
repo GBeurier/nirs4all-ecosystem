@@ -88,7 +88,7 @@ This is not a temporary cut. The target is the final project topology:
 - Python `nirs4all` RC head now includes `99d57b7e fix(parity): burn down native xfail debt`; strict xfails are reduced from 11 to 6 while preserving `concat_transform_pca_svd_plsr`, `generator_sample_log_uniform_alpha`, `rep_to_sources_basic`, `rep_to_pp_basic`, and the two branch separation native-boundary cases as explicit debt.
 - Python `nirs4all` RC head `3d568ab` is the current full parity proof head. On the selected RC stack (`dag-ml` `7f86a9b`, `dag-ml-data` `e681685`), `pyref_oracle_full` passed with `659 passed, 227 deselected, 1530 warnings` in `2037.46s`; no parity tests were skipped or xfailed. The preceding `42448821` result with `14 skipped / 6 xfailed` is superseded.
 - Studio RC head now includes `0653ee0 test(runtime): align Studio default engine contract`; targeted backend runtime/native/quick-run checks passed with RC dag-ml and dag-ml-data on `PYTHONPATH`.
-- Studio RC head now includes `9190ccc test(studio): cover operator definition fixtures` and `1d1ded5 fix(tests): preserve RC nirs4all import precedence`; operator definitions no longer skip missing fixtures, and combined runtime/operator/quick-run verification passes against the RC Python worktree.
+- Studio RC head now includes `9190ccc test(studio): cover operator definition fixtures`, `1d1ded5 fix(tests): preserve RC nirs4all import precedence`, and `8141e2e fix(runtime): reuse shared engine badge`; operator definitions no longer skip missing fixtures, combined runtime/operator/quick-run verification passes against the RC Python worktree, and the latest shared-UI badge adoption gate passed in Wave 4D.
 - Web RC head now includes `1ccb839 ci(web): gate client-only browser build`; the public `web.nirs4all.org` build remains GitHub Pages/static/WASM-only and the CI gate now runs the client-side-only test, typecheck, Vitest, and build.
 - `nirs4all-ui` RC head now includes `8f9f2f6 ci(ui): add package release gate`; CI runs typecheck, Vitest, build, and `npm pack --dry-run` through `npm run ci`.
 - Studio backend full pytest passed with the current RC Python/dag-ml/dag-ml-data stack: `2324 passed, 6 skipped` in `1465.99s`. Remaining skips are Windows-only/env/example-access categories rather than operator fixture debt.
@@ -100,8 +100,8 @@ This is not a temporary cut. The target is the final project topology:
 - Ecosystem RC head now includes `cb1a0bd docs(release): lock selected rc topology`; lock generation validates selected `rc/v1-*` worktrees while preserving canonical public repo paths and nirs4all-core aliases.
 - Ecosystem RC head now includes `89e8c63 docs(release): tighten topology accounting`; release surface validation documents `nirs4all-core`, `nirs4all-python`, R/JS-WASM/Rust/MATLAB language surfaces, `nirs4all-ui`, client-side-only Web, providers/cockpit/org, and the narrower aggregate lock boundary.
 - Cluster GitGuardian remediation was upgraded from tip cleanup to a targeted history rewrite and refreshed after the latest alert. Published refs now point to rewritten clean history: `main` `97b2b38`, `rc/v1-full-refactor` `e843073`, tag `n4a-v1-rc1-2026.07-refactor` `60c1b5a` peeled to `e843073`. Strict scanner-pattern checks over the published refs are empty; cluster gates are `142 passed, 1 skipped, 1 deselected` on `main` and `145 passed, 1 skipped, 1 deselected` on the RC worktree.
-- RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for ecosystem, Python, Studio, Web, shared UI, tools, providers, repository, benchmarks, papers, cluster, cockpit, org, and core.
-- Latest pushed/tagged heads after the security/parity/CI refresh batch: Python `3d568ab`, Studio `1d1ded5`, Web `1ccb839`, UI `8f9f2f6`, Providers `5146908`, Tools `7c5070f`, Cockpit `71786b1`, Benchmarks `45f4cf7`, Cluster `e843073`; Ecosystem uses the current board HEAD for this note.
+- RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees listed in `WAVE_4J_RC_PUBLICATION_AUDIT.md`.
+- Latest pushed/tagged heads after the publication/security/parity/CI refresh batch: Python `3d568ab`, dag-ml `7f86a9b`, dag-ml-data `e681685`, Core `29d6d04`, Studio `8141e2e`, Web `1ccb839`, UI `8f9f2f6`, Cockpit `71786b1`, Org `9417073`, Ecosystem `5dc07b9`, Providers `5146908`, Tools `7c5070f`, Cluster `e843073`, Formats `86218e6`, IO `c064ecf`, Datasets `d9cbd99`, Methods `44cc948`, Repository `534c907`, Benchmarks `45f4cf7`, Papers `acde191`.
 - `aggregation-lock` remains limited to the aggregate core/runtime members. Studio/Web/UI/tools/providers/benchmarks/papers/cluster are tracked by the surface matrix, cutover gates, and agent reports rather than forced into the aggregate lock without an ownership contract.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator skips and Python registry skips have been burned down; Python full parity on `3d568ab` now reports no skipped or xfailed parity tests. Remaining skip risk is outside this gate: Studio optional/environment categories and methods/language binding environments.
 
@@ -152,6 +152,11 @@ Exact-count parity notes:
 - `generator_chain_model_configs`
 
 ## Parallel Lanes
+
+Note: this lane table preserves the original orchestration record. Current RC
+selection is governed by the published worktree/tag audit above; historical
+Claude sessions labelled `running` here must not be treated as active release
+blockers without checking their lane reports and the selected RC heads.
 
 | Lane | Owner | Scope | Status | Report |
 | --- | --- | --- | --- | --- |

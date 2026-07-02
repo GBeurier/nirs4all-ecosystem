@@ -9,7 +9,10 @@
     "../RELEASE_DISTRIBUTION_INVENTORY.md",
     "docs/agent_reports/WAVE_2O_CLUSTER_IO_TOOLS.md",
     "docs/agent_reports/WAVE_2P_RELEASE_PROOF_AND_PARITY.md",
-    "docs/agent_reports/WAVE_4H_CI_AND_FULL_PARITY_REFRESH.md"
+    "docs/agent_reports/WAVE_4D_STUDIO_RELEASE_READINESS.md",
+    "docs/agent_reports/WAVE_4H_CI_AND_FULL_PARITY_REFRESH.md",
+    "docs/agent_reports/WAVE_4I_SECURITY_AND_PERF_REFRESH.md",
+    "docs/agent_reports/WAVE_4J_RC_PUBLICATION_AUDIT.md"
   ],
   "aggregation_lock": {
     "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
