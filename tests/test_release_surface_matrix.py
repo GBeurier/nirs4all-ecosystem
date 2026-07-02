@@ -111,3 +111,28 @@ def test_required_surfaces_include_core_rust_and_matlab_accounting(tmp_path: Pat
 
     with pytest.raises(surface_matrix.SurfaceMatrixError, match="missing rust:nirs4all"):
         surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)
+
+
+def test_public_surface_matrix_accounts_for_web_providers_and_sites() -> None:
+    matrix = _read_matrix()
+    by_id = {surface["id"]: surface for surface in matrix["public_v1_surfaces"]}
+
+    web = by_id["nirs4all.web.product"]
+    assert "browser" in web["display_name"]
+    assert "client-side-only" in web["proof_boundary"]
+    assert "Python server" in web["proof_boundary"]
+
+    providers = by_id["nirs4all.providers.contracts"]
+    assert providers["distribution"] == "nirs4all-providers"
+    assert providers["lock_relation"] == "outside_aggregation_lock"
+    assert "neutral schemas" in providers["proof_boundary"]
+    assert "R/WASM/native" in providers["proof_boundary"]
+
+    cockpit = by_id["nirs4all.cockpit.product"]
+    assert cockpit["distribution"] == "nirs4all-cockpit"
+    assert cockpit["required_for_nirs4all_v1"] is False
+
+    org = by_id["nirs4all.org.site"]
+    assert org["distribution"] == "nirs4all-org"
+    assert org["repo_path"] == "nirs4all-org"
+    assert org["lock_relation"] == "outside_aggregation_lock"

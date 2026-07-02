@@ -16,7 +16,7 @@
 | `nirs4all-repository` | `main` | public |
 | `nirs4all` | `main` | public |
 | `nirs4all-studio` | `master` | public |
-| `nirs4all-web` | `main` | public |
+| `nirs4all-web` | `main` | public client-side-only browser/WASM app |
 | `nirs4all-lite` | `main` | public (RC V1 target name: `nirs4all-core`; submodule/repo rename pending) |
 | `nirs4all-org` | `main` | public |
 | `nirs4all-drafts` | `main` | **private** |
@@ -33,6 +33,15 @@
 > *readers* of spectroscopic files (read only, ~45 formats). > - **`nirs4all-io`** (new): *assembly bridge* of datasets
 > (resolution → inference → configuration → materialization). Python in phase 1
 > (`SpectroDataset`compatible), Rust in phase 2 (`dag-ml-data`compatible). > It consumes`nirs4all-formats`for reading files.
+
+## Release topology notes
+
+- The RC V1 aggregate release target is **`nirs4all-core`**. The local/public rename target exists at `GBeurier/nirs4all-core`, but this parent repo still pins the historical `nirs4all-lite` submodule path and URL until that repo/directory rename is completed.
+- The **aggregation lock is intentionally narrower than the full product matrix**. It pins the reproducible aggregate core/runtime member set; it does **not** claim to cover every product, plugin, site, or publication repo.
+- `nirs4all-web` is the **client-side-only** browser/WASM product surface. Its release surface must not imply a Python server or Python parity proof by itself.
+- `nirs4all-providers` is a separately published Python client (`GBeurier/nirs4all-providers`), but the canonical provider surface for core/R/WASM/native consumers remains the neutral contracts under `docs/contracts/providers/`.
+- `nirs4all-org` and `nirs4all-cockpit` are publication surfaces outside the aggregation lock. They should be accounted for as public release surfaces, not as aggregate-core lock members.
+- Skip/xfail debt remains explicit release evidence, not implied green status: the Python parity/xfail inventory stays under the cutover gates, and the lite R surface may skip locally only when R is unavailable and must still be reported as release risk.
 
 ## Cloner
 

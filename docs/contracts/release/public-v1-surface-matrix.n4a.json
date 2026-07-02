@@ -195,7 +195,7 @@
     },
     {
       "id": "nirs4all.web.product",
-      "display_name": "nirs4all-web standalone browser product",
+      "display_name": "nirs4all-web standalone client-side browser product",
       "ecosystem": "static_web_app",
       "distribution": "nirs4all-web",
       "namespace": "nirs4all-web",
@@ -203,8 +203,47 @@
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": false,
-      "proof_boundary": "Public browser/WASM product surface; not a member of the aggregation lock and must not overclaim Python parity.",
-      "local_gate_policy": "typecheck/build/Vitest/browser smoke according to touched Web surface."
+      "proof_boundary": "Public client-side-only browser/WASM product surface; not a member of the aggregation lock, implies no Python server, and must not overclaim Python parity.",
+      "local_gate_policy": "typecheck/build/Vitest/client-side browser smoke according to touched Web surface."
+    },
+    {
+      "id": "nirs4all.providers.contracts",
+      "display_name": "nirs4all-providers neutral contract client",
+      "ecosystem": "optional_python_client",
+      "distribution": "nirs4all-providers",
+      "namespace": "nirs4all_providers",
+      "repo_path": "nirs4all-providers",
+      "lock_relation": "outside_aggregation_lock",
+      "lock_member_key": null,
+      "required_for_nirs4all_v1": false,
+      "proof_boundary": "Published Python provider client surface; the canonical release contract remains the neutral schemas in docs/contracts/providers and must stay consumable by R/WASM/native clients without a Python dependency.",
+      "local_gate_policy": "providers_local_sibling_release plus canonical schema byte-identity and fixture validation in the providers repo."
+    },
+    {
+      "id": "nirs4all.cockpit.product",
+      "display_name": "nirs4all-cockpit operational publication surface",
+      "ecosystem": "static_web_app",
+      "distribution": "nirs4all-cockpit",
+      "namespace": "nirs4all-cockpit",
+      "repo_path": "nirs4all-cockpit",
+      "lock_relation": "outside_aggregation_lock",
+      "lock_member_key": null,
+      "required_for_nirs4all_v1": false,
+      "proof_boundary": "Published operational cockpit/site surface; outside the aggregation lock and separate from the client-side nirs4all-web product.",
+      "local_gate_policy": "site build/deploy smoke according to the touched cockpit publication surface."
+    },
+    {
+      "id": "nirs4all.org.site",
+      "display_name": "nirs4all.org publication site",
+      "ecosystem": "static_site",
+      "distribution": "nirs4all-org",
+      "namespace": "nirs4all.org",
+      "repo_path": "nirs4all-org",
+      "lock_relation": "outside_aggregation_lock",
+      "lock_member_key": null,
+      "required_for_nirs4all_v1": false,
+      "proof_boundary": "Published public site surface; outside the aggregation lock and distinct from the aggregate runtime/package topology.",
+      "local_gate_policy": "static-site validation/build smoke when org publication content or release claims change."
     },
     {
       "id": "nirs4all.tools.migration",

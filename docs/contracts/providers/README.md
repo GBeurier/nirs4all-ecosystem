@@ -2,6 +2,7 @@
 
 **Lane:** RC-F (providers/contracts) · **Decision source:** `DEC-PROV-001` / `LOCK-PROV` (see `SW6_PROV_PLUGINS_spec.md`, `IMP_L14_PROVIDERS_IMPL_PLAN.md`).
 **Status:** contract freeze for the read slice (datasets · repository · benchmarks · papers). Publish/upload and the benchmark runner stay deferred and gated.
+The published Python client repo is `GBeurier/nirs4all-providers`; this directory remains the canonical neutral contract surface that client must conform to.
 
 ## Why this exists
 
