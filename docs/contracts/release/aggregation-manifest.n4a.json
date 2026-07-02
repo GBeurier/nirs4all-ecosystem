@@ -1,7 +1,7 @@
 {
   "schema_version": "n4a.aggregation-manifest/v1",
-  "aggregate_id": "nirs4all-lite",
-  "future_aggregate_id": "nirs4all-core",
+  "aggregate_id": "nirs4all-core",
+  "legacy_aggregate_id": "nirs4all-lite",
   "release_train": "2026.07-refactor",
   "status": "candidate",
   "compatibility_policy": {
@@ -447,7 +447,7 @@
       "key": "lite",
       "repo_path": "nirs4all-lite",
       "repo_url": "GBeurier/nirs4all-lite",
-      "role": "Portable aggregate bindings, future nirs4all-core",
+      "role": "Portable aggregate bindings, renamed nirs4all-core on the RC V1 head (Python distribution nirs4all-core; repo/directory rename pending, so repo_path/repo_url stay nirs4all-lite)",
       "owner_boundary": "aggregate",
       "default_inclusion": "base",
       "optional": false,
@@ -455,10 +455,11 @@
       "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
       "packages": {
         "python": {
-          "distribution": "nirs4all-lite",
+          "distribution": "nirs4all-core",
           "imports": [
             "nirs4all_lite"
-          ]
+          ],
+          "legacy_distribution": "nirs4all-lite"
         },
         "rust": {
           "crates": [
@@ -528,7 +529,8 @@
           ],
           "include_json": true
         }
-      ]
+      ],
+      "target_repo_url": "GBeurier/nirs4all-core"
     },
     {
       "key": "datasets",

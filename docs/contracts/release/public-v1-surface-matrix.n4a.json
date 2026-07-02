@@ -50,7 +50,7 @@
     {
       "key": "lite",
       "repo_path": "nirs4all-lite",
-      "release_role": "Portable aggregate bindings, future nirs4all-core"
+      "release_role": "Portable aggregate bindings, renamed nirs4all-core on the RC V1 head (repo_path stays nirs4all-lite until the GitHub repo rename)"
     },
     {
       "key": "datasets",

@@ -17,7 +17,7 @@
 | `nirs4all` | `main` | public |
 | `nirs4all-studio` | `master` | public |
 | `nirs4all-web` | `main` | public |
-| `nirs4all-lite` | `main` | public |
+| `nirs4all-lite` | `main` | public (RC V1 target name: `nirs4all-core`; submodule/repo rename pending) |
 | `nirs4all-org` | `main` | public |
 | `nirs4all-drafts` | `main` | **private** |
 | `nirs4all-papers` | `main` | public |
