@@ -160,6 +160,75 @@ def test_validate_lock_mismatch_error_mentions_selected_workspace(tmp_path: Path
     assert "superseded branches" in message
 
 
+def test_generate_lock_uses_selected_workspace_path_but_records_canonical_repo_path(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "manifest.json"
+    selected_repo = tmp_path / "workspace" / "RC-v1-member"
+    selected_repo.parent.mkdir()
+    _init_repo(selected_repo)
+    _git(selected_repo, "checkout", "-b", "rc/v1-demo")
+    (selected_repo / "README.md").write_text("selected\n", encoding="utf-8")
+    _commit_all(selected_repo)
+
+    _write_json(
+        manifest_path,
+        {
+            "schema_version": release_lock.MANIFEST_SCHEMA_VERSION,
+            "release_train": "test",
+            "status": "candidate",
+            "components": [
+                {
+                    "key": "member",
+                    "repo_path": "canonical-member",
+                    "selected_workspace_path": "RC-v1-member",
+                    "selected_branch_patterns": ["rc/v1-*"],
+                }
+            ],
+        },
+    )
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "workspace")
+
+    member = lock["members"]["member"]
+    assert member["repo_path"] == "canonical-member"
+    assert member["selected_workspace_path"] == "RC-v1-member"
+    assert member["state"]["branch"] == "rc/v1-demo"
+
+
+def test_generate_lock_rejects_selected_workspace_on_non_rc_branch(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "manifest.json"
+    selected_repo = tmp_path / "workspace" / "RC-v1-member"
+    selected_repo.parent.mkdir()
+    _init_repo(selected_repo)
+    (selected_repo / "README.md").write_text("selected\n", encoding="utf-8")
+    _commit_all(selected_repo)
+
+    _write_json(
+        manifest_path,
+        {
+            "schema_version": release_lock.MANIFEST_SCHEMA_VERSION,
+            "release_train": "test",
+            "status": "candidate",
+            "components": [
+                {
+                    "key": "member",
+                    "repo_path": "canonical-member",
+                    "selected_workspace_path": "RC-v1-member",
+                    "selected_branch_patterns": ["rc/v1-*"],
+                }
+            ],
+        },
+    )
+
+    with pytest.raises(release_lock.RelError, match="does not match selected_branch_patterns"):
+        release_lock.generate_lock(manifest_path, tmp_path / "workspace")
+
+
 def test_audit_fetchability_cli_only_fails_when_requested(tmp_path: Path) -> None:
     release_lock, manifest_path, lock_path = _write_fetchability_fixture(tmp_path)
     output_json = tmp_path / "fetchability.json"
@@ -354,6 +423,10 @@ def test_central_manifest_declares_reproducible_methods_and_lite_topology_source
         )
     )
     components = {component["key"]: component for component in manifest["components"]}
+    assert manifest["release_selection_policy"]["selected_branch_patterns"] == ["rc/v1-*"]
+    assert components["lite"]["selected_workspace_path"] == "RC-v1-nirs4all-core"
+    assert components["lite"]["target_repo_path"] == "nirs4all-core"
+    assert "nirs4all-core" in components["lite"]["repo_aliases"]
     methods_sources = {
         source["key"]: source for source in components["methods"]["version_sources"]
     }

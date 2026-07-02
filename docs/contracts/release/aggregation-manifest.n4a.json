@@ -11,6 +11,14 @@
     "private_repos_allowed": false,
     "r_packages": "explicit"
   },
+  "release_selection_policy": {
+    "workspace_root": "/home/delete/nirs4all/_worktrees",
+    "selected_branch_patterns": [
+      "rc/v1-*"
+    ],
+    "repo_path_policy": "repo_path remains the public/canonical repository path recorded in the lock; selected_workspace_path names the local RC worktree used as release evidence.",
+    "superseded_tag_policy": "Do not validate historical exact tags from main/refactor branches as RC V1 selection evidence; selected members must be on rc/v1-* branches."
+  },
   "lockstep_groups": [
     {
       "id": "dagml-pair",
@@ -34,6 +42,10 @@
     {
       "key": "dag_ml",
       "repo_path": "dag-ml",
+      "selected_workspace_path": "RC-v1-dagml",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
       "repo_url": "GBeurier/dag-ml",
       "role": "DAG runtime and native execution contracts",
       "owner_boundary": "control",
@@ -119,6 +131,10 @@
     {
       "key": "dag_ml_data",
       "repo_path": "dag-ml-data",
+      "selected_workspace_path": "RC-v1-dmd",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
       "repo_url": "GBeurier/dag-ml-data",
       "role": "Data provider contracts and DMD representations",
       "owner_boundary": "data",
@@ -215,6 +231,10 @@
     {
       "key": "methods",
       "repo_path": "nirs4all-methods",
+      "selected_workspace_path": "RC-v1-methods",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
       "repo_url": "GBeurier/nirs4all-methods",
       "role": "Portable methods kernels and C ABI",
       "owner_boundary": "kernels",
@@ -311,6 +331,10 @@
     {
       "key": "formats",
       "repo_path": "nirs4all-formats",
+      "selected_workspace_path": "RC-v1-formats",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
       "repo_url": "GBeurier/nirs4all-formats",
       "role": "Vendor readers and bindings",
       "owner_boundary": "readers",
@@ -379,6 +403,10 @@
     {
       "key": "io",
       "repo_path": "nirs4all-io",
+      "selected_workspace_path": "RC-v1-io",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
       "repo_url": "GBeurier/nirs4all-io",
       "role": "Dataset assembly and DatasetPackage bridge",
       "owner_boundary": "assembly",
@@ -446,6 +474,13 @@
     {
       "key": "lite",
       "repo_path": "nirs4all-lite",
+      "selected_workspace_path": "RC-v1-nirs4all-core",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
+      "repo_aliases": [
+        "nirs4all-core"
+      ],
       "repo_url": "GBeurier/nirs4all-lite",
       "role": "Portable aggregate bindings, renamed nirs4all-core on the RC V1 head (Python distribution nirs4all-core; repo/directory rename pending, so repo_path/repo_url stay nirs4all-lite)",
       "owner_boundary": "aggregate",
@@ -475,6 +510,12 @@
           "packages": [
             "nirs4all"
           ]
+        },
+        "matlab": {
+          "archives": [
+            "nirs4all-matlab-octave"
+          ],
+          "namespace": "+nirs4all"
         }
       },
       "availability": {
@@ -530,11 +571,16 @@
           "include_json": true
         }
       ],
-      "target_repo_url": "GBeurier/nirs4all-core"
+      "target_repo_url": "GBeurier/nirs4all-core",
+      "target_repo_path": "nirs4all-core"
     },
     {
       "key": "datasets",
       "repo_path": "nirs4all-datasets",
+      "selected_workspace_path": "RC-v1-datasets",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
       "repo_url": "GBeurier/nirs4all-datasets",
       "role": "Reference dataset catalog",
       "owner_boundary": "catalog",

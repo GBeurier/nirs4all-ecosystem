@@ -103,6 +103,12 @@ def repo_state(repo_path: Path) -> dict[str, Any]:
     }
 
 
+def matches_any_pattern(value: str | None, patterns: list[str]) -> bool:
+    if value is None:
+        return False
+    return any(fnmatch.fnmatch(value, pattern) for pattern in patterns)
+
+
 def repo_identity(repo_path: Path) -> dict[str, Any]:
     """Stable git identity for the repo producing the lockfile.
 
@@ -431,8 +437,16 @@ def collect_glob_artifacts(repo_path: Path, pattern: str) -> dict[str, str]:
 
 
 def collect_member(workspace_root: Path, component: dict[str, Any]) -> dict[str, Any]:
-    repo_path = (workspace_root / component["repo_path"]).resolve()
+    selected_workspace_path = component.get("selected_workspace_path") or component["repo_path"]
+    repo_path = (workspace_root / selected_workspace_path).resolve()
     state = repo_state(repo_path)
+    branch_patterns = component.get("selected_branch_patterns", [])
+    if branch_patterns and not matches_any_pattern(state.get("branch"), branch_patterns):
+        raise RelError(
+            f"{component['key']} selected workspace {selected_workspace_path!r} "
+            f"is on branch {state.get('branch')!r}, which does not match "
+            f"selected_branch_patterns={branch_patterns}"
+        )
     artifacts = [
         collect_contract_artifact(repo_path, artifact)
         for artifact in component.get("contract_artifacts", [])
@@ -443,7 +457,11 @@ def collect_member(workspace_root: Path, component: dict[str, Any]) -> dict[str,
     }
     return {
         "repo_path": component["repo_path"],
+        "selected_workspace_path": selected_workspace_path,
+        "repo_aliases": component.get("repo_aliases", []),
         "repo_url": component.get("repo_url"),
+        "target_repo_url": component.get("target_repo_url"),
+        "target_repo_path": component.get("target_repo_path"),
         "role": component.get("role"),
         "owner_boundary": component.get("owner_boundary"),
         "default_inclusion": component.get("default_inclusion"),
@@ -454,6 +472,7 @@ def collect_member(workspace_root: Path, component: dict[str, Any]) -> dict[str,
         "packages": component.get("packages", {}),
         "availability": component.get("availability", {}),
         "required_gates": component.get("required_gates", []),
+        "selected_branch_patterns": branch_patterns,
         "versions": collect_versions(repo_path, component),
         "contract_artifacts": artifacts,
         "glob_artifacts": glob_artifacts,
@@ -538,6 +557,7 @@ def generate_lock(manifest_path: Path, workspace_root: Path) -> dict[str, Any]:
         "release_train": manifest.get("release_train"),
         "status": manifest.get("status"),
         "compatibility_policy": manifest.get("compatibility_policy", {}),
+        "release_selection_policy": manifest.get("release_selection_policy", {}),
         "generated_from": {
             "ecosystem_repo": "nirs4all-ecosystem",
             "manifest_path": manifest_rel,

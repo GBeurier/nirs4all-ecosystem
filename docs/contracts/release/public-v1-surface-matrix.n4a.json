@@ -18,7 +18,7 @@
       "The full public V1 product matrix.",
       "A green full Python-reference parity result.",
       "Studio/Web/cluster/provider end-to-end environment proof.",
-      "The historical Python nirs4all package, which remains the V1 oracle but is not an aggregation-lock member."
+      "The current Python nirs4all repository, selected from the nirs4all-python RC worktree and targeted for a future nirs4all-python repo rename, remains the V1 Python reference but is not an aggregation-lock member."
     ]
   },
   "aggregation_lock_members": [
@@ -50,7 +50,7 @@
     {
       "key": "lite",
       "repo_path": "nirs4all-lite",
-      "release_role": "Portable aggregate bindings, renamed nirs4all-core on the RC V1 head (repo_path stays nirs4all-lite until the GitHub repo rename)"
+      "release_role": "Portable aggregate bindings, selected from RC-v1-nirs4all-core. repo_path stays nirs4all-lite until the GitHub repo rename; nirs4all-core is an explicit public alias."
     },
     {
       "key": "datasets",
@@ -65,19 +65,24 @@
   },
   "required_nirs4all_v1_surface_ids": [
     "nirs4all.python.oracle",
+    "nirs4all.python.core",
     "nirs4all.r.aggregate",
-    "nirs4all.browser_wasm.aggregate",
-    "nirs4all.browser_wasm.methods_scoped",
-    "nirs4all.browser_wasm.datasets_scoped"
+    "nirs4all.javascript_wasm.aggregate",
+    "nirs4all.javascript_wasm.methods_scoped",
+    "nirs4all.javascript_wasm.datasets_scoped",
+    "nirs4all.rust.aggregate",
+    "nirs4all.matlab_octave.aggregate"
   ],
   "public_v1_surfaces": [
     {
       "id": "nirs4all.python.oracle",
-      "display_name": "nirs4all Python historical/oracle package",
+      "display_name": "nirs4all Python oracle package",
       "ecosystem": "python",
       "distribution": "nirs4all",
       "namespace": "nirs4all.*",
       "repo_path": "nirs4all",
+      "selected_workspace_path": "RC-v1-nirs4all-python",
+      "target_repo_path": "nirs4all-python",
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": true,
@@ -85,12 +90,25 @@
       "local_gate_policy": "pyref_oracle_full is deferred in W2P; targeted gates are not release-equivalent."
     },
     {
+      "id": "nirs4all.python.core",
+      "display_name": "nirs4all-core Python aggregate facade",
+      "ecosystem": "python",
+      "distribution": "nirs4all-core",
+      "namespace": "nirs4all_core",
+      "repo_path": "nirs4all-core",
+      "lock_relation": "covered_by_locked_member",
+      "lock_member_key": "lite",
+      "required_for_nirs4all_v1": true,
+      "proof_boundary": "Python aggregate target distribution is covered by the selected RC-v1-nirs4all-core member; the historical nirs4all oracle remains a separate outside-lock surface.",
+      "local_gate_policy": "lite/core Python topology tests plus pyref_oracle_full on final selected heads."
+    },
+    {
       "id": "nirs4all.r.aggregate",
       "display_name": "nirs4all aggregate R package",
       "ecosystem": "r",
       "distribution": "nirs4all",
       "namespace": "library(nirs4all)",
-      "repo_path": "nirs4all-lite",
+      "repo_path": "nirs4all-core",
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "lite",
       "required_for_nirs4all_v1": true,
@@ -98,12 +116,12 @@
       "local_gate_policy": "test-r-if-available; missing R is not a green release proof."
     },
     {
-      "id": "nirs4all.browser_wasm.aggregate",
-      "display_name": "nirs4all browser/WASM aggregate package",
-      "ecosystem": "npm_wasm",
+      "id": "nirs4all.javascript_wasm.aggregate",
+      "display_name": "nirs4all JavaScript/WASM aggregate package",
+      "ecosystem": "javascript_wasm",
       "distribution": "nirs4all",
       "namespace": "nirs4all",
-      "repo_path": "nirs4all-lite",
+      "repo_path": "nirs4all-core",
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "lite",
       "required_for_nirs4all_v1": true,
@@ -111,9 +129,9 @@
       "local_gate_policy": "test-wasm and browser smoke where the touched surface requires it."
     },
     {
-      "id": "nirs4all.browser_wasm.methods_scoped",
-      "display_name": "@nirs4all/methods-wasm scoped browser/WASM package",
-      "ecosystem": "npm_wasm",
+      "id": "nirs4all.javascript_wasm.methods_scoped",
+      "display_name": "@nirs4all/methods-wasm scoped JavaScript/WASM package",
+      "ecosystem": "javascript_wasm",
       "distribution": "@nirs4all/methods-wasm",
       "namespace": "@nirs4all/methods-wasm",
       "repo_path": "nirs4all-methods",
@@ -124,9 +142,9 @@
       "local_gate_policy": "methods WASM build/smoke plus methods parity evidence when the exposed capability changes."
     },
     {
-      "id": "nirs4all.browser_wasm.datasets_scoped",
-      "display_name": "@nirs4all/datasets-wasm scoped browser/WASM package",
-      "ecosystem": "npm_wasm",
+      "id": "nirs4all.javascript_wasm.datasets_scoped",
+      "display_name": "@nirs4all/datasets-wasm scoped JavaScript/WASM package",
+      "ecosystem": "javascript_wasm",
       "distribution": "@nirs4all/datasets-wasm",
       "namespace": "@nirs4all/datasets-wasm",
       "repo_path": "nirs4all-datasets",
@@ -135,6 +153,32 @@
       "required_for_nirs4all_v1": true,
       "proof_boundary": "Scoped package declaration is covered by the locked optional/external datasets member; catalog checksums remain the release gate.",
       "local_gate_policy": "datasets_catalog_checksums plus browser/WASM smoke when the package surface changes."
+    },
+    {
+      "id": "nirs4all.rust.aggregate",
+      "display_name": "nirs4all Rust aggregate crate",
+      "ecosystem": "rust",
+      "distribution": "nirs4all",
+      "namespace": "nirs4all",
+      "repo_path": "nirs4all-core",
+      "lock_relation": "covered_by_locked_member",
+      "lock_member_key": "lite",
+      "required_for_nirs4all_v1": true,
+      "proof_boundary": "Rust aggregate crate is covered by the selected RC-v1-nirs4all-core member; crate publication/fetchability remains a separate release gate.",
+      "local_gate_policy": "lite/core Rust package tests and release topology checks on selected heads."
+    },
+    {
+      "id": "nirs4all.matlab_octave.aggregate",
+      "display_name": "nirs4all MATLAB/Octave aggregate namespace archive",
+      "ecosystem": "matlab_octave",
+      "distribution": "nirs4all-matlab-octave",
+      "namespace": "+nirs4all",
+      "repo_path": "nirs4all-core",
+      "lock_relation": "covered_by_locked_member",
+      "lock_member_key": "lite",
+      "required_for_nirs4all_v1": true,
+      "proof_boundary": "MATLAB/Octave namespace archive is covered by the selected RC-v1-nirs4all-core member; local execution remains subset evidence until release infrastructure runs it.",
+      "local_gate_policy": "lite/core MATLAB/Octave package topology checks where the environment is available."
     },
     {
       "id": "nirs4all.studio.product",

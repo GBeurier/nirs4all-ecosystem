@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:940b7dd67aef23fe721bd325dcf4eeb3ddab47af62e5a7b5b898a2ea3c713dd0",
+  "manifest_digest": "sha256:1d5349519c5234f9345633b71b68d380fa613ec561bf39bf0588a15358b76d36",
   "members": {
     "dag_ml": {
       "availability": {
@@ -163,6 +163,7 @@
         }
       },
       "private": false,
+      "repo_aliases": [],
       "repo_path": "dag-ml",
       "repo_url": "GBeurier/dag-ml",
       "required_gates": [
@@ -171,12 +172,18 @@
         "dagml_parity_oracle"
       ],
       "role": "DAG runtime and native execution contracts",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
+      "selected_workspace_path": "RC-v1-dagml",
       "state": {
-        "branch": "refactor/L20-lockstep",
+        "branch": "rc/v1-full-refactor",
         "commit": "7f86a9b3db6683ca9a52892758d5cac58506b389",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
+      "target_repo_path": null,
+      "target_repo_url": null,
       "versions": {
         "abi_snapshot": {
           "kind": "json",
@@ -306,6 +313,7 @@
         }
       },
       "private": false,
+      "repo_aliases": [],
       "repo_path": "dag-ml-data",
       "repo_url": "GBeurier/dag-ml-data",
       "required_gates": [
@@ -314,12 +322,18 @@
         "dagml_data_parity_oracle"
       ],
       "role": "Data provider contracts and DMD representations",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
+      "selected_workspace_path": "RC-v1-dmd",
       "state": {
-        "branch": "refactor/L20-lockstep",
+        "branch": "rc/v1-full-refactor",
         "commit": "e6816854365350722777056ccfc8d26184940ef1",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
+      "target_repo_path": null,
+      "target_repo_url": null,
       "versions": {
         "abi_snapshot": {
           "kind": "json",
@@ -380,18 +394,25 @@
         }
       },
       "private": false,
+      "repo_aliases": [],
       "repo_path": "nirs4all-datasets",
       "repo_url": "GBeurier/nirs4all-datasets",
       "required_gates": [
         "datasets_catalog_checksums"
       ],
       "role": "Reference dataset catalog",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
+      "selected_workspace_path": "RC-v1-datasets",
       "state": {
-        "branch": "main",
-        "commit": "d72e0be6a7b6ad2bd28a632849fe54f3a909e30e",
+        "branch": "rc/v1-full-refactor",
+        "commit": "28d08977912d58c5dc7cf5c813b3a60c85ce366d",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": null
       },
+      "target_repo_path": null,
+      "target_repo_url": null,
       "versions": {
         "python": {
           "kind": "toml",
@@ -454,6 +475,7 @@
         }
       },
       "private": false,
+      "repo_aliases": [],
       "repo_path": "nirs4all-formats",
       "repo_url": "GBeurier/nirs4all-formats",
       "required_gates": [
@@ -461,12 +483,18 @@
         "formats_conformance"
       ],
       "role": "Vendor readers and bindings",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
+      "selected_workspace_path": "RC-v1-formats",
       "state": {
-        "branch": "main",
+        "branch": "rc/v1-full-refactor",
         "commit": "86218e633d13b86f8651a2a66be5c75a1f17ef31",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
+      "target_repo_path": null,
+      "target_repo_url": null,
       "versions": {
         "python": {
           "kind": "toml",
@@ -527,6 +555,7 @@
         }
       },
       "private": false,
+      "repo_aliases": [],
       "repo_path": "nirs4all-io",
       "repo_url": "GBeurier/nirs4all-io",
       "required_gates": [
@@ -535,12 +564,18 @@
         "dataset_package_v2"
       ],
       "role": "Dataset assembly and DatasetPackage bridge",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
+      "selected_workspace_path": "RC-v1-io",
       "state": {
-        "branch": "refactor/L7-io-dagml-sibling",
-        "commit": "e2c35f8e3a0e3bf8fd775d1b8af13ff4207a1992",
+        "branch": "rc/v1-full-refactor",
+        "commit": "90fe63066b1ddaf569db9a4c0d6d0328585c7d36",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": null
       },
+      "target_repo_path": null,
+      "target_repo_url": null,
       "versions": {
         "python": {
           "kind": "toml",
@@ -572,17 +607,19 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:c585381853acab282a4666fb5a50a92b0454a5fe011db8434c2e6271c219a592",
+          "canonical_json_sha256": "sha256:90fd3b2fdf7592506a10a7477034b03a42fe0fa59bcedb9612f02605bae87801",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
             "aggregate": {
               "default_inclusion": "base",
-              "future_id": "nirs4all-core",
-              "id": "nirs4all-lite",
+              "id": "nirs4all-core",
+              "legacy_id": "nirs4all-lite",
               "owner_boundary": "aggregate",
               "private": false,
-              "repo": "GBeurier/nirs4all-lite"
+              "repo": "GBeurier/nirs4all-lite",
+              "repo_rename_status": "pending-github-rename",
+              "target_repo": "GBeurier/nirs4all-core"
             },
             "core_contract": {
               "allowed_roles": [
@@ -639,23 +676,25 @@
                   "n4a",
                   "nirs4all_core"
                 ],
-                "name": "nirs4all-lite",
+                "name": "nirs4all-core",
                 "registry": "pypi",
-                "role": "current Python aggregate distribution",
+                "role": "current Python aggregate distribution (renamed from nirs4all-lite)",
                 "status": "current",
                 "workflow": "release-python.yml"
               },
               {
                 "artifact": null,
-                "default_inclusion": "reserved",
+                "default_inclusion": "legacy",
                 "ecosystem": "python",
                 "imports": [
+                  "nirs4all_lite",
+                  "n4a",
                   "nirs4all_core"
                 ],
-                "name": "nirs4all-core",
+                "name": "nirs4all-lite",
                 "registry": "pypi",
-                "role": "future Python aggregate target distribution",
-                "status": "release-gated",
+                "role": "legacy Python aggregate distribution name (superseded by nirs4all-core)",
+                "status": "legacy-superseded",
                 "workflow": null
               },
               {
@@ -715,7 +754,7 @@
                 "default_inclusion": "release-provenance",
                 "ecosystem": "source_sbom",
                 "imports": [],
-                "name": "nirs4all-lite-source-sbom",
+                "name": "nirs4all-core-source-sbom",
                 "registry": "github-release",
                 "role": "source archive, SBOM, checksums, and provenance",
                 "status": "current",
@@ -807,7 +846,7 @@
               ],
               "python": [
                 {
-                  "distribution": "nirs4all-lite",
+                  "distribution": "nirs4all-core",
                   "execution_engine": true,
                   "exports": "full_aggregate",
                   "import": "nirs4all_lite",
@@ -815,7 +854,7 @@
                 },
                 {
                   "backing_import": "nirs4all_lite",
-                  "distribution": "nirs4all-lite",
+                  "distribution": "nirs4all-core",
                   "execution_engine": true,
                   "exports": "full_aggregate",
                   "import": "n4a",
@@ -823,12 +862,11 @@
                 },
                 {
                   "backing_import": "nirs4all_lite",
-                  "distribution": "nirs4all-lite",
+                  "distribution": "nirs4all-core",
                   "execution_engine": false,
                   "exports": "core_contract",
                   "import": "nirs4all_core",
-                  "kind": "additive-core-facade",
-                  "target_distribution": "nirs4all-core"
+                  "kind": "additive-core-facade"
                 }
               ],
               "reserved_python_imports": [
@@ -844,12 +882,12 @@
                 "nirs4all_core"
               ],
               "canonical_import": "nirs4all_lite",
-              "distribution": "nirs4all-lite",
+              "distribution": "nirs4all-core",
+              "legacy_distribution": "nirs4all-lite",
+              "legacy_distribution_status": "superseded",
               "reserved_non_imports": [
                 "nirs4all"
-              ],
-              "target_distribution": "nirs4all-core",
-              "target_distribution_status": "release-gated"
+              ]
             },
             "release_pointers": {
               "abi": [
@@ -895,7 +933,7 @@
                 "workflow": "release-source.yml"
               }
             },
-            "schema": "nirs4all-lite.release-topology.v1",
+            "schema": "nirs4all-core.release-topology.v2",
             "upstream_components": [
               {
                 "default_inclusion": "aggregate-extra",
@@ -1084,7 +1122,7 @@
             ],
             "v1_release_surfaces": [
               {
-                "distribution": "nirs4all-lite",
+                "distribution": "nirs4all-core",
                 "ecosystem": "python",
                 "local_gate": "test-python",
                 "namespace": "nirs4all_lite",
@@ -1115,10 +1153,10 @@
               }
             ]
           },
-          "json_schema": "nirs4all-lite.release-topology.v1",
+          "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_lite/_topology.py",
-          "raw_sha256": "sha256:c38e7faa8b5610e16d888965a397cc69e7bff3956923c5ecc17660cace49e282",
+          "raw_sha256": "sha256:6db5d9d7de57b30a86966a6d846c2c1d7e0b899169a0c4042eec9dfc1c1fe793",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -1129,16 +1167,23 @@
       "optional": false,
       "owner_boundary": "aggregate",
       "packages": {
+        "matlab": {
+          "archives": [
+            "nirs4all-matlab-octave"
+          ],
+          "namespace": "+nirs4all"
+        },
         "npm": {
           "packages": [
             "nirs4all"
           ]
         },
         "python": {
-          "distribution": "nirs4all-lite",
+          "distribution": "nirs4all-core",
           "imports": [
             "nirs4all_lite"
-          ]
+          ],
+          "legacy_distribution": "nirs4all-lite"
         },
         "r": {
           "packages": [
@@ -1152,6 +1197,9 @@
         }
       },
       "private": false,
+      "repo_aliases": [
+        "nirs4all-core"
+      ],
       "repo_path": "nirs4all-lite",
       "repo_url": "GBeurier/nirs4all-lite",
       "required_gates": [
@@ -1160,13 +1208,19 @@
         "lite_release_source",
         "lite_pipeline_parity"
       ],
-      "role": "Portable aggregate bindings, future nirs4all-core",
+      "role": "Portable aggregate bindings, renamed nirs4all-core on the RC V1 head (Python distribution nirs4all-core; repo/directory rename pending, so repo_path/repo_url stay nirs4all-lite)",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
+      "selected_workspace_path": "RC-v1-nirs4all-core",
       "state": {
-        "branch": "main",
-        "commit": "f204ef4b02636ab1af370225f95bdeb2ccf15b43",
+        "branch": "rc/v1-full-refactor-core",
+        "commit": "29d6d04a5bb0ebfffeef92bf7dfcaa6d47643853",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": null
       },
+      "target_repo_path": "nirs4all-core",
+      "target_repo_url": "GBeurier/nirs4all-core",
       "versions": {
         "npm": {
           "kind": "json",
@@ -1247,6 +1301,7 @@
         }
       },
       "private": false,
+      "repo_aliases": [],
       "repo_path": "nirs4all-methods",
       "repo_url": "GBeurier/nirs4all-methods",
       "required_gates": [
@@ -1255,12 +1310,18 @@
         "methods_installed_ci"
       ],
       "role": "Portable methods kernels and C ABI",
+      "selected_branch_patterns": [
+        "rc/v1-*"
+      ],
+      "selected_workspace_path": "RC-v1-methods",
       "state": {
-        "branch": "main",
-        "commit": "cfb670ebb41b7bba5be209ad5472687424a8fa07",
+        "branch": "rc/v1-full-refactor",
+        "commit": "44cc94891348e0ba3c8ca84ef32073147894cf1c",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": null
       },
+      "target_repo_path": null,
+      "target_repo_url": null,
       "versions": {
         "c_header": {
           "kind": "c_header_macros",
@@ -1305,6 +1366,14 @@
         }
       }
     }
+  },
+  "release_selection_policy": {
+    "repo_path_policy": "repo_path remains the public/canonical repository path recorded in the lock; selected_workspace_path names the local RC worktree used as release evidence.",
+    "selected_branch_patterns": [
+      "rc/v1-*"
+    ],
+    "superseded_tag_policy": "Do not validate historical exact tags from main/refactor branches as RC V1 selection evidence; selected members must be on rc/v1-* branches.",
+    "workspace_root": "/home/delete/nirs4all/_worktrees"
   },
   "release_train": "2026.07-refactor",
   "schema_version": "n4a.aggregation-lock/v1",

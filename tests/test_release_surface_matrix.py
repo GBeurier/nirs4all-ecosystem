@@ -46,10 +46,13 @@ def test_public_v1_surface_matrix_validates_current_contracts() -> None:
 
     assert validated["matrix"]["required_nirs4all_v1_surface_ids"] == [
         "nirs4all.python.oracle",
+        "nirs4all.python.core",
         "nirs4all.r.aggregate",
-        "nirs4all.browser_wasm.aggregate",
-        "nirs4all.browser_wasm.methods_scoped",
-        "nirs4all.browser_wasm.datasets_scoped",
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.javascript_wasm.methods_scoped",
+        "nirs4all.javascript_wasm.datasets_scoped",
+        "nirs4all.rust.aggregate",
+        "nirs4all.matlab_octave.aggregate",
     ]
 
 
@@ -71,7 +74,7 @@ def test_public_v1_surface_matrix_requires_r_aggregate_surface(tmp_path: Path) -
 def test_outside_lock_surface_cannot_point_to_locked_repo(tmp_path: Path) -> None:
     surface_matrix = _load_surface_matrix()
     matrix = _read_matrix()
-    _surface(matrix, "nirs4all.python.oracle")["repo_path"] = "nirs4all-lite"
+    _surface(matrix, "nirs4all.python.oracle")["repo_path"] = "nirs4all-core"
     matrix_path = tmp_path / "matrix.json"
     _write_json(matrix_path, matrix)
 
@@ -82,9 +85,29 @@ def test_outside_lock_surface_cannot_point_to_locked_repo(tmp_path: Path) -> Non
 def test_covered_surface_distribution_must_be_declared_by_lock_member(tmp_path: Path) -> None:
     surface_matrix = _load_surface_matrix()
     matrix = copy.deepcopy(_read_matrix())
-    _surface(matrix, "nirs4all.browser_wasm.aggregate")["distribution"] = "not-nirs4all"
+    _surface(matrix, "nirs4all.javascript_wasm.aggregate")["distribution"] = "not-nirs4all"
     matrix_path = tmp_path / "matrix.json"
     _write_json(matrix_path, matrix)
 
     with pytest.raises(surface_matrix.SurfaceMatrixError, match="is not declared by lock member lite"):
+        surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)
+
+
+def test_required_surfaces_include_core_rust_and_matlab_accounting(tmp_path: Path) -> None:
+    surface_matrix = _load_surface_matrix()
+    matrix = _read_matrix()
+    matrix["public_v1_surfaces"] = [
+        surface
+        for surface in matrix["public_v1_surfaces"]
+        if surface["id"] != "nirs4all.rust.aggregate"
+    ]
+    matrix["required_nirs4all_v1_surface_ids"] = [
+        surface_id
+        for surface_id in matrix["required_nirs4all_v1_surface_ids"]
+        if surface_id != "nirs4all.rust.aggregate"
+    ]
+    matrix_path = tmp_path / "matrix.json"
+    _write_json(matrix_path, matrix)
+
+    with pytest.raises(surface_matrix.SurfaceMatrixError, match="missing rust:nirs4all"):
         surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)

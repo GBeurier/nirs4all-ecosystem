@@ -34,7 +34,9 @@ PACKAGE_ECOSYSTEM_KEYS = {
     "python": ("python", "distribution"),
     "r": ("r", "packages"),
     "npm_wasm": ("npm", "packages"),
+    "javascript_wasm": ("npm", "packages"),
     "rust": ("rust", "crates"),
+    "matlab_octave": ("matlab", "archives"),
 }
 
 
@@ -122,11 +124,17 @@ def _validate_public_surfaces(matrix: dict[str, Any], lock: dict[str, Any]) -> N
         "matrix.public_v1_surfaces must be a non-empty list",
     )
     lock_members = lock["members"]
-    lock_repo_paths = {
-        member.get("repo_path")
-        for member in lock_members.values()
-        if isinstance(member, dict)
-    }
+    lock_repo_paths: set[str] = set()
+    for member in lock_members.values():
+        if not isinstance(member, dict):
+            continue
+        for value in (
+            member.get("repo_path"),
+            member.get("target_repo_path"),
+            *member.get("repo_aliases", []),
+        ):
+            if isinstance(value, str) and value:
+                lock_repo_paths.add(value)
     seen_ids: set[str] = set()
     for surface in surfaces:
         _require(isinstance(surface, dict), "each public_v1_surfaces entry must be an object")
@@ -154,9 +162,18 @@ def _validate_public_surfaces(matrix: dict[str, Any], lock: dict[str, Any]) -> N
             )
             _require(member_key in lock_members, f"{surface_id}: unknown lock_member_key {member_key!r}")
             member = lock_members[member_key]
+            member_repo_paths = {
+                value
+                for value in (
+                    member.get("repo_path"),
+                    member.get("target_repo_path"),
+                    *member.get("repo_aliases", []),
+                )
+                if isinstance(value, str) and value
+            }
             _require(
-                surface["repo_path"] == member.get("repo_path"),
-                f"{surface_id}: repo_path={surface['repo_path']!r} does not match lock member {member_key} repo_path={member.get('repo_path')!r}",
+                surface["repo_path"] in member_repo_paths,
+                f"{surface_id}: repo_path={surface['repo_path']!r} does not match lock member {member_key} repo paths={sorted(member_repo_paths)}",
             )
             packages = _member_packages(member, surface["ecosystem"])
             if packages:
@@ -190,9 +207,12 @@ def _validate_public_surfaces(matrix: dict[str, Any], lock: dict[str, Any]) -> N
 
     required_shapes = [
         ("python", "nirs4all", None),
+        ("python", "nirs4all-core", None),
         ("r", "nirs4all", None),
-        ("npm_wasm", "nirs4all", None),
-        ("npm_wasm", None, "@nirs4all/"),
+        ("javascript_wasm", "nirs4all", None),
+        ("javascript_wasm", None, "@nirs4all/"),
+        ("rust", "nirs4all", None),
+        ("matlab_octave", "nirs4all-matlab-octave", None),
     ]
     required_surfaces = [
         surface
