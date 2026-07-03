@@ -22,7 +22,7 @@ parity:
 | Einstein the 3rd | UI/Web read-only audit | Confirmed `nirs4all-ui` is a reusable package and Web `studio-lite` is client-side-only. Noted that UI package surface is intentionally small today. |
 | Singer the 3rd | Cluster GitGuardian read-only audit | Confirmed `main`, `rc/v1-full-refactor`, and the RC tag are clean; only immutable merged PR refs still contain placeholder examples such as `--token dev`. |
 | Dewey the 3rd | Web/Ecosystem CI audit | Confirmed Web clean-runner failure came from missing vendored `nirs4all-ui` subpath `dist` files and Ecosystem failure came from invalid release-lock CLI argument ordering. |
-| Claude Code Fable/Opus | Cluster/Web/Ecosystem read-only audit | Found no high-entropy/live Cluster secret on current heads and independently confirmed the GitGuardian signal matches placeholder/test examples plus historical PR refs. |
+| Claude Code Fable/Opus | Cluster/Web/Ecosystem read-only audit | Found no high-entropy/live Cluster secret on current heads. Identified the likely GitGuardian trigger as the documentation placeholder `alice:s3cr3t:submitter`, now removed from HEAD but still reachable in history. |
 
 ## Integrated Changes
 
@@ -117,6 +117,12 @@ Cluster GitGuardian:
   the RC tag, and merged PR refs #1/#2. Current published heads remain clean; PR
   refs only contain placeholder/test values. Local token files at the workspace
   root were not read and are outside a Git repository.
+- Claude Code's independent read-only audit found the likely historical trigger:
+  `--principal alice:s3cr3t:submitter`. This is a non-secret documentation
+  placeholder, not a live credential; current HEAD is cleaned to abstract
+  placeholders, but the old placeholder remains reachable in historical commits.
+  The practical closure path is GitGuardian dashboard false-positive/remediated
+  handling unless GitGuardian discloses an actual non-placeholder value.
 
 Release lock:
 

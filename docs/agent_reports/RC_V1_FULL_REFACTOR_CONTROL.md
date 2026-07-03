@@ -196,7 +196,20 @@ This is not a temporary cut. The target is the final project topology:
   `dag-ml` R coordination and `DatasetPackage` materialization gates exist.
 - Ecosystem RC head now includes `cb1a0bd docs(release): lock selected rc topology`; lock generation validates selected `rc/v1-*` worktrees while preserving canonical public repo paths and nirs4all-core aliases.
 - Ecosystem RC head now includes `89e8c63 docs(release): tighten topology accounting`; release surface validation documents `nirs4all-core`, `nirs4all-python`, R/JS-WASM/Rust/MATLAB language surfaces, `nirs4all-ui`, client-side-only Web, providers/cockpit/org, and the narrower aggregate lock boundary.
-- Cluster GitGuardian remediation was upgraded from tip cleanup to a targeted history rewrite and refreshed after the latest alert. Wave 4X additionally removed the active-head secret-shaped `--principal alice:s3cr3t:submitter` example. Published branch/tag refs now point to clean heads: `main` `16b4a2a`, `rc/v1-full-refactor` `19384e2`, tag `n4a-v1-rc1-2026.07-refactor` `19384e2`. Strict scanner-pattern checks over the active branch/tag refs are empty; cluster gates are `142 passed, 1 skipped, 1 deselected` on `main` and `145 passed, 1 skipped, 1 deselected` on the RC worktree. GitHub still exposes merged hidden PR refs #1/#2 from 2026-06-04; current recheck finds only placeholder CLI examples such as `--token dev` there, not selected release heads. Source branches are gone and deleting hidden PR refs is rejected by GitHub, so residual alert closure is a GitGuardian/GitHub-support action after token rotation if the value was ever real.
+- Cluster GitGuardian remediation cleaned the published active heads and was
+  refreshed after the latest alert. Wave 4X removed the active-head
+  secret-shaped documentation example `--principal alice:s3cr3t:submitter`.
+  Published branch/tag refs now point to clean heads: `main` `16b4a2a`,
+  `rc/v1-full-refactor` `19384e2`, tag `n4a-v1-rc1-2026.07-refactor`
+  `19384e2`. Strict scanner-pattern checks over the active branch/tag refs are
+  empty; cluster gates are `142 passed, 1 skipped, 1 deselected` on `main` and
+  `145 passed, 1 skipped, 1 deselected` on the RC worktree. GitHub/history may
+  still expose old placeholder examples: the latest read-only audits found
+  historical `alice:s3cr3t:submitter` and merged hidden PR refs #1/#2 with
+  examples such as `--token dev`, not a real credential on selected release
+  heads. Source branches are gone and deleting hidden PR refs is rejected by
+  GitHub, so residual alert closure is a GitGuardian/GitHub-support dashboard
+  action unless GitGuardian discloses an actual non-placeholder value.
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees. `WAVE_4Q_RC_PUBLICATION_REAUDIT.md` rechecked the post-4P heads after repairing missing tags on Studio/UI/Org/Tools/IO/Datasets; Wave 4R then moved Studio/IO/Datasets and regenerated the aggregation lock for IO/Datasets.
 - Latest pushed/tagged heads after the Wave 4Z CI-fix batch: Python `6a2c720`,
   dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `2b0d18a`,
