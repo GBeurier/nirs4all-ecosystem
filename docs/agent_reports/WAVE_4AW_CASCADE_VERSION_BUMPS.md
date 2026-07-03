@@ -10,12 +10,13 @@ Scope: release cascade after the V1 refactor batch, excluding production-sensiti
 
 | Repo | Selected head | Version / tag |
 | --- | --- | --- |
-| `dag-ml` | `7e9a881d0939` | `0.2.2`, `n4a-v1-2026.07-refactor` |
+| `dag-ml` | `b8d7ae199c12` | `0.2.2`, `n4a-v1-2026.07-refactor`, refreshed committed Python ABI3 extension |
 | `dag-ml-data` | `22157227e2a8` | `0.2.3`, `n4a-v1-2026.07-refactor` |
 | `nirs4all-formats` | `181946f141ed` | `0.2.1`, final tag moved from stale head |
 | `nirs4all-io` | `4a5bef22c117` | `0.1.5` |
 | `nirs4all-datasets` | `c46042dabe29` | `0.3.2` |
 | `nirs4all-methods` | `115077ae4551` | `1.0.1`, final tag moved from stale head |
+| `nirs4all-repository` | `b82f5b6` | `0.1.2`, generated catalog refreshed |
 | `nirs4all-core` | `19e69417ad89` | `0.2.2`, canonical aggregate target |
 | `nirs4all-web` | `6f8f3fcdbdd` | vendored `nirs4all-core` WASM shim `0.2.2` and rebuilt current `nirs4all-ui` dist |
 | `nirs4all-cockpit` | `85737b6` | public snapshot updated |
@@ -43,7 +44,9 @@ Ecosystem:
 
 Sibling gates run during the cascade:
 
+- `dag-ml`: committed extension freshness check; `cargo test --workspace`.
 - `nirs4all-core`: `cargo test --workspace`; Python unittest discovery; WASM npm tests with Linux Node; version check.
+- `nirs4all-repository`: `validate --all`, catalog build/current check, Ruff, mypy, 67 pytest tests.
 - `nirs4all-web`: client-only contract, `check:ui-shim`, `check:lite-shim`, `typecheck`, 134 Vitest tests, catalog validation, `build`, `build:single`, browser smoke `rt-fallback`.
 - `nirs4all-cockpit`: target validation, 87 tests, Ruff, cascade head refresh for Web/UI/methods/formats/papers/cluster.
 - `nirs4all-org`: HTML parser smoke and diff check.

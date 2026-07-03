@@ -178,7 +178,7 @@
       "selected_workspace_path": "RC-v1-dagml",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "7e9a881d0939f79f799bf155bafd69dddc56d7ac",
+        "commit": "b8d7ae199c12187fd7df241542248e75a448700f",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
