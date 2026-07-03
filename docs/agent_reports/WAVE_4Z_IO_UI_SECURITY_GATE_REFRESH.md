@@ -69,6 +69,11 @@ or `nirs4all-cluster`.
 - `node scripts/sync-ui-shim.mjs --check` and
   `node scripts/sync-lite-shim.mjs --check` -> up to date.
 - `npm run build:single` -> passed, producing a single static HTML artifact.
+- `npm run build && node scripts/run-smokes.mjs` -> production served build plus
+  `23/23` browser smokes passed. The smoke set exercised `dag-ml-wasm`,
+  `libn4m`, `dag-ml-data`, Web worker fallback errors, `.n4a` export/import,
+  datasets upload, branch/generator DAGs, and prediction/chart flows without JS
+  console errors.
 
 Cluster GitGuardian:
 
@@ -116,9 +121,9 @@ Release lock:
 
 - R, Octave, and MATLAB binding release proofs still need suitable host
   toolchains or CI/manual release runners.
-- Web `build:single` passed locally; served-worker browser smoke should remain
-  part of the final Web cutover gate because the single-file and served paths
-  exercise different engines.
+- Web `build:single` and served-worker browser smokes both passed locally.
+  Keep both in the final Web cutover gate because they exercise different
+  engines.
 - GitGuardian may keep reporting immutable historical PR refs. Active branch/tag
   heads are clean; close the alert as stale/placeholder unless GitGuardian
   discloses an actual token value.

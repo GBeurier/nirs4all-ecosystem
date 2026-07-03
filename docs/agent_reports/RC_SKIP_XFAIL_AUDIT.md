@@ -30,7 +30,8 @@ and `NIRS4ALL_REQUIRE_N4M=1`.
   passed with Vitest `52 passed`, typecheck, build, and `npm pack --dry-run`.
 - Web client-only and static gates remain skip-free in the local Linux Node
   environment: client-only `2 passed`, full Vitest `134 passed`, catalog
-  validation, UI/core shim checks, and `build:single` passed.
+  validation, UI/core shim checks, `build:single`, production `build`, and
+  `23/23` served browser smokes passed.
 - Benchmarks `1 skipped` is optional CI/runtime coverage and should be rerun in the service-extra environment if zero skips is required.
 - Python parity `30 skipped / 11 xfailed` is stale, and the intermediate
   `853 passed, 14 skipped, 6 xfailed` result is now superseded.
