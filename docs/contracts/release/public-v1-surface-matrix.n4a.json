@@ -68,8 +68,8 @@
     },
     {
       "key": "lite",
-      "repo_path": "nirs4all-lite",
-      "release_role": "Portable aggregate bindings, selected from RC-v1-nirs4all-core. repo_path stays nirs4all-lite until the GitHub repo rename; nirs4all-core is an explicit public alias."
+      "repo_path": "nirs4all-core",
+      "release_role": "Portable aggregate bindings, selected from RC-v1-nirs4all-core. nirs4all-core is the canonical RC repository/package target; nirs4all-lite remains a legacy/current artifact alias during cutover."
     },
     {
       "key": "datasets",

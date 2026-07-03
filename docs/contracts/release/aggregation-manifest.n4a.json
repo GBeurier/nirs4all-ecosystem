@@ -474,16 +474,16 @@
     },
     {
       "key": "lite",
-      "repo_path": "nirs4all-lite",
+      "repo_path": "nirs4all-core",
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "selected_branch_patterns": [
         "rc/v1-*"
       ],
       "repo_aliases": [
-        "nirs4all-core"
+        "nirs4all-lite"
       ],
-      "repo_url": "GBeurier/nirs4all-lite",
-      "role": "Portable aggregate bindings, renamed nirs4all-core on the RC V1 head (Python distribution nirs4all-core; repo/directory rename pending, so repo_path/repo_url stay nirs4all-lite)",
+      "repo_url": "GBeurier/nirs4all-core",
+      "role": "Portable aggregate bindings, renamed nirs4all-core on the RC V1 head (Python distribution nirs4all-core; nirs4all-lite remains a legacy/current artifact alias during cutover)",
       "owner_boundary": "aggregate",
       "default_inclusion": "base",
       "optional": false,

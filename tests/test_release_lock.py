@@ -464,9 +464,11 @@ def test_central_manifest_declares_reproducible_methods_and_lite_topology_source
     )
     components = {component["key"]: component for component in manifest["components"]}
     assert manifest["release_selection_policy"]["selected_branch_patterns"] == ["rc/v1-*"]
+    assert components["lite"]["repo_path"] == "nirs4all-core"
+    assert components["lite"]["repo_url"] == "GBeurier/nirs4all-core"
     assert components["lite"]["selected_workspace_path"] == "RC-v1-nirs4all-core"
     assert components["lite"]["target_repo_path"] == "nirs4all-core"
-    assert "nirs4all-core" in components["lite"]["repo_aliases"]
+    assert "nirs4all-lite" in components["lite"]["repo_aliases"]
     methods_sources = {
         source["key"]: source for source in components["methods"]["version_sources"]
     }
