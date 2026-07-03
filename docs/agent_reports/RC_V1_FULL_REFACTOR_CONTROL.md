@@ -409,6 +409,9 @@ This is not a temporary cut. The target is the final project topology:
   runtimes as green proof; the sweep also refreshes native export, Studio/Web
   runtime contracts, providers, migration, release-lock validation/fetchability,
   lockstep, perf comparison, and cluster advisory gates.
+- `RC_V1_RELEASE_CANDIDATE_FINAL_REPORT.md` consolidates the selected heads,
+  remote branch/tag audit, gate evidence, GitHub checks, remaining risks, and
+  production-switch decisions for this RC batch.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator
   skips and Python registry skips have been burned down; the current full Python
   parity proof on `bf242e48` reports `887 passed`, `0 skipped`, and `0 xfailed`
