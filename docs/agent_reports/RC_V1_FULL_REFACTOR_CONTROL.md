@@ -317,6 +317,9 @@ accepted Python parity debt:
 - Datasets remote `get(id)` for every catalog entry must not be claimed until
   canonical hosting/DOI/file-id routes are complete; current proof covers the
   catalog, software bridge, and raw retrieval contracts.
+- Methods runtime gates are current for ABI, JS/WASM, R, and Octave/MEX, but
+  release-distribution debt remains for CRAN external checks, `nirs4all-methods`
+  sdist/post-publish smoke, and stale release-readiness docs.
 - Full Python parity must be rerun after the next large integration batch before
   RC promotion.
 

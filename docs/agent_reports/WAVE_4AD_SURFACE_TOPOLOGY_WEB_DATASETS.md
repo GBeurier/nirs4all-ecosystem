@@ -125,10 +125,22 @@ Tests:
   native ABI snapshot up to date, ABI compatibility OK for header `2.0.x`,
   Linux dynamic dependencies listed, and `Native ABI freshness OK`.
 
+Review:
+
+- Codex subagent `019f2691-c1b9-7322-91e9-8aa1a9dbdd4e` audited Methods
+  read-only. It found the runtime targets for ABI, JS/WASM, R, Octave/MEX, and
+  MATLAB present, and identified stale release-readiness documentation rather
+  than missing local gates.
+
 Decision:
 
 - Methods ABI freshness is current on the selected RC head. Wave 4AC remains
   the source record for Methods R binding, Octave/MEX, and JS/WASM parity gates.
+- Remaining Methods debt is release-distribution and documentation hygiene:
+  CRAN incoming/PDF/win-builder/R-hub/macbuilder evidence, `nirs4all-methods`
+  sdist and post-publish smoke, broader R/Octave surface coverage beyond current
+  smoke/parity fixtures, and stale docs/fixtures that still mention older ABI or
+  manual JS release assumptions.
 
 ## Ecosystem Lock and Docs
 
