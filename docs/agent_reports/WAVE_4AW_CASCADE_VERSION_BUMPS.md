@@ -10,16 +10,16 @@ Scope: release cascade after the V1 refactor batch, excluding production-sensiti
 
 | Repo | Selected head | Version / tag |
 | --- | --- | --- |
-| `dag-ml` | `b8d7ae199c12` | `0.2.2`, `n4a-v1-2026.07-refactor`, refreshed committed Python ABI3 extension |
+| `dag-ml` | `c15d8fc9d2c` | `0.2.2`, `n4a-v1-2026.07-refactor`, refreshed committed Python ABI3 extension + Rustdoc CI fix |
 | `dag-ml-data` | `22157227e2a8` | `0.2.3`, `n4a-v1-2026.07-refactor` |
 | `nirs4all-formats` | `181946f141ed` | `0.2.1`, final tag moved from stale head |
-| `nirs4all-io` | `c6740189d9a2` | `0.1.5`, Windows verbatim path fix for R release smoke |
+| `nirs4all-io` | `607b4770d284` | `0.1.5`, Windows verbatim path fix for R release smoke + enforced local `dag-ml` parity oracle install |
 | `nirs4all-datasets` | `c46042dabe29` | `0.3.2` |
 | `nirs4all-methods` | `115077ae4551` | `1.0.1`, final tag moved from stale head |
 | `nirs4all-repository` | `b82f5b6` | `0.1.2`, generated catalog refreshed |
 | `nirs4all-core` | `19e69417ad89` | `0.2.2`, canonical aggregate target |
 | `nirs4all-web` | `6f8f3fcdbdd` | vendored `nirs4all-core` WASM shim `0.2.2` and rebuilt current `nirs4all-ui` dist |
-| `nirs4all-cockpit` | `d926f7f` | public snapshot updated |
+| `nirs4all-cockpit` | `d926f7f` | public snapshot updated; final cockpit commit follows this ecosystem lock refresh |
 | `nirs4all-org` | `05666f5` | public site updated |
 
 Additional final tags were added on the selected RC heads for `nirs4all-tools`,
@@ -27,10 +27,8 @@ Additional final tags were added on the selected RC heads for `nirs4all-tools`,
 
 ## Files changed in ecosystem
 
-- `docs/contracts/release/aggregation-manifest.n4a.json`
 - `docs/contracts/release/aggregation-lock.n4a.lock.json`
-- `docs/contracts/release/public-v1-surface-matrix.n4a.json`
-- `tests/test_release_lock.py`
+- `docs/agent_reports/WAVE_4AW_CASCADE_VERSION_BUMPS.md`
 
 ## Validation
 
@@ -44,8 +42,8 @@ Ecosystem:
 
 Sibling gates run during the cascade:
 
-- `dag-ml`: committed extension freshness check; `cargo test --workspace`.
-- `nirs4all-io`: `cargo fmt --all --check`, targeted Windows-prefix unit test, `cargo test -p nirs4all-io`, `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo build --workspace --no-default-features`.
+- `dag-ml`: committed extension freshness check; `cargo test --workspace`; `cargo fmt --all --check`; `RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps`.
+- `nirs4all-io`: `cargo fmt --all --check`, targeted Windows-prefix unit test, `cargo test -p nirs4all-io`, `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo build --workspace --no-default-features`; workflow YAML parse for the parity-oracle fix.
 - `nirs4all-core`: `cargo test --workspace`; Python unittest discovery; WASM npm tests with Linux Node; version check.
 - `nirs4all-repository`: `validate --all`, catalog build/current check, Ruff, mypy, 67 pytest tests.
 - `nirs4all-web`: client-only contract, `check:ui-shim`, `check:lite-shim`, `typecheck`, 134 Vitest tests, catalog validation, `build`, `build:single`, browser smoke `rt-fallback`.
@@ -67,3 +65,4 @@ be run after this large batch as the next heavy gate.
   targets where PyPI/npm/crates/GitHub Releases have not caught up.
 - Web remains client-side-only; Node/npm are build-time tooling only.
 - `nirs4all` Python and `nirs4all-studio` main were not released in this batch.
+- The `nirs4all-io` parity oracle now fails if `nirs4all` or `dag-ml` cannot be cloned, instead of producing a misleading skipped/green gate.
