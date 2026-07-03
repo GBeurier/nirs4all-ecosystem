@@ -60,7 +60,7 @@
         "installed_n4m_proof"
       ],
       "expected_evidence": [
-        "scripts/prove_installed_n4m.py runs in _worktrees/INT-nirs4all",
+        "scripts/prove_installed_n4m.py runs in _worktrees/RC-v1-nirs4all-python",
         "the proof installs and consumes n4m/libn4m from the proof virtualenv",
         "dag-ml and dag-ml-data are supplied through explicit local sibling paths"
       ],
@@ -241,7 +241,7 @@
         "post_w2j_cutover_state"
       ],
       "expected_evidence": [
-        "refactor/integration-nirs4all declares DEFAULT_ENGINE = \"dag-ml\"",
+        "RC-v1-nirs4all-python declares DEFAULT_ENGINE = \"dag-ml\"",
         "nirs4all.api.run.run defaults allow_fallback to false",
         "fallback compatibility remains explicit through engine=\"legacy\" or allow_fallback=True",
         "dag-ml export compatibility remains explicit through compatibility=\"legacy-refit\""
@@ -275,13 +275,10 @@
       "owner_repo": "nirs4all-cluster",
       "status": "ready",
       "required_for_cutover": false,
-      "cwd": "_worktrees/INT-cluster",
-      "command": [
-        "bash",
-        "-lc",
-        "PYTHONPATH=. pytest -q tests/test_distributed_parity.py && ruff check nirs4all_cluster tests/test_distributed_parity.py"
+      "primary_gate_id": "cluster_dag_advisory",
+      "gate_ids": [
+        "cluster_dag_advisory"
       ],
-      "gate_ids": [],
       "expected_evidence": [
         "server can schedule DAG-shaped jobs to registered clients with rights metadata",
         "client-submitted jobs preserve runtime/result provenance",

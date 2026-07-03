@@ -424,15 +424,20 @@ def check_post_w2j_state(workspace_root: Path) -> dict[str, Any]:
     checks: list[dict[str, Any]] = []
     heads: dict[str, str] = {}
 
-    nirs4all_root = workspace_root / "_worktrees" / "INT-nirs4all"
-    heads["nirs4all"] = _check_repo_branch_and_head(checks, "nirs4all", nirs4all_root, "refactor/integration-nirs4all")
+    nirs4all_root = workspace_root / "_worktrees" / "RC-v1-nirs4all-python"
+    heads["nirs4all"] = _check_repo_branch_and_head(
+        checks,
+        "nirs4all",
+        nirs4all_root,
+        "rc/v1-full-refactor-python",
+    )
     checks.extend(_check_nirs4all_cutover_state(nirs4all_root))
 
     product_repos = [
         (
             "studio",
-            workspace_root / "_worktrees" / "INT-studio",
-            "refactor/integration-studio",
+            workspace_root / "_worktrees" / "RC-v1-studio",
+            "rc/v1-full-refactor",
             {
                 "api/runtime_errors.py": ["class RtError", "unsupported_capability", "unavailable_backend"],
                 "tests/test_runs_engine_routing.py": ["allow_fallback is False", "fallback_policy", "structured refusal"],
@@ -441,8 +446,8 @@ def check_post_w2j_state(workspace_root: Path) -> dict[str, Any]:
         ),
         (
             "web",
-            workspace_root / "_worktrees" / "INT-web",
-            "refactor/integration-web",
+            workspace_root / "_worktrees" / "RC-v1-web",
+            "rc/v1-full-refactor",
             {
                 "studio-lite/src/engine/main-engine.runtime-v1.test.ts": [
                     "without silently running the direct pipeline",
@@ -454,8 +459,8 @@ def check_post_w2j_state(workspace_root: Path) -> dict[str, Any]:
         ),
         (
             "tools",
-            workspace_root / "nirs4all-tools",
-            "main",
+            workspace_root / "_worktrees" / "RC-v1-tools",
+            "rc/v1-full-refactor",
             {
                 "README.md": ["no-in-place", "native-results-v1", "unsupported-report.json"],
                 "src/nirs4all_tools/commands.py": ["legacy {inspect,migrate,verify}", "strict", "native-results-v1"],
@@ -463,8 +468,8 @@ def check_post_w2j_state(workspace_root: Path) -> dict[str, Any]:
         ),
         (
             "cluster",
-            workspace_root / "_worktrees" / "INT-cluster",
-            "refactor/integration-cluster",
+            workspace_root / "_worktrees" / "RC-v1-cluster",
+            "rc/v1-full-refactor",
             {
                 "tests/test_rbac.py": ["dag_shaped_whole_run", "server_attested_worker_report", "executor_principal"],
                 "tests/test_scheduler.py": ["dead_worker_tasks_requeue", "worker lost"],
@@ -473,8 +478,8 @@ def check_post_w2j_state(workspace_root: Path) -> dict[str, Any]:
         ),
         (
             "providers",
-            workspace_root / "_worktrees" / "INT-providers",
-            "refactor/integration-providers",
+            workspace_root / "_worktrees" / "RC-v1-providers",
+            "rc/v1-full-refactor",
             {
                 "src/nirs4all_providers/repository.py": ["get_pipeline_list", "list_pipelines", "get_pipeline"],
                 "src/nirs4all_providers/benchmarks.py": ["get_pipeline_list", "get_pipeline", "queue_pipeline_test"],

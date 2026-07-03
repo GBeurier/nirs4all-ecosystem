@@ -94,25 +94,51 @@ def test_release_non_full_gates_promote_w2s_and_lite_evidence() -> None:
     gates = {gate["id"]: gate for gate in manifest["gates"]}
 
     assert gates["installed_n4m_proof"]["required"] is True
-    assert gates["installed_n4m_proof"]["cwd"] == "_worktrees/INT-nirs4all"
+    assert gates["installed_n4m_proof"]["cwd"] == "_worktrees/RC-v1-nirs4all-python"
     installed_command = " ".join(gates["installed_n4m_proof"]["command"])
     assert "timeout 1800 python3.11 scripts/prove_installed_n4m.py --install-deps" in installed_command
-    assert "--dag-ml-path {workspace_root}/dag-ml" in installed_command
-    assert "--dag-ml-data-path {workspace_root}/dag-ml-data" in installed_command
+    assert "--dag-ml-path {workspace_root}/_worktrees/RC-v1-dagml" in installed_command
+    assert "--dag-ml-data-path {workspace_root}/_worktrees/RC-v1-dmd" in installed_command
 
     assert gates["providers_local_sibling_release"]["required"] is True
-    assert gates["providers_local_sibling_release"]["cwd"] == "_worktrees/INT-providers"
+    assert gates["providers_local_sibling_release"]["cwd"] == "_worktrees/RC-v1-providers"
     providers_command = " ".join(gates["providers_local_sibling_release"]["command"])
     assert "nirs4all_providers.local_release_gate" in providers_command
-    assert "--dependency-path {workspace_root}/nirs4all-datasets/.venv" in providers_command
-    assert "--dependency-path {workspace_root}/nirs4all-repository/.venv" in providers_command
+    assert "ln -s {workspace_root}/_worktrees/RC-v1-datasets" in providers_command
+    assert "ln -s {workspace_root}/_worktrees/RC-v1-repository" in providers_command
+    assert "--dependency-path {workspace_root}/_worktrees/RC-v1-io/src" in providers_command
 
     assert gates["lite_v1_surfaces"]["required"] is True
-    assert gates["lite_v1_surfaces"]["cwd"] == "nirs4all-lite"
+    assert gates["lite_v1_surfaces"]["cwd"] == "_worktrees/RC-v1-nirs4all-core"
     lite_command = " ".join(gates["lite_v1_surfaces"]["command"])
     assert "PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH" in lite_command
     assert "PYTHONPATH=bindings/python/src" in lite_command
     assert "make test-v1-surfaces" in lite_command
+
+
+def test_cutover_gates_target_selected_rc_worktrees() -> None:
+    manifest = json.loads((ROOT / "docs" / "contracts" / "cutover" / "drop-gates.n4a.json").read_text(encoding="utf-8"))
+    serialized = json.dumps(manifest, sort_keys=True)
+
+    assert "_worktrees/INT-" not in serialized
+    assert "{workspace_root}/dag-ml" not in serialized
+    assert "{workspace_root}/dag-ml-data" not in serialized
+    assert '"cwd": "nirs4all-ecosystem"' not in serialized
+    assert '"cwd": "nirs4all-tools"' not in serialized
+    assert '"cwd": "nirs4all-lite"' not in serialized
+    for expected in (
+        "_worktrees/RC-v1-nirs4all-python",
+        "_worktrees/RC-v1-studio",
+        "_worktrees/RC-v1-web",
+        "_worktrees/RC-v1-tools",
+        "_worktrees/RC-v1-cluster",
+        "_worktrees/RC-v1-providers",
+        "_worktrees/RC-v1-dagml",
+        "_worktrees/RC-v1-dmd",
+        "_worktrees/RC-v1-nirs4all-core",
+        "_worktrees/RC-v1-ecosystem",
+    ):
+        assert expected in serialized
 
 
 def test_readiness_matrix_requires_promoted_release_gates() -> None:
