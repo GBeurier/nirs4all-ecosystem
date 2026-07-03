@@ -1,7 +1,7 @@
 # RC Skip / Xfail Audit
 
 Date: 2026-07-02
-Last refresh: 2026-07-03 after Python `6a2c720` full split parity
+Last refresh: 2026-07-03 after Wave 4Z IO/UI/Web gate refresh
 Agent: Codex/Laplace, read-only; coordinator refresh after Python `6a2c720`
 
 ## Scope
@@ -25,7 +25,12 @@ and `NIRS4ALL_REQUIRE_N4M=1`.
   - the combined Studio runtime/operator/quick-run RC stack gate passes with `464 passed`.
 - Studio full-backend result is refreshed after Wave 4W: `2335 passed, 0 skipped`, `301 warnings`. Locally coverable backend skips were removed; Windows host behavior remains a real external host gate, not a skipped Linux backend test.
 - Studio frontend targeted portable-paths gate reports `4 passed`; Wave 4Y full
-  frontend Vitest reports `517` test files and `3709` tests passed.
+  frontend Vitest reports `517` test files and `3709` tests passed. Wave 4Z
+  separately reran the shared `nirs4all-ui` source package gate: `npm run ci`
+  passed with Vitest `52 passed`, typecheck, build, and `npm pack --dry-run`.
+- Web client-only and static gates remain skip-free in the local Linux Node
+  environment: client-only `2 passed`, full Vitest `134 passed`, catalog
+  validation, UI/core shim checks, and `build:single` passed.
 - Benchmarks `1 skipped` is optional CI/runtime coverage and should be rerun in the service-extra environment if zero skips is required.
 - Python parity `30 skipped / 11 xfailed` is stale, and the intermediate
   `853 passed, 14 skipped, 6 xfailed` result is now superseded.
@@ -51,8 +56,9 @@ and `NIRS4ALL_REQUIRE_N4M=1`.
 - Track remaining Studio skips as optional/environment gates, not operator debt.
 - Do not cite `99d57b7e`, `42448821`, or `3d568ab` as the current parity proof
   head; the current proof was run on RC Python `6a2c720`.
-- Keep methods binding proof separate: JS/WASM/R/Octave/MATLAB methods gates
-  still depend on their release environments even though Python parity is green.
+- Keep methods binding proof separate: JS/WASM has local strict proof; R,
+  Octave, and MATLAB methods/core gates still depend on their release
+  environments even though Python parity is green.
 - Preserve the distinction between `deselected` and `skipped` in release notes.
 
 ## Risk
@@ -60,5 +66,7 @@ and `NIRS4ALL_REQUIRE_N4M=1`.
 Python-reference parity no longer has unexplained skip/xfail debt in the
 selected split parity gates. Remaining skip risk is outside this gate:
 R and Octave/MATLAB language binding environments still need their own final
-release proofs, and full non-Python DatasetPackage materialization remains an
-environment gate.
+release proofs. Non-Python DatasetPackage coverage is no longer blank: Rust
+`io-core`, `io-dagml`, WASM smokes, and CLI/WASM cross-binding checks passed in
+Wave 4Z. The remaining risk is final host proof for R/Octave/MATLAB and broader
+non-Python materialization cases beyond the current Rust/WASM local gates.
