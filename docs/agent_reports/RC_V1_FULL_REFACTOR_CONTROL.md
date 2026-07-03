@@ -213,7 +213,7 @@ This is not a temporary cut. The target is the final project topology:
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees. `WAVE_4Q_RC_PUBLICATION_REAUDIT.md` rechecked the post-4P heads after repairing missing tags on Studio/UI/Org/Tools/IO/Datasets; Wave 4R then moved Studio/IO/Datasets and regenerated the aggregation lock for IO/Datasets.
 - Latest pushed/tagged heads after the Wave 4AB gate/claims batch: Python `6a2c720`,
   dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `2b0d18a`,
-  Studio `fcc44c8`, Web `974f71a`, UI `69501bd`, Cockpit `f06f7b4`,
+  Studio `028e3c0`, Web `974f71a`, UI `69501bd`, Cockpit `f06f7b4`,
   Org `fd4634d`, Ecosystem uses the current board HEAD, Providers `2cfcca6`,
   Tools `7c5070f`, Cluster `19384e2`, Formats `32fc87f`, IO `71aaaf5`,
   Datasets `60658035`, Methods `64731c6d`, Repository `ced219f`,
@@ -239,13 +239,21 @@ This is not a temporary cut. The target is the final project topology:
   was additive rather than a purge; close as false positive/remediated unless
   GitGuardian discloses a non-placeholder value.
 - `aggregation-lock` remains limited to the aggregate core/runtime members. Studio/Web/UI/tools/providers/benchmarks/papers/cluster are tracked by the surface matrix, cutover gates, and agent reports rather than forced into the aggregate lock without an ownership contract.
-- Wave 4AB moves Studio to `fcc44c8` and Methods to `64731c6d`, with branch and
+- Wave 4AB moves Studio to `028e3c0` and Methods to `64731c6d`, with branch and
   tag `n4a-v1-rc1-2026.07-refactor` published for both. Studio now runs the
   vendored `nirs4all-ui` shim gate in CI and `lint:parallel`, builds the
   sibling UI package before clean-runner comparison, and tracks the required
-  vendored `dist`. Methods cross-binding and parity workflows now run on
-  `rc/**`; the aggregation manifest requires `methods_cross_binding_parity` and
-  records Methods R availability as `subset`, not `full`.
+  vendored `dist`. Studio RC CI also installs local `dag-ml` and `dag-ml-data`
+  runtime wheels from the selected RC branches before installing Python
+  `nirs4all`, and Ruff lints only Studio-owned Python paths. Methods
+  cross-binding and parity workflows now run on `rc/**`; the aggregation
+  manifest requires `methods_cross_binding_parity` and records Methods R
+  availability as `subset`, not `full`.
+- GitHub Actions are green on Studio `028e3c0`: `CI` and `Playwright E2E Tests`
+  both completed with success. Methods `64731c6d` is green on `CI`,
+  `Sanitizers`, `version-guard`, `Cross-binding parity`, `version-sync`,
+  `ABI Surface`, `Coverage`, and `Parity gate`. Ecosystem `3cf421a` passed
+  `version-guard`.
 - Wave 4AB cutover gate sweep passed with `pyref_oracle_full` intentionally
   skipped for batch-cost control. The run covered release-lock validation,
   fetchability, native `.n4a` export, Studio runtime routes, Web runtime

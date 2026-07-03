@@ -15,7 +15,11 @@ split slow/non-slow run.
 
 ### Studio
 
-Commit: `fcc44c86 ci(studio): gate shared ui vendor drift`
+Commits:
+
+- `fcc44c86 ci(studio): gate shared ui vendor drift`
+- `3ee93955 ci(studio): install rc dag runtimes in tests`
+- `028e3c04 ci(studio): lint only studio python paths`
 
 Files modified:
 
@@ -33,12 +37,19 @@ Decisions:
   available on clean CI runners.
 - Generated `vendor/nirs4all-ui/dist` is tracked deliberately, matching the
   clean-runner requirement already enforced in Web.
+- RC CI installs local `dag-ml` and `dag-ml-data` Python wheels from the selected
+  RC branches before installing the Python `nirs4all` source, avoiding a PyPI
+  dependency on unpublished RC packages.
+- Studio Ruff now lints only Studio-owned Python paths so dependency checkouts
+  used for RC installation are not treated as Studio source.
 
 Tests:
 
 - `NIRS4ALL_UI_SHIM_REQUIRED=1 npm run check:ui-shim` -> PASS
 - `npm run lint:parallel` -> PASS
 - `git diff --cached --check` -> PASS
+- GitHub Actions on `028e3c04`: Studio `CI` -> success; `Playwright E2E Tests`
+  -> success.
 
 ### Methods
 
@@ -162,7 +173,7 @@ Decision:
 - `nirs4all-methods` branch `rc/v1-full-refactor` and tag
   `n4a-v1-rc1-2026.07-refactor` were moved to `64731c6d`.
 - `nirs4all-studio` branch `rc/v1-full-refactor` and tag
-  `n4a-v1-rc1-2026.07-refactor` were moved to `fcc44c86`.
+  `n4a-v1-rc1-2026.07-refactor` were moved to `028e3c04`.
 - `nirs4all-ecosystem` will publish this report plus the refreshed aggregation
   manifest/lock after final validation.
 
