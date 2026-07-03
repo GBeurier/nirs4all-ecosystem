@@ -25,7 +25,9 @@
     "docs/agent_reports/WAVE_4T_DOCS_UI_SHARED_STATUS.md",
     "docs/agent_reports/WAVE_4U_PARITY_PROVIDERS_PERF_CORE_PINS.md",
     "docs/agent_reports/WAVE_4V_STUDIO_WEB_SECURITY_GATES.md",
-    "docs/agent_reports/WAVE_4W_STRICT_DAGML_WASM_STUDIO_DATASETS.md"
+    "docs/agent_reports/WAVE_4W_STRICT_DAGML_WASM_STUDIO_DATASETS.md",
+    "docs/agent_reports/WAVE_4AT_FULL_PARITY_REFRESH.md",
+    "docs/agent_reports/WAVE_4AU_CUTOVER_LANGUAGE_GATE_REFRESH.md"
   ],
   "aggregation_lock": {
     "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
@@ -130,7 +132,7 @@
       "lock_member_key": "lite",
       "required_for_nirs4all_v1": true,
       "proof_boundary": "Package topology is covered by the locked lite member; V1 release proof requires the strict R runtime parity gate, not an if-available local smoke.",
-      "local_gate_policy": "test-r-parity is required for V1 promotion; test-r-if-available is developer convenience only and a missing R runtime is not a green release proof."
+      "local_gate_policy": "test-r-parity passed in Wave 4AU for the selected RC core/methods heads; rerun on any later aggregate or methods movement. test-r-if-available is developer convenience only and a missing R runtime is not a green release proof."
     },
     {
       "id": "nirs4all.javascript_wasm.aggregate",
@@ -195,7 +197,7 @@
       "lock_member_key": "lite",
       "required_for_nirs4all_v1": true,
       "proof_boundary": "MATLAB/Octave namespace archive is covered by the selected RC-v1-nirs4all-core member; V1 release proof requires the strict MATLAB/Octave runtime parity gate, not an if-available smoke.",
-      "local_gate_policy": "test-matlab-parity is required for V1 promotion; if only Octave is available the licensed MATLAB host proof remains an explicit release risk, not a skipped green proof."
+      "local_gate_policy": "test-matlab-parity passed under Octave in Wave 4AU for the selected RC core/methods heads; rerun on any later aggregate or methods movement. Licensed MATLAB host proof remains an explicit release risk, not a skipped green proof."
     },
     {
       "id": "nirs4all.studio.product",

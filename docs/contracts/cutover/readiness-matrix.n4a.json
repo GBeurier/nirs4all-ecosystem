@@ -228,8 +228,8 @@
         "make test-r-parity passes for the R aggregate runtime surface",
         "make test-matlab-parity passes for the MATLAB/Octave aggregate runtime surface"
       ],
-      "missing_contract": "Strict R and MATLAB/Octave runtime execution must be recorded before promotion. Missing R or MATLAB/Octave runtime proof is a cutover blocker for required V1 surfaces, not a skipped green proof.",
-      "next_owner_action": "Keep lite_v1_surfaces green with the selected Node path and PYTHONPATH, then run strict R and MATLAB/Octave parity on release infrastructure before promotion."
+      "missing_contract": "None for the selected RC local proof: Wave 4AU records strict R parity and strict Octave execution parity inside the required lite_v1_surfaces gate. Missing R or Octave runtime proof remains a blocker for any later selected head.",
+      "next_owner_action": "Keep lite_v1_surfaces green with Linux Node/npm, R, Octave, and the selected Methods root; record a licensed MATLAB host proof separately before any GA claim that depends on licensed MATLAB."
     },
     {
       "id": "DROP-002-DEFAULT-ENGINE",
@@ -256,7 +256,7 @@
       "title": "Python and Studio legacy-vs-dag-ml performance comparison is gated",
       "lane": "PERF/V1",
       "owner_repo": "nirs4all-benchmarks",
-      "status": "ready",
+      "status": "passed",
       "required_for_cutover": true,
       "primary_gate_id": "perf_cross_engine_compare",
       "gate_ids": [
@@ -269,7 +269,7 @@
         "JSON and Markdown reports are emitted for cutover evidence"
       ],
       "missing_contract": "No missing command contract. Thresholds are conservative RC ceilings and must be recalibrated if the CI host class or measured workload changes.",
-      "next_owner_action": "Run perf_cross_engine_compare in the final cutover sweep before production flip; keep Benchmarks tests strict so the command cannot silently drop fallback or ratio assertions."
+      "next_owner_action": "Keep perf_cross_engine_compare in the final cutover sweep before production flip; keep Benchmarks tests strict so the command cannot silently drop fallback or ratio assertions."
     },
     {
       "id": "PROV-READ-001",
