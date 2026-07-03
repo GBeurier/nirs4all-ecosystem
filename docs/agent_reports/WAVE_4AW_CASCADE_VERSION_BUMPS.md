@@ -17,8 +17,8 @@ Scope: release cascade after the V1 refactor batch, excluding production-sensiti
 | `nirs4all-datasets` | `c46042dabe29` | `0.3.2` |
 | `nirs4all-methods` | `115077ae4551` | `1.0.1`, final tag moved from stale head |
 | `nirs4all-core` | `19e69417ad89` | `0.2.2`, canonical aggregate target |
-| `nirs4all-web` | `5f7ee6823ae` | vendored `nirs4all-core` WASM shim `0.2.2` |
-| `nirs4all-cockpit` | `234b2ed` | public snapshot updated |
+| `nirs4all-web` | `00f29f45b29a` | vendored `nirs4all-core` WASM shim `0.2.2` and current `nirs4all-ui` |
+| `nirs4all-cockpit` | `8204744` | public snapshot updated |
 | `nirs4all-org` | `05666f5` | public site updated |
 
 Additional final tags were added on the selected RC heads for `nirs4all-tools`,
