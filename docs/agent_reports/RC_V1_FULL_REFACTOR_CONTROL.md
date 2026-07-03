@@ -285,8 +285,9 @@ This is not a temporary cut. The target is the final project topology:
   JavaScript/WASM, Rust, R, and MATLAB/Octave. Local Core gates passed for Rust,
   Python, WASM, R, and Octave parity; Web passed the client-side-only gate,
   static/single-file builds, and all browser smokes; IO and Datasets received
-  additional workspace/catalog/bridge coverage. Full Python parity was still
-  deferred for batch-cost control.
+  additional workspace/catalog/bridge coverage; Methods ABI freshness is current.
+  IO cross-binding parity still needs a multi-toolchain shell/CI environment.
+  Full Python parity was still deferred for batch-cost control.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator
   skips and Python registry skips have been burned down; Python full parity on
   current head `6a2c720` reports `887 passed`, `0 skipped`, and `0 xfailed`

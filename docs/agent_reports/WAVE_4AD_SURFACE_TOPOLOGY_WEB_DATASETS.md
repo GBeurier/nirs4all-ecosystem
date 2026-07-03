@@ -84,9 +84,18 @@ IO tests:
 - `cargo clippy --workspace --all-targets -- -D warnings` -> PASS.
 - `cargo test --workspace` -> PASS.
 - `cargo build --workspace --no-default-features` -> PASS.
+- `bash scripts/dag_ml_data_conformance.sh` -> both CLI conformance cases
+  passed through `dag-ml-data-cli validate-envelope` and
+  `dag-ml-cli validate-data-binding`.
+- `bash tests/cross_binding/verify.sh` -> no failure, but cross-binding parity
+  did not run because fewer than two binding toolchains were available in that
+  shell. This remains an explicit skipped local gate, not a proof.
 
 Datasets tests:
 
+- `cargo fmt --all --check` -> PASS.
+- `cargo clippy --workspace --all-targets -- -D warnings` -> PASS.
+- `cargo test --workspace` -> PASS.
 - `ruff check .` -> PASS.
 - `mypy --config-file pyproject.toml src` -> PASS.
 - `python3.11 catalog/scripts/validate.py` -> `164` descriptors valid.
@@ -103,6 +112,19 @@ Decision:
 - Datasets still has legitimate distribution/retrieval roadmap items, but the
   release-candidate bridge skips are covered by an integrated local gate and
   must not be counted as untested parity holes for this batch.
+
+## Methods ABI Freshness
+
+Tests:
+
+- `make test-abi-freshness PRESET=dev-release` -> CMake configure/build OK,
+  native ABI snapshot up to date, ABI compatibility OK for header `2.0.x`,
+  Linux dynamic dependencies listed, and `Native ABI freshness OK`.
+
+Decision:
+
+- Methods ABI freshness is current on the selected RC head. Wave 4AC remains
+  the source record for Methods R binding, Octave/MEX, and JS/WASM parity gates.
 
 ## Ecosystem Lock and Docs
 
@@ -140,3 +162,5 @@ Decisions:
 - Licensed MATLAB runtime proof remains outside this Linux/Octave environment.
 - Datasets public distribution/retrieval readiness remains a release-management
   item separate from the local bridge parity gates.
+- IO cross-binding parity still needs a shell/CI environment with at least two
+  binding toolchains available at the same time.
