@@ -5,8 +5,8 @@ Coordinator: Codex
 
 ## Scope
 
-Close the post-reset RC drift found by parallel reviewers without launching the
-long full parity suite yet:
+Close the post-reset RC drift found by parallel reviewers, then launch the full
+parity suite once the batch is integrated:
 
 - make Python parity tests resolve the selected RC `dag-ml` CLI instead of an
   absent local checkout path;
@@ -33,7 +33,7 @@ long full parity suite yet:
 
 ## Local Gates
 
-Python parity/runtime, no full parity:
+Python parity/runtime targeted gates:
 
 - `python3.11 -m pytest -q tests/integration/parity/test_dagml_run_selector.py tests/integration/parity/test_rt_fallback_strict.py tests/integration/parity/test_marker_audit.py tests/integration/parity/test_native_fallback_boundary.py`
   -> `49 passed`.
@@ -47,6 +47,26 @@ Python parity/runtime, no full parity:
 - `python3.11 -m tests.integration.parity.coverage_meter --check`
   -> `coverage_meter OK (fallback=0, target=0)`.
 - `python3.11 -m ruff check` on the touched parity/runtime files -> passed.
+
+Python full parity after the integrated batch:
+
+- Slow parity segment:
+  `N4A_DAGML_CLI=/home/delete/nirs4all/_worktrees/RC-v1-dagml/target/debug/dag-ml-cli python3.11 -m pytest -q -m slow tests/integration/parity`
+  -> `443 passed, 444 deselected, 1305 warnings` in `1776.75s`.
+- Non-slow parity segment in the base interpreter:
+  `N4A_DAGML_CLI=... python3.11 -m pytest -q -m "parity and not slow" tests/integration/parity`
+  -> `316 passed, 1 skipped, 570 deselected, 503 warnings` in `470.31s`.
+  The single skip was `test_dagml_node_runner.py::test_fit_cv_uses_methods_snv_when_env_enabled`,
+  caused by `n4m` not being installed in the base interpreter.
+- The skip was not accepted as green. The installed-methods proof harness built
+  `nirs4all_methods-1.0.1-cp311-cp311-linux_x86_64.whl` from `RC-v1-methods`,
+  installed it in a proof venv with `NIRS4ALL_REQUIRE_N4M=1`, verified ABI
+  `2.0.0`, and verified identical SHA-256 for the source, staged, wheel, and
+  proof-venv `libn4m.so.2.0.0`:
+  `b70ce16fa9cac12fd670b6643e375f09f801842185fb3783524675d4ce45cc81`.
+- The same non-slow parity pytest args were rerun through that proof harness and
+  returned `status: OK`. This closes the methods skip as an environment setup
+  issue, not accepted test debt.
 
 Datasets/providers:
 
@@ -91,8 +111,9 @@ Ecosystem:
 
 ## Parallel Review Inputs
 
-- Codex Python worker confirmed `KNOWN_DIVERGENCES=0`, `EXPECTED_FALLBACK=0`,
-  and no full parity launch in this batch.
+- Codex Python worker confirmed `KNOWN_DIVERGENCES=0`, `EXPECTED_FALLBACK=0`.
+  The coordinator then launched the full parity gate after the batch and closed
+  the only realized methods skip with an installed-wheel proof.
 - Codex datasets/providers worker confirmed the cross-language datasets contract
   is the neutral catalog/index/descriptor plus IO/materialization surfaces, not
   a mandatory Python provider package.
@@ -122,8 +143,11 @@ placeholder, rotate that credential before treating the alert as closed.
 
 ## Remaining Risk
 
-- Full Python-reference parity has not been rerun on `884a196`; launch it after
-  this integrated batch, not during every small fix.
+- Full Python-reference parity on `884a196` passed in split form. The only
+  realized skip in the base interpreter was the missing local `n4m` install, and
+  it is covered by a strict installed-methods proof. Future release runners
+  should run the non-slow parity segment in a methods-installed environment to
+  keep skip count at zero.
 - Studio full backend pytest and Playwright were not rerun in this wave; the new
   Studio evidence is the focused runtime overhead gate.
 - R, MATLAB/Octave, and methods JS/WASM execution remain environment gates until
