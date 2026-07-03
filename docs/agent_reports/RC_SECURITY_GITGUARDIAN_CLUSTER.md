@@ -328,3 +328,64 @@ Decision:
   branches/tags followed by force-push and support/rescan requests.
 - For the current RC, close as false positive/remediated unless GitGuardian
   provides a concrete non-placeholder secret value.
+
+## 2026-07-03 CI Guard Hardening
+
+The user reported the same GitGuardian email class again. A fresh local check
+matched the alert window to historical commit `1027e64`
+(`fix(cluster): requeue running-task failures through failed state`), which
+still contained scanner-sensitive documentation/help examples such as
+environment-token command examples and the old RBAC principal example shape.
+No real credential was found in the current selected heads.
+
+Additional checks:
+
+- GitHub's secret-scanning REST API returns `404 Secret scanning is disabled on
+  this repository`; the GitGuardian fingerprint cannot be retrieved from GitHub
+  in this environment.
+- Current `nirs4all-cluster` HEAD scans contain no concrete inline value for
+  the checked `--token`, `--secret`, `--password`, `--api-key`, or
+  `--principal` patterns.
+- `detect-secrets` on tracked files reports only known false-positive dataset
+  path strings, recorded by hash in a baseline. No raw secret value is stored in
+  that baseline.
+
+Hardening implemented:
+
+- `rc/v1-full-refactor` moved to `9643460`
+  (`ci(security): block token-shaped cluster examples`) and
+  `n4a-v1-rc1-2026.07-refactor` was moved to the same commit.
+- `main` received the same CI-only hardening as `aec2a10`.
+- New CI job `secret scan` runs `detect-secrets-hook` against the tracked-file
+  baseline and then `scripts/secret_shape_guard.py`.
+- The guard rejects new token-shaped CLI examples, including concrete
+  `--principal name:value:roles`, shell-token variables passed as concrete
+  `--token` values, and common dummy token literals. This closes the recurrence
+  vector that produced the GitGuardian false positives without changing runtime
+  behavior.
+
+Local validation on `RC-v1-cluster`:
+
+- `python3 scripts/secret_shape_guard.py`: passed.
+- `git ls-files -z | xargs -0 uvx --from detect-secrets detect-secrets-hook --baseline .secrets.baseline`: passed.
+- Workflow YAML parse: passed.
+- `uv run ruff check scripts/secret_shape_guard.py`: passed.
+- `uv run pytest -q`: `145 passed`, `1 skipped`, `1 deselected`,
+  `3 warnings`.
+
+Local validation on `main` after cherry-pick:
+
+- `python3 scripts/secret_shape_guard.py`: passed.
+- `git ls-files -z | xargs -0 uvx --from detect-secrets detect-secrets-hook --baseline .secrets.baseline`: passed.
+
+Remote validation:
+
+- GitHub Actions on `9643460` (`rc/v1-full-refactor`): `CI` and
+  `version-guard` completed with success.
+- GitHub Actions on `aec2a10` (`main`): `CI` and `version-guard` completed
+  with success.
+
+Decision remains unchanged: the accessible evidence identifies placeholder /
+documentation-triggered false positives, not a production credential. If
+GitGuardian displays any non-placeholder value, rotate it immediately outside
+the codebase and treat that as new evidence.

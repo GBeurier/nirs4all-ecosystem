@@ -425,6 +425,14 @@ accepted Python parity debt:
   and full-registry/multi-shape parity dashboards.
 - Full Python parity must be rerun after the next large integration batch before
   RC promotion.
+- Latest Cluster GitGuardian hardening moved `nirs4all-cluster`
+  `rc/v1-full-refactor` and tag `n4a-v1-rc1-2026.07-refactor` to `9643460`
+  and cherry-picked the same CI-only guard to `main` as `aec2a10`. The new
+  cluster CI `secret scan` job runs `detect-secrets-hook` against the tracked
+  baseline and rejects new token-shaped CLI examples. Local RC validation:
+  guard + detect-secrets hook + workflow YAML + Ruff passed; cluster pytest is
+  `145 passed`, `1 skipped`, `1 deselected`, `3 warnings`. GitHub Actions are
+  green on `9643460` and `aec2a10` for both `CI` and `version-guard`.
 
 ## Parallel Lanes
 
@@ -443,7 +451,7 @@ blockers without checking their lane reports and the selected RC heads.
 | RC-F | Claude/Opus `1ab19061-a59c-4b98-b37a-03f0d7b32502` | Providers as neutral contracts and per-language client semantics. | running; coordinator providers facade fix `3de0042` after RC-M conformance | `RC_F_PROVIDERS_CONTRACTS.md` |
 | RC-G | Claude/Fable `fcce9360-9b1f-470c-9ab3-42518a659f68` | Studio/Web/UI runtime UX, client-side-only Web, shared component consumption. | running | `RC_G_STUDIO_WEB_UI.md` |
 | RC-H | Claude/Opus `a8c5b19c-aeba-4985-b073-b28b8bfa66db` | Migration converter release proof and legacy/native result performance comparisons. | running | `RC_H_MIGRATION_CONVERTER.md` |
-| RC-I | Codex/GPT-5.5 `019f2286-ba97-7512-8a9d-88b0995a85dc` | Cluster client/server scheduler, DAG rights, minimal client contracts. | integrated in rewritten cluster RC head `e843073`; GitGuardian history rewrite and token-shaped CLI example cleanup complete for published refs | `RC_I_CLUSTER_SCHEDULER.md`, `RC_SECURITY_GITGUARDIAN_CLUSTER.md` |
+| RC-I | Codex/GPT-5.5 `019f2286-ba97-7512-8a9d-88b0995a85dc` | Cluster client/server scheduler, DAG rights, minimal client contracts. | integrated in cluster RC head `9643460`; GitGuardian cleanup plus token-shaped CLI CI guard complete for published refs | `RC_I_CLUSTER_SCHEDULER.md`, `RC_SECURITY_GITGUARDIAN_CLUSTER.md` |
 | RC-J | Codex/GPT-5.5 `019f2286-bc1a-70f2-af8f-1122c242f637` | Formats/IO/datasets reference bridge and get/load dataset contracts. | integrated and refreshed in IO `dac4841`, datasets `cac8742` | `RC_J_FORMATS_IO_DATASETS.md`, `WAVE_4R_IO_DATASETS_BRIDGE_RC_CI.md` |
 | RC-K | Claude/Fable `c742c1c9-6848-4631-8ff4-dcbe94de9691` | Final reviewer/parity auditor. No code ownership. | running | read-only result |
 | RC-L | Codex/GPT-5.4 `019f2286-bd52-7283-998d-13f6dcbda7b0` | Methods engine and bindings parity surface. | integrated in methods commit `09adf881` | `RC_L_METHODS_BINDINGS.md` |
