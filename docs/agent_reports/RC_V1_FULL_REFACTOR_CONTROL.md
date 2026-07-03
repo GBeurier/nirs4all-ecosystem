@@ -213,8 +213,8 @@ This is not a temporary cut. The target is the final project topology:
   dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `1b505e9`,
   Studio `5907639`, Web `974f71a`, UI `69501bd`, Cockpit `f06f7b4`,
   Org `fd4634d`, Ecosystem uses the current board HEAD, Providers `2cfcca6`,
-  Tools `7c5070f`, Cluster `ffeaf4b`, Formats `32fc87f`, IO `71aaaf5`,
-  Datasets `7b1b805`, Methods `cb9159dd`, Repository `ced219f`,
+  Tools `7c5070f`, Cluster `ffeaf4b`, Formats `32fc87f`, IO `26963d5`,
+  Datasets `7b1b805`, Methods `115077ae`, Repository `ced219f`,
   Benchmarks `06d4146`, Papers `f1d84f4`.
 - Wave 4AA moves Datasets to `60658035` and Providers to `2cfcca6`, with branch
   and tag `n4a-v1-rc1-2026.07-refactor` published for both. Datasets fixes the
@@ -258,6 +258,28 @@ This is not a temporary cut. The target is the final project topology:
   contract, providers sibling release, dag-ml/dag-ml-data lockstep, migration
   smoke, core/lite V1 surfaces, and cluster DAG advisory. Full Python parity was
   not rerun; the last full proof remains `887 passed`, `0 skipped`, `0 xfailed`.
+- Wave 4AF proves the selected `nirs4all-tools` migration/converter goldens on
+  head `7c5070f`: full pytest is `114 passed`, the mixed legacy CLI migration
+  exits with expected warning status `10`, and follow-up `legacy verify` exits
+  `0` with SQLite integrity plus preserved opaque payload coverage.
+- Wave 4AG moves IO to `26963d5`, publishes branch/tag, and adds Python pyo3
+  `_native.to_spec` to the cross-binding parity script. Local CLI/Python byte
+  identity passed, Rust fmt/clippy/workspace tests passed, and GitHub Actions
+  are green on the pushed head including `Cross-binding parity`, `Python
+  binding`, `WASM binding`, `R binding`, `Octave binding`, `dag-ml-data
+  conformance`, and `ABI Surface`.
+- Wave 4AH moves Methods to `115077ae`, publishes branch/tag, and adds a
+  Linux CI package-smoke job for `nirs4all-methods` wheel and sdist. Local gates
+  passed: package smoke unit tests `6 passed`, wheel install
+  `INSTALLED_N4M_OK`, sdist inspection/install `INSTALLED_N4M_OK`, ABI
+  freshness, version sync, and `git diff --check`. Remote GitHub Actions are
+  green on `115077ae`: `CI`, `Parity gate`, `Cross-binding parity`, `Coverage`,
+  `Sanitizers`, `ABI Surface`, `version-sync`, and `version-guard`.
+- Wave 4AI re-audits the GitGuardian `nirs4all-cluster` alert. Active refs
+  remain clean on main `eaf79a0` and RC/tag `ffeaf4b`; the alert maps to
+  scanner-sensitive placeholder CLI examples in older history. No rotation is
+  needed if these were only examples; rotate out of band if GitGuardian exposes
+  a real non-placeholder credential value.
 - The 2026-07-02 GitGuardian alert on `GBeurier/nirs4all-cluster` was rechecked
   after `git fetch --prune`: visible remote refs are only `origin/main` and
   `origin/rc/v1-full-refactor`, and targeted active-ref scans found no concrete
