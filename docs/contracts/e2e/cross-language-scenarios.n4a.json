@@ -1,0 +1,491 @@
+{
+  "schema_version": "n4a.cross-language-e2e/v1",
+  "generated_for": "nirs4all-v1-refactor",
+  "execution_policy": {
+    "default_mode": "plan",
+    "full_parity_policy": "Run only after large integration batches or final selected heads.",
+    "missing_runtime_policy": "Report as blocked by missing tool/env; do not xfail or silently skip.",
+    "artifact_root": "{artifacts_dir}"
+  },
+  "scenarios": [
+    {
+      "id": "e2e-r-dataset-io-pipeline-save",
+      "title": "R dataset load, IO reshape, complex pipeline, and saved workspace",
+      "objective": "In R, load a catalog dataset, change its structure through nirs4all-io, run a multi-step NIRS pipeline, and persist both pipeline and workspace artifacts.",
+      "languages": ["r", "python", "native"],
+      "repos": ["nirs4all-core", "nirs4all-datasets", "nirs4all-io", "nirs4all-methods", "dag-ml-data"],
+      "tags": ["datasets", "io", "pipeline", "workspace_save", "parity"],
+      "artifacts": [
+        "{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json",
+        "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json",
+        "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.parquet"
+      ],
+      "evidence": [
+        "R session info and package versions",
+        "Dataset card id and IO reshape diff",
+        "Saved pipeline/workspace SHA256",
+        "Native methods parity summary"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "python nirs4all reference",
+          "candidate": "R nirs4all aggregate through nirs4all-methods",
+          "metric": "prediction_abs_max <= 1e-8"
+        }
+      ],
+      "steps": [
+        {
+          "id": "r-load-reshape",
+          "title": "Load reference dataset and reshape spectra/metadata through IO",
+          "kind": "prepare",
+          "repo": "nirs4all-core",
+          "requires_tools": ["Rscript"],
+          "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/e2e_dataset_io_pipeline.R"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && Rscript bindings/r/tests/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"],
+          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json"]
+        },
+        {
+          "id": "r-run-save",
+          "title": "Run complex R pipeline and save workspace/predictions",
+          "kind": "execute",
+          "repo": "nirs4all-core",
+          "requires_tools": ["Rscript"],
+          "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/e2e_run_save_pipeline.R"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"],
+          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.parquet"]
+        }
+      ]
+    },
+    {
+      "id": "e2e-python-reopen-paper-repository-refit",
+      "title": "Python reopen pipeline, prove parity, export paper, and force repository best-pipeline refit",
+      "objective": "Open a saved pipeline in full Python nirs4all, rerun it, compare against the Python oracle, export a reproducible paper bundle, and inject the best refit pipeline into repository metadata.",
+      "languages": ["python", "native"],
+      "repos": ["nirs4all", "nirs4all-repository", "nirs4all-papers", "dag-ml", "nirs4all-methods"],
+      "tags": ["pipeline", "repository", "papers", "workspace_save", "parity"],
+      "artifacts": [
+        "{artifacts_dir}/python-paper-repository/reopened-result.json",
+        "{artifacts_dir}/python-paper-repository/paper-export.zip",
+        "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"
+      ],
+      "evidence": [
+        "Python oracle version and dag-ml backend version",
+        "Reopen/rerun parity ledger",
+        "Paper manifest with source hashes",
+        "Repository provider descriptor for forced best refit"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "python nirs4all legacy reference",
+          "candidate": "dag-ml backend refit",
+          "metric": "scores and predictions exactly match scenario tolerance ledger"
+        }
+      ],
+      "steps": [
+        {
+          "id": "python-reopen-rerun",
+          "title": "Open, rerun, and compare a saved pipeline",
+          "kind": "execute",
+          "repo": "nirs4all",
+          "requires_tools": ["python3"],
+          "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_pipeline_reopen_paper_repository.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && python3 -m pytest tests/e2e/test_pipeline_reopen_paper_repository.py::test_reopen_rerun_parity --artifacts-dir={artifacts_dir}/python-paper-repository"],
+          "produces": ["{artifacts_dir}/python-paper-repository/reopened-result.json"]
+        },
+        {
+          "id": "papers-export-repository-refit",
+          "title": "Export reproducible paper and force best refit into repository",
+          "kind": "export",
+          "repo": "nirs4all-papers",
+          "requires_tools": ["python3"],
+          "requires_paths": ["{workspace_root}/nirs4all-papers/tests/e2e/test_repository_refit_export.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-papers && python3 -m pytest tests/e2e/test_repository_refit_export.py --artifacts-dir={artifacts_dir}/python-paper-repository"],
+          "produces": ["{artifacts_dir}/python-paper-repository/paper-export.zip", "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"]
+        }
+      ]
+    },
+    {
+      "id": "e2e-wasm-open-repo-pipeline-parity-alt-dataset",
+      "title": "WASM opens repository pipeline, reruns, checks parity, and applies an alternative dataset",
+      "objective": "Run the browser/WASM aggregate locally, open a repository pipeline, rerun it, compare against Python parity goldens, then execute the same pipeline on an alternative dataset.",
+      "languages": ["javascript_wasm", "web", "python"],
+      "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"],
+      "tags": ["datasets", "pipeline", "repository", "predictions", "parity", "web_results"],
+      "artifacts": [
+        "{artifacts_dir}/wasm-repo-alt-dataset/wasm-predictions.json",
+        "{artifacts_dir}/wasm-repo-alt-dataset/alt-dataset-predictions.json",
+        "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"
+      ],
+      "evidence": [
+        "WASM package version and web build hash",
+        "Repository pipeline descriptor",
+        "Python-vs-WASM prediction parity",
+        "Alternative dataset compatibility report"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "python nirs4all reference predictions",
+          "candidate": "WASM aggregate predictions",
+          "metric": "prediction_abs_max <= 1e-8"
+        }
+      ],
+      "steps": [
+        {
+          "id": "wasm-run-repository-pipeline",
+          "title": "Open repository pipeline and rerun in local WASM",
+          "kind": "execute",
+          "repo": "nirs4all-web",
+          "requires_tools": ["npm"],
+          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/e2e/wasm-repository-pipeline.test.ts"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && npm run test -- --run tests/e2e/wasm-repository-pipeline.test.ts --artifacts-dir={artifacts_dir}/wasm-repo-alt-dataset"],
+          "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/wasm-predictions.json"]
+        },
+        {
+          "id": "web-render-results",
+          "title": "Open predictions in web UI and capture result rendering",
+          "kind": "ui",
+          "repo": "nirs4all-web",
+          "requires_tools": ["npm"],
+          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/e2e/render-saved-predictions.spec.ts"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && npm run test:e2e -- tests/e2e/render-saved-predictions.spec.ts --artifacts-dir={artifacts_dir}/wasm-repo-alt-dataset"],
+          "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"]
+        }
+      ]
+    },
+    {
+      "id": "e2e-multimodal-python-r-wasm-roundtrip",
+      "title": "Multimodal Python/R/WASM pipeline roundtrip",
+      "objective": "Generate a multimodal NIRS plus metadata pipeline in Python, roundtrip it through R and WASM, and verify predictions and saved manifests remain equivalent.",
+      "languages": ["python", "r", "javascript_wasm", "web"],
+      "repos": ["nirs4all", "nirs4all-core", "nirs4all-io", "dag-ml-data", "nirs4all-web"],
+      "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"],
+      "artifacts": [
+        "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
+        "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet",
+        "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet",
+        "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"
+      ],
+      "evidence": [
+        "Multimodal schema validation",
+        "Python/R/WASM prediction parity table",
+        "Roundtrip manifest hash equality"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "python multimodal predictions",
+          "candidate": "R and WASM multimodal predictions",
+          "metric": "per-output prediction_abs_max <= 1e-8"
+        }
+      ],
+      "steps": [
+        {
+          "id": "python-generate-multimodal",
+          "title": "Generate multimodal pipeline and oracle predictions",
+          "kind": "prepare",
+          "repo": "nirs4all",
+          "requires_tools": ["python3"],
+          "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_multimodal_roundtrip.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && python3 -m pytest tests/e2e/test_multimodal_roundtrip.py::test_generate_oracle --artifacts-dir={artifacts_dir}/multimodal-roundtrip"],
+          "produces": ["{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json"]
+        },
+        {
+          "id": "r-wasm-roundtrip",
+          "title": "Execute the same multimodal pipeline in R and WASM",
+          "kind": "execute",
+          "repo": "nirs4all-core",
+          "requires_tools": ["python3", "Rscript", "npm"],
+          "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/run_multimodal_roundtrip.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && python3 scripts/e2e/run_multimodal_roundtrip.py --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}/multimodal-roundtrip"],
+          "produces": ["{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"]
+        }
+      ]
+    },
+    {
+      "id": "e2e-multisource-branching-stacking-replay",
+      "title": "Multisource branching, stacking, and replay across engines",
+      "objective": "Assemble multiple sources with distinct preprocessing branches, train stacking/OOF, save replay manifests, and replay in core/native and Python reference engines.",
+      "languages": ["python", "native", "rust"],
+      "repos": ["nirs4all", "dag-ml", "dag-ml-data", "nirs4all-core", "nirs4all-methods"],
+      "tags": ["multisource", "pipeline_generation", "pipeline", "workspace_save", "parity"],
+      "artifacts": [
+        "{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json",
+        "{artifacts_dir}/multisource-stacking/oof-ledger.json",
+        "{artifacts_dir}/multisource-stacking/native-replay.json"
+      ],
+      "evidence": [
+        "Per-source preprocessing branch manifest",
+        "OOF stacking leakage audit",
+        "Native replay parity ledger"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "python nirs4all stacking replay",
+          "candidate": "dag-ml/native replay",
+          "metric": "fold predictions and final predictions match tolerance ledger"
+        }
+      ],
+      "steps": [
+        {
+          "id": "python-build-stacking",
+          "title": "Build multisource stacking pipeline and replay manifest",
+          "kind": "execute",
+          "repo": "nirs4all",
+          "requires_tools": ["python3"],
+          "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_multisource_stacking_replay.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && python3 -m pytest tests/e2e/test_multisource_stacking_replay.py --artifacts-dir={artifacts_dir}/multisource-stacking"],
+          "produces": ["{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json"]
+        },
+        {
+          "id": "native-replay",
+          "title": "Replay multisource stacking manifest through native/core bindings",
+          "kind": "verify",
+          "repo": "nirs4all-core",
+          "requires_tools": ["cargo", "python3"],
+          "requires_paths": ["{workspace_root}/nirs4all-core/bindings/rust/nirs4all/tests"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && cargo test -p nirs4all e2e_multisource_stacking_replay -- --ignored"],
+          "produces": ["{artifacts_dir}/multisource-stacking/native-replay.json"]
+        }
+      ]
+    },
+    {
+      "id": "e2e-converter-legacy-save-predictions-web",
+      "title": "Legacy save conversion, prediction lowering, and Web results rendering",
+      "objective": "Convert a legacy workspace/save, lower predictions into the V1 result contract, open the output in Web, and verify every result panel renders.",
+      "languages": ["python", "javascript_wasm", "web"],
+      "repos": ["nirs4all-tools", "nirs4all", "nirs4all-web", "nirs4all-ui"],
+      "tags": ["workspace_save", "predictions", "web_results", "pipeline", "parity"],
+      "artifacts": [
+        "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
+        "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
+        "{artifacts_dir}/legacy-converter/web-results-panels.json"
+      ],
+      "evidence": [
+        "Legacy input fixture hash",
+        "Converter migration report",
+        "Prediction result contract validation",
+        "Web panel coverage screenshot/index"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "legacy Python save replay",
+          "candidate": "converted V1 workspace replay",
+          "metric": "predictions and exported metrics are equivalent"
+        }
+      ],
+      "steps": [
+        {
+          "id": "convert-legacy-save",
+          "title": "Convert legacy workspace and lower predictions",
+          "kind": "export",
+          "repo": "nirs4all-tools",
+          "requires_tools": ["python3"],
+          "requires_paths": ["{workspace_root}/nirs4all-tools/tests/e2e/test_legacy_save_predictions_web.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-tools && python3 -m pytest tests/e2e/test_legacy_save_predictions_web.py::test_convert_legacy_save --artifacts-dir={artifacts_dir}/legacy-converter"],
+          "produces": ["{artifacts_dir}/legacy-converter/converted-workspace.n4a.json", "{artifacts_dir}/legacy-converter/predictions.rt_result.json"]
+        },
+        {
+          "id": "web-open-predictions",
+          "title": "Render converted predictions in Web result panels",
+          "kind": "ui",
+          "repo": "nirs4all-web",
+          "requires_tools": ["npm"],
+          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/e2e/converted-predictions-render.spec.ts"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && npm run test:e2e -- tests/e2e/converted-predictions-render.spec.ts --artifacts-dir={artifacts_dir}/legacy-converter"],
+          "produces": ["{artifacts_dir}/legacy-converter/web-results-panels.json"]
+        }
+      ]
+    },
+    {
+      "id": "e2e-dataset-provider-repository-roundtrip",
+      "title": "Dataset provider to repository to core roundtrip",
+      "objective": "Resolve a dataset provider descriptor, materialize through IO, publish a repository pipeline descriptor, and consume it through core Python/R/WASM entrypoints.",
+      "languages": ["python", "r", "javascript_wasm"],
+      "repos": ["nirs4all-providers", "nirs4all-datasets", "nirs4all-io", "nirs4all-repository", "nirs4all-core"],
+      "tags": ["datasets", "io", "repository", "pipeline", "parity"],
+      "artifacts": [
+        "{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json",
+        "{artifacts_dir}/provider-repository-roundtrip/repository-index.json",
+        "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
+      ],
+      "evidence": [
+        "Provider descriptor contract validation",
+        "Dataset manifest and IO materialization summary",
+        "Repository index conformance",
+        "Python/R/WASM consumption parity"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "provider materialized Python dataset",
+          "candidate": "R and WASM loaded repository dataset",
+          "metric": "dataset fingerprints and prediction outputs match"
+        }
+      ],
+      "steps": [
+        {
+          "id": "provider-materialize",
+          "title": "Resolve provider descriptor and materialize dataset",
+          "kind": "prepare",
+          "repo": "nirs4all-providers",
+          "requires_tools": ["python3"],
+          "requires_paths": ["{workspace_root}/nirs4all-providers/tests/e2e/test_dataset_provider_repository_roundtrip.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-providers && python3 -m pytest tests/e2e/test_dataset_provider_repository_roundtrip.py --artifacts-dir={artifacts_dir}/provider-repository-roundtrip"],
+          "produces": ["{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json"]
+        },
+        {
+          "id": "core-consume-repository",
+          "title": "Consume the repository descriptor from Python, R, and WASM",
+          "kind": "verify",
+          "repo": "nirs4all-core",
+          "requires_tools": ["python3", "Rscript", "npm"],
+          "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/consume_repository_descriptor.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && python3 scripts/e2e/consume_repository_descriptor.py --artifacts-dir {artifacts_dir}/provider-repository-roundtrip"],
+          "produces": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"]
+        }
+      ]
+    },
+    {
+      "id": "e2e-pipeline-generation-performance-compare",
+      "title": "Complex pipeline generation with performance comparison against Studio/runtime",
+      "objective": "Generate a family of candidate pipelines, run Python reference and dag-ml/native backends, compare outputs, and record performance gains for library and Studio/Web runtime paths.",
+      "languages": ["python", "javascript_wasm", "web", "native"],
+      "repos": ["nirs4all", "dag-ml", "nirs4all-core", "nirs4all-studio", "nirs4all-web"],
+      "tags": ["pipeline_generation", "pipeline", "parity", "predictions", "web_results"],
+      "artifacts": [
+        "{artifacts_dir}/performance-compare/pipeline-family.json",
+        "{artifacts_dir}/performance-compare/python-vs-dagml.json",
+        "{artifacts_dir}/performance-compare/studio-web-runtime.json"
+      ],
+      "evidence": [
+        "Generated pipeline search-space manifest",
+        "Python reference vs dag-ml parity ledger",
+        "Studio/Web runtime timing comparison",
+        "Regression budget verdict"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "python nirs4all reference",
+          "candidate": "dag-ml/native and WASM runtimes",
+          "metric": "prediction parity plus performance ratio ledger"
+        }
+      ],
+      "steps": [
+        {
+          "id": "generate-family",
+          "title": "Generate candidate pipeline family and Python oracle outputs",
+          "kind": "execute",
+          "repo": "nirs4all",
+          "requires_tools": ["python3"],
+          "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_pipeline_generation_performance.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && python3 -m pytest tests/e2e/test_pipeline_generation_performance.py::test_generate_family --artifacts-dir={artifacts_dir}/performance-compare"],
+          "produces": ["{artifacts_dir}/performance-compare/pipeline-family.json"]
+        },
+        {
+          "id": "compare-runtimes",
+          "title": "Compare Python, dag-ml/native, Studio, and Web runtimes",
+          "kind": "verify",
+          "repo": "nirs4all-web",
+          "requires_tools": ["python3", "npm"],
+          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/e2e/performance-compare.spec.ts"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && npm run test:e2e -- tests/e2e/performance-compare.spec.ts --artifacts-dir={artifacts_dir}/performance-compare"],
+          "produces": ["{artifacts_dir}/performance-compare/studio-web-runtime.json"]
+        }
+      ]
+    },
+    {
+      "id": "e2e-cluster-dag-rights-client-core",
+      "title": "Cluster scheduler runs a DAG pipeline with rights checks and core client handoff",
+      "objective": "Submit a DAG pipeline through the cluster client/server scheduler, enforce read/execute rights, return artifacts to core, and compare predictions with local execution.",
+      "languages": ["python", "native"],
+      "repos": ["nirs4all-cluster", "nirs4all-core", "dag-ml", "nirs4all-methods"],
+      "tags": ["pipeline", "predictions", "workspace_save", "parity"],
+      "artifacts": [
+        "{artifacts_dir}/cluster-dag-rights/scheduler-run.json",
+        "{artifacts_dir}/cluster-dag-rights/core-client-result.json",
+        "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"
+      ],
+      "evidence": [
+        "Cluster rights decision log",
+        "Scheduler DAG trace",
+        "Core client artifact handoff manifest",
+        "Local vs cluster parity ledger"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "local dag-ml/native execution",
+          "candidate": "cluster scheduled execution",
+          "metric": "prediction and artifact hash parity"
+        }
+      ],
+      "steps": [
+        {
+          "id": "cluster-run-dag",
+          "title": "Run DAG pipeline through cluster with rights checks",
+          "kind": "execute",
+          "repo": "nirs4all-cluster",
+          "requires_tools": ["python3"],
+          "requires_paths": ["{workspace_root}/nirs4all-cluster/tests/e2e/test_cluster_dag_rights_core_client.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-cluster && python3 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"],
+          "produces": ["{artifacts_dir}/cluster-dag-rights/scheduler-run.json"]
+        },
+        {
+          "id": "core-client-handoff",
+          "title": "Verify core client artifact handoff and parity",
+          "kind": "verify",
+          "repo": "nirs4all-core",
+          "requires_tools": ["python3"],
+          "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/verify_cluster_handoff.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && python3 scripts/e2e/verify_cluster_handoff.py --artifacts-dir {artifacts_dir}/cluster-dag-rights"],
+          "produces": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"]
+        }
+      ]
+    },
+    {
+      "id": "e2e-formats-io-datasets-methods-language-bindings",
+      "title": "Formats, IO, datasets, and methods parity across R/Python/WASM/Rust",
+      "objective": "Read heterogeneous file formats, assemble reference datasets, invoke native methods through each language binding, and compare exported predictions.",
+      "languages": ["python", "r", "javascript_wasm", "rust", "native"],
+      "repos": ["nirs4all-formats", "nirs4all-io", "nirs4all-datasets", "nirs4all-methods", "nirs4all-core"],
+      "tags": ["datasets", "io", "predictions", "parity", "pipeline"],
+      "artifacts": [
+        "{artifacts_dir}/formats-io-methods/assembled-datasets.json",
+        "{artifacts_dir}/formats-io-methods/binding-parity.json",
+        "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
+      ],
+      "evidence": [
+        "Formats reader manifest",
+        "IO dataset assembly trace",
+        "Methods binding ABI/version report",
+        "Language binding prediction parity"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "native nirs4all-methods ABI",
+          "candidate": "Python/R/WASM/Rust bindings",
+          "metric": "method outputs and predictions match tolerance ledger"
+        }
+      ],
+      "steps": [
+        {
+          "id": "assemble-reference-datasets",
+          "title": "Read heterogeneous formats and assemble datasets",
+          "kind": "prepare",
+          "repo": "nirs4all-io",
+          "requires_tools": ["python3", "cargo"],
+          "requires_paths": ["{workspace_root}/nirs4all-io/tests/e2e/test_formats_io_datasets_methods.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-io && python3 -m pytest tests/e2e/test_formats_io_datasets_methods.py::test_assemble_reference_datasets --artifacts-dir={artifacts_dir}/formats-io-methods"],
+          "produces": ["{artifacts_dir}/formats-io-methods/assembled-datasets.json"]
+        },
+        {
+          "id": "cross-binding-methods-parity",
+          "title": "Invoke methods through Python/R/WASM/Rust and compare outputs",
+          "kind": "verify",
+          "repo": "nirs4all-methods",
+          "requires_tools": ["python3", "Rscript", "npm", "cargo"],
+          "requires_paths": ["{workspace_root}/nirs4all-methods/scripts/e2e/cross_binding_methods_parity.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-methods && python3 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"],
+          "produces": ["{artifacts_dir}/formats-io-methods/binding-parity.json"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+name: Cross-language E2E scenarios
+
+on:
+  pull_request:
+  push:
+    branches: [main, "rc/**"]
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: "Scenario id to execute; leave empty to plan all"
+        required: false
+        type: string
+      execute:
+        description: "Run commands instead of dry planning"
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  validate-and-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test dependencies
+        run: python3 -m pip install pytest
+      - name: Validate scenario contract
+        run: python3 scripts/n4a_e2e_scenarios.py validate
+      - name: Run pytest validation
+        run: python3 -m pytest -q tests/test_e2e_scenarios.py
+      - name: Plan all scenarios
+        if: ${{ !github.event.inputs.scenario }}
+        run: python3 scripts/n4a_e2e_scenarios.py plan
+      - name: Plan selected scenario
+        if: ${{ github.event.inputs.scenario && github.event.inputs.execute != 'true' }}
+        run: python3 scripts/n4a_e2e_scenarios.py plan --scenario "${{ github.event.inputs.scenario }}"
+      - name: Execute selected scenario
+        if: ${{ github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
+        run: python3 scripts/n4a_e2e_scenarios.py run "${{ github.event.inputs.scenario }}" --execute

@@ -1,9 +1,20 @@
 # local code-intelligence index
 .codegraph/
 
+# Python local test/build caches
+__pycache__/
+*/__pycache__/
+
 # --- untracked build/process docs (kept locally, 2026-06-16) ---
 ECOSYSTEM_RESTRUCTURE_LOG.md
 REVIEW_VISION.md
 
 # planning docs relocated here, kept local only
 /docs/
+!/docs/
+/docs/*
+!/docs/CROSS_LANGUAGE_E2E.md
+!/docs/contracts/
+/docs/contracts/*
+!/docs/contracts/e2e/
+!/docs/contracts/e2e/**
