@@ -19,11 +19,14 @@ Scope: release cascade after the V1 refactor batch, excluding production-sensiti
 | `nirs4all-repository` | `b82f5b6` | `0.1.2`, generated catalog refreshed |
 | `nirs4all-core` | `19e69417ad89` | `0.2.2`, canonical aggregate target |
 | `nirs4all-web` | `6f8f3fcdbdd` | vendored `nirs4all-core` WASM shim `0.2.2` and rebuilt current `nirs4all-ui` dist |
-| `nirs4all-cockpit` | `d926f7f` | public snapshot updated; final cockpit commit follows this ecosystem lock refresh |
+| `nirs4all-cockpit` | `90d331562945` | public snapshot updated, including `nirs4all-ui` GitHub release tracking and npm auth blockage |
 | `nirs4all-org` | `05666f5` | public site updated |
 
 Additional final tags were added on the selected RC heads for `nirs4all-tools`,
-`nirs4all-ui`, `nirs4all-cluster`, and `nirs4all-papers`.
+`nirs4all-ui`, `nirs4all-cluster`, and `nirs4all-papers`. `nirs4all-ui`
+also has a GitHub Release `v0.1.0`; npm publication was attempted from the
+validated package and blocked by `ENEEDAUTH` because no npm credentials are
+available on the machine.
 
 ## Files changed in ecosystem
 
@@ -47,6 +50,7 @@ Sibling gates run during the cascade:
 - `nirs4all-core`: `cargo test --workspace`; Python unittest discovery; WASM npm tests with Linux Node; version check.
 - `nirs4all-repository`: `validate --all`, catalog build/current check, Ruff, mypy, 67 pytest tests.
 - `nirs4all-web`: client-only contract, `check:ui-shim`, `check:lite-shim`, `typecheck`, 134 Vitest tests, catalog validation, `build`, `build:single`, browser smoke `rt-fallback`.
+- `nirs4all-ui`: `npm run ci` with Linux Node 24 -> typecheck, 52 Vitest tests, build, `npm pack --dry-run`; `npm publish` blocked by missing npm auth.
 - `nirs4all-cockpit`: target validation, 87 tests, Ruff, cascade head refresh for Web/UI/methods/formats/papers/cluster.
 - `nirs4all-org`: HTML parser smoke and diff check.
 
@@ -63,6 +67,8 @@ be run after this large batch as the next heavy gate.
   evidence.
 - Public registry state is not forced green: cockpit still marks stale/missing
   targets where PyPI/npm/crates/GitHub Releases have not caught up.
+- `nirs4all-ui` is versioned and released on GitHub, but its npm target remains
+  missing until an npm token/login is configured.
 - Web remains client-side-only; Node/npm are build-time tooling only.
 - `nirs4all` Python and `nirs4all-studio` main were not released in this batch.
 - The `nirs4all-io` parity oracle now fails if `nirs4all`, `dag-ml`, or `dag-ml-data` cannot be cloned, instead of producing a misleading skipped/green gate.
