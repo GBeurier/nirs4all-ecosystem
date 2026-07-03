@@ -253,3 +253,32 @@ Validation:
 - Post-push scan of active heads found no concrete `--token VALUE` or
   `--principal VALUE` examples. Hidden PR refs #1/#2 still contain only the
   historical `--token dev` placeholder.
+
+## Wave 4AC Active-Ref Metavar Hardening
+
+The active heads still contained scanner-sensitive CLI metavar examples for the
+principal option. They were not real credentials, but GitGuardian classifies
+generic CLI option values aggressively, so the active refs were hardened again.
+
+Actions:
+
+- Replaced docs/help text that placed a token-shaped value immediately after
+  `--principal` with neutral option-only wording.
+- Pushed `main` to `eaf79a0 docs(security): avoid cluster CLI option metavars`.
+- Cherry-picked the same change to the RC worktree as `ffeaf4b` and moved tag
+  `n4a-v1-rc1-2026.07-refactor` to that head.
+
+Validation:
+
+- Active remote refs scan over `origin/main`, `origin/rc/v1-full-refactor`, and
+  `n4a-v1-rc1-2026.07-refactor` found zero inline `--principal` or `--token`
+  secret-shaped values.
+- `ruff check docs/cli-reference.md docs/rest-api.md nirs4all_cluster/cli.py`:
+  passed on both main and RC worktrees.
+- `pytest tests/test_rbac.py -q`: `24 passed` on both main and RC worktrees.
+- GitHub Actions are green on both `eaf79a0` and `ffeaf4b` (`CI` and
+  `version-guard`).
+
+Decision remains unchanged: no real credential is known from accessible
+evidence. Treat continued reports as stale/history/hidden-ref findings unless
+GitGuardian shows a non-placeholder value.

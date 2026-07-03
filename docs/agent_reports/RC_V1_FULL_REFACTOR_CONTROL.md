@@ -199,24 +199,22 @@ This is not a temporary cut. The target is the final project topology:
 - Cluster GitGuardian remediation cleaned the published active heads and was
   refreshed after the latest alert. Wave 4X removed the active-head
   secret-shaped documentation example `--principal alice:s3cr3t:submitter`.
-  Published branch/tag refs now point to clean heads: `main` `16b4a2a`,
-  `rc/v1-full-refactor` `19384e2`, tag `n4a-v1-rc1-2026.07-refactor`
-  `19384e2`. Strict scanner-pattern checks over the active branch/tag refs are
-  empty; cluster gates are `142 passed, 1 skipped, 1 deselected` on `main` and
-  `145 passed, 1 skipped, 1 deselected` on the RC worktree. GitHub/history may
-  still expose old placeholder examples: the latest read-only audits found
-  historical `alice:s3cr3t:submitter` and merged hidden PR refs #1/#2 with
-  examples such as `--token dev`, not a real credential on selected release
-  heads. Source branches are gone and deleting hidden PR refs is rejected by
-  GitHub, so residual alert closure is a GitGuardian/GitHub-support dashboard
-  action unless GitGuardian discloses an actual non-placeholder value.
+  Wave 4AC then removed scanner-sensitive principal metavars from active
+  docs/help. Published branch/tag refs now point to clean heads: `main`
+  `eaf79a0`, `rc/v1-full-refactor` `ffeaf4b`, tag
+  `n4a-v1-rc1-2026.07-refactor` `ffeaf4b`. Strict scanner-pattern checks over
+  the active branch/tag refs are empty; the focused RBAC gate is `24 passed` on
+  both main and RC worktrees, and GitHub Actions are green for both heads.
+  GitHub/history may still expose old placeholder examples on hidden PR refs;
+  residual alert closure is a GitGuardian/GitHub-support dashboard action unless
+  GitGuardian discloses an actual non-placeholder value.
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees. `WAVE_4Q_RC_PUBLICATION_REAUDIT.md` rechecked the post-4P heads after repairing missing tags on Studio/UI/Org/Tools/IO/Datasets; Wave 4R then moved Studio/IO/Datasets and regenerated the aggregation lock for IO/Datasets.
-- Latest pushed/tagged heads after the Wave 4AB gate/claims batch: Python `6a2c720`,
+- Latest pushed/tagged heads after the Wave 4AC gate/security batch: Python `6a2c720`,
   dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `2b0d18a`,
-  Studio `028e3c0`, Web `974f71a`, UI `69501bd`, Cockpit `f06f7b4`,
+  Studio `5907639`, Web `974f71a`, UI `69501bd`, Cockpit `f06f7b4`,
   Org `fd4634d`, Ecosystem uses the current board HEAD, Providers `2cfcca6`,
-  Tools `7c5070f`, Cluster `19384e2`, Formats `32fc87f`, IO `71aaaf5`,
-  Datasets `60658035`, Methods `64731c6d`, Repository `ced219f`,
+  Tools `7c5070f`, Cluster `ffeaf4b`, Formats `32fc87f`, IO `71aaaf5`,
+  Datasets `7b1b805`, Methods `64731c6d`, Repository `ced219f`,
   Benchmarks `06d4146`, Papers `f1d84f4`.
 - Wave 4AA moves Datasets to `60658035` and Providers to `2cfcca6`, with branch
   and tag `n4a-v1-rc1-2026.07-refactor` published for both. Datasets fixes the
@@ -265,6 +263,22 @@ This is not a temporary cut. The target is the final project topology:
   `origin/rc/v1-full-refactor`, and targeted active-ref scans found no concrete
   CLI-option secret values. Treat it as stale/remediated placeholder exposure
   unless GitGuardian provides a non-placeholder value.
+- Wave 4AC moves Studio to `5907639`, Cluster RC to `ffeaf4b` (`main`
+  `eaf79a0`), and Datasets to `7b1b805`, with branch and tag
+  `n4a-v1-rc1-2026.07-refactor` published for the selected RC heads. Studio
+  release packaging now bakes selected RC `nirs4all`, `dag-ml`, and
+  `dag-ml-data` sources into all-in-one release archives and Docker builds;
+  GitHub Actions are green (`CI` and Playwright). Cluster active refs now have
+  zero inline CLI-option secret candidates after neutralizing principal
+  metavars; GitHub Actions are green on both main and RC. Datasets R bridge now
+  runs the optional `nirs4allio` micro-gate in a combined fresh R library instead
+  of failing behind a skip; IO loader tests preserve semicolon-default coverage.
+- Wave 4AC also closes several non-Python local gates: Core strict WASM parity
+  (`15` tests, `0` skipped), Core R V1 public surface, Core R strict portable
+  parity against `RC-v1-methods`, IO WASM smoke, IO R smoke, IO Octave/MATLAB
+  smoke, Datasets WASM node/web/package dry-run, Datasets R smoke, and combined
+  R IO+datasets package verification. Full Python parity was intentionally not
+  rerun in this batch.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator
   skips and Python registry skips have been burned down; Python full parity on
   current head `6a2c720` reports `887 passed`, `0 skipped`, and `0 xfailed`
@@ -284,11 +298,13 @@ Wave 4X full proof. New parity skips or xfails are release blockers unless they
 are optional-environment skips outside the Python parity oracle and are recorded
 with a replacement contract or local fixture.
 
-Remaining non-Python proof debt is environment/toolchain debt, not accepted
-Python parity debt:
+Remaining non-Python proof debt is broader language-completeness debt, not
+accepted Python parity debt:
 
-- R/Rscript gates for core aggregate and methods cross-binding execution.
-- Octave/MATLAB execution gates for the MATLAB/Octave preview/subset surfaces.
+- Broader R/Rscript feature-completeness beyond the Wave 4AC core strict R
+  parity and IO/datasets R package smokes.
+- Broader Octave/MATLAB execution gates for the MATLAB/Octave preview/subset
+  surfaces beyond the Wave 4AC IO Octave smoke.
 - Methods-backed WASM numeric execution on final heads when the toolchain is
   available locally or in CI.
 

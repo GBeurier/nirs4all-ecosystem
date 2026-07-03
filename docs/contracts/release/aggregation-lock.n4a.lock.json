@@ -407,7 +407,7 @@
       "selected_workspace_path": "RC-v1-datasets",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "606580358584b53e3be286325487a6f01b8cdfd0",
+        "commit": "7b1b805ac530cb068b9f9b034a50fe52fdb72eca",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
