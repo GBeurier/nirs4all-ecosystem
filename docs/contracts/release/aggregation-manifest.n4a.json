@@ -269,7 +269,7 @@
       },
       "availability": {
         "python": "full",
-        "r": "full",
+        "r": "subset",
         "wasm": "subset",
         "matlab": "subset",
         "native": "full"
@@ -277,6 +277,7 @@
       "required_gates": [
         "n4m_abi_symbols",
         "n4m_version_sync",
+        "methods_cross_binding_parity",
         "methods_installed_ci"
       ],
       "version_sources": [

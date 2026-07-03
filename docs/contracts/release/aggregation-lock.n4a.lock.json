@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:1d5349519c5234f9345633b71b68d380fa613ec561bf39bf0588a15358b76d36",
+  "manifest_digest": "sha256:0dedd1588cf3aba4a8d7451f871fc0a40b379330b002767fada81ff94ef3e083",
   "members": {
     "dag_ml": {
       "availability": {
@@ -1253,7 +1253,7 @@
         "matlab": "subset",
         "native": "full",
         "python": "full",
-        "r": "full",
+        "r": "subset",
         "wasm": "subset"
       },
       "contract_artifacts": [
@@ -1307,6 +1307,7 @@
       "required_gates": [
         "n4m_abi_symbols",
         "n4m_version_sync",
+        "methods_cross_binding_parity",
         "methods_installed_ci"
       ],
       "role": "Portable methods kernels and C ABI",
@@ -1316,7 +1317,7 @@
       "selected_workspace_path": "RC-v1-methods",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "a24b06bed8f707ef5dbe83bc3d0dbfd8bc3b04de",
+        "commit": "64731c6d1c81bac7eacc8d49af6e81d6a32c310a",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
@@ -1403,6 +1404,7 @@
       "lite_release_source",
       "lite_release_topology_manifest",
       "lite_version_guard",
+      "methods_cross_binding_parity",
       "methods_installed_ci",
       "n4m_abi_symbols",
       "n4m_version_sync"

@@ -211,13 +211,12 @@ This is not a temporary cut. The target is the final project topology:
   GitHub, so residual alert closure is a GitGuardian/GitHub-support dashboard
   action unless GitGuardian discloses an actual non-placeholder value.
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees. `WAVE_4Q_RC_PUBLICATION_REAUDIT.md` rechecked the post-4P heads after repairing missing tags on Studio/UI/Org/Tools/IO/Datasets; Wave 4R then moved Studio/IO/Datasets and regenerated the aggregation lock for IO/Datasets.
-- Latest pushed/tagged heads after the Wave 4Z CI-fix batch: Python `6a2c720`,
+- Latest pushed/tagged heads after the Wave 4AB gate/claims batch: Python `6a2c720`,
   dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `2b0d18a`,
-  Studio `75f511b`, Web `974f71a`, UI `69501bd`, Cockpit `f06f7b4`,
-  Org `fd4634d`, Ecosystem uses the current board HEAD (release-lock tooling fix
-  at `05da7dc`), Providers `bb87f35`,
+  Studio `fcc44c8`, Web `974f71a`, UI `69501bd`, Cockpit `f06f7b4`,
+  Org `fd4634d`, Ecosystem uses the current board HEAD, Providers `2cfcca6`,
   Tools `7c5070f`, Cluster `19384e2`, Formats `32fc87f`, IO `71aaaf5`,
-  Datasets `259d1445`, Methods `a24b06b`, Repository `ced219f`,
+  Datasets `60658035`, Methods `64731c6d`, Repository `ced219f`,
   Benchmarks `06d4146`, Papers `f1d84f4`.
 - Wave 4AA moves Datasets to `60658035` and Providers to `2cfcca6`, with branch
   and tag `n4a-v1-rc1-2026.07-refactor` published for both. Datasets fixes the
@@ -240,6 +239,24 @@ This is not a temporary cut. The target is the final project topology:
   was additive rather than a purge; close as false positive/remediated unless
   GitGuardian discloses a non-placeholder value.
 - `aggregation-lock` remains limited to the aggregate core/runtime members. Studio/Web/UI/tools/providers/benchmarks/papers/cluster are tracked by the surface matrix, cutover gates, and agent reports rather than forced into the aggregate lock without an ownership contract.
+- Wave 4AB moves Studio to `fcc44c8` and Methods to `64731c6d`, with branch and
+  tag `n4a-v1-rc1-2026.07-refactor` published for both. Studio now runs the
+  vendored `nirs4all-ui` shim gate in CI and `lint:parallel`, builds the
+  sibling UI package before clean-runner comparison, and tracks the required
+  vendored `dist`. Methods cross-binding and parity workflows now run on
+  `rc/**`; the aggregation manifest requires `methods_cross_binding_parity` and
+  records Methods R availability as `subset`, not `full`.
+- Wave 4AB cutover gate sweep passed with `pyref_oracle_full` intentionally
+  skipped for batch-cost control. The run covered release-lock validation,
+  fetchability, native `.n4a` export, Studio runtime routes, Web runtime
+  contract, providers sibling release, dag-ml/dag-ml-data lockstep, migration
+  smoke, core/lite V1 surfaces, and cluster DAG advisory. Full Python parity was
+  not rerun; the last full proof remains `887 passed`, `0 skipped`, `0 xfailed`.
+- The 2026-07-02 GitGuardian alert on `GBeurier/nirs4all-cluster` was rechecked
+  after `git fetch --prune`: visible remote refs are only `origin/main` and
+  `origin/rc/v1-full-refactor`, and targeted active-ref scans found no concrete
+  CLI-option secret values. Treat it as stale/remediated placeholder exposure
+  unless GitGuardian provides a non-placeholder value.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator
   skips and Python registry skips have been burned down; Python full parity on
   current head `6a2c720` reports `887 passed`, `0 skipped`, and `0 xfailed`
@@ -250,49 +267,22 @@ This is not a temporary cut. The target is the final project topology:
 
 ## Parity Debt To Burn Down
 
-Known parity xfails to fix:
+Current Python-reference parity debt for the selected head is zero in the last
+full proof: split slow/non-slow parity on Python `6a2c720` totals `887 passed`,
+`0 skipped`, `0 xfailed`, and `0 failed`.
 
-- `concat_transform_pca_svd_plsr`
+Historical xfail/skip lists in earlier Wave 4 notes are superseded by the
+Wave 4X full proof. New parity skips or xfails are release blockers unless they
+are optional-environment skips outside the Python parity oracle and are recorded
+with a replacement contract or local fixture.
 
-Known parity xfails to justify or replace with a non-equivalence contract:
+Remaining non-Python proof debt is environment/toolchain debt, not accepted
+Python parity debt:
 
-- `generator_sample_log_uniform_alpha` (unseeded `_sample_` nondeterminism)
-- `rep_to_pp_basic` (documented legacy double-count/aggregation semantic divergence)
-- `rep_to_sources_basic` (same legacy double-count/aggregation semantic divergence)
-
-Known legacy-bug xfails:
-
-- `branch_separation_by_tag`
-- `branch_separation_by_filter`
-
-Cleared live PipelineCase skip/debt items in `1234db31`:
-
-- `aggregation_classification_vote`
-- `branch_separation_by_metadata_auto`
-- `refit_params_use_all_partitions`
-- `exclude_multi_any_y_and_x`
-
-Remaining targeted skip classes after the broader gate:
-
-- missing local `n4m` binding for methods-backed operators;
-- legacy-bug skips for `branch_separation_by_tag` and `branch_separation_by_filter`;
-- optional dependency skip for SHAP when absent from the local environment;
-- optional dependency skip for `referencing` when absent from the local environment;
-- empty-sentinel skip for lockdrop/fallback-boundary markers when no expected fallback cases remain.
-
-Tolerance overrides to review:
-
-- `generator_cartesian_pick`
-- `generator_cartesian_stages`
-- `generator_cartesian_with_param_range`
-- `generator_or_pick_mutex3`
-- `generator_or_pick_requires`
-- `generator_or_with_pick`
-
-Exact-count parity notes:
-
-- `generator_or_models_pls_ridge`
-- `generator_chain_model_configs`
+- R/Rscript gates for core aggregate and methods cross-binding execution.
+- Octave/MATLAB execution gates for the MATLAB/Octave preview/subset surfaces.
+- Methods-backed WASM numeric execution on final heads when the toolchain is
+  available locally or in CI.
 
 ## Parallel Lanes
 
