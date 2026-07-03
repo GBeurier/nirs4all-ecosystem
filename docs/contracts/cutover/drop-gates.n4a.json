@@ -265,6 +265,24 @@
       ]
     },
     {
+      "id": "perf_cross_engine_compare",
+      "title": "RC-v1 legacy vs dag-ml performance comparison",
+      "lane": "PERF/V1",
+      "required": true,
+      "cwd": "_worktrees/RC-v1-benchmarks",
+      "command": [
+        "bash",
+        "-lc",
+        "json_out=/tmp/n4a_perf_compare_rc_gate.json; md_out=/tmp/n4a_perf_compare_rc_gate.md; PYTHONPATH=src timeout 900 ./.venv/bin/n4a-benchmarks perf-compare --repeats 3 --assert-max-ratio python_run=1.25 --assert-max-ratio studio_run=1.35 --json-out \"$json_out\" --markdown-out \"$md_out\" && echo \"perf JSON: $json_out\" && echo \"perf Markdown: $md_out\""
+      ],
+      "evidence": [
+        "python_run measures the same seeded workload with legacy and dag-ml",
+        "studio_run measures the Studio pipeline job worker with legacy and dag-ml",
+        "fallback is disabled and recorded engine must match requested engine",
+        "dag-ml/legacy run ratios stay below the committed ceilings"
+      ]
+    },
+    {
       "id": "cluster_dag_advisory",
       "title": "Cluster DAG rights and result provenance advisory gate",
       "lane": "V1-CLUSTER",

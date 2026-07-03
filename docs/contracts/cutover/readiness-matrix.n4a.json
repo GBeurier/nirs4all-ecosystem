@@ -250,6 +250,26 @@
       "next_owner_action": "Do not reintroduce a legacy default or implicit legacy fallback/export bridge; run the strict full gate set in a prepared release workspace before claiming V1 release readiness."
     },
     {
+      "id": "PERF-CROSS-ENGINE-001",
+      "title": "Python and Studio legacy-vs-dag-ml performance comparison is gated",
+      "lane": "PERF/V1",
+      "owner_repo": "nirs4all-benchmarks",
+      "status": "ready",
+      "required_for_cutover": true,
+      "primary_gate_id": "perf_cross_engine_compare",
+      "gate_ids": [
+        "perf_cross_engine_compare"
+      ],
+      "expected_evidence": [
+        "n4a-benchmarks perf-compare runs python_run and studio_run for legacy and dag-ml",
+        "allow_fallback is false and recorded engine must match requested engine",
+        "dag-ml/legacy run ratios stay below python_run=1.25 and studio_run=1.35",
+        "JSON and Markdown reports are emitted for cutover evidence"
+      ],
+      "missing_contract": "No missing command contract. Thresholds are conservative RC ceilings and must be recalibrated if the CI host class or measured workload changes.",
+      "next_owner_action": "Run perf_cross_engine_compare in the final cutover sweep before production flip; keep Benchmarks tests strict so the command cannot silently drop fallback or ratio assertions."
+    },
+    {
       "id": "PROV-READ-001",
       "title": "Providers local sibling release gate passes without write coupling",
       "lane": "W2R/W2S-JG",
