@@ -314,6 +314,9 @@ accepted Python parity debt:
   IO/datasets R gates.
 - Licensed MATLAB runtime proof remains manual/outside the Linux Octave proofs;
   Octave/MEX parity has passed for Methods and Core, and IO Octave smoke passed.
+- Datasets remote `get(id)` for every catalog entry must not be claimed until
+  canonical hosting/DOI/file-id routes are complete; current proof covers the
+  catalog, software bridge, and raw retrieval contracts.
 - Full Python parity must be rerun after the next large integration batch before
   RC promotion.
 

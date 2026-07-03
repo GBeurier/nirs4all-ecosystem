@@ -112,6 +112,10 @@ Decision:
 - Datasets still has legitimate distribution/retrieval roadmap items, but the
   release-candidate bridge skips are covered by an integrated local gate and
   must not be counted as untested parity holes for this batch.
+- Datasets is not a software blocker for an RC that claims catalog/bridge
+  readiness. It would become a blocker only if the RC promises that remote
+  `get(id)` works for every dataset without local canonical bytes or dataset
+  hosting; that global distribution claim remains explicitly out of scope.
 
 ## Methods ABI Freshness
 
@@ -161,6 +165,8 @@ Decisions:
 - Full Python parity was intentionally not rerun in this batch.
 - Licensed MATLAB runtime proof remains outside this Linux/Octave environment.
 - Datasets public distribution/retrieval readiness remains a release-management
-  item separate from the local bridge parity gates.
+  item separate from the local bridge parity gates. Do not claim global remote
+  `get(id)` coverage for all datasets until canonical hosting/DOI/file-id
+  routes are complete.
 - IO cross-binding parity still needs a shell/CI environment with at least two
   binding toolchains available at the same time.
