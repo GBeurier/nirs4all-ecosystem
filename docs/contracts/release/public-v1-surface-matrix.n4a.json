@@ -23,7 +23,9 @@
     "docs/agent_reports/WAVE_4R_IO_DATASETS_BRIDGE_RC_CI.md",
     "docs/agent_reports/WAVE_4S_RC_CI_WEB_UI_SECURITY.md",
     "docs/agent_reports/WAVE_4T_DOCS_UI_SHARED_STATUS.md",
-    "docs/agent_reports/WAVE_4U_PARITY_PROVIDERS_PERF_CORE_PINS.md"
+    "docs/agent_reports/WAVE_4U_PARITY_PROVIDERS_PERF_CORE_PINS.md",
+    "docs/agent_reports/WAVE_4V_STUDIO_WEB_SECURITY_GATES.md",
+    "docs/agent_reports/WAVE_4W_STRICT_DAGML_WASM_STUDIO_DATASETS.md"
   ],
   "aggregation_lock": {
     "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",

@@ -407,7 +407,7 @@
       "selected_workspace_path": "RC-v1-datasets",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "59b34f560368b5b1ffb7f72bbed81af2a52f6eec",
+        "commit": "259d144594c996488e854cede438ba54d98ccd10",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
@@ -1215,7 +1215,7 @@
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "state": {
         "branch": "rc/v1-full-refactor-core",
-        "commit": "8dcf2af0309d6ba07580054c9392f1a5e8355e00",
+        "commit": "f120c28100642ac64d706a5b8404ce76770a5269",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
