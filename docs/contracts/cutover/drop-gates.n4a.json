@@ -249,19 +249,21 @@
     },
     {
       "id": "lite_v1_surfaces",
-      "title": "Lite aggregate Python/R/WASM V1 surfaces",
+      "title": "Lite aggregate Python/R/WASM/Rust/MATLAB V1 surfaces",
       "lane": "W2N/W2T-E",
       "required": true,
       "cwd": "_worktrees/RC-v1-nirs4all-core",
       "command": [
         "bash",
         "-lc",
-        "PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH PYTHONPATH=bindings/python/src timeout 1800 make test-v1-surfaces"
+        "PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH PYTHONPATH=bindings/python/src timeout 1800 make test-v1-surfaces test-r-parity test-matlab-parity"
       ],
       "evidence": [
         "nirs4all-core V1 Python aggregate surface gate passes",
         "nirs4all-core V1 WASM/browser aggregate surface gate passes",
-        "R is exercised by the existing test-r-if-available policy and may skip only when R is unavailable"
+        "nirs4all-core Rust aggregate surface accounting remains covered by topology tests",
+        "R aggregate runtime parity passes without if-available skip substitution",
+        "MATLAB/Octave aggregate runtime parity passes without if-available skip substitution"
       ]
     },
     {

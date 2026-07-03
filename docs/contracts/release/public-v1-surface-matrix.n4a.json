@@ -129,8 +129,8 @@
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "lite",
       "required_for_nirs4all_v1": true,
-      "proof_boundary": "Package topology is covered by the locked lite member; local R execution may still be skipped if R is unavailable and must be reported as risk.",
-      "local_gate_policy": "test-r-if-available; missing R is not a green release proof."
+      "proof_boundary": "Package topology is covered by the locked lite member; V1 release proof requires the strict R runtime parity gate, not an if-available local smoke.",
+      "local_gate_policy": "test-r-parity is required for V1 promotion; test-r-if-available is developer convenience only and a missing R runtime is not a green release proof."
     },
     {
       "id": "nirs4all.javascript_wasm.aggregate",
@@ -194,8 +194,8 @@
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "lite",
       "required_for_nirs4all_v1": true,
-      "proof_boundary": "MATLAB/Octave namespace archive is covered by the selected RC-v1-nirs4all-core member; local execution remains subset evidence until release infrastructure runs it.",
-      "local_gate_policy": "lite/core MATLAB/Octave package topology checks where the environment is available."
+      "proof_boundary": "MATLAB/Octave namespace archive is covered by the selected RC-v1-nirs4all-core member; V1 release proof requires the strict MATLAB/Octave runtime parity gate, not an if-available smoke.",
+      "local_gate_policy": "test-matlab-parity is required for V1 promotion; if only Octave is available the licensed MATLAB host proof remains an explicit release risk, not a skipped green proof."
     },
     {
       "id": "nirs4all.studio.product",

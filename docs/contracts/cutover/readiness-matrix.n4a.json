@@ -32,7 +32,7 @@
       "title": "Full Python reference fallback ledger is empty",
       "lane": "B-010/L19",
       "owner_repo": "nirs4all",
-      "status": "passed",
+      "status": "ready",
       "required_for_cutover": true,
       "primary_gate_id": "pyref_coverage_zero",
       "gate_ids": [
@@ -211,7 +211,7 @@
     },
     {
       "id": "LITE-V1-SURFACE-001",
-      "title": "Lite aggregate exposes the required Python/R/WASM V1 surfaces",
+      "title": "Lite aggregate exposes the required Python/R/WASM/Rust/MATLAB V1 surfaces",
       "lane": "W2N/W2T-E",
       "owner_repo": "nirs4all-lite",
       "status": "passed",
@@ -224,10 +224,12 @@
       "expected_evidence": [
         "make test-v1-surfaces runs the Python aggregate surface",
         "make test-v1-surfaces runs the WASM/browser aggregate surface",
-        "the R aggregate surface is governed only by the existing test-r-if-available policy"
+        "make test-v1-surfaces keeps Rust and language-topology accounting covered",
+        "make test-r-parity passes for the R aggregate runtime surface",
+        "make test-matlab-parity passes for the MATLAB/Octave aggregate runtime surface"
       ],
-      "missing_contract": "None for the current lite V1 surface accounting. A local missing-R skip remains a release risk to report, not a substitute for an R proof on release infrastructure.",
-      "next_owner_action": "Keep lite_v1_surfaces green with the selected Node path and PYTHONPATH; do not add ad hoc R skips outside test-r-if-available."
+      "missing_contract": "Strict R and MATLAB/Octave runtime execution must be recorded before promotion. Missing R or MATLAB/Octave runtime proof is a cutover blocker for required V1 surfaces, not a skipped green proof.",
+      "next_owner_action": "Keep lite_v1_surfaces green with the selected Node path and PYTHONPATH, then run strict R and MATLAB/Octave parity on release infrastructure before promotion."
     },
     {
       "id": "DROP-002-DEFAULT-ENGINE",
