@@ -124,6 +124,15 @@ Tests:
 - `make test-abi-freshness PRESET=dev-release` -> CMake configure/build OK,
   native ABI snapshot up to date, ABI compatibility OK for header `2.0.x`,
   Linux dynamic dependencies listed, and `Native ABI freshness OK`.
+- After the docs hygiene patch on Methods `cb9159dd`:
+  `scripts/bump_version.sh --check` -> project `1.0.1`, ABI `2.0.0`, every
+  manifest in sync; `cmake --build --preset dev-release --target n4m_tests
+  n4m_internal_tests --parallel && ctest --preset dev-release
+  --output-on-failure` -> `2/2` tests passed; `make test-js-wasm` -> WASM
+  runtime `1.0.1+abi.2.0.0`, `npm test` PASS, `npm pack --dry-run` PASS.
+- GitHub Actions on `cb9159dd`: `CI`, `Cross-binding parity`, `Parity gate`,
+  `ABI Surface`, `Coverage`, `Sanitizers`, `version-sync`, and
+  `version-guard` all completed with success.
 
 Review:
 
@@ -136,11 +145,14 @@ Decision:
 
 - Methods ABI freshness is current on the selected RC head. Wave 4AC remains
   the source record for Methods R binding, Octave/MEX, and JS/WASM parity gates.
-- Remaining Methods debt is release-distribution and documentation hygiene:
+- The stale RC-readiness docs and stale JS fixture provenance were corrected on
+  `cb9159dd`. `RELEASE_READINESS.md` now separates the June audit baseline from
+  the current RC state, and `release_process.md` no longer contradicts
+  `release-npm.yml`.
+- Remaining Methods debt is release-distribution and coverage hardening:
   CRAN incoming/PDF/win-builder/R-hub/macbuilder evidence, `nirs4all-methods`
   sdist and post-publish smoke, broader R/Octave surface coverage beyond current
-  smoke/parity fixtures, and stale docs/fixtures that still mention older ABI or
-  manual JS release assumptions.
+  smoke/parity fixtures, and a full-registry/multi-shape parity dashboard.
 
 ## Ecosystem Lock and Docs
 

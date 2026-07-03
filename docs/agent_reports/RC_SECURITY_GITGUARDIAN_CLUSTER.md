@@ -282,3 +282,49 @@ Validation:
 Decision remains unchanged: no real credential is known from accessible
 evidence. Treat continued reports as stale/history/hidden-ref findings unless
 GitGuardian shows a non-placeholder value.
+
+## 2026-07-03 GitGuardian Email Recheck
+
+The user reported a GitGuardian email for repository
+`GBeurier/nirs4all-cluster`, secret type `Generic CLI Option Secret`, pushed
+date `2026-07-02 09:41:03 UTC`.
+
+Coordinator checks:
+
+- `git ls-remote --heads --tags origin` shows only `main`,
+  `rc/v1-full-refactor`, and `n4a-v1-rc1-2026.07-refactor` as visible remote
+  refs. No old `refactor/*` heads are visible remotely from this clone.
+- Active branch/tag refs still point to `main` `eaf79a0` and RC/tag `ffeaf4b`.
+- Targeted scans over active refs for concrete inline `N4CLUSTER_TOKEN=...`,
+  `--token ...`, `--api-key ...`, `--secret ...`, `--password ...`, and
+  `--principal ...` credential-shaped values found zero candidates.
+- GitHub's own secret-scanning REST endpoint returns `404 Secret scanning is
+  disabled on this repository`, so the GitGuardian alert fingerprint is not
+  available through GitHub API from this environment.
+
+Parallel read-only reviews:
+
+- Codex subagent `019f269e-7a70-7d90-81a4-dda7a27eb488` found no current-head
+  secret value and classified the alert as most likely a documentation/example
+  false positive. It confirmed that historical reachable commits still contain
+  scanner-sensitive CLI examples/metavars, so an ancestor-walking scanner can
+  continue to alert.
+- Claude/Fable read-only audit `04cf6618-91b1-416e-b4bd-95c0b6eb29b8`
+  completed with the same conclusion: the hits are placeholders/env-var
+  references (`N4CLUSTER_TOKEN`), dummy examples such as `s3cr3t`, or test
+  tokens, with no high-entropy credential value found in refs, tags or reachable
+  history. It recommends closing as false positive/resolved and avoiding pushes
+  of the obsolete local `refactor/*` branches unless they are rebased/cleaned.
+
+Decision:
+
+- No rotation is indicated from local evidence because no real credential was
+  identified. If GitGuardian displays a non-placeholder value in the UI, rotate
+  that value out of band immediately.
+- Deleting superseded refs is not enough to clear this class of alert: the
+  suspicious examples are in historical commits reachable from active branches.
+  If the requirement is to make the alert disappear from scanners that inspect
+  all ancestors, the only complete remediation is a history rewrite of active
+  branches/tags followed by force-push and support/rescan requests.
+- For the current RC, close as false positive/remediated unless GitGuardian
+  provides a concrete non-placeholder secret value.

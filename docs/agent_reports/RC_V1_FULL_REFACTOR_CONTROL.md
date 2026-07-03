@@ -214,7 +214,7 @@ This is not a temporary cut. The target is the final project topology:
   Studio `5907639`, Web `974f71a`, UI `69501bd`, Cockpit `f06f7b4`,
   Org `fd4634d`, Ecosystem uses the current board HEAD, Providers `2cfcca6`,
   Tools `7c5070f`, Cluster `ffeaf4b`, Formats `32fc87f`, IO `71aaaf5`,
-  Datasets `7b1b805`, Methods `64731c6d`, Repository `ced219f`,
+  Datasets `7b1b805`, Methods `cb9159dd`, Repository `ced219f`,
   Benchmarks `06d4146`, Papers `f1d84f4`.
 - Wave 4AA moves Datasets to `60658035` and Providers to `2cfcca6`, with branch
   and tag `n4a-v1-rc1-2026.07-refactor` published for both. Datasets fixes the
@@ -288,6 +288,23 @@ This is not a temporary cut. The target is the final project topology:
   additional workspace/catalog/bridge coverage; Methods ABI freshness is current.
   IO cross-binding parity still needs a multi-toolchain shell/CI environment.
   Full Python parity was still deferred for batch-cost control.
+- Wave 4AE moves Methods to `cb9159dd`, publishes the RC branch/tag there, and
+  regenerates/validates the aggregation lock; fetchability audit reports `7/7`
+  member commits checked out. The patch closes stale Methods release docs and JS
+  fixture provenance without changing runtime code. Gates passed:
+  `scripts/bump_version.sh --check`, `make test-abi-freshness
+  PRESET=dev-release`, C++ `n4m_tests` + `n4m_internal_tests` via ctest, and
+  `make test-js-wasm` including npm test and pack dry-run. GitHub Actions on
+  `cb9159dd` are green for `CI`, `Cross-binding parity`, `Parity gate`,
+  `ABI Surface`, `Coverage`, `Sanitizers`, `version-sync`, and `version-guard`.
+  Full Python parity was not rerun in this docs-only Methods batch.
+- Wave 4AE also reaudits the July 3 GitGuardian cluster alert. Active remote refs
+  are still only `origin/main`, `origin/rc/v1-full-refactor`, and the RC tag;
+  targeted active-head scans find no concrete CLI-option secret values. The
+  remaining alert source is historical reachable documentation examples/metavars
+  or GitGuardian stale state, not a current head secret. If GitGuardian requires
+  the alert to disappear rather than be closed as false-positive/remediated, that
+  requires history rewrite of active branches, not merely deleting superseded refs.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator
   skips and Python registry skips have been burned down; Python full parity on
   current head `6a2c720` reports `887 passed`, `0 skipped`, and `0 xfailed`
@@ -317,9 +334,11 @@ accepted Python parity debt:
 - Datasets remote `get(id)` for every catalog entry must not be claimed until
   canonical hosting/DOI/file-id routes are complete; current proof covers the
   catalog, software bridge, and raw retrieval contracts.
-- Methods runtime gates are current for ABI, JS/WASM, R, and Octave/MEX, but
-  release-distribution debt remains for CRAN external checks, `nirs4all-methods`
-  sdist/post-publish smoke, and stale release-readiness docs.
+- Methods runtime gates are current for ABI, JS/WASM, R, and Octave/MEX, and the
+  stale RC-readiness docs/JS fixture provenance were corrected on `cb9159dd`.
+  Release-distribution debt remains for CRAN external checks,
+  `nirs4all-methods` sdist/post-publish smoke, broader R/Octave surface coverage,
+  and full-registry/multi-shape parity dashboards.
 - Full Python parity must be rerun after the next large integration batch before
   RC promotion.
 

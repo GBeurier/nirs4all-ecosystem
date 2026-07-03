@@ -76,6 +76,15 @@ Decisions:
 - The remaining GitGuardian risk is historical/stale refs or hidden PR refs. If
   GitGuardian shows a real non-placeholder value, rotate it out of band; current
   active branch/tag evidence does not show a real credential.
+- Follow-up after the July 3 GitGuardian email: read-only Codex and Claude/Fable
+  audits completed against `nirs4all-cluster`. Visible remote refs remain
+  limited to `main`, `rc/v1-full-refactor`, and the RC tag. The audits found no
+  concrete inline `N4CLUSTER_TOKEN=...`, `--token ...`, or `--principal ...`
+  credential on active heads and no high-entropy credential in reachable
+  history. Historical reachable commits do contain scanner-sensitive CLI
+  examples/metavars, so a scanner that walks ancestors can still alert unless
+  history is rewritten. Recommendation remains false-positive/remediated unless
+  GitGuardian discloses a non-placeholder value.
 
 Tests:
 
