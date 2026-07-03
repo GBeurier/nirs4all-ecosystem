@@ -4,6 +4,11 @@ Date: 2026-07-03
 
 Coordinator: Codex parent session in `/home/delete/nirs4all`.
 
+Update: `WAVE_4AD_SURFACE_TOPOLOGY_WEB_DATASETS.md` supersedes this report for
+Core V1 surface topology, Web client-only proof, and the latest IO/Datasets
+gate evidence. The security and Studio/Cluster/Datasets R bridge entries below
+remain the Wave 4AC source record.
+
 ## Scope
 
 This batch keeps production heads intact and updates only selected RC branches

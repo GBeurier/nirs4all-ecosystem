@@ -607,7 +607,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:90fd3b2fdf7592506a10a7477034b03a42fe0fa59bcedb9612f02605bae87801",
+          "canonical_json_sha256": "sha256:f44485721ed2153334d17844c91ba170f5374d23b0272cc553b1d2de587ddfa6",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -1143,6 +1143,16 @@
               },
               {
                 "distribution": "nirs4all",
+                "ecosystem": "rust",
+                "local_gate": "test-rust",
+                "namespace": "nirs4all",
+                "package_manifest": "bindings/rust/nirs4all/Cargo.toml",
+                "registry": "crates.io",
+                "release_workflow": "release-crates.yml",
+                "tool_policy": "required"
+              },
+              {
+                "distribution": "nirs4all",
                 "ecosystem": "r",
                 "local_gate": "test-r-if-available",
                 "namespace": "library(nirs4all)",
@@ -1150,13 +1160,23 @@
                 "registry": "cran/r-universe",
                 "release_workflow": "release-r.yml",
                 "tool_policy": "skip-locally-if-r-missing"
+              },
+              {
+                "distribution": "nirs4all-matlab-octave",
+                "ecosystem": "matlab_octave",
+                "local_gate": "test-matlab-parity-if-available",
+                "namespace": "+nirs4all",
+                "package_manifest": "bindings/matlab/README.md",
+                "registry": "github-release",
+                "release_workflow": "release-matlab.yml",
+                "tool_policy": "skip-locally-if-octave-missing"
               }
             ]
           },
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_lite/_topology.py",
-          "raw_sha256": "sha256:6db5d9d7de57b30a86966a6d846c2c1d7e0b899169a0c4042eec9dfc1c1fe793",
+          "raw_sha256": "sha256:bf4248377d394d280133f7bbe7d2d19b20683db696951b26715786dda9bae396",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -1215,7 +1235,7 @@
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "state": {
         "branch": "rc/v1-full-refactor-core",
-        "commit": "2b0d18a3fd498aa3238ad2d5ac283a30efb6c4bf",
+        "commit": "1b505e9974390a946415e3b8c57f0803b4ce1532",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },

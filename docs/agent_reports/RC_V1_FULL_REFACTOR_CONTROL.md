@@ -209,8 +209,8 @@ This is not a temporary cut. The target is the final project topology:
   residual alert closure is a GitGuardian/GitHub-support dashboard action unless
   GitGuardian discloses an actual non-placeholder value.
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees. `WAVE_4Q_RC_PUBLICATION_REAUDIT.md` rechecked the post-4P heads after repairing missing tags on Studio/UI/Org/Tools/IO/Datasets; Wave 4R then moved Studio/IO/Datasets and regenerated the aggregation lock for IO/Datasets.
-- Latest pushed/tagged heads after the Wave 4AC gate/security batch: Python `6a2c720`,
-  dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `2b0d18a`,
+- Latest pushed/tagged heads after the Wave 4AD surface/topology batch: Python `6a2c720`,
+  dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `1b505e9`,
   Studio `5907639`, Web `974f71a`, UI `69501bd`, Cockpit `f06f7b4`,
   Org `fd4634d`, Ecosystem uses the current board HEAD, Providers `2cfcca6`,
   Tools `7c5070f`, Cluster `ffeaf4b`, Formats `32fc87f`, IO `71aaaf5`,
@@ -280,6 +280,13 @@ This is not a temporary cut. The target is the final project topology:
   IO Octave/MATLAB smoke, Datasets WASM node/web/package dry-run, Datasets R
   smoke, and combined R IO+datasets package verification. Full Python parity was
   intentionally not rerun in this batch.
+- Wave 4AD moves Core to `1b505e9` and regenerates the aggregation lock so the
+  machine-readable Core topology lists all V1 language surfaces: Python,
+  JavaScript/WASM, Rust, R, and MATLAB/Octave. Local Core gates passed for Rust,
+  Python, WASM, R, and Octave parity; Web passed the client-side-only gate,
+  static/single-file builds, and all browser smokes; IO and Datasets received
+  additional workspace/catalog/bridge coverage. Full Python parity was still
+  deferred for batch-cost control.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator
   skips and Python registry skips have been burned down; Python full parity on
   current head `6a2c720` reports `887 passed`, `0 skipped`, and `0 xfailed`
@@ -299,15 +306,15 @@ Wave 4X full proof. New parity skips or xfails are release blockers unless they
 are optional-environment skips outside the Python parity oracle and are recorded
 with a replacement contract or local fixture.
 
-Remaining non-Python proof debt is broader language-completeness debt, not
+Remaining non-Python proof debt is broader release-environment coverage, not
 accepted Python parity debt:
 
-- Broader R/Rscript feature-completeness beyond the Wave 4AC Methods/Core/IO/
-  datasets R gates.
-- Licensed MATLAB runtime proof beyond the Wave 4AC Methods Octave/MEX parity
-  and IO Octave smoke.
-- Methods-backed WASM numeric execution on final heads when the toolchain is
-  available locally or in CI.
+- Broader R/Rscript feature-completeness beyond the Wave 4AC/4AD Methods/Core/
+  IO/datasets R gates.
+- Licensed MATLAB runtime proof remains manual/outside the Linux Octave proofs;
+  Octave/MEX parity has passed for Methods and Core, and IO Octave smoke passed.
+- Full Python parity must be rerun after the next large integration batch before
+  RC promotion.
 
 ## Parallel Lanes
 
