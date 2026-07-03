@@ -570,7 +570,7 @@
       "selected_workspace_path": "RC-v1-io",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "4a5bef22c1177e5ce7ac85a302841031d7743b38",
+        "commit": "c6740189d9a2fe1a9e8a22bd7e72ed031f3d24ad",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
