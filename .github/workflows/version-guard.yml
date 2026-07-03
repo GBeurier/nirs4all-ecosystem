@@ -147,7 +147,6 @@ jobs:
             --manifest docs/contracts/release/aggregation-manifest.n4a.json \
             --lock docs/contracts/release/aggregation-lock.n4a.lock.json \
             --output external
-          python scripts/n4a_release_lock.py validate \
-            --workspace-root external \
+          python scripts/n4a_release_lock.py --workspace-root external validate \
             --manifest docs/contracts/release/aggregation-manifest.n4a.json \
             --lock docs/contracts/release/aggregation-lock.n4a.lock.json

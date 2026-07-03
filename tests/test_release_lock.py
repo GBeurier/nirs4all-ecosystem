@@ -197,6 +197,46 @@ def test_generate_lock_uses_selected_workspace_path_but_records_canonical_repo_p
     assert member["state"]["branch"] == "rc/v1-demo"
 
 
+def test_checkout_members_uses_selected_workspace_path_for_validation(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "manifest.json"
+    lock_path = manifest_dir / "lock.json"
+    selected_repo = tmp_path / "workspace" / "RC-v1-member"
+    selected_repo.parent.mkdir()
+    _init_repo(selected_repo)
+    _git(selected_repo, "checkout", "-b", "rc/v1-demo")
+    (selected_repo / "README.md").write_text("selected\n", encoding="utf-8")
+    _commit_all(selected_repo)
+
+    _write_json(
+        manifest_path,
+        {
+            "schema_version": release_lock.MANIFEST_SCHEMA_VERSION,
+            "release_train": "test",
+            "status": "candidate",
+            "components": [
+                {
+                    "key": "member",
+                    "repo_path": "canonical-member",
+                    "repo_url": selected_repo.resolve().as_uri(),
+                    "selected_workspace_path": "RC-v1-member",
+                    "selected_branch_patterns": ["rc/v1-*"],
+                }
+            ],
+        },
+    )
+    _write_json(lock_path, release_lock.generate_lock(manifest_path, tmp_path / "workspace"))
+
+    checkout_root = tmp_path / "external"
+    release_lock.checkout_members(manifest_path, lock_path, checkout_root)
+
+    assert (checkout_root / "RC-v1-member" / ".git").exists()
+    assert not (checkout_root / "canonical-member").exists()
+    release_lock.validate_lock(manifest_path, lock_path, checkout_root)
+
+
 def test_generate_lock_rejects_selected_workspace_on_non_rc_branch(tmp_path: Path) -> None:
     release_lock = _load_release_lock()
     manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"

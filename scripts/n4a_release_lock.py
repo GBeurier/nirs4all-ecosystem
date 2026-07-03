@@ -610,8 +610,8 @@ def checkout_members(manifest_path: Path, lock_path: Path, output_root: Path) ->
         repo_url = component.get("repo_url")
         if not repo_url:
             raise RelError(f"manifest component {key!r} has no repo_url")
-        repo_path = component["repo_path"]
-        target = output_root / repo_path
+        selected_workspace_path = component.get("selected_workspace_path") or component["repo_path"]
+        target = output_root / selected_workspace_path
         if target.exists():
             raise RelError(f"checkout target already exists: {target}")
         state = member.get("state", {})
