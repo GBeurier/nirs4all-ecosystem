@@ -27,7 +27,9 @@ alert.
 ## Integrated Or Verified Heads
 
 - `nirs4all` Python remains `6a2c7200`.
-- Core `f120c281` is published on both:
+- Core was first verified at `f120c281` and then moved in Wave 4Y to
+  `2b0d18a` for a Makefile-only strict WASM path robustness fix. The latest
+  branch/tag are published on both:
   - `GBeurier/nirs4all-lite` `rc/v1-full-refactor-core`
   - `GBeurier/nirs4all-core` `rc/v1-full-refactor-core`
   - tag `n4a-v1-rc1-2026.07-refactor` on both remotes.
@@ -60,6 +62,18 @@ Cluster security hardening:
 - `PYTHONPATH=. pytest -q` from cluster RC: `145 passed, 1 skipped, 1 deselected, 3 warnings`.
 - Post-push scan of active heads found no concrete `--token VALUE` or
   `--principal VALUE` examples on `origin/main` or `origin/rc/v1-full-refactor`.
+- Recheck after the July 2 GitGuardian alert:
+  - active refs are clean: `main` -> `16b4a2a`,
+    `rc/v1-full-refactor` and tag `n4a-v1-rc1-2026.07-refactor` ->
+    `19384e2`;
+  - hidden merged PR refs still expose only the historical placeholder
+    `PROTOTYPE_DESIGN.md:167` example `--token dev`:
+    `refs/pull/1/head` -> `e5a70fd` and `refs/pull/2/head` -> `d530536`;
+  - PR #1 and #2 are merged, their source branches are absent from
+    `refs/heads/*`, and GitHub rejects direct cleanup:
+    `git push origin :refs/pull/1/head :refs/pull/2/head` returns
+    `deny updating a hidden ref`; `gh api -X DELETE .../git/refs/pull/*/head`
+    returns HTTP 422 `refs/pull/* is read-only`.
 
 Release-lock fetchability:
 
@@ -67,8 +81,8 @@ Release-lock fetchability:
   confirmed both branch and tag resolve to the locked commit for `dag_ml`,
   `dag_ml_data`, `datasets`, `formats`, `io`, `lite`, and `methods`.
 - Core/lite specifically now resolves `rc/v1-full-refactor-core` and
-  `n4a-v1-rc1-2026.07-refactor` to `f120c28100642ac64d706a5b8404ce76770a5269`
-  on the canonical `GBeurier/nirs4all-lite` remote.
+  `n4a-v1-rc1-2026.07-refactor` to the locked Core commit on the canonical
+  `GBeurier/nirs4all-lite` remote.
 
 ## Decisions
 
@@ -76,16 +90,18 @@ Release-lock fetchability:
   for Python parity accounting by the current split full parity run above.
 - Hidden GitHub PR refs for cluster still expose only historical placeholder
   `--token dev` examples. They are not selected branch/tag heads and cannot be
-  deleted by normal branch/tag pushes; if GitGuardian shows a non-placeholder
-  value, rotate it externally and request GitGuardian/GitHub support review.
+  deleted by normal branch/tag pushes or the GitHub Git refs API. If
+  GitGuardian shows a non-placeholder value, rotate it externally and request
+  GitGuardian/GitHub support review; otherwise close it as stale/placeholder
+  exposure from immutable merged PR refs.
 - The Core publication issue found by Claude was real when scanned, but is now
   corrected and verified by remote branch/tag resolution.
 
 ## Remaining Risks
 
-- Core WASM/Methods strict parity still requires staged Methods JS/WASM artifacts
-  (`index.js`, `n4m.js`, `n4m.wasm`).
+- Core WASM/Methods strict parity is closed locally in Wave 4Y with staged
+  Methods JS/WASM artifacts and `15` strict WASM tests passing.
 - R, Octave/MATLAB, and full non-Python DatasetPackage materialization remain
   environment/toolchain gates.
-- Studio frontend full Vitest was not rerun in this follow-up; backend full
-  pytest remains `2335 passed, 0 skipped` from Wave 4W.
+- Studio frontend full Vitest is closed locally in Wave 4Y with `3709 passed`;
+  backend full pytest remains `2335 passed, 0 skipped` from Wave 4W.

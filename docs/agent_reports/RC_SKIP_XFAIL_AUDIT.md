@@ -24,7 +24,8 @@ and `NIRS4ALL_REQUIRE_N4M=1`.
   - `tests/test_operator_definitions.py` now passes with `445 passed` and 0 skips after replacing skipped fixture families with deterministic local inputs;
   - the combined Studio runtime/operator/quick-run RC stack gate passes with `464 passed`.
 - Studio full-backend result is refreshed after Wave 4W: `2335 passed, 0 skipped`, `301 warnings`. Locally coverable backend skips were removed; Windows host behavior remains a real external host gate, not a skipped Linux backend test.
-- Studio frontend targeted portable-paths gate now reports `4 passed`; full frontend Vitest was not rerun in Wave 4W/4X.
+- Studio frontend targeted portable-paths gate reports `4 passed`; Wave 4Y full
+  frontend Vitest reports `517` test files and `3709` tests passed.
 - Benchmarks `1 skipped` is optional CI/runtime coverage and should be rerun in the service-extra environment if zero skips is required.
 - Python parity `30 skipped / 11 xfailed` is stale, and the intermediate
   `853 passed, 14 skipped, 6 xfailed` result is now superseded.
@@ -58,6 +59,6 @@ and `NIRS4ALL_REQUIRE_N4M=1`.
 
 Python-reference parity no longer has unexplained skip/xfail debt in the
 selected split parity gates. Remaining skip risk is outside this gate:
-methods/language binding environments still need their own final release proofs,
-and Core WASM/Methods strict parity still needs the staged Methods JS/WASM
-distribution.
+R and Octave/MATLAB language binding environments still need their own final
+release proofs, and full non-Python DatasetPackage materialization remains an
+environment gate.

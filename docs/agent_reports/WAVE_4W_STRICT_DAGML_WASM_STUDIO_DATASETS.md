@@ -136,11 +136,12 @@ then pushed branch `rc/v1-full-refactor-core` and tag
 fetchability audit confirms all seven aggregation-lock members resolve branch
 and tag to their locked commits, including `lite` -> `f120c281`.
 
+Wave 4Y later moved Core to `2b0d18a` for a Makefile-only path robustness fix
+and regenerated the aggregation lock. Fetchability remains `7/7`.
+
 ## Risks
 
-- Core WASM/Methods strict parity still needs a built/staged Methods JS/WASM
-  distribution.
 - R, Octave/MATLAB, and end-to-end non-Python DatasetPackage materialization
   remain environment gates.
-- Studio full backend has zero skips, but frontend full Vitest was not rerun in
-  this wave; only skip candidates and prior Wave 4V e2e evidence were used.
+- Core WASM/Methods strict parity and Studio full frontend Vitest are closed in
+  Wave 4Y.
