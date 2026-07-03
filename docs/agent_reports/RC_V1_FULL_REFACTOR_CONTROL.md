@@ -73,14 +73,14 @@ This is not a temporary cut. The target is the final project topology:
 
 | Gate | Latest evidence | Release interpretation |
 | --- | --- | --- |
-| Python parity harness | Last full split parity proof is Python `6a2c720` on the selected RC stack with `NIRS4ALL_REQUIRE_N4M=1`, RC `dag-ml`/`dag-ml-data` paths, and SHAP installed: non-slow split `444 passed, 443 deselected, 510 warnings` in `550.90s`; slow split `443 passed, 444 deselected, 1309 warnings` in `1843.08s`; combined interpretation `887 passed`, `0 skipped`, `0 xfailed`, `0 failed`. Current Python head `5e7a0e4b` passed the Wave 4AQ targeted CI reproductions but has not had full parity rerun. | Python parity skip/xfail debt is closed for the last full proof only. Final RC promotion must rerun full parity on the final Python head; do not transfer the `887/0/0/0` proof to `5e7a0e4b` until that run completes. |
+| Python parity harness | Last full split parity proof is Python `6a2c720` on the selected RC stack with `NIRS4ALL_REQUIRE_N4M=1`, RC `dag-ml`/`dag-ml-data` paths, and SHAP installed: non-slow split `444 passed, 443 deselected, 510 warnings` in `550.90s`; slow split `443 passed, 444 deselected, 1309 warnings` in `1843.08s`; combined interpretation `887 passed`, `0 skipped`, `0 xfailed`, `0 failed`. Current Python head `bf242e48` fixes the Windows parquet atomic-replace CI failure and passed targeted unit/integration reproductions, but has not had full parity rerun. | Python parity skip/xfail debt is closed for the last full proof only. Final RC promotion must rerun full parity on the final Python head; do not transfer the `887/0/0/0` proof to `bf242e48` until that run completes. |
 | `dag-ml` workspace | `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings` passed | Native runtime baseline is usable for RC work. |
-| Studio | Operator-definition fixture gate now has 0 skips: `445 passed`. Runtime/operator/quick-run RC stack gate after import-precedence fix: `464 passed`. Wave 4W full backend pytest on Studio head `75f511b`: `2335 passed, 301 warnings`, `0 skipped`. Targeted skip burn-down checks passed (`65 passed`, Ruff, ESLint, and portable-paths Vitest `4 passed`). Wave 4Y full frontend Vitest reports `517` Studio test files and `3709` tests passed; this covers Studio `src/**` and `electron/**`, not vendored `vendor/nirs4all-ui` source tests. Wave 4AO moves Studio to `a509888` and pins release archive/Docker runtime deps to immutable selected RC SHAs; local YAML parse and branch-tarball guard passed. Wave 4AP moves Studio to `0eb8596`: product/contract gate skips in `test_run_errors.py` and `test_operators_manifests.py` are now hard failures, with targeted `rtk pytest` reporting `29 passed` and Ruff clean. Wave 4AQ moves Studio to `6b57a90` and repins all-in-one/Docker Python runtime URLs to Python `5e7a0e4b`. | Studio backend and frontend local skip debt is gone on the Linux RC environment. Shared UI source behavior remains owned by the `nirs4all-ui` repo gate plus Studio/Web shim drift checks. Windows host behavior remains a real host gate where only simulated path normalization was tested locally. Release archive/Docker reproducibility is no longer tied to moving dependency branches, but the actual all-in-one/Docker release jobs still need to run before promotion. |
+| Studio | Operator-definition fixture gate now has 0 skips: `445 passed`. Runtime/operator/quick-run RC stack gate after import-precedence fix: `464 passed`. Wave 4W full backend pytest on Studio head `75f511b`: `2335 passed, 301 warnings`, `0 skipped`. Targeted skip burn-down checks passed (`65 passed`, Ruff, ESLint, and portable-paths Vitest `4 passed`). Wave 4Y full frontend Vitest reports `517` Studio test files and `3709` tests passed; this covers Studio `src/**` and `electron/**`, not vendored `vendor/nirs4all-ui` source tests. Wave 4AO moves Studio to `a509888` and pins release archive/Docker runtime deps to immutable selected RC SHAs; local YAML parse and branch-tarball guard passed. Wave 4AP moves Studio to `0eb8596`: product/contract gate skips in `test_run_errors.py` and `test_operators_manifests.py` are now hard failures, with targeted `rtk pytest` reporting `29 passed` and Ruff clean. Wave 4AQ moves Studio to `6b57a90` and repins all-in-one/Docker Python runtime URLs to Python `5e7a0e4b`. Wave 4AR moves Studio to `1508242` and repins all-in-one/Docker runtime URLs to Python `bf242e48` and `dag-ml-data` `616f3e5`; local YAML parse and stale-ref guards passed. | Studio backend and frontend local skip debt is gone on the Linux RC environment. Shared UI source behavior remains owned by the `nirs4all-ui` repo gate plus Studio/Web shim drift checks. Windows host behavior remains a real host gate where only simulated path normalization was tested locally. Release archive/Docker reproducibility is no longer tied to moving dependency branches, but the actual all-in-one/Docker release jobs still need to run before promotion. |
 | Web | After `8a5dcff`, deploy Pages and RC CI gates both require `npm ci`, client-side-only contract `2 passed`, typecheck, Vitest `134 passed`, strict `validate:catalog` against `nirs4all-methods` ABI and Studio canonical DAG registry, strict `check:lite-shim`, `build:single`, `build`, and browser smoke `rt-fallback`. Wave 4Z reran local Web gates with Linux Node `v22.21.1`: `tsc --noEmit`, client-only `2 passed`, full Vitest `134 passed`, catalog validation, UI/core shim checks, `build:single`, production `build`, and `23/23` served browser smokes passed. Web head `5be833d` keeps the clean-runner vendored `nirs4all-ui` subpath exports and corrects public domain wording; local Wave 4AO checks passed `check:ui-shim`, client-only `2 passed`, and typecheck. | Web RC is a static/browser-only app with no backend runtime and no intentional third-party runtime requests; ABI/catalog/Studio DAG drift, vendored `nirs4all-core` shim drift, and vendored `nirs4all-ui` package drift are blocking gates. Served-worker and single-file paths are both locally green and should both stay in final cutover validation. |
 | IO/datasets bridge | Wave 4R on `RC-v1-io` `dac4841` proved the pyo3 IO `DatasetPackage` bridge. Wave 4W moves datasets to `259d1445`: Python/Rust tests pin `catalog/index.json -> n4ds_resolve -> descriptor-rich resolved contract -> nirs4all-io DatasetSpec` without Python provider objects; WASM/R smoke sources now reference the same descriptor-rich contract shape. Wave 4Z moves IO to `71aaaf5` and adds `io-core` tests for `SpectralRecordSet`, `SequenceBlock`, `GenotypeMatrix`, `MaskBlock`, and bare `UriBackedPayload`; local gates passed `cargo test -p nirs4all-io-core`, `cargo test -p nirs4all-io-dagml`, Python `tests/test_dataset_package.py`, WASM smokes, and CLI/WASM cross-binding byte identity. Wave 4AA moves datasets to `60658035` and fixes the access-policy test fake so the non-network CI suite cannot fall through to the native Dataverse fetch after earlier imports. `python3.11 -m pytest -q -m "not network"` reports `226 passed`, `6 skipped`. | Datasets non-Python consumers use neutral catalog/index/descriptor plus IO contracts by design; `datasets` does not assemble `DatasetPackage`. IO owns materialization. Remaining risk is host/toolchain coverage for R/Octave/MATLAB and broader non-Python materialization scenarios beyond the current Rust/WASM gates, not absence of a Python provider package. |
 | Python non-parity tests under strict dag-ml | Wave 4W strict public API batch passed `28 passed`: `workspace_path` and `Session` are explicitly legacy-mode tests, while strict native uses `results_path`; native `.n4a` predict/explain/retrain now passes targeted coverage. | The targeted strict API blocker is closed. This is not a full production flip proof until full parity and wider RC-D release proof are rerun. |
 | Providers | Wave 4P on `RC-v1-providers` `7c7c6e9` added the canonical contract gate. Wave 4U moves providers to `bb87f35`: Ruff passed, `tests/test_contracts.py` -> `21 passed`, and `scripts/validate_contracts.py` -> `provider contracts gate: PASS (5 schemas, 5 fixtures)`. Wave 4AA moves providers to `2cfcca6`: the CI gate lints only provider-owned `src`, `tests`, and `scripts`, and Ruff excludes the checked-out `nirs4all-ecosystem` contracts sibling. `python3.11 scripts/ci_gate.py` passes. | Providers remain an optional Python client surface over neutral contracts; R/WASM/native consumers must use the schemas/fixtures plus native IO/materialization without a Python runtime dependency. |
-| Performance comparison | `n4a-benchmarks perf-compare --repeats 3 --assert-max-ratio python_run=1.25 --assert-max-ratio studio_run=1.35` on Benchmarks `6e4c630`: Python direct `dag-ml/legacy` run ratio `0.730x` and total ratio `0.771x`; Studio pipeline worker run ratio `0.707x` and total ratio `0.751x`. Python `scripts/bench_engine_perf.py` from the perf head `5d37b921` is unchanged through current Python `5e7a0e4b`; it refuses unverified dag-ml fallback and smoke-passed `pls_small` with `0.15x` run ratio, `0.96x` RSS ratio, and `0` prediction-count delta. | RC perf gate is now required in cutover contracts. Evidence has fallback disabled, recorded engines matching requested engines, JSON/Markdown saved under `/tmp/n4a_perf_compare_rc_gate_after_6e4c630.*`, and a Python direct smoke JSON under `/tmp/n4a_bench_engine_perf_smoke_after_ci_fix_20260703.json`. |
+| Performance comparison | `n4a-benchmarks perf-compare --repeats 3 --assert-max-ratio python_run=1.25 --assert-max-ratio studio_run=1.35` on Benchmarks `6e4c630`: Python direct `dag-ml/legacy` run ratio `0.730x` and total ratio `0.771x`; Studio pipeline worker run ratio `0.707x` and total ratio `0.751x`. Python `scripts/bench_engine_perf.py` from the perf head `5d37b921` is unchanged through current Python `bf242e48`; it refuses unverified dag-ml fallback and smoke-passed `pls_small` with `0.15x` run ratio, `0.96x` RSS ratio, and `0` prediction-count delta. | RC perf gate is now required in cutover contracts. Evidence has fallback disabled, recorded engines matching requested engines, JSON/Markdown saved under `/tmp/n4a_perf_compare_rc_gate_after_6e4c630.*`, and a Python direct smoke JSON under `/tmp/n4a_bench_engine_perf_smoke_after_ci_fix_20260703.json`. |
 | Core language surfaces | Wave 4K on `RC-v1-nirs4all-core` `29d6d04`: Rust fmt/clippy/tests passed; Python binding tests `54 run, 1 skipped`; WASM tests passed with Linux Node 24 (`13 passed, 2 skipped` full WASM; V1 surface `13 passed, 1 skipped`); V1 Python surface tests `53 passed`; strict core Python parity and Rust parity passed. Wave 4Y moves Core to `2b0d18a`: Methods JS/WASM `make test-js-wasm` passes on EMSDK (`emcc 5.0.7`, Node `22.16.0`), stages `index.js`, `n4m.js`, and `n4m.wasm`; Core `make test-wasm-parity-strict NIRS4ALL_METHODS_ROOT=../RC-v1-methods` passes `15` WASM tests plus TypeScript typecheck. Wave 4AQ moves Core to `ba959a1`: `release-matlab.yml` now blocks package upload on strict MATLAB/Octave parity against the pinned Methods ref, release topology/capability unittest reports `21 tests OK`, workflow YAML parses, and `make -n test-matlab-parity` confirms `NIRS4ALL_LITE_REQUIRE_METHODS_PARITY=1`. | Core WASM/Methods strict parity is closed locally with a staged Methods JS/WASM dist. R and MATLAB/Octave remain required V1 surfaces; release policy now requires strict runtime parity gates instead of accepting if-available skips as green release proof. Actual host runtime execution still needs release infrastructure before promotion. |
 | Cockpit release accounting | Wave 4P on `RC-v1-cockpit` `8b8e1a4`: `data/current.json` now marks `dag-ml-data` crates as stale against `v0.2.2`/RC head instead of green. `json.tool`, `n4a-cockpit validate-targets`, and offline pytest passed (`84 passed`). Wave 4AO moves Cockpit to `6cdc829`: `tests/test_targets_topology.py` now asserts Python, Rust, JavaScript/WASM, R, and MATLAB/Octave accounting for `nirs4all-core`; local gates passed `4 passed`, target validation `21 packages, 94 targets`, Ruff, and `git diff --check`. | Cockpit is an accounting snapshot, not product release proof; stale registry cells are intentionally visible rather than hidden. MATLAB/Octave is accounted as a tracked aggregate release surface, while actual licensed MATLAB runtime proof remains outside Cockpit. |
 
@@ -108,7 +108,7 @@ This is not a temporary cut. The target is the final project topology:
 - Wave 4S covered normal `rc/**` CI triggers across the remaining selected
   repos without widening release/manual/pages/scheduled/long parity workflows.
   The aggregate lock now pins CI-only heads for `dag-ml` `a8f6cb3`,
-  `dag-ml-data` `95e56a7`, `nirs4all-formats` `32fc87f`,
+  `dag-ml-data` `616f3e5`, `nirs4all-formats` `32fc87f`,
   `nirs4all-io` `0d20c80`, `nirs4all-methods` `d918c5e`, and
   `nirs4all-core` `0a516e2`.
 - Web/Studio clean-runner UI dependency resolution is fixed after Wave 4S.
@@ -200,20 +200,21 @@ This is not a temporary cut. The target is the final project topology:
   refreshed after the latest alert. Wave 4X removed the active-head
   secret-shaped documentation example `--principal alice:s3cr3t:submitter`.
   Wave 4AC then removed scanner-sensitive principal metavars from active
-  docs/help. Published branch/tag refs now point to clean heads: `main`
-  `eaf79a0`, `rc/v1-full-refactor` `ffeaf4b`, tag
-  `n4a-v1-rc1-2026.07-refactor` `ffeaf4b`. Strict scanner-pattern checks over
-  the active branch/tag refs are empty; the focused RBAC gate is `24 passed` on
-  both main and RC worktrees, and GitHub Actions are green for both heads.
+  docs/help. Wave 4AR then adds a CI secret-scan guard. Published branch/tag refs
+  now point to clean heads: `main` `aec2a10`, `rc/v1-full-refactor` `9643460`,
+  tag `n4a-v1-rc1-2026.07-refactor` `9643460`. Strict scanner-pattern checks over
+  the active branch/tag refs are empty; the focused RBAC gate is `24 passed`, full
+  cluster pytest is `145 passed`, `1 skipped`, `1 deselected`, and GitHub Actions
+  are green for both heads.
   GitHub/history may still expose old placeholder examples on hidden PR refs;
   residual alert closure is a GitGuardian/GitHub-support dashboard action unless
   GitGuardian discloses an actual non-placeholder value.
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees. `WAVE_4Q_RC_PUBLICATION_REAUDIT.md` rechecked the post-4P heads after repairing missing tags on Studio/UI/Org/Tools/IO/Datasets; Wave 4R then moved Studio/IO/Datasets and regenerated the aggregation lock for IO/Datasets.
-- Latest pushed/tagged heads after the Wave 4AQ CI/release-gate batch: Python `5e7a0e4b`,
-  dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `ba959a1`,
-  Studio `6b57a90`, Web `5be833d`, UI `69501bd`, Cockpit `6cdc829`,
+- Latest pushed/tagged heads after the Wave 4AR runtime-pin and CI refresh batch: Python `bf242e48`,
+  dag-ml `a8f6cb3`, dag-ml-data `616f3e5`, Core `ba959a1`,
+  Studio `1508242`, Web `5be833d`, UI `69501bd`, Cockpit `6cdc829`,
   Org `2d44265`, Ecosystem uses the current board HEAD, Providers `2cfcca6`,
-  Tools `7c5070f`, Cluster `ffeaf4b`, Formats `32fc87f`, IO `26963d5`,
+  Tools `7c5070f`, Cluster `9643460`, Formats `32fc87f`, IO `26963d5`,
   Datasets `7b1b805`, Methods `115077ae`, Repository `ced219f`,
   Benchmarks `6e4c630`, Papers `f1d84f4`.
 - Wave 4AA moves Datasets to `60658035` and Providers to `2cfcca6`, with branch
@@ -378,13 +379,23 @@ This is not a temporary cut. The target is the final project topology:
   passed `58 passed`, `2 skipped` (pre-existing TensorFlow optional skips), and
   Ruff passed. Studio moves to `6b57a90` to repin all-in-one/Docker Python
   runtime deps to `5e7a0e4b`.
+- Wave 4AR moves Python to `bf242e48` after the Windows CI parquet atomic-replace
+  failure on `5e7a0e4b`. The fix retries transient `os.replace` `PermissionError`
+  cases only on Windows and passed the new unit regression, the touched
+  `ArrayStore` unit suite, and the failing branch-generator integration test.
+  `dag-ml-data` moves to `616f3e5` so all CI jobs checkout the paired `dag-ml`
+  RC branch instead of default `main`; the published CI is green. Studio moves to
+  `1508242` and repins all-in-one/Docker runtime URLs to Python `bf242e48` and
+  `dag-ml-data` `616f3e5`; GitHub Studio CI and Playwright were still running at
+  the time of this board update.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator
   skips and Python registry skips have been burned down; the last full Python
   parity proof on `6a2c720` reports `887 passed`, `0 skipped`, and `0 xfailed`
-  across the split slow/non-slow run. Current Python `5e7a0e4b` adds
+  across the split slow/non-slow run. Current Python `bf242e48` adds
   perf/CI/example-compatibility/type-check changes, the Wave 4AO macOS unit
-  fix, and the Wave 4AQ legacy-integration CI fix after that proof, and still
-  requires the planned final full parity rerun after the next large batch.
+  fix, the Wave 4AQ legacy-integration CI fix, and the Wave 4AR Windows
+  atomic-replace CI fix after that proof, and still requires the planned final
+  full parity rerun after the next large batch.
   Remaining skip risk is outside this gate:
   R and Octave/MATLAB language binding environments without their release
   toolchains, plus final host proof for non-Python DatasetPackage surfaces
@@ -395,9 +406,9 @@ This is not a temporary cut. The target is the final project topology:
 Current Python-reference parity debt is zero in the last full proof:
 split slow/non-slow parity on Python `6a2c720` totals `887 passed`,
 `0 skipped`, `0 xfailed`, and `0 failed`. The selected RC Python head is now
-`5e7a0e4b` after perf/CI/example-compatibility/type-check changes, the
-Wave 4AO macOS unit/disjoint-merge fix, and the Wave 4AQ legacy-integration
-CI fix; do not claim
+`bf242e48` after perf/CI/example-compatibility/type-check changes, the
+Wave 4AO macOS unit/disjoint-merge fix, the Wave 4AQ legacy-integration
+CI fix, and the Wave 4AR Windows atomic-replace CI fix; do not claim
 final production parity for that head until the next large-batch full parity run
 completes.
 

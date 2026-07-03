@@ -328,7 +328,7 @@
       "selected_workspace_path": "RC-v1-dmd",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "95e56a7fa3d82ea00fda7ecfcd950a22ab526d21",
+        "commit": "616f3e5ff715667d537c089a9ba059832f8cc1c9",
         "dirty": false,
         "exact_tag": "n4a-v1-rc1-2026.07-refactor"
       },
