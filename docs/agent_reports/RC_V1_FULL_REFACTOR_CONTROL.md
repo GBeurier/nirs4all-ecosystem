@@ -275,10 +275,11 @@ This is not a temporary cut. The target is the final project topology:
   of failing behind a skip; IO loader tests preserve semicolon-default coverage.
 - Wave 4AC also closes several non-Python local gates: Core strict WASM parity
   (`15` tests, `0` skipped), Core R V1 public surface, Core R strict portable
-  parity against `RC-v1-methods`, IO WASM smoke, IO R smoke, IO Octave/MATLAB
-  smoke, Datasets WASM node/web/package dry-run, Datasets R smoke, and combined
-  R IO+datasets package verification. Full Python parity was intentionally not
-  rerun in this batch.
+  parity against `RC-v1-methods`, Methods R binding parity, Methods Octave/MEX
+  parity, Methods JS/WASM smoke/parity/pack dry-run, IO WASM smoke, IO R smoke,
+  IO Octave/MATLAB smoke, Datasets WASM node/web/package dry-run, Datasets R
+  smoke, and combined R IO+datasets package verification. Full Python parity was
+  intentionally not rerun in this batch.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator
   skips and Python registry skips have been burned down; Python full parity on
   current head `6a2c720` reports `887 passed`, `0 skipped`, and `0 xfailed`
@@ -301,10 +302,10 @@ with a replacement contract or local fixture.
 Remaining non-Python proof debt is broader language-completeness debt, not
 accepted Python parity debt:
 
-- Broader R/Rscript feature-completeness beyond the Wave 4AC core strict R
-  parity and IO/datasets R package smokes.
-- Broader Octave/MATLAB execution gates for the MATLAB/Octave preview/subset
-  surfaces beyond the Wave 4AC IO Octave smoke.
+- Broader R/Rscript feature-completeness beyond the Wave 4AC Methods/Core/IO/
+  datasets R gates.
+- Licensed MATLAB runtime proof beyond the Wave 4AC Methods Octave/MEX parity
+  and IO Octave smoke.
 - Methods-backed WASM numeric execution on final heads when the toolchain is
   available locally or in CI.
 

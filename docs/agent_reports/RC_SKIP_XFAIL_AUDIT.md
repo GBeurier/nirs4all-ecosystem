@@ -52,6 +52,12 @@ and `NIRS4ALL_REQUIRE_N4M=1`.
   - summary:
     `registered=95, non_runnable=0, runnable=95, fallback=0, native=95, xfail_strict=0, skip=0, num_predictions_divergence=2, run_only_nondeterministic=1, expected_fallback_target=0`.
 - Wave 4AC adds non-Python skip burn-down evidence:
+  - Methods R binding:
+    `env "PATH=/home/delete/miniconda3/envs/p4a-r/bin:${PATH}" make test-r-binding PRESET=dev-release` -> `R smoke + parity OK`.
+  - Methods Octave/MEX binding:
+    `conda run -n pls4all_r bash -lc 'unset LIBRARY_PATH CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH CMAKE_PREFIX_PATH CONDA_BUILD_SYSROOT; make test-octave-mex PRESET=dev-release'` -> `PARITY GATE PASS`.
+  - Methods JS/WASM binding:
+    `source /home/delete/emsdk/emsdk_env.sh && make test-js-wasm` -> `WASM smoke + parity OK` and `npm pack --dry-run` PASS.
   - Core R V1 public surface:
     `conda run -n p4a-r make test-r-v1-surfaces` -> PASS.
   - Core R strict portable parity with selected Methods RC:
@@ -64,20 +70,21 @@ and `NIRS4ALL_REQUIRE_N4M=1`.
 - Track remaining Studio skips as optional/environment gates, not operator debt.
 - Do not cite `99d57b7e`, `42448821`, or `3d568ab` as the current parity proof
   head; the current proof was run on RC Python `6a2c720`.
-- Keep methods binding proof separate: JS/WASM has local strict proof, and R now
-  has core portable parity plus IO/datasets package smoke proof. MATLAB/Octave
-  and broader target-language feature completeness still need final release
-  host proof even though Python parity is green.
+- Keep methods binding proof separate: Methods JS/WASM, R, and Octave/MEX now
+  have local proof, and R also has core portable parity plus IO/datasets package
+  smoke proof. Licensed MATLAB runtime and broader target-language feature
+  completeness still need final release host proof even though Python parity is
+  green.
 - Preserve the distinction between `deselected` and `skipped` in release notes.
 
 ## Risk
 
 Python-reference parity no longer has unexplained skip/xfail debt in the
 selected split parity gates. Remaining skip risk is outside this gate:
-MATLAB/Octave language binding environments and broader target-language
-feature-completeness still need final release proofs. Non-Python DatasetPackage
-coverage is no longer blank: Rust `io-core`, `io-dagml`, WASM smokes,
-CLI/WASM cross-binding checks, Core R strict parity, and combined R IO+datasets
-checks have all passed locally. The remaining risk is final host proof for
-MATLAB/Octave and broader non-Python materialization cases beyond the current
-Rust/WASM/R local gates.
+licensed MATLAB runtime and broader target-language feature-completeness still
+need final release proofs. Non-Python DatasetPackage coverage is no longer
+blank: Rust `io-core`, `io-dagml`, WASM smokes, CLI/WASM cross-binding checks,
+Methods R/Octave/JS-WASM parity, Core R strict parity, and combined
+R IO+datasets checks have all passed locally. The remaining risk is final
+licensed MATLAB host proof and broader non-Python materialization cases beyond
+the current Rust/WASM/R/Octave local gates.

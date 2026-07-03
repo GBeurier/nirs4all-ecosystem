@@ -146,6 +146,15 @@ Tests:
 
 Additional local gate evidence collected before this report:
 
+- Methods R binding:
+  `env "PATH=/home/delete/miniconda3/envs/p4a-r/bin:${PATH}" make test-r-binding PRESET=dev-release`
+  -> `R smoke + parity OK`.
+- Methods Octave/MEX binding:
+  `conda run -n pls4all_r bash -lc 'unset LIBRARY_PATH CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH CMAKE_PREFIX_PATH CONDA_BUILD_SYSROOT; make test-octave-mex PRESET=dev-release'`
+  -> `PARITY GATE PASS`.
+- Methods JS/WASM binding:
+  `source /home/delete/emsdk/emsdk_env.sh && make test-js-wasm` with Node
+  `v22.21.1` -> `WASM smoke + parity OK` and `npm pack --dry-run` PASS.
 - Core strict WASM parity:
   `make test-wasm-parity-strict NIRS4ALL_METHODS_ROOT=/home/delete/nirs4all/_worktrees/RC-v1-methods`
   -> Node TAP `15` tests, `0` skipped.
@@ -169,6 +178,12 @@ Additional local gate evidence collected before this report:
 - Datasets R:
   standalone R package smoke -> PASS; combined R IO+datasets gate above removes
   the optional bridge skip for this environment.
+
+Operational note: invoking Methods `make test-r-binding` or
+`make test-octave-mex` through a fully activated conda build environment can
+pollute CMake's native link step (`libm`/`libmvec` lookup). The passing commands
+above either put only the R binaries in `PATH` or unset conda build variables
+before running CMake.
 
 ## Publication
 
@@ -196,10 +211,11 @@ source of release evidence.
 ## Remaining Risks
 
 - Full Python parity was intentionally not rerun in this batch.
-- R evidence now covers core public surface, core strict portable parity,
-  IO package smoke, datasets package smoke, and combined IO+datasets package
-  usage. This is still not a claim that every R surface is feature-complete.
-- Current Octave/MATLAB evidence is an IO smoke gate, not full MATLAB/Octave
-  feature parity across every release surface.
+- R evidence now covers Methods binding parity, Core public surface, Core strict
+  portable parity, IO package smoke, datasets package smoke, and combined
+  IO+datasets package usage. This is still not a claim that every R surface is
+  feature-complete.
+- Octave evidence now covers Methods MEX parity and IO smoke. Licensed MATLAB
+  runtime proof remains manual/outside this Linux environment.
 - Historical GitHub objects or hidden PR refs can still trigger stale
   GitGuardian findings even when selected branch/tag heads scan clean.
