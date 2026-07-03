@@ -75,11 +75,9 @@ that gate remains deferred until the next large integration batch.
 GitHub Actions:
 
 - `dag-ml-data` `616f3e5`: `CI` and `version-guard` completed successfully.
-- Python `bf242e48`: `version-guard` and `CodeQL` completed successfully; `CI`,
-  `Documentation`, and `Docs Quality` were still running when this report was
-  written.
-- Studio `1508242`: `CI` and `Playwright E2E Tests` were still running when this
-  report was written.
+- Python `bf242e48`: `CI`, `CodeQL`, `Documentation`, `Docs Quality`, and
+  `version-guard` completed successfully.
+- Studio `1508242`: `CI` and `Playwright E2E Tests` completed successfully.
 
 ## Decisions
 
@@ -93,9 +91,8 @@ GitHub Actions:
 
 ## Risks
 
-- Full Python parity still needs a fresh large-batch rerun on `bf242e48` or the
-  eventual later selected head before RC promotion.
+- Full Python parity was later refreshed in Wave 4AT on `bf242e48`; rerun it only
+  after later Python/native/data runtime movement.
 - Studio all-in-one/Docker release jobs remain release-environment proof, not
   fully exercised by this YAML/pin refresh.
-- Python and Studio GitHub Actions were pending at report creation and must be
-  checked before final RC sign-off.
+- Python and Studio GitHub Actions are now green for this batch.
