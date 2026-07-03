@@ -17,8 +17,8 @@ Scope: release cascade after the V1 refactor batch, excluding production-sensiti
 | `nirs4all-datasets` | `c46042dabe29` | `0.3.2` |
 | `nirs4all-methods` | `115077ae4551` | `1.0.1`, final tag moved from stale head |
 | `nirs4all-core` | `19e69417ad89` | `0.2.2`, canonical aggregate target |
-| `nirs4all-web` | `00f29f45b29a` | vendored `nirs4all-core` WASM shim `0.2.2` and current `nirs4all-ui` |
-| `nirs4all-cockpit` | `8204744` | public snapshot updated |
+| `nirs4all-web` | `6f8f3fcdbdd` | vendored `nirs4all-core` WASM shim `0.2.2` and rebuilt current `nirs4all-ui` dist |
+| `nirs4all-cockpit` | `85737b6` | public snapshot updated |
 | `nirs4all-org` | `05666f5` | public site updated |
 
 Additional final tags were added on the selected RC heads for `nirs4all-tools`,
@@ -44,8 +44,8 @@ Ecosystem:
 Sibling gates run during the cascade:
 
 - `nirs4all-core`: `cargo test --workspace`; Python unittest discovery; WASM npm tests with Linux Node; version check.
-- `nirs4all-web`: `check:lite-shim`, `typecheck`, 134 Vitest tests, catalog validation, `build`, `build:single`.
-- `nirs4all-cockpit`: target validation, 87 tests, Ruff.
+- `nirs4all-web`: client-only contract, `check:ui-shim`, `check:lite-shim`, `typecheck`, 134 Vitest tests, catalog validation, `build`, `build:single`, browser smoke `rt-fallback`.
+- `nirs4all-cockpit`: target validation, 87 tests, Ruff, cascade head refresh for Web/UI/methods/formats/papers/cluster.
 - `nirs4all-org`: HTML parser smoke and diff check.
 
 Full Python-reference parity was not rerun in this step by instruction; it should
