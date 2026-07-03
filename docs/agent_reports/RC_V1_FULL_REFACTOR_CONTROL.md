@@ -1,6 +1,6 @@
 # RC V1 Full Refactor Control Board
 
-Date: 2026-07-02
+Date: 2026-07-03
 
 Coordinator: Codex parent session in `/home/delete/nirs4all`.
 
@@ -135,6 +135,22 @@ This is not a temporary cut. The target is the final project topology:
   Full Python-reference parity was then run after the batch in split form; the
   sole base-interpreter methods skip was closed by the installed-methods proof
   harness rather than accepted as release debt.
+- Wave 4V moves the selected Studio/Web/Core/Methods/Org heads to Studio
+  `e9fa4cf`, Web `85dcd79`, Core `8dcf2af`, Methods `a24b06b`, and Org
+  `fd4634d`, with branch and tag `n4a-v1-rc1-2026.07-refactor` published for
+  each. Studio full Playwright e2e passed `63 passed (13.8m)` after the settings
+  locator fix; final Studio runtime/venv targeted tests passed `7 passed` after
+  the pip nonzero-cache refinement. Web audit/shim/smoke gates remain green,
+  Core Python V1 surface reports `53 tests OK`, Core WASM reports `13 passed,
+  2 skipped`, Methods now fails fast on missing JS parity fixture, and Org
+  wording no longer overclaims R/MATLAB/full aggregate status.
+- Wave 4V reran the GitGuardian cluster alert audit against the current
+  published refs and hidden PR refs. Current published heads remain clean:
+  cluster `main` `97b2b38`, cluster RC `9d6ab34`. Hidden merged PR refs #1/#2
+  still expose placeholder CLI examples such as `--token dev`, not a discovered
+  real token. If GitGuardian shows a non-placeholder value, rotate it out of
+  band; otherwise close the alert as stale/placeholder PR-ref exposure because
+  GitHub rejects normal deletion of hidden PR refs.
 - Claude Code separation review confirmed the target split is coherent but
   warned against overclaiming R or native datasets/providers. Current release
   language should treat R as a methods portable subset/preview until
@@ -143,12 +159,12 @@ This is not a temporary cut. The target is the final project topology:
 - Ecosystem RC head now includes `89e8c63 docs(release): tighten topology accounting`; release surface validation documents `nirs4all-core`, `nirs4all-python`, R/JS-WASM/Rust/MATLAB language surfaces, `nirs4all-ui`, client-side-only Web, providers/cockpit/org, and the narrower aggregate lock boundary.
 - Cluster GitGuardian remediation was upgraded from tip cleanup to a targeted history rewrite and refreshed after the latest alert. Published branch/tag refs now point to rewritten clean history: `main` `97b2b38`, `rc/v1-full-refactor` `9d6ab34`, tag `n4a-v1-rc1-2026.07-refactor` `9d6ab34`. Strict scanner-pattern checks over the branch/tag refs are empty; cluster gates are `142 passed, 1 skipped, 1 deselected` on `main` and `145 passed, 1 skipped, 1 deselected` on the RC worktree. GitHub still exposes merged hidden PR refs #1/#2 from 2026-06-04; current recheck finds only placeholder CLI examples such as `--token dev` / `TOKEN` there, not selected release heads. Source branches are gone and deleting hidden PR refs is rejected by GitHub, so residual alert closure is a GitGuardian/GitHub-support action after token rotation if the value was ever real.
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees. `WAVE_4Q_RC_PUBLICATION_REAUDIT.md` rechecked the post-4P heads after repairing missing tags on Studio/UI/Org/Tools/IO/Datasets; Wave 4R then moved Studio/IO/Datasets and regenerated the aggregation lock for IO/Datasets.
-- Latest pushed/tagged heads after the Wave 4U batch: Python `884a196`,
-  dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `5067cab`,
-  Studio `bd7de4b`, Web `6924da5`, UI `69501bd`, Cockpit `f06f7b4`,
-  Org `61074ff`, Ecosystem uses the current board HEAD, Providers `bb87f35`,
+- Latest pushed/tagged heads after the Wave 4V batch: Python `884a196`,
+  dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `8dcf2af`,
+  Studio `e9fa4cf`, Web `85dcd79`, UI `69501bd`, Cockpit `f06f7b4`,
+  Org `fd4634d`, Ecosystem uses the current board HEAD, Providers `bb87f35`,
   Tools `7c5070f`, Cluster `9d6ab34`, Formats `32fc87f`, IO `0d20c80`,
-  Datasets `59b34f5`, Methods `6f6a3fa`, Repository `ced219f`,
+  Datasets `59b34f5`, Methods `a24b06b`, Repository `ced219f`,
   Benchmarks `06d4146`, Papers `f1d84f4`.
 - `aggregation-lock` remains limited to the aggregate core/runtime members. Studio/Web/UI/tools/providers/benchmarks/papers/cluster are tracked by the surface matrix, cutover gates, and agent reports rather than forced into the aggregate lock without an ownership contract.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator skips and Python registry skips have been burned down; Python full parity on runtime head `3d568ab` reports no skipped or xfailed parity tests. Current Python head `884a196` has a split full-parity proof; the base interpreter realized one methods-install skip, and the methods-installed proof harness reran the non-slow parity args with `NIRS4ALL_REQUIRE_N4M=1` and passed. Remaining skip risk is outside this gate: Studio optional/environment categories and language binding environments without their release toolchains.
