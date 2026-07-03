@@ -178,7 +178,7 @@
       "selected_workspace_path": "RC-v1-dagml",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "c15d8fc9d2ca841e9ba8de089f56fd810b67b602",
+        "commit": "d7ee3ccd3c64779c3f81db409584e6f40e70db06",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
@@ -570,7 +570,7 @@
       "selected_workspace_path": "RC-v1-io",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "607b4770d28460979efc4b8749af87110274b206",
+        "commit": "1fc6c12088dcd5e8d8702fedd3cf339d296c3a02",
         "dirty": false,
         "exact_tag": "n4a-v1-2026.07-refactor"
       },
