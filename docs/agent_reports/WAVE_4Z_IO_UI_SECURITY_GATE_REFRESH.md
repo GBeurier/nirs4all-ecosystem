@@ -20,7 +20,9 @@ parity:
 | --- | --- | --- |
 | Turing the 3rd | IO/datasets read-only audit | Confirmed `datasets` non-Python owns resolve/fetch/verify and neutral descriptors, not package assembly. Flagged missing `io-core` payload-variant coverage. |
 | Einstein the 3rd | UI/Web read-only audit | Confirmed `nirs4all-ui` is a reusable package and Web `studio-lite` is client-side-only. Noted that UI package surface is intentionally small today. |
-| Claude Code Opus | Cluster GitGuardian read-only audit | Hit max-turns before a final report, but the logged commands found no high-entropy/live secret and mapped residual `--token dev` exposure to immutable PR refs. |
+| Singer the 3rd | Cluster GitGuardian read-only audit | Confirmed `main`, `rc/v1-full-refactor`, and the RC tag are clean; only immutable merged PR refs still contain placeholder examples such as `--token dev`. |
+| Dewey the 3rd | Web/Ecosystem CI audit | Confirmed Web clean-runner failure came from missing vendored `nirs4all-ui` subpath `dist` files and Ecosystem failure came from invalid release-lock CLI argument ordering. |
+| Claude Code Fable/Opus | Cluster/Web/Ecosystem read-only audit | Found no high-entropy/live Cluster secret on current heads and independently confirmed the GitGuardian signal matches placeholder/test examples plus historical PR refs. |
 
 ## Integrated Changes
 
@@ -33,8 +35,28 @@ parity:
   `n4a-v1-rc1-2026.07-refactor` to `71aaaf5`.
 - Regenerated the aggregation lock; only the IO member commit changed.
 
-No code changes were made in `nirs4all-ui`, `nirs4all-web`, `nirs4all-datasets`,
-or `nirs4all-cluster`.
+`nirs4all-web` moved from `85dcd79` to `974f71a`:
+
+- Added the generated vendored `nirs4all-ui` `dist` subpaths used by package
+  exports: `components`, `runtime`, and `score`.
+- Updated the `nirs4all-ui` sibling GitHub Action to run `npm ci` and
+  `npm run build` after checkout so the drift check compares against a clean
+  source checkout with built `dist` artifacts.
+- Pushed branch `rc/v1-full-refactor` and retagged
+  `n4a-v1-rc1-2026.07-refactor` to `974f71a`.
+
+`nirs4all-ecosystem` moved from `13c84c9` to `05da7dc`:
+
+- Fixed the `version-guard` workflow to pass global `--workspace-root` before
+  the `validate` subcommand.
+- Updated `checkout-members` to clone into `selected_workspace_path` when one is
+  declared, making the documented `checkout-members` then `validate` flow
+  directly reproducible for RC worktrees.
+- Added a regression test that generates a lock from a selected RC workspace,
+  checks out members into a clean root, and validates the lock against that root.
+
+No code changes were made in `nirs4all-ui`, `nirs4all-datasets`, or
+`nirs4all-cluster`.
 
 ## Tests And Audits
 
@@ -74,6 +96,11 @@ or `nirs4all-cluster`.
   `libn4m`, `dag-ml-data`, Web worker fallback errors, `.n4a` export/import,
   datasets upload, branch/generator DAGs, and prediction/chart flows without JS
   console errors.
+- Clean-runner UI vendor reproduction: clone `nirs4all-ui@rc/v1-full-refactor`,
+  `npm ci`, `npm run build`, then
+  `NIRS4ALL_UI_SHIM_REQUIRED=1 npm run check:ui-shim` from Web -> passed.
+- GitHub Actions on `974f71a`: `version-guard` success and `web-ci` success
+  (`studio-lite client-only gate` completed).
 
 Cluster GitGuardian:
 
@@ -86,6 +113,10 @@ Cluster GitGuardian:
 - GitHub rejected previous deletion attempts for `refs/pull/*`; residual closure
   is GitGuardian/GitHub-support handling unless GitGuardian reveals a real
   non-placeholder value.
+- A second read-only Codex audit checked `origin/main`, `origin/rc/v1-full-refactor`,
+  the RC tag, and merged PR refs #1/#2. Current published heads remain clean; PR
+  refs only contain placeholder/test values. Local token files at the workspace
+  root were not read and are outside a Git repository.
 
 Release lock:
 
@@ -98,6 +129,15 @@ Release lock:
   -> `7/7` member commits checked out.
 - `git ls-remote https://github.com/GBeurier/nirs4all-io.git refs/heads/rc/v1-full-refactor refs/tags/n4a-v1-rc1-2026.07-refactor`
   -> both refs resolve to `71aaaf5`.
+- Clean CI reproduction after the workflow/tooling fix:
+  `checkout-members --output /tmp/n4a-ecosystem-ci-validate` then
+  `--workspace-root /tmp/n4a-ecosystem-ci-validate validate` -> passed across
+  all 7 locked members.
+- `python3 -m pytest -q tests/test_release_lock.py tests/test_release_surface_matrix.py -p no:cacheprovider`
+  -> `17 passed`.
+- GitHub Actions on `05da7dc`: `version-guard` success, with
+  `release-lock-tooling`, `guard`, and `release-lock-validation` all completed
+  successfully.
 
 ## Decisions
 
