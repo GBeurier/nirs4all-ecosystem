@@ -201,7 +201,8 @@ This is not a temporary cut. The target is the final project topology:
 - Latest pushed/tagged heads after the Wave 4Z CI-fix batch: Python `6a2c720`,
   dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `2b0d18a`,
   Studio `75f511b`, Web `974f71a`, UI `69501bd`, Cockpit `f06f7b4`,
-  Org `fd4634d`, Ecosystem `05da7dc`, Providers `bb87f35`,
+  Org `fd4634d`, Ecosystem uses the current board HEAD (release-lock tooling fix
+  at `05da7dc`), Providers `bb87f35`,
   Tools `7c5070f`, Cluster `19384e2`, Formats `32fc87f`, IO `71aaaf5`,
   Datasets `259d1445`, Methods `a24b06b`, Repository `ced219f`,
   Benchmarks `06d4146`, Papers `f1d84f4`.
