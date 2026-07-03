@@ -225,3 +225,31 @@ and cannot be deleted through normal Git pushes.
 Operational conclusion is unchanged: current selected refs are clean for the
 checked class. Treat continued alerts as GitGuardian stale-cache / hidden-PR-ref
 review unless the UI reveals a real non-placeholder value.
+
+## Wave 4X Active-Head Hardening
+
+The repeated GitGuardian class also prompted a scan for generic CLI-option
+values beyond `--token`. The selected heads no longer contained token examples,
+but still had a secret-shaped help/documentation example for RBAC principals:
+`--principal alice:s3cr3t:submitter`.
+
+Actions:
+
+- Replaced the runtime help and CLI reference text with the neutral contract
+  form `NAME:TOKEN:ROLES`, without changing parsing semantics.
+- Pushed `main` to `16b4a2a docs(security): avoid secret-shaped principal examples`.
+- Cherry-picked the same change to the RC worktree as `19384e2` and moved tag
+  `n4a-v1-rc1-2026.07-refactor` to that head.
+
+Validation:
+
+- `ruff check nirs4all_cluster/cli.py`: passed on both `main` and RC.
+- `PYTHONPATH=. pytest -q` on `main`: `142 passed, 1 skipped, 1 deselected, 3 warnings`.
+- `PYTHONPATH=. pytest -q` on RC: `145 passed, 1 skipped, 1 deselected, 3 warnings`.
+- Post-push `git ls-remote`:
+  - `origin/main` -> `16b4a2a`
+  - `origin/rc/v1-full-refactor` -> `19384e2`
+  - `n4a-v1-rc1-2026.07-refactor` -> `19384e2`
+- Post-push scan of active heads found no concrete `--token VALUE` or
+  `--principal VALUE` examples. Hidden PR refs #1/#2 still contain only the
+  historical `--token dev` placeholder.

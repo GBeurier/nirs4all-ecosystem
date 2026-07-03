@@ -1,7 +1,8 @@
 # RC Skip / Xfail Audit
 
-Date: 2026-07-02  
-Agent: Codex/Laplace, read-only; coordinator refresh after Python `3d568ab`
+Date: 2026-07-02
+Last refresh: 2026-07-03 after Python `6a2c720` full split parity
+Agent: Codex/Laplace, read-only; coordinator refresh after Python `6a2c720`
 
 ## Scope
 
@@ -13,27 +14,32 @@ Read-only audit of skip/xfail debt visible in the current RC gates:
 - prior targeted benchmarks result
 
 The initial audit was read-only. The coordinator later refreshed this report
-after the full Python parity rerun on the selected RC Python head `3d568ab`
-with RC `dag-ml` `7f86a9b` and RC `dag-ml-data` `e681685` on `PYTHONPATH`.
+after full Python parity reruns on selected RC Python heads, most recently
+`6a2c720` with the selected RC `dag-ml` and `dag-ml-data` paths on `PYTHONPATH`
+and `NIRS4ALL_REQUIRE_N4M=1`.
 
 ## Findings
 
 - Studio operator fixture debt has been burned down after the original audit:
   - `tests/test_operator_definitions.py` now passes with `445 passed` and 0 skips after replacing skipped fixture families with deterministic local inputs;
   - the combined Studio runtime/operator/quick-run RC stack gate passes with `464 passed`.
-- Studio full-backend result is refreshed after the current batch: `2324 passed, 6 skipped` in `1465.99s`. Remaining skips are Windows-only/env/example-access categories, not operator-definition fixture debt.
-- Studio frontend `1 skipped` is Windows-only path behavior in `electron/portable-paths.test.ts`.
+- Studio full-backend result is refreshed after Wave 4W: `2335 passed, 0 skipped`, `301 warnings`. Locally coverable backend skips were removed; Windows host behavior remains a real external host gate, not a skipped Linux backend test.
+- Studio frontend targeted portable-paths gate now reports `4 passed`; full frontend Vitest was not rerun in Wave 4W/4X.
 - Benchmarks `1 skipped` is optional CI/runtime coverage and should be rerun in the service-extra environment if zero skips is required.
 - Python parity `30 skipped / 11 xfailed` is stale, and the intermediate
   `853 passed, 14 skipped, 6 xfailed` result is now superseded.
-- Full Python parity on the selected RC heads now passes without parity skip or
-  xfail debt:
-  - command:
-    `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/delete/nirs4all/_worktrees/RC-v1-dagml/crates/dag-ml-py/python:/home/delete/nirs4all/_worktrees/RC-v1-dmd/crates/dag-ml-data-py/python:. PATH=/home/delete/nirs4all/_worktrees/RC-v1-dagml/target/debug:$PATH /home/delete/nirs4all/nirs4all/.venv/bin/python -m pytest tests/integration/parity/ -m parity -p no:cacheprovider -ra`
-  - result:
-    `659 passed, 227 deselected, 1530 warnings in 2037.46s (0:33:57)`.
-  - `227 deselected` are tests outside the `parity` marker, not skipped tests.
-  - No `skipped`, no `xfailed`, and no `failed` tests were reported in this gate.
+- Full Python parity on current selected RC head `6a2c720` now passes without
+  parity skip or xfail debt:
+  - non-slow command:
+    `PYTHONDONTWRITEBYTECODE=1 NIRS4ALL_REQUIRE_N4M=1 PYTHONPATH=/home/delete/nirs4all/_worktrees/RC-v1-dagml/crates/dag-ml-py/python:/home/delete/nirs4all/_worktrees/RC-v1-dmd/crates/dag-ml-data-py/python:. PATH=/home/delete/nirs4all/_worktrees/RC-v1-dagml/target/debug:$PATH /home/delete/nirs4all/nirs4all/.venv/bin/python -m pytest tests/integration/parity -m "not slow" -q --tb=short -p no:cacheprovider`
+  - non-slow result:
+    `444 passed, 443 deselected, 510 warnings in 550.90s`.
+  - slow command:
+    `PYTHONDONTWRITEBYTECODE=1 NIRS4ALL_REQUIRE_N4M=1 PYTHONPATH=/home/delete/nirs4all/_worktrees/RC-v1-dagml/crates/dag-ml-py/python:/home/delete/nirs4all/_worktrees/RC-v1-dmd/crates/dag-ml-data-py/python:. PATH=/home/delete/nirs4all/_worktrees/RC-v1-dagml/target/debug:$PATH /home/delete/nirs4all/nirs4all/.venv/bin/python -m pytest tests/integration/parity -m "slow" -q --tb=short -p no:cacheprovider`
+  - slow result:
+    `443 passed, 444 deselected, 1309 warnings in 1843.08s`.
+  - Combined interpretation: `887 passed`, `0 skipped`, `0 xfailed`, `0 failed`.
+  - `deselected` are the opposite split, not skipped tests.
 - The fallback coverage meter was checked before the full run:
   - `coverage_meter OK (fallback=0, target=0)`;
   - summary:
@@ -42,8 +48,8 @@ with RC `dag-ml` `7f86a9b` and RC `dag-ml-data` `e681685` on `PYTHONPATH`.
 ## Required Follow-Up
 
 - Track remaining Studio skips as optional/environment gates, not operator debt.
-- Do not cite `99d57b7e` or `42448821` as the current parity proof head; the
-  current proof was run on RC Python `3d568ab`.
+- Do not cite `99d57b7e`, `42448821`, or `3d568ab` as the current parity proof
+  head; the current proof was run on RC Python `6a2c720`.
 - Keep methods binding proof separate: JS/WASM/R/Octave/MATLAB methods gates
   still depend on their release environments even though Python parity is green.
 - Preserve the distinction between `deselected` and `skipped` in release notes.
@@ -51,6 +57,7 @@ with RC `dag-ml` `7f86a9b` and RC `dag-ml-data` `e681685` on `PYTHONPATH`.
 ## Risk
 
 Python-reference parity no longer has unexplained skip/xfail debt in the
-selected `-m parity` gate. Remaining skip risk is outside this gate: Studio
-environment skips and methods/language binding environments still need their
-own final release proofs.
+selected split parity gates. Remaining skip risk is outside this gate:
+methods/language binding environments still need their own final release proofs,
+and Core WASM/Methods strict parity still needs the staged Methods JS/WASM
+distribution.

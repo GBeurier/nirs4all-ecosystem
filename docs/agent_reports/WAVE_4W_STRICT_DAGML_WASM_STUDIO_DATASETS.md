@@ -7,10 +7,11 @@ Coordinator: Codex parent session in `/home/delete/nirs4all`.
 ## Scope
 
 Wave 4W integrates the post-reset review batch requested after the skip/xfail
-and provider-role discussion. It does not run full Python parity; it closes
-targeted strict dag-ml API gaps, removes locally coverable Studio skips, makes
-Core WASM/Methods parity skips fail explicitly in strict mode, and pins a
-non-Python Datasets-to-IO bridge contract.
+and provider-role discussion. The initial integration closes targeted strict
+dag-ml API gaps, removes locally coverable Studio skips, makes Core
+WASM/Methods parity skips fail explicitly in strict mode, and pins a non-Python
+Datasets-to-IO bridge contract. The deferred full Python parity gate was then
+run in Wave 4X after the batch.
 
 ## Agents And Reviews
 
@@ -51,6 +52,13 @@ Python strict dag-ml targeted gates:
 - `pytest tests/integration/api/test_module_api.py tests/integration/api/test_predict_explain_retrain_happy_path.py tests/integration/api/test_dagml_native_retrain_roundtrip.py -q`: `28 passed`.
 - `ruff check nirs4all/pipeline/explainer.py tests/integration/api/test_dagml_native_retrain_roundtrip.py tests/integration/api/test_predict_explain_retrain_happy_path.py tests/integration/api/test_module_api.py`: passed.
 - `git diff --check`: passed.
+
+Post-Wave 4X full Python parity on the same Python head `6a2c7200`, with
+`NIRS4ALL_REQUIRE_N4M=1` and RC `dag-ml`/`dag-ml-data` paths:
+
+- Non-slow split: `444 passed, 443 deselected, 510 warnings in 550.90s`.
+- Slow split: `443 passed, 444 deselected, 1309 warnings in 1843.08s`.
+- Combined interpretation: `887 passed`, `0 skipped`, `0 xfailed`, `0 failed`.
 
 Core/WASM:
 
@@ -104,11 +112,12 @@ Ecosystem:
 
 ## GitGuardian State
 
-Current remote branch/tag heads for `nirs4all-cluster` remain clean:
+Current remote branch/tag heads for `nirs4all-cluster` remain clean after the
+Wave 4X hardening of the remaining secret-shaped `--principal` example:
 
-- `origin/main`: `97b2b38`
-- `origin/rc/v1-full-refactor`: `9d6ab34`
-- `n4a-v1-rc1-2026.07-refactor`: `9d6ab34`
+- `origin/main`: `16b4a2a`
+- `origin/rc/v1-full-refactor`: `19384e2`
+- `n4a-v1-rc1-2026.07-refactor`: `19384e2`
 
 `refs/pull/1/head` and `refs/pull/2/head` are merged hidden GitHub PR refs and
 still contain placeholder examples `--token dev`. Source branches are deleted
@@ -116,10 +125,19 @@ and normal branch/tag pushes do not control those generated refs. No real
 token value was found locally; if the GitGuardian alert exposes a true value in
 its UI, rotate it externally and close the alert there or via GitHub support.
 
+## Post-Wave 4X Fetchability Recheck
+
+Claude Code read-only review session `2f3bba5d-1feb-44b0-8e53-d3b04346ccdd`
+correctly found that Core `f120c28` was initially published only to the
+`GBeurier/nirs4all-core` remote and not yet to the canonical
+`GBeurier/nirs4all-lite` `repo_url` used by the aggregation lock. The coordinator
+then pushed branch `rc/v1-full-refactor-core` and tag
+`n4a-v1-rc1-2026.07-refactor` to both remotes. A later `git ls-remote`
+fetchability audit confirms all seven aggregation-lock members resolve branch
+and tag to their locked commits, including `lite` -> `f120c281`.
+
 ## Risks
 
-- Full Python reference parity was intentionally not rerun in this wave; run it
-  after the next large batch.
 - Core WASM/Methods strict parity still needs a built/staged Methods JS/WASM
   distribution.
 - R, Octave/MATLAB, and end-to-end non-Python DatasetPackage materialization

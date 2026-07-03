@@ -73,7 +73,7 @@ This is not a temporary cut. The target is the final project topology:
 
 | Gate | Latest evidence | Release interpretation |
 | --- | --- | --- |
-| Python parity harness | Python runtime proof head `3d568ab` has full `pyref_oracle_full` green on the selected RC stack (`dag-ml` `7f86a9b`, `dag-ml-data` `e681685`): `659 passed, 227 deselected, 1530 warnings` in `2037.46s`; no parity tests skipped or xfailed. Current Python head `6a2c720` keeps the Wave 4U split full-parity proof as last full evidence, then adds strict dag-ml public API gates: `test_module_api.py`, `test_predict_explain_retrain_happy_path.py`, and `test_dagml_native_retrain_roundtrip.py` passed `28 passed` with RC `dag-ml`/`dag-ml-data` paths. Native `.n4a` export/predict/explain/retrain is now covered, including direct `_DagmlExportedModel` explain. | Full parity was intentionally not rerun in Wave 4W. The strict API/native roundtrip blocker is closed for targeted gates; release runners must still rerun full parity with installed `n4m` after the next large batch. |
+| Python parity harness | Current Python head `6a2c720` has full split parity green on the selected RC stack with `NIRS4ALL_REQUIRE_N4M=1`, RC `dag-ml`/`dag-ml-data` paths, and SHAP installed: non-slow split `444 passed, 443 deselected, 510 warnings` in `550.90s`; slow split `443 passed, 444 deselected, 1309 warnings` in `1843.08s`; combined interpretation `887 passed`, `0 skipped`, `0 xfailed`, `0 failed`. The same head also passed strict dag-ml public API/native bundle targeted gates: `test_module_api.py`, `test_predict_explain_retrain_happy_path.py`, and `test_dagml_native_retrain_roundtrip.py` -> `28 passed`. Native `.n4a` export/predict/explain/retrain is covered, including direct `_DagmlExportedModel` explain. | Python parity skip/xfail debt is closed for the selected RC head. Remaining release blockers are environment/language gates and Core WASM/Methods strict artifact staging, not Python parity accounting. |
 | `dag-ml` workspace | `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings` passed | Native runtime baseline is usable for RC work. |
 | Studio | Operator-definition fixture gate now has 0 skips: `445 passed`. Runtime/operator/quick-run RC stack gate after import-precedence fix: `464 passed`. Wave 4W full backend pytest on Studio head `75f511b`: `2335 passed, 301 warnings`, `0 skipped`. Targeted skip burn-down checks passed (`65 passed`, Ruff, ESLint, and portable-paths Vitest `4 passed`). | Studio backend skip debt is gone on the Linux RC environment. Windows host behavior remains a real host gate where only simulated path normalization was tested locally. |
 | Web | After `8a5dcff`, deploy Pages and RC CI gates both require `npm ci`, client-side-only contract `2 passed`, typecheck, Vitest `134 passed`, strict `validate:catalog` against `nirs4all-methods` ABI and Studio canonical DAG registry, strict `check:lite-shim`, `build:single`, `build`, and browser smoke `rt-fallback`. | Web RC is a static/browser-only app with no backend runtime and no intentional third-party runtime requests; ABI/catalog/Studio DAG drift and vendored `nirs4all-core` shim drift are now blocking gates. |
@@ -161,33 +161,36 @@ This is not a temporary cut. The target is the final project topology:
   strict Methods artifact preflight now fails explicitly until `index.js`,
   `n4m.js`, and `n4m.wasm` are staged; Datasets pins the non-Python
   descriptor-to-IO-spec bridge with Python/Rust goldens. `WAVE_4W` records the
-  agent reports, review decisions, tests, and remaining risks. Full Python
-  parity was intentionally deferred until the next large batch.
+  agent reports, review decisions, tests, and remaining risks. Wave 4X then ran
+  full Python parity on the selected head: non-slow `444 passed, 443 deselected`
+  and slow `443 passed, 444 deselected`, with no skipped or xfailed parity tests.
+- Wave 4X also closed the release-lock fetchability gap flagged by a Claude
+  read-only audit. Core `f120c28` branch/tag now resolves on both
+  `GBeurier/nirs4all-lite` and `GBeurier/nirs4all-core`, and a `git ls-remote`
+  audit confirms all seven aggregation-lock members resolve branch and tag to
+  their locked commits.
 - Claude Code separation review confirmed the target split is coherent but
   warned against overclaiming R or native datasets/providers. Current release
   language should treat R as a methods portable subset/preview until
   `dag-ml` R coordination and `DatasetPackage` materialization gates exist.
 - Ecosystem RC head now includes `cb1a0bd docs(release): lock selected rc topology`; lock generation validates selected `rc/v1-*` worktrees while preserving canonical public repo paths and nirs4all-core aliases.
 - Ecosystem RC head now includes `89e8c63 docs(release): tighten topology accounting`; release surface validation documents `nirs4all-core`, `nirs4all-python`, R/JS-WASM/Rust/MATLAB language surfaces, `nirs4all-ui`, client-side-only Web, providers/cockpit/org, and the narrower aggregate lock boundary.
-- Cluster GitGuardian remediation was upgraded from tip cleanup to a targeted history rewrite and refreshed after the latest alert. Published branch/tag refs now point to rewritten clean history: `main` `97b2b38`, `rc/v1-full-refactor` `9d6ab34`, tag `n4a-v1-rc1-2026.07-refactor` `9d6ab34`. Strict scanner-pattern checks over the branch/tag refs are empty; cluster gates are `142 passed, 1 skipped, 1 deselected` on `main` and `145 passed, 1 skipped, 1 deselected` on the RC worktree. GitHub still exposes merged hidden PR refs #1/#2 from 2026-06-04; current recheck finds only placeholder CLI examples such as `--token dev` / `TOKEN` there, not selected release heads. Source branches are gone and deleting hidden PR refs is rejected by GitHub, so residual alert closure is a GitGuardian/GitHub-support action after token rotation if the value was ever real.
+- Cluster GitGuardian remediation was upgraded from tip cleanup to a targeted history rewrite and refreshed after the latest alert. Wave 4X additionally removed the active-head secret-shaped `--principal alice:s3cr3t:submitter` example. Published branch/tag refs now point to clean heads: `main` `16b4a2a`, `rc/v1-full-refactor` `19384e2`, tag `n4a-v1-rc1-2026.07-refactor` `19384e2`. Strict scanner-pattern checks over the active branch/tag refs are empty; cluster gates are `142 passed, 1 skipped, 1 deselected` on `main` and `145 passed, 1 skipped, 1 deselected` on the RC worktree. GitHub still exposes merged hidden PR refs #1/#2 from 2026-06-04; current recheck finds only placeholder CLI examples such as `--token dev` there, not selected release heads. Source branches are gone and deleting hidden PR refs is rejected by GitHub, so residual alert closure is a GitGuardian/GitHub-support action after token rotation if the value was ever real.
 - RC branches and tag `n4a-v1-rc1-2026.07-refactor` are published for the 20 selected worktrees. `WAVE_4Q_RC_PUBLICATION_REAUDIT.md` rechecked the post-4P heads after repairing missing tags on Studio/UI/Org/Tools/IO/Datasets; Wave 4R then moved Studio/IO/Datasets and regenerated the aggregation lock for IO/Datasets.
 - Latest pushed/tagged heads after the Wave 4W batch: Python `6a2c720`,
   dag-ml `a8f6cb3`, dag-ml-data `95e56a7`, Core `f120c28`,
   Studio `75f511b`, Web `85dcd79`, UI `69501bd`, Cockpit `f06f7b4`,
   Org `fd4634d`, Ecosystem uses the current board HEAD, Providers `bb87f35`,
-  Tools `7c5070f`, Cluster `9d6ab34`, Formats `32fc87f`, IO `0d20c80`,
+  Tools `7c5070f`, Cluster `19384e2`, Formats `32fc87f`, IO `0d20c80`,
   Datasets `259d1445`, Methods `a24b06b`, Repository `ced219f`,
   Benchmarks `06d4146`, Papers `f1d84f4`.
 - `aggregation-lock` remains limited to the aggregate core/runtime members. Studio/Web/UI/tools/providers/benchmarks/papers/cluster are tracked by the surface matrix, cutover gates, and agent reports rather than forced into the aggregate lock without an ownership contract.
 - Skip/xfail audit is recorded in `RC_SKIP_XFAIL_AUDIT.md`: Studio operator
   skips and Python registry skips have been burned down; Python full parity on
-  runtime head `3d568ab` reports no skipped or xfailed parity tests. Current
-  Python head `6a2c720` keeps the Wave 4U split full-parity proof and adds
-  Wave 4W strict API/native targeted proof; full parity was not rerun after the
-  last two Python commits. Remaining skip risk is outside this gate: language
-  binding environments without their release toolchains, optional SHAP-style
-  extras when not installed, and Core WASM/Methods strict parity until Methods
-  JS/WASM dist is staged.
+  current head `6a2c720` reports `887 passed`, `0 skipped`, and `0 xfailed`
+  across the split slow/non-slow run. Remaining skip risk is outside this gate:
+  language binding environments without their release toolchains and Core
+  WASM/Methods strict parity until Methods JS/WASM dist is staged.
 
 ## Parity Debt To Burn Down
 
