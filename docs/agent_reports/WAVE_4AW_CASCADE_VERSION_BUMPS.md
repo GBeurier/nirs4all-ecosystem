@@ -19,7 +19,7 @@ Scope: release cascade after the V1 refactor batch, excluding production-sensiti
 | `nirs4all-repository` | `b82f5b6` | `0.1.2`, generated catalog refreshed |
 | `nirs4all-core` | `19e69417ad89` | `0.2.2`, canonical aggregate target |
 | `nirs4all-web` | `6f8f3fcdbdd` | vendored `nirs4all-core` WASM shim `0.2.2` and rebuilt current `nirs4all-ui` dist |
-| `nirs4all-cockpit` | `85737b6` | public snapshot updated |
+| `nirs4all-cockpit` | `224141f` | public snapshot updated |
 | `nirs4all-org` | `05666f5` | public site updated |
 
 Additional final tags were added on the selected RC heads for `nirs4all-tools`,
