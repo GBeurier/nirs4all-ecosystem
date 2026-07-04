@@ -243,8 +243,9 @@ def _validate_produced_artifacts(step: dict[str, Any], before: dict[str, int | N
     failures: list[str] = []
     for raw_path in step.get("produces", []):
         path = Path(raw_path)
-        if not path.exists():
-            failures.append(f"{raw_path}: missing")
+        structural_failures = _validate_existing_artifact(raw_path)
+        if structural_failures:
+            failures.extend(structural_failures)
             continue
         previous_mtime = before.get(raw_path)
         if previous_mtime is not None:
@@ -256,17 +257,30 @@ def _validate_produced_artifacts(step: dict[str, Any], before: dict[str, int | N
             if current_mtime <= previous_mtime:
                 failures.append(f"{raw_path}: stale artifact was not refreshed by step")
                 continue
-        if path.suffix.lower() != ".json":
-            continue
-        try:
-            payload = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            failures.append(f"{raw_path}: invalid JSON artifact: {exc}")
-            continue
-        semantic_failures = _json_semantic_failures(payload)
-        if semantic_failures:
-            failures.append(f"{raw_path}: non-passing evidence: {', '.join(semantic_failures)}")
     return failures
+
+
+def _validate_existing_artifact(raw_path: str) -> list[str]:
+    path = Path(raw_path)
+    if not path.exists():
+        return [f"{raw_path}: missing"]
+    if not path.is_file():
+        return [f"{raw_path}: expected file artifact"]
+    try:
+        if path.stat().st_size <= 0:
+            return [f"{raw_path}: empty artifact"]
+    except OSError as exc:
+        return [f"{raw_path}: cannot stat artifact: {exc}"]
+    if path.suffix.lower() != ".json":
+        return []
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{raw_path}: invalid JSON artifact: {exc}"]
+    semantic_failures = _json_semantic_failures(payload)
+    if semantic_failures:
+        return [f"{raw_path}: non-passing evidence: {', '.join(semantic_failures)}"]
+    return []
 
 
 def _validate_step(scenario_id: str, step: dict[str, Any], step_ids: set[str]) -> None:
@@ -877,6 +891,52 @@ def coverage_report(
     }
 
 
+def artifact_evidence_report(plans: list[dict[str, Any]]) -> dict[str, Any]:
+    """Verify that expected post-run artifacts exist and contain passing evidence."""
+
+    scenarios: dict[str, dict[str, Any]] = {}
+    verified_count = 0
+    failed_count = 0
+    artifact_count = 0
+    failure_count = 0
+    for plan in plans:
+        artifact_sources: dict[str, set[str]] = {}
+        for raw_path in plan["artifacts"]:
+            artifact_sources.setdefault(raw_path, set()).add("scenario")
+        for step in plan["steps"]:
+            for raw_path in step.get("produces", []):
+                artifact_sources.setdefault(raw_path, set()).add(step["id"])
+        failures: list[str] = []
+        verified_artifacts: list[str] = []
+        for raw_path in sorted(artifact_sources):
+            artifact_failures = _validate_existing_artifact(raw_path)
+            if artifact_failures:
+                failures.extend(artifact_failures)
+            else:
+                verified_artifacts.append(raw_path)
+        scenario_status = "failed" if failures else "verified"
+        if failures:
+            failed_count += 1
+            failure_count += len(failures)
+        else:
+            verified_count += 1
+        artifact_count += len(artifact_sources)
+        scenarios[plan["id"]] = {
+            "status": scenario_status,
+            "artifact_count": len(artifact_sources),
+            "verified_artifacts": verified_artifacts,
+            "failures": failures,
+        }
+    return {
+        "scenario_count": len(plans),
+        "verified_count": verified_count,
+        "failed_count": failed_count,
+        "artifact_count": artifact_count,
+        "failure_count": failure_count,
+        "scenarios": scenarios,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
@@ -895,6 +955,10 @@ def main(argv: list[str] | None = None) -> int:
 
     coverage_parser = subparsers.add_parser("coverage", help="summarize scenario coverage/readiness")
     coverage_parser.add_argument("--json", action="store_true")
+
+    evidence_parser = subparsers.add_parser("evidence", help="verify expected post-run artifacts")
+    evidence_parser.add_argument("--scenario")
+    evidence_parser.add_argument("--json", action="store_true")
 
     run_parser = subparsers.add_parser("run", help="execute one scenario")
     run_parser.add_argument("scenario")
@@ -985,6 +1049,28 @@ def main(argv: list[str] | None = None) -> int:
                         f"contract={counts['contract']} gap={counts['gap']}"
                     )
             return 0
+        if args.command == "evidence":
+            scenarios = [_scenario_by_id(manifest, args.scenario)] if args.scenario else manifest["scenarios"]
+            plans = [
+                plan_scenario(scenario, workspace_root=workspace_root, artifacts_dir=artifacts_dir)
+                for scenario in scenarios
+            ]
+            report = artifact_evidence_report(plans)
+            if args.json:
+                print(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True))
+            else:
+                print(
+                    f"{report['verified_count']}/{report['scenario_count']} scenarios verified; "
+                    f"artifacts={report['artifact_count']} failures={report['failure_count']}"
+                )
+                for scenario_id, scenario_report in report["scenarios"].items():
+                    if scenario_report["status"] == "verified":
+                        print(f"{scenario_id}: verified ({scenario_report['artifact_count']} artifacts)")
+                        continue
+                    print(f"{scenario_id}: failed")
+                    for failure in scenario_report["failures"]:
+                        print(f"  {failure}")
+            return 0 if report["failed_count"] == 0 else 1
         if args.command == "run":
             plan = plan_scenario(
                 _scenario_by_id(manifest, args.scenario),

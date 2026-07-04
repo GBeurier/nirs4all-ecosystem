@@ -1026,6 +1026,126 @@ def test_cross_language_e2e_rejects_non_passing_json_artifacts(tmp_path: Path, p
     assert returncode == 1
 
 
+def test_cross_language_e2e_artifact_evidence_report_verifies_existing_artifacts(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    json_artifact = tmp_path / "passing-result.json"
+    png_artifact = tmp_path / "web-results.png"
+    json_artifact.write_text('{"status": "passed", "ok": true}\n', encoding="utf-8")
+    png_artifact.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "synthetic",
+                "artifacts": [str(json_artifact), str(png_artifact)],
+                "steps": [
+                    {
+                        "id": "write-evidence",
+                        "produces": [str(json_artifact), str(png_artifact)],
+                    }
+                ],
+            }
+        ]
+    )
+
+    assert report["verified_count"] == 1
+    assert report["failed_count"] == 0
+    assert report["artifact_count"] == 2
+    assert report["scenarios"]["synthetic"]["status"] == "verified"
+
+
+def test_cross_language_e2e_artifact_evidence_report_rejects_missing_and_nonpassing(
+    tmp_path: Path,
+) -> None:
+    e2e = _load_e2e_module()
+    missing_artifact = tmp_path / "missing-result.json"
+    nonpassing_artifact = tmp_path / "nonpassing-result.json"
+    nonpassing_artifact.write_text('{"status": "skipped"}\n', encoding="utf-8")
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "synthetic",
+                "artifacts": [str(missing_artifact), str(nonpassing_artifact)],
+                "steps": [
+                    {
+                        "id": "write-evidence",
+                        "produces": [str(nonpassing_artifact)],
+                    }
+                ],
+            }
+        ]
+    )
+
+    assert report["verified_count"] == 0
+    assert report["failed_count"] == 1
+    assert report["failure_count"] == 2
+    failures = "\n".join(report["scenarios"]["synthetic"]["failures"])
+    assert "missing" in failures
+    assert "non-passing evidence" in failures
+
+
+def test_cross_language_e2e_cli_evidence_json_selected_scenario(tmp_path: Path) -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+    scenario = _scenario_by_id(manifest, "e2e-r-dataset-io-pipeline-save")
+    artifacts_dir = tmp_path / "artifacts"
+
+    for raw_path in scenario["artifacts"]:
+        path = Path(raw_path.format(workspace_root=tmp_path, artifacts_dir=artifacts_dir))
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('{"status": "passed", "ok": true}\n', encoding="utf-8")
+
+    verified = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--workspace-root",
+            str(tmp_path),
+            "--artifacts-dir",
+            str(artifacts_dir),
+            "evidence",
+            "--scenario",
+            scenario["id"],
+            "--json",
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    )
+    report = json.loads(verified.stdout)
+
+    assert report["verified_count"] == 1
+    assert report["failed_count"] == 0
+    assert report["scenarios"][scenario["id"]]["artifact_count"] == len(scenario["artifacts"])
+
+    missing = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--workspace-root",
+            str(tmp_path),
+            "--artifacts-dir",
+            str(tmp_path / "missing-artifacts"),
+            "evidence",
+            "--scenario",
+            scenario["id"],
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    assert missing.returncode == 1
+    assert "failed" in missing.stdout
+    assert "missing" in missing.stdout
+
+
 def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path: Path) -> None:
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
     manifest = _read_manifest()
