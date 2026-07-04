@@ -156,8 +156,8 @@
       "id": "e2e-multimodal-python-r-wasm-roundtrip",
       "title": "Multimodal Python/R/WASM pipeline roundtrip",
       "objective": "Generate a multimodal NIRS plus metadata pipeline in Python, roundtrip it through R and WASM, and verify predictions and saved manifests remain equivalent.",
-      "languages": ["python", "r", "javascript_wasm", "web"],
-      "repos": ["nirs4all", "nirs4all-core", "nirs4all-io", "dag-ml-data", "nirs4all-web"],
+      "languages": ["python", "r", "javascript_wasm"],
+      "repos": ["nirs4all", "nirs4all-core"],
       "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"],
       "artifacts": [
         "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
@@ -183,9 +183,9 @@
           "title": "Generate multimodal pipeline and oracle predictions",
           "kind": "prepare",
           "repo": "nirs4all",
-          "requires_tools": ["python3"],
+          "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_multimodal_roundtrip.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && python3 -m pytest tests/e2e/test_multimodal_roundtrip.py::test_generate_oracle --artifacts-dir={artifacts_dir}/multimodal-roundtrip"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_multimodal_roundtrip.py::test_generate_oracle --artifacts-dir={artifacts_dir}/multimodal-roundtrip"],
           "produces": ["{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json", "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet"]
         },
         {
@@ -193,10 +193,10 @@
           "title": "Execute the same multimodal pipeline in R and WASM",
           "kind": "execute",
           "repo": "nirs4all-core",
-          "requires_tools": ["python3", "Rscript", "npm"],
+          "requires_tools": ["python3.11", "Rscript", "node"],
           "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/run_multimodal_roundtrip.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && python3 scripts/e2e/run_multimodal_roundtrip.py --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}/multimodal-roundtrip"],
-          "produces": ["{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"]
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH LD_LIBRARY_PATH={workspace_root}/nirs4all-methods/build/dev-release/cpp/src:$LD_LIBRARY_PATH PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_multimodal_roundtrip.py --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}/multimodal-roundtrip"],
+          "produces": ["{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json", "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json"]
         }
       ]
     },
@@ -240,9 +240,9 @@
           "title": "Replay multisource stacking manifest through native/core bindings",
           "kind": "verify",
           "repo": "nirs4all-core",
-          "requires_tools": ["cargo", "python3"],
-          "requires_paths": ["{workspace_root}/nirs4all-core/bindings/rust/nirs4all/tests"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && cargo test -p nirs4all e2e_multisource_stacking_replay -- --ignored"],
+          "requires_tools": ["cargo", "python3.11"],
+          "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/run_multisource_stacking_replay.py"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_multisource_stacking_replay.py --artifacts-dir {artifacts_dir}/multisource-stacking"],
           "produces": ["{artifacts_dir}/multisource-stacking/native-replay.json"]
         }
       ]
