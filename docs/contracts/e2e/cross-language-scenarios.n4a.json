@@ -265,7 +265,7 @@
         "Converter migration report",
         "Prediction result contract validation",
         "Web panel coverage screenshot/index",
-        "Client-only served-app contract panel rendering"
+        "Client-only served-app React ResultsList/ResultsVisualization rendering"
       ],
       "parity_checks": [
         {
