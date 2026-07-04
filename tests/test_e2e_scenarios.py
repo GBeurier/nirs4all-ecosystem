@@ -275,6 +275,9 @@ def test_cross_language_e2e_successful_step_must_refresh_existing_artifacts(tmp_
     [
         {"parity": {"status": "not_run"}},
         {"numeric_oracle": {"status": "not_requested"}},
+        {"web_runtime": {"status": "passed_web_with_studio_hold"}},
+        {"studio_runtime": {"status": "not_executed_prod_hold"}},
+        {"repository_runtime": {"result": "not_executed_in_this_gate"}},
         {"legacy_python_replay": False},
     ],
 )

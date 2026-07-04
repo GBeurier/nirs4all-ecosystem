@@ -376,21 +376,21 @@
     },
     {
       "id": "e2e-pipeline-generation-performance-compare",
-      "title": "Complex pipeline generation with Python/Web performance comparison and Studio hold marker",
-      "objective": "Generate a family of candidate pipelines, run Python reference and dag-ml/native backends, compare outputs, record performance gains for library and Web runtime paths, and explicitly mark Studio runtime comparison as held until its dedicated entrypoint exists.",
+      "title": "Complex pipeline generation with Python/Web performance comparison",
+      "objective": "Generate a family of candidate pipelines, run Python reference and dag-ml/native backends, compare outputs, and record performance gains for library and client-side Web runtime paths. Studio runtime comparison is intentionally outside this Web-only gate until a dedicated Studio entrypoint exists.",
       "languages": ["python", "javascript_wasm", "web", "native"],
-      "repos": ["nirs4all", "dag-ml", "nirs4all-core", "nirs4all-studio", "nirs4all-web"],
+      "repos": ["nirs4all", "dag-ml", "nirs4all-core", "nirs4all-web"],
       "tags": ["pipeline_generation", "pipeline", "parity", "predictions", "web_results"],
       "artifacts": [
         "{artifacts_dir}/performance-compare/pipeline-family.json",
         "{artifacts_dir}/performance-compare/python-vs-dagml.json",
-        "{artifacts_dir}/performance-compare/studio-web-runtime.json"
+        "{artifacts_dir}/performance-compare/web-runtime.json"
       ],
       "evidence": [
         "Generated pipeline search-space manifest",
         "Python reference vs dag-ml parity ledger",
         "Web runtime timing comparison",
-        "Studio runtime prod-hold marker",
+        "Studio excluded from this Web-only gate",
         "Regression budget verdict"
       ],
       "parity_checks": [
@@ -413,13 +413,13 @@
         },
         {
           "id": "compare-runtimes",
-          "title": "Compare Python, dag-ml/native, and Web runtimes; record Studio hold",
+          "title": "Compare Python, dag-ml/native, and Web runtimes",
           "kind": "verify",
           "repo": "nirs4all-web",
           "requires_tools": ["node", "npm", "google-chrome"],
           "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/performance-compare-smoke.mjs"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && NODE_BIN=${{N4A_NODE_BIN:-$HOME/.nvm/versions/node/v22.21.1/bin}} && if [ -d \"$NODE_BIN\" ]; then export PATH=\"$NODE_BIN:$PATH\"; fi && npm run build && ARTIFACTS_DIR={artifacts_dir}/performance-compare npm run smoke:performance-compare"],
-          "produces": ["{artifacts_dir}/performance-compare/python-vs-dagml.json", "{artifacts_dir}/performance-compare/studio-web-runtime.json"]
+          "produces": ["{artifacts_dir}/performance-compare/python-vs-dagml.json", "{artifacts_dir}/performance-compare/web-runtime.json"]
         }
       ]
     },

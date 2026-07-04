@@ -71,6 +71,12 @@ DISALLOWED_ARTIFACT_STATUSES = {
     "xfail",
     "xfailed",
 }
+DISALLOWED_ARTIFACT_STATUS_TOKENS = {
+    "hold",
+}
+DISALLOWED_ARTIFACT_STATUS_SUBSTRINGS = {
+    "not_executed",
+}
 BOOLEAN_EVIDENCE_FIELDS = {
     "finite_predictions",
     "legacy_python_replay",
@@ -154,7 +160,12 @@ def _json_semantic_failures(value: Any, path: str = "$") -> list[str]:
             key_name = str(key).lower()
             if key_name in STATUS_FIELD_NAMES and isinstance(item, str):
                 status = _normal_status(item)
-                if status in DISALLOWED_ARTIFACT_STATUSES:
+                status_tokens = set(status.split("_"))
+                if (
+                    status in DISALLOWED_ARTIFACT_STATUSES
+                    or status_tokens & DISALLOWED_ARTIFACT_STATUS_TOKENS
+                    or any(fragment in status for fragment in DISALLOWED_ARTIFACT_STATUS_SUBSTRINGS)
+                ):
                     failures.append(f"{child_path}={item!r}")
             if key_name in BOOLEAN_EVIDENCE_FIELDS and item is False:
                 failures.append(f"{child_path}=false")
