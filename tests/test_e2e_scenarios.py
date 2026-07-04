@@ -204,8 +204,36 @@ def test_cross_language_e2e_cli_list_and_plan_json() -> None:
     )
     plan = json.loads(planned.stdout)[0]
     assert plan["id"] == scenario_ids[0]
+    assert plan["evidence_level"] in {"contract_smoke", "hybrid", "strict"}
+    assert "parity_checks" in plan
+    assert "strictness_gaps" in plan
     assert plan["steps"]
     assert "requires_paths" in plan["steps"][0]
+
+
+def test_cross_language_e2e_plan_exposes_contract_smoke_gaps() -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+
+    planned = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "plan",
+            "--scenario",
+            "e2e-wasm-open-repo-pipeline-alt-dataset",
+            "--json",
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    )
+    plan = json.loads(planned.stdout)[0]
+
+    assert plan["evidence_level"] == "contract_smoke"
+    assert plan["strictness_gaps"]
+    assert "parity" not in plan["tags"]
 
 
 def test_cross_language_e2e_manifest_is_not_gitignored() -> None:

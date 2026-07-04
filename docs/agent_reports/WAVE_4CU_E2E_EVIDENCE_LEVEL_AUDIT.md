@@ -16,6 +16,7 @@ Date: 2026-07-04
   - `contract_smoke` scenarios may no longer carry the `parity` tag.
   - `hybrid` and `contract_smoke` scenarios must declare `strictness_gaps`.
   - Any scenario with the `parity` tag must declare at least one strict parity check.
+  - `plan --json` now exposes `evidence_level`, `strictness_gaps`, and `parity_checks`.
 - `docs/contracts/e2e/cross-language-scenarios.n4a.json`
   - Marked strict scenarios explicitly.
   - Downgraded Web repository import and provider repository descriptor scenarios to `contract_smoke`.
@@ -52,7 +53,10 @@ From `nirs4all-ecosystem`:
 - `python3.11 -m json.tool docs/contracts/e2e/cross-language-scenarios.n4a.json`
 - `python3.11 scripts/n4a_e2e_scenarios.py validate`
 - `python3.11 scripts/n4a_e2e_scenarios.py list --json`
+- `python3.11 scripts/n4a_e2e_scenarios.py plan --scenario e2e-wasm-open-repo-pipeline-alt-dataset --json`
 - `python3.11 -m pytest -q tests/test_e2e_scenarios.py tests/test_gitmodules_topology.py tests/test_release_lock.py` — 40 passed.
+- `python3.11 -m pytest -q tests/test_e2e_scenarios.py` — 28 passed after plan JSON exposure.
+- `python3.11 -m ruff check scripts/n4a_e2e_scenarios.py tests/test_e2e_scenarios.py` — OK.
 
 ## Risks / Next Work
 
