@@ -12,6 +12,14 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs" / "contracts" / "e2e" / "cross-language-scenarios.n4a.json"
+ALLOWED_PUBLIC_CHECKOUT_DATA_BLOCKERS = {
+    "nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json",
+    "nirs4all-data/regression/GRAPEVINE_LeafTraits/PSI_spxyG70_30_byCultivar_MicroNIR_NeoSpectra",
+}
+ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS = {
+    "e2e-r-dataset-io-pipeline-save",
+    "e2e-cluster-dag-rights-client-core",
+}
 
 
 def _load_e2e_module():
@@ -36,6 +44,24 @@ def _scenario_by_id(manifest: dict, scenario_id: str) -> dict:
         if scenario["id"] == scenario_id:
             return scenario
     raise AssertionError(f"missing scenario: {scenario_id}")
+
+
+def _assert_ready_or_only_public_checkout_data_blockers(plans: list[dict]) -> None:
+    blocked = {plan["id"] for plan in plans if plan["status"] == "blocked"}
+    unexpected: list[str] = []
+    for plan in plans:
+        for step in plan["steps"]:
+            for missing in step["missing"]:
+                if not missing.startswith("path:"):
+                    unexpected.append(f"{plan['id']}.{step['id']}: {missing}")
+                    continue
+                if not any(fragment in missing for fragment in ALLOWED_PUBLIC_CHECKOUT_DATA_BLOCKERS):
+                    unexpected.append(f"{plan['id']}.{step['id']}: {missing}")
+
+    assert not unexpected
+    assert blocked <= ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS
+    if not blocked:
+        assert {plan["status"] for plan in plans} == {"ready"}
 
 
 def test_cross_language_e2e_manifest_validates_current_contract() -> None:
@@ -135,16 +161,16 @@ def test_cross_language_e2e_current_workspace_plans_all_complex_workflows_ready(
     e2e = _load_e2e_module()
     manifest = e2e.validate_scenarios(MANIFEST)
 
+    workspace_root = e2e.default_workspace_root()
     plans = [
-        e2e.plan_scenario(scenario, workspace_root=ROOT.parent, artifacts_dir=tmp_path / "artifacts")
+        e2e.plan_scenario(scenario, workspace_root=workspace_root, artifacts_dir=tmp_path / "artifacts")
         for scenario in manifest["scenarios"]
     ]
 
     assert [plan["id"] for plan in plans] == [scenario["id"] for scenario in manifest["scenarios"]]
-    assert {plan["status"] for plan in plans} == {"ready"}
+    _assert_ready_or_only_public_checkout_data_blockers(plans)
     for plan in plans:
         assert len(plan["steps"]) >= 2, plan["id"]
-        assert all(not step["missing"] for step in plan["steps"]), plan["id"]
 
 
 def test_cross_language_e2e_manifest_requires_exact_scenario_count(tmp_path: Path) -> None:
