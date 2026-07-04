@@ -139,9 +139,9 @@
       "id": "e2e-wasm-open-repo-pipeline-alt-dataset",
       "title": "WASM opens repository pipeline, executes client-side import smoke, and renders predictions",
       "objective": "Run the browser/WASM aggregate locally, export/import a pipeline repository artifact, execute the imported pipeline client-side, validate saved prediction artifact reuse, and verify the Web build consumes the shared nirs4all-ui shim.",
-      "evidence_level": "contract_smoke",
+      "evidence_level": "hybrid",
       "strictness_gaps": [
-        "No Python-vs-WASM numeric prediction parity is asserted here; this scenario proves client-side import/export/rendering and shared UI contract only."
+        "Web roundtrip prediction preservation is strict inside the browser/WASM runtime, but no Python-vs-WASM numeric oracle is asserted in this scenario."
       ],
       "languages": ["javascript_wasm", "web", "python"],
       "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"],
@@ -154,8 +154,9 @@
       "evidence": [
         "WASM package version and web build hash",
         "Repository pipeline descriptor and shared UI shim check",
-        "Client-only prediction artifact reuse smoke",
-        "Imported pipeline execution screenshot"
+        "Client-only prediction artifact reuse with export/import hash evidence",
+        "Imported pipeline execution screenshot and runtime resource hashes",
+        "Source-vs-imported Web prediction comparison"
       ],
       "parity_checks": [
         {
@@ -163,6 +164,18 @@
           "candidate": "fresh browser session imported pipeline execution",
           "metric": "pipeline artifact imports, executes, and renders without console errors",
           "evidence_level": "contract"
+        },
+        {
+          "oracle": "source Web/WASM run before export",
+          "candidate": "fresh Web/WASM run after pipeline JSON import",
+          "metric": "CV/refit prediction rows and finite metrics match with max_abs_delta <= 1e-8",
+          "evidence_level": "strict"
+        },
+        {
+          "oracle": "pre-export .n4a prediction panel",
+          "candidate": "post-import .n4a prediction panel",
+          "metric": "displayed prediction values match with max_abs_delta <= 5e-4",
+          "evidence_level": "strict"
         }
       ],
       "steps": [

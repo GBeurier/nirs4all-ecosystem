@@ -37,6 +37,7 @@ Strict:
 Hybrid:
 
 - R dataset IO pipeline save: strict portable R parity fixture, but real catalog dataset path still lacks numeric R-vs-Python comparison.
+- Web/WASM repository pipeline import and result rendering: strict source-vs-imported Web prediction comparison was added in `nirs4all-web@73b9184`, but Python-vs-WASM numeric oracle remains outside this scenario.
 - Multisource stacking replay: strict score parity, but native vector-level prediction equality is still only audited.
 - Pipeline generation performance: strict Python-vs-dag-ml parity, Web timing remains contract evidence and Studio is outside the gate.
 - Formats/IO/datasets/methods: strict native/Python/R method parity, WASM remains fixture-scoped and Rust is archive evidence.
@@ -44,7 +45,7 @@ Hybrid:
 
 Contract smoke:
 
-- Web/WASM repository pipeline import and result rendering.
+- None currently; remaining gaps are now classified as `hybrid` rather than pure contract smokes.
 
 ## Verification
 
@@ -60,5 +61,5 @@ From `nirs4all-ecosystem`:
 
 ## Risks / Next Work
 
-- The contract no longer overclaims, but the goal still requires replacing the remaining `contract_smoke` scenario and hybrid gaps with stricter numeric/runtime evidence.
+- The contract no longer overclaims, but the goal still requires replacing the remaining hybrid gaps with stricter numeric/runtime evidence.
 - Full parity remains intentionally deferred until the next large batch.
