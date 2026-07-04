@@ -209,3 +209,45 @@ def test_cross_language_e2e_successful_step_must_produce_declared_artifacts(tmp_
 
     assert returncode == 1
     assert not missing_artifact.exists()
+
+
+def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path: Path) -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+    manifest = _read_manifest()
+    scenario_id = manifest["scenarios"][0]["id"]
+    missing_artifact = tmp_path / "missing-cli-result.json"
+    manifest["scenarios"][0]["steps"] = [
+        {
+            "id": "forgetful-cli-step",
+            "title": "Command exits zero but omits its artifact",
+            "kind": "verify",
+            "repo": "nirs4all-ecosystem",
+            "requires_tools": [],
+            "requires_paths": [],
+            "command": [sys.executable, "-c", "pass"],
+            "produces": [str(missing_artifact)],
+        }
+    ]
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    executed = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--manifest",
+            str(manifest_path),
+            "run",
+            scenario_id,
+            "--execute",
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    assert executed.returncode == 1
+    assert "missing produced artifact(s)" in executed.stderr
+    assert str(missing_artifact) in executed.stderr

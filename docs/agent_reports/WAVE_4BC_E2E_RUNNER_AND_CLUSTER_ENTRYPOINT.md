@@ -18,6 +18,9 @@ remaining scenario blocker explicit.
 - `nirs4all-ecosystem/docs/contracts/e2e/cross-language-scenarios.n4a.json`
   - Cluster scenario now uses `python3.11`, matching the repo's tested local
     environment.
+  - `core-client-result.json` is now declared in the blocked core step's
+    `produces`, so it cannot remain only a scenario-level artifact once the step
+    becomes executable.
 - `nirs4all-ecosystem/pytest.ini`
   - Restricts ecosystem pytest collection to `tests/`, so `pytest -q` does not
     recurse into tracked gitlinks such as the historical `nirs4all-cluster`
@@ -46,6 +49,10 @@ remaining scenario blocker explicit.
   1 deselected.
 - `nirs4all-cluster`: `ruff check .` -> passed.
 - `nirs4all-cluster`: `mypy nirs4all_cluster` -> passed.
+- Claude Code Fable read-only review: verdict `SHIP`; it confirmed the
+  produces guard, blocked-step exit semantics, and cluster no-`nirs4all` import
+  invariant. Actionable follow-up folded back here: add `core-client-result.json`
+  to the core step's `produces`.
 
 ## Decisions
 

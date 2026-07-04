@@ -435,7 +435,7 @@
           "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/verify_cluster_handoff.py"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && python3.11 scripts/e2e/verify_cluster_handoff.py --artifacts-dir {artifacts_dir}/cluster-dag-rights"],
-          "produces": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"]
+          "produces": ["{artifacts_dir}/cluster-dag-rights/core-client-result.json", "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"]
         }
       ]
     },
