@@ -124,8 +124,8 @@
     },
     {
       "id": "e2e-wasm-open-repo-pipeline-parity-alt-dataset",
-      "title": "WASM opens repository pipeline, reruns, checks parity, and applies an alternative dataset",
-      "objective": "Run the browser/WASM aggregate locally, export/import a pipeline repository artifact, run the imported pipeline client-side, and validate saved prediction artifact reuse.",
+      "title": "WASM opens repository pipeline, executes client-side import smoke, and renders predictions",
+      "objective": "Run the browser/WASM aggregate locally, export/import a pipeline repository artifact, execute the imported pipeline client-side, validate saved prediction artifact reuse, and verify the Web build consumes the shared nirs4all-ui shim.",
       "languages": ["javascript_wasm", "web", "python"],
       "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"],
       "tags": ["datasets", "pipeline", "repository", "predictions", "parity", "web_results"],
@@ -136,7 +136,7 @@
       ],
       "evidence": [
         "WASM package version and web build hash",
-        "Repository pipeline descriptor",
+        "Repository pipeline descriptor and shared UI shim check",
         "Client-only prediction artifact reuse smoke",
         "Imported pipeline execution screenshot"
       ],
@@ -144,7 +144,7 @@
         {
           "oracle": "exported client-side pipeline artifact",
           "candidate": "fresh browser session imported pipeline execution",
-          "metric": "pipeline artifact imports and executes to results without console errors"
+          "metric": "pipeline artifact imports, executes, and renders without console errors; this smoke does not claim numeric Python-vs-WASM parity"
         }
       ],
       "steps": [
@@ -154,8 +154,11 @@
           "kind": "execute",
           "repo": "nirs4all-web",
           "requires_tools": ["npm"],
-          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
+            "{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs"
+          ],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"],
           "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json", "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"]
         },
         {
@@ -164,8 +167,11 @@
           "kind": "ui",
           "repo": "nirs4all-web",
           "requires_tools": ["npm"],
-          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/n4a-roundtrip-smoke.mjs"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
+            "{workspace_root}/nirs4all-web/studio-lite/tests/n4a-roundtrip-smoke.mjs"
+          ],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"],
           "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"]
         }
       ]
@@ -220,8 +226,8 @@
     },
     {
       "id": "e2e-multisource-branching-stacking-replay",
-      "title": "Multisource branching, stacking, and replay across engines",
-      "objective": "Assemble multiple sources with distinct preprocessing branches, train stacking/OOF, save replay manifests, and replay in core/native and Python reference engines.",
+      "title": "Multisource branching, stacking score replay, and native prediction-table audit",
+      "objective": "Assemble multiple sources with distinct preprocessing branches, train stacking/OOF, save replay manifests, compare native score-set metrics against the direct Python oracle, and audit the native predictions.parquet schema/array coverage.",
       "languages": ["python", "native", "rust"],
       "repos": ["nirs4all", "dag-ml", "dag-ml-data", "nirs4all-core", "nirs4all-methods"],
       "tags": ["multisource", "pipeline_generation", "pipeline", "workspace_save", "parity"],
@@ -233,13 +239,14 @@
       "evidence": [
         "Per-source preprocessing branch manifest",
         "OOF stacking leakage audit",
-        "Native replay parity ledger"
+        "Native replay score parity ledger",
+        "Native predictions.parquet schema and arrays_present audit"
       ],
       "parity_checks": [
         {
           "oracle": "python nirs4all stacking replay",
           "candidate": "dag-ml/native replay",
-          "metric": "fold predictions and final predictions match tolerance ledger"
+          "metric": "score_set cv/test RMSE deltas stay within tolerance; native prediction table schema, row count, partitions, folds, and current array coverage are audited explicitly"
         }
       ],
       "steps": [
@@ -268,7 +275,7 @@
     {
       "id": "e2e-converter-legacy-save-predictions-web",
       "title": "Legacy save conversion, prediction lowering, and Web results rendering",
-      "objective": "Convert a legacy workspace/save, lower predictions into the V1 result contract, open the output in Web, and verify every result panel renders.",
+      "objective": "Convert a legacy workspace/save fixture, lower predictions into the V1 result contract, prove deterministic converter preservation against fixture values and checksums, open the output in Web, and verify every result panel renders.",
       "languages": ["python", "javascript_wasm", "web"],
       "repos": ["nirs4all-tools", "nirs4all", "nirs4all-web", "nirs4all-ui"],
       "tags": ["workspace_save", "predictions", "web_results", "pipeline", "parity"],
@@ -279,7 +286,7 @@
         "{artifacts_dir}/legacy-converter/web-results.png"
       ],
       "evidence": [
-        "Legacy input fixture hash",
+        "Legacy input fixture hash and converter checksum manifest",
         "Converter migration report",
         "Prediction result contract validation",
         "Web panel coverage screenshot/index",
@@ -287,9 +294,9 @@
       ],
       "parity_checks": [
         {
-          "oracle": "legacy Python save replay",
-          "candidate": "converted V1 workspace replay",
-          "metric": "predictions and exported metrics are equivalent"
+          "oracle": "legacy fixture values and converter checksum manifest",
+          "candidate": "converted V1 workspace and lowered runtime result contract",
+          "metric": "fixture prediction vectors, scores, row counts, checksums, and Web result panels match expected contract"
         }
       ],
       "steps": [
@@ -309,8 +316,11 @@
           "kind": "ui",
           "repo": "nirs4all-web",
           "requires_tools": ["npm"],
-          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/converted-predictions-render-smoke.mjs"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
+            "{workspace_root}/nirs4all-web/studio-lite/tests/converted-predictions-render-smoke.mjs"
+          ],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"],
           "produces": ["{artifacts_dir}/legacy-converter/web-results-panels.json", "{artifacts_dir}/legacy-converter/web-results.png"]
         }
       ]
@@ -416,7 +426,7 @@
     {
       "id": "e2e-cluster-dag-rights-client-core",
       "title": "Cluster scheduler runs a DAG pipeline with rights checks and core client handoff",
-      "objective": "Submit a DAG-shaped pipeline through the cluster client/server scheduler, enforce read/execute rights, return artifacts to core, recompute the scheduler aggregate from task results, and record an opt-in real nirs4all local-vs-cluster numeric oracle when available.",
+      "objective": "Submit a DAG-shaped pipeline through the cluster client/server scheduler, enforce read/execute rights, return artifacts to core, recompute the scheduler aggregate from task results, and require a real nirs4all local-vs-cluster numeric oracle.",
       "languages": ["python", "native"],
       "repos": ["nirs4all-cluster", "nirs4all-core", "dag-ml", "nirs4all-methods"],
       "tags": ["pipeline", "workspace_save", "parity"],
@@ -431,7 +441,7 @@
         "Scheduler DAG trace",
         "Core client artifact handoff manifest",
         "Local aggregate recompute vs cluster aggregate ledger",
-        "Optional local Python nirs4all oracle vs cluster nirs4all.run metric ledger"
+        "Required local Python nirs4all oracle vs cluster nirs4all.run metric ledger"
       ],
       "parity_checks": [
         {
@@ -442,7 +452,7 @@
         {
           "oracle": "local Python nirs4all reference",
           "candidate": "cluster worker nirs4all.run",
-          "metric": "best_rmse abs_diff <= 1e-6 when N4A_CLUSTER_NUMERIC_ORACLE=1"
+          "metric": "best_rmse abs_diff <= 1e-6"
         }
       ],
       "steps": [
@@ -452,8 +462,13 @@
           "kind": "execute",
           "repo": "nirs4all-cluster",
           "requires_tools": ["python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all-cluster/tests/e2e/test_cluster_dag_rights_core_client.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-cluster && PYTHONPATH=src:${{PYTHONPATH:-}} python3.11 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-cluster/tests/e2e/test_cluster_dag_rights_core_client.py",
+            "{workspace_root}/nirs4all/nirs4all/__init__.py",
+            "{workspace_root}/nirs4all-cluster/examples/pipelines/pls.yaml",
+            "{workspace_root}/nirs4all-data/regression/GRAPEVINE_LeafTraits/PSI_spxyG70_30_byCultivar_MicroNIR_NeoSpectra"
+          ],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-cluster && N4A_CLUSTER_NUMERIC_ORACLE=1 PYTHONPATH={workspace_root}/nirs4all-cluster:{workspace_root}/nirs4all:${{PYTHONPATH:-}} python3.11 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"],
           "produces": ["{artifacts_dir}/cluster-dag-rights/scheduler-run.json", "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json"]
         },
         {

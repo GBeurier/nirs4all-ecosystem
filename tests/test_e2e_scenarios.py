@@ -246,6 +246,68 @@ def test_cross_language_e2e_successful_step_must_produce_declared_artifacts(tmp_
     assert not missing_artifact.exists()
 
 
+def test_cross_language_e2e_successful_step_must_refresh_existing_artifacts(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    stale_artifact = tmp_path / "stale-result.json"
+    stale_artifact.write_text('{"status": "passed"}\n', encoding="utf-8")
+
+    returncode = e2e.execute_plan(
+        {
+            "id": "synthetic",
+            "status": "ready",
+            "steps": [
+                {
+                    "id": "stale-step",
+                    "status": "ready",
+                    "missing": [],
+                    "command": [sys.executable, "-c", "pass"],
+                    "produces": [str(stale_artifact)],
+                }
+            ],
+        }
+    )
+
+    assert returncode == 1
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"parity": {"status": "not_run"}},
+        {"numeric_oracle": {"status": "not_requested"}},
+        {"legacy_python_replay": False},
+    ],
+)
+def test_cross_language_e2e_rejects_non_passing_json_artifacts(tmp_path: Path, payload: dict) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "non-passing-result.json"
+
+    returncode = e2e.execute_plan(
+        {
+            "id": "synthetic",
+            "status": "ready",
+            "steps": [
+                {
+                    "id": "non-passing-step",
+                    "status": "ready",
+                    "missing": [],
+                    "command": [
+                        sys.executable,
+                        "-c",
+                        (
+                            "import json, pathlib; "
+                            f"pathlib.Path({str(artifact)!r}).write_text(json.dumps({payload!r}), encoding='utf-8')"
+                        ),
+                    ],
+                    "produces": [str(artifact)],
+                }
+            ],
+        }
+    )
+
+    assert returncode == 1
+
+
 def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path: Path) -> None:
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
     manifest = _read_manifest()
@@ -285,7 +347,8 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
     )
 
     assert executed.returncode == 1
-    assert "missing produced artifact(s)" in executed.stderr
+    assert "invalid produced artifact(s)" in executed.stderr
+    assert "missing" in executed.stderr
     assert str(missing_artifact) in executed.stderr
 
 
@@ -307,7 +370,7 @@ def test_cross_language_e2e_run_ready_executes_ready_but_reports_blocked(tmp_pat
                         "command": [
                             sys.executable,
                             "-c",
-                            f"from pathlib import Path; Path({str(produced)!r}).write_text('ok')",
+                            f"from pathlib import Path; Path({str(produced)!r}).write_text('{{\"status\":\"passed\"}}')",
                         ],
                         "produces": [str(produced)],
                     }
@@ -330,7 +393,7 @@ def test_cross_language_e2e_run_ready_executes_ready_but_reports_blocked(tmp_pat
         ]
     )
 
-    assert produced.read_text(encoding="utf-8") == "ok"
+    assert json.loads(produced.read_text(encoding="utf-8")) == {"status": "passed"}
     assert returncode == 2
 
 

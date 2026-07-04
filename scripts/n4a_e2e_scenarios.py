@@ -59,6 +59,27 @@ ALLOWED_STEP_KINDS = {
     "ui",
     "publish",
 }
+STATUS_FIELD_NAMES = {"status", "parity_status", "result", "verdict"}
+DISALLOWED_ARTIFACT_STATUSES = {
+    "blocked",
+    "error",
+    "failed",
+    "not_requested",
+    "not_run",
+    "skip",
+    "skipped",
+    "xfail",
+    "xfailed",
+}
+BOOLEAN_EVIDENCE_FIELDS = {
+    "finite_predictions",
+    "legacy_python_replay",
+    "numeric_oracle_valid",
+    "ok",
+    "passed",
+    "success",
+    "valid",
+}
 
 
 class E2EScenarioError(RuntimeError):
@@ -119,6 +140,73 @@ def _tool_available(tool: str) -> bool:
     if shutil.which(tool) is not None:
         return True
     return any(candidate.is_file() for candidate in TOOL_FALLBACKS.get(tool, []))
+
+
+def _normal_status(value: str) -> str:
+    return value.strip().lower().replace("-", "_").replace(" ", "_")
+
+
+def _json_semantic_failures(value: Any, path: str = "$") -> list[str]:
+    failures: list[str] = []
+    if isinstance(value, dict):
+        for key, item in value.items():
+            child_path = f"{path}.{key}"
+            key_name = str(key).lower()
+            if key_name in STATUS_FIELD_NAMES and isinstance(item, str):
+                status = _normal_status(item)
+                if status in DISALLOWED_ARTIFACT_STATUSES:
+                    failures.append(f"{child_path}={item!r}")
+            if key_name in BOOLEAN_EVIDENCE_FIELDS and item is False:
+                failures.append(f"{child_path}=false")
+            failures.extend(_json_semantic_failures(item, child_path))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            failures.extend(_json_semantic_failures(item, f"{path}[{index}]"))
+    return failures
+
+
+def _produced_snapshot(paths: list[str]) -> dict[str, int | None]:
+    snapshot: dict[str, int | None] = {}
+    for raw_path in paths:
+        path = Path(raw_path)
+        if not path.exists():
+            snapshot[raw_path] = None
+            continue
+        try:
+            snapshot[raw_path] = path.stat().st_mtime_ns
+        except OSError:
+            snapshot[raw_path] = None
+    return snapshot
+
+
+def _validate_produced_artifacts(step: dict[str, Any], before: dict[str, int | None]) -> list[str]:
+    failures: list[str] = []
+    for raw_path in step.get("produces", []):
+        path = Path(raw_path)
+        if not path.exists():
+            failures.append(f"{raw_path}: missing")
+            continue
+        previous_mtime = before.get(raw_path)
+        if previous_mtime is not None:
+            try:
+                current_mtime = path.stat().st_mtime_ns
+            except OSError as exc:
+                failures.append(f"{raw_path}: cannot stat after step: {exc}")
+                continue
+            if current_mtime <= previous_mtime:
+                failures.append(f"{raw_path}: stale artifact was not refreshed by step")
+                continue
+        if path.suffix.lower() != ".json":
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            failures.append(f"{raw_path}: invalid JSON artifact: {exc}")
+            continue
+        semantic_failures = _json_semantic_failures(payload)
+        if semantic_failures:
+            failures.append(f"{raw_path}: non-passing evidence: {', '.join(semantic_failures)}")
+    return failures
 
 
 def _validate_step(scenario_id: str, step: dict[str, Any], step_ids: set[str]) -> None:
@@ -283,15 +371,16 @@ def execute_plan(plan: dict[str, Any], *, stop_on_blocked: bool = True) -> int:
             blocked_seen = True
             print(f"SKIP-BLOCKED {plan['id']}.{step['id']}: {', '.join(step['missing'])}", file=sys.stderr)
             continue
+        produced_before = _produced_snapshot(step.get("produces", []))
         proc = subprocess.run(step["command"], text=True, check=False)
         if proc.returncode != 0:
             print(f"FAILED {plan['id']}.{step['id']}: exit {proc.returncode}", file=sys.stderr)
             return proc.returncode
-        missing_produced = [raw_path for raw_path in step.get("produces", []) if not Path(raw_path).exists()]
-        if missing_produced:
+        artifact_failures = _validate_produced_artifacts(step, produced_before)
+        if artifact_failures:
             print(
-                f"FAILED {plan['id']}.{step['id']}: missing produced artifact(s): "
-                f"{', '.join(missing_produced)}",
+                f"FAILED {plan['id']}.{step['id']}: invalid produced artifact(s): "
+                f"{'; '.join(artifact_failures)}",
                 file=sys.stderr,
             )
             return 1
