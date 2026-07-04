@@ -6,7 +6,7 @@ Date: 2026-07-04
 
 - `dag-ml@00d20c3` - rustdoc warning cleanup plus freshness gate handling for comment/doc-only Rust commits.
 - `nirs4all@7edf6042` - Python paper/repository E2E ledger now records dataset hash and dimensions.
-- `nirs4all-papers@5686c02` - paper handoff evidence now carries Python-backed refit proof, `force_best_refit=true`, selected pipeline id, hashes, RMSE, and prediction count.
+- `nirs4all-papers@3a7f72c` - paper handoff evidence now carries Python-backed refit proof, `force_best_refit=true`, selected pipeline id, hashes, RMSE, and prediction count; CI checks out `nirs4all-repository` for the handoff provider test.
 - `nirs4all-web@a1bbcd9` - repository Web/WASM smoke now requires a Python nirs4all/sklearn oracle over browser-emitted dag-ml folds.
 
 ## Contract updates
