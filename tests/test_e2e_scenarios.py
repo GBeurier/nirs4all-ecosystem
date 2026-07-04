@@ -167,6 +167,20 @@ def test_cross_language_e2e_manifest_is_not_gitignored() -> None:
     assert ignored.returncode == 1
 
 
+def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "cross-language-e2e.yml").read_text(encoding="utf-8")
+    manifest = _read_manifest()
+    declared_repos = {repo for scenario in manifest["scenarios"] for repo in scenario["repos"]}
+
+    assert "N4A_WORKSPACE_ROOT: ${{ github.workspace }}" in workflow
+    assert "path: nirs4all-ecosystem" in workflow
+    assert "nirs4all-drafts" not in workflow
+    assert "nirs4all-lab" not in workflow
+    for repo in sorted(declared_repos):
+        assert f"repository: GBeurier/{repo}" in workflow
+        assert f"path: {repo}" in workflow
+
+
 def test_cross_language_e2e_allow_blocked_never_returns_green(tmp_path: Path) -> None:
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
     manifest = _read_manifest()
