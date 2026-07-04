@@ -15,7 +15,7 @@ hold were left untouched.
 | Repo | Commit | Files modified |
 | --- | --- | --- |
 | `nirs4all-datasets` | `2c414bda` | `docs/index.md` |
-| `nirs4all-io` | `1cea4cb` | `docs/index.md`, `.github/workflows/ci.yml` |
+| `nirs4all-io` | `a828c28` | `docs/index.md`, `.github/workflows/ci.yml` |
 | `nirs4all-formats` | `fd3fcdc` | `docs/index.md` |
 | `nirs4all-methods` | `60641219` | `bindings/matlab/README.md`, `docs/about.md`, `bindings/js/README.md`, `bindings/js/INPUT_CONTRACT.md` |
 | `dag-ml` | `e6ee688` on `refactor/L20-lockstep` | `AGENTS.md`, `docs/index.md`, `docs/SUPPORTED.md`, `crates/dag-ml-wasm/README.md` |
@@ -24,10 +24,11 @@ hold were left untouched.
 
 The `nirs4all-ecosystem` submodule pins were advanced to those heads.
 
-`nirs4all-io` received a follow-up CI-only fix after GitHub Actions exposed that
+`nirs4all-io` received follow-up CI-only fixes after GitHub Actions exposed that
 the ecosystem E2E test expects the `nirs4all-datasets` sibling repository on the
-runner. The workflow now checks out that sibling instead of skipping or weakening
-the E2E test.
+runner and imports its runtime dependencies from source. The workflow now checks
+out that sibling and installs the needed dataset runtime dependencies instead of
+skipping or weakening the E2E test.
 
 ## Tests and checks
 
@@ -35,6 +36,9 @@ the E2E test.
 - `python3.11 -m pytest -q tests/e2e/test_formats_io_datasets_methods.py`
   passed in `nirs4all-io` (`1 passed`) after installing the repo with
   `python3.11 -m pip install -e ".[parquet,excel]" scipy pytest ruff mypy`.
+- The same targeted test passed after adding the CI install dependencies for
+  `nirs4all-datasets` source imports (`pydantic`, `python-dotenv`, `matplotlib`,
+  `requests`, `typer`).
 - `.github/workflows/ci.yml` YAML parsed successfully with `python3.11` /
   `yaml.safe_load`.
 - Targeted stale-doc search passed for the corrected files:
@@ -44,8 +48,8 @@ the E2E test.
   wording.
 - GitHub Actions were triggered on the pushed repos. At commit time several
   full CI runs were still queued/in progress; the `nirs4all-io` follow-up is
-  CI-only and supersedes the earlier failed run where the datasets sibling was
-  absent.
+  CI-only and supersedes the earlier failed runs where the datasets sibling and
+  then its source-import dependencies were absent.
 
 ## Review notes
 
