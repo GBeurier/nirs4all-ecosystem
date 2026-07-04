@@ -50,14 +50,15 @@ ALLOWED_CHECK_EVIDENCE_LEVELS = {
     "hybrid",
     "strict",
 }
-V1_REFACTOR_PHASES = {
+V1_REFACTOR_PHASE_ORDER = (
     "python_open_pipeline",
     "python_rerun_pipeline",
     "python_parity",
     "papers_export",
     "repository_forced_best_refit",
     "wasm_web_reuse",
-}
+)
+V1_REFACTOR_PHASES = set(V1_REFACTOR_PHASE_ORDER)
 ALLOWED_V1_REFACTOR_STATUSES = {
     "strict",
     "contract",
@@ -546,6 +547,27 @@ def _step_status(step: dict[str, Any], workspace_root: Path, artifacts_dir: Path
     return ("blocked" if missing else "ready", missing)
 
 
+def _v1_refactor_summary(phases: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    by_status = {status: 0 for status in ("strict", "contract", "gap")}
+    phase_lists = {
+        "strict_phases": [],
+        "contract_phases": [],
+        "gap_phases": [],
+    }
+    for phase in V1_REFACTOR_PHASE_ORDER:
+        status = phases[phase]["status"]
+        by_status[status] += 1
+        phase_lists[f"{status}_phases"].append(phase)
+    return {
+        "total": len(V1_REFACTOR_PHASE_ORDER),
+        "strict": by_status["strict"],
+        "contract": by_status["contract"],
+        "gap": by_status["gap"],
+        "non_gap": by_status["strict"] + by_status["contract"],
+        **phase_lists,
+    }
+
+
 def plan_scenario(
     scenario: dict[str, Any],
     *,
@@ -578,6 +600,7 @@ def plan_scenario(
         "evidence_level": scenario["evidence_level"],
         "strictness_gaps": scenario.get("strictness_gaps", []),
         "v1_refactor_contract": scenario.get("v1_refactor_contract", {}),
+        "v1_refactor_summary": _v1_refactor_summary(scenario.get("v1_refactor_contract", {})),
         "parity_checks": scenario.get("parity_checks", []),
         "steps": planned_steps,
         "evidence": scenario["evidence"],
@@ -782,6 +805,9 @@ def main(argv: list[str] | None = None) -> int:
                 summary = {
                     "ready": [plan["id"] for plan in plans if plan["status"] == "ready"],
                     "blocked": [plan["id"] for plan in plans if plan["status"] == "blocked"],
+                    "v1_refactor_summary": {
+                        plan["id"]: plan["v1_refactor_summary"] for plan in plans
+                    },
                 }
                 print(json.dumps(summary, ensure_ascii=True, indent=2, sort_keys=True))
                 print("Dry run only. Pass --execute to run ready scenarios.", file=sys.stderr)

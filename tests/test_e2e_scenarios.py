@@ -172,6 +172,38 @@ def test_cross_language_e2e_current_workspace_plans_all_complex_workflows_ready(
     _assert_ready_or_only_public_checkout_data_blockers(plans)
     for plan in plans:
         assert len(plan["steps"]) >= 2, plan["id"]
+        summary = plan["v1_refactor_summary"]
+        assert summary["total"] == len(e2e.V1_REFACTOR_PHASE_ORDER), plan["id"]
+        assert summary["strict"] + summary["contract"] + summary["gap"] == summary["total"], plan["id"]
+        assert summary["non_gap"] == summary["strict"] + summary["contract"], plan["id"]
+
+
+def test_cross_language_e2e_plan_summarizes_v1_refactor_gaps(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+    scenario = next(
+        scenario
+        for scenario in manifest["scenarios"]
+        if scenario["id"] == "e2e-wasm-open-repo-pipeline-alt-dataset"
+    )
+
+    plan = e2e.plan_scenario(
+        scenario,
+        workspace_root=e2e.default_workspace_root(),
+        artifacts_dir=tmp_path / "artifacts",
+    )
+
+    assert plan["evidence_level"] == "hybrid"
+    assert plan["v1_refactor_summary"] == {
+        "total": 6,
+        "strict": 2,
+        "contract": 1,
+        "gap": 3,
+        "non_gap": 3,
+        "strict_phases": ["python_parity", "wasm_web_reuse"],
+        "contract_phases": ["repository_forced_best_refit"],
+        "gap_phases": ["python_open_pipeline", "python_rerun_pipeline", "papers_export"],
+    }
 
 
 def test_cross_language_e2e_manifest_requires_exact_scenario_count(tmp_path: Path) -> None:
@@ -313,13 +345,12 @@ def test_cross_language_e2e_manifest_rejects_unknown_v1_refactor_artifact(tmp_pa
 
 def test_cross_language_e2e_plan_formats_paths_and_reports_blockers(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
-    manifest = _read_manifest()
+    manifest = e2e.validate_scenarios(MANIFEST)
     scenario = copy.deepcopy(manifest["scenarios"][0])
     scenario["steps"][0]["requires_tools"] = ["definitely-missing-n4a-e2e-tool"]
-    validated = {"scenarios": [scenario]}
 
     plan = e2e.plan_scenario(
-        validated["scenarios"][0],
+        scenario,
         workspace_root=Path("/tmp/n4a-workspace"),
         artifacts_dir=tmp_path / "artifacts",
     )
@@ -331,7 +362,7 @@ def test_cross_language_e2e_plan_formats_paths_and_reports_blockers(tmp_path: Pa
 
 def test_cross_language_e2e_plan_reports_missing_entrypoint_paths(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
-    manifest = _read_manifest()
+    manifest = e2e.validate_scenarios(MANIFEST)
     scenario = copy.deepcopy(manifest["scenarios"][0])
     scenario["steps"][0]["requires_tools"] = []
     scenario["steps"][0]["requires_paths"] = ["{workspace_root}/missing/e2e-entrypoint.py"]
@@ -984,4 +1015,9 @@ def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked(tmp_pa
     assert "e2e-multimodal-python-r-wasm-roundtrip" in summary["ready"]
     assert "e2e-multisource-branching-stacking-replay" in summary["ready"]
     assert summary["blocked"] == []
+    assert summary["v1_refactor_summary"]["e2e-wasm-open-repo-pipeline-alt-dataset"]["gap"] == 3
+    assert (
+        summary["v1_refactor_summary"]["e2e-python-reopen-paper-repository-refit"]["strict"]
+        == 4
+    )
     assert "Dry run only" in planned.stderr
