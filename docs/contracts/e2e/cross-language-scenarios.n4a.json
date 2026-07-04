@@ -441,9 +441,9 @@
     },
     {
       "id": "e2e-formats-io-datasets-methods-language-bindings",
-      "title": "Formats, IO, datasets, and methods parity across R/Python/WASM/Rust",
-      "objective": "Read heterogeneous file formats, assemble reference datasets, invoke native methods through each language binding, and compare exported predictions.",
-      "languages": ["python", "r", "javascript_wasm", "rust", "native"],
+      "title": "Formats, IO, datasets, and methods parity across native/Python/R/WASM plus Rust archive audit",
+      "objective": "Read heterogeneous file formats, assemble reference datasets, invoke native methods through current release-target language bindings, compare exported predictions, and record the archived Rust binding status explicitly.",
+      "languages": ["python", "r", "javascript_wasm", "rust_archive", "native"],
       "repos": ["nirs4all-formats", "nirs4all-io", "nirs4all-datasets", "nirs4all-methods", "nirs4all-core"],
       "tags": ["datasets", "io", "predictions", "parity", "pipeline"],
       "artifacts": [
@@ -460,7 +460,7 @@
       "parity_checks": [
         {
           "oracle": "native nirs4all-methods ABI",
-          "candidate": "Python/R/WASM/Rust bindings",
+          "candidate": "Python/R/WASM bindings, with archived Rust binding status recorded as non-release-target evidence",
           "metric": "method outputs and predictions match tolerance ledger"
         }
       ],
@@ -477,10 +477,10 @@
         },
         {
           "id": "cross-binding-methods-parity",
-          "title": "Invoke methods through Python/R/WASM/Rust and compare outputs",
+          "title": "Invoke methods through native/Python/R/WASM and audit archived Rust",
           "kind": "verify",
           "repo": "nirs4all-methods",
-          "requires_tools": ["python3.11", "Rscript", "npm", "cargo"],
+          "requires_tools": ["python3.11", "cmake", "ninja"],
           "requires_paths": ["{workspace_root}/nirs4all-methods/scripts/e2e/cross_binding_methods_parity.py"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-methods && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"],
           "produces": ["{artifacts_dir}/formats-io-methods/binding-parity.json", "{artifacts_dir}/formats-io-methods/predictions-by-language.json"]

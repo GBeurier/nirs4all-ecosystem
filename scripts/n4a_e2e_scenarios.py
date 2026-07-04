@@ -20,6 +20,7 @@ ALLOWED_LANGUAGES = {
     "python",
     "r",
     "rust",
+    "rust_archive",
     "javascript_wasm",
     "web",
     "matlab_octave",
