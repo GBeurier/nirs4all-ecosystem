@@ -19,11 +19,18 @@ aggregation manifests, or repo-local `AGENTS.md` / `CLAUDE.md` files.
 - Claude Code may be used again for parallel review/implementation, but every
   Claude Code MCP call must pass `allowedTools` explicitly:
   `["Bash", "Read", "Write", "Edit", "Glob", "Grep", "Task"]`.
+- Codex approval mode and Claude Code permissions are separate. Even when Codex
+  runs with `approval_policy=never`, Claude Code can still stall on its own
+  permission gate unless `allowedTools` is supplied on every initial or resumed
+  Claude session call.
 - Add `WebFetch` / `WebSearch` to Claude Code only when the specific task needs
   network access.
 - Claude Code sessions must be polled to completion with their `sessionId` and
   cursor; permission requests should be answered `allow_for_session` when they
   appear.
+- Claude Code can spawn subagents only when `Task` is included in
+  `allowedTools`; use it for isolated review lanes when the ownership boundary is
+  clear.
 - Full parity runs remain deferred until large integrated batches, because they
   are long. Targeted gates should be run per lane before integration.
 
