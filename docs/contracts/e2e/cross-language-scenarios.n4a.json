@@ -97,9 +97,9 @@
           "title": "Export reproducible paper and force best refit into repository",
           "kind": "export",
           "repo": "nirs4all-papers",
-          "requires_tools": ["python3"],
+          "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all-papers/tests/e2e/test_repository_refit_export.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-papers && python3 -m pytest tests/e2e/test_repository_refit_export.py --artifacts-dir={artifacts_dir}/python-paper-repository"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-papers && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_repository_refit_export.py --artifacts-dir={artifacts_dir}/python-paper-repository"],
           "produces": ["{artifacts_dir}/python-paper-repository/paper-export.zip", "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"]
         }
       ]
@@ -278,9 +278,9 @@
           "title": "Convert legacy workspace and lower predictions",
           "kind": "export",
           "repo": "nirs4all-tools",
-          "requires_tools": ["python3"],
+          "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all-tools/tests/e2e/test_legacy_save_predictions_web.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-tools && python3 -m pytest tests/e2e/test_legacy_save_predictions_web.py::test_convert_legacy_save --artifacts-dir={artifacts_dir}/legacy-converter"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-tools && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_legacy_save_predictions_web.py::test_convert_legacy_save --artifacts-dir={artifacts_dir}/legacy-converter"],
           "produces": ["{artifacts_dir}/legacy-converter/converted-workspace.n4a.json", "{artifacts_dir}/legacy-converter/predictions.rt_result.json"]
         },
         {

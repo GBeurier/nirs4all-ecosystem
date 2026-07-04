@@ -167,6 +167,15 @@ def test_cross_language_e2e_manifest_is_not_gitignored() -> None:
     assert ignored.returncode == 1
 
 
+def test_cross_language_e2e_python311_steps_use_python311_command() -> None:
+    manifest = _read_manifest()
+
+    for scenario in manifest["scenarios"]:
+        for step in scenario["steps"]:
+            if "python3.11" in step.get("requires_tools", []):
+                assert any("python3.11" in part for part in step["command"]), f"{scenario['id']}.{step['id']}"
+
+
 def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     workflow = (ROOT / ".github" / "workflows" / "cross-language-e2e.yml").read_text(encoding="utf-8")
     manifest = _read_manifest()
