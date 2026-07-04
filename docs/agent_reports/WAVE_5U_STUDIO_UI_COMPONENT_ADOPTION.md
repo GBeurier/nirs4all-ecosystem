@@ -9,6 +9,9 @@ Repository: `nirs4all-studio`
 Commit pushed:
 
 - `93013de feat(runtime): reuse shared UI primitives`
+- `a8eda33 ci: install local dag-ml rc dependencies`
+- `fd7269d ci: materialize shared ui sibling`
+- `c80949a ci: resolve shared ui sources inside workspace`
 
 Files changed:
 
@@ -16,6 +19,11 @@ Files changed:
 - `src/components/runtime/RuntimeDiagnosticsList.tsx`
 - `src/components/runtime/RuntimeStatus.tsx`
 - `src/ui/runtime/resultMetadata.test.ts`
+- `.github/workflows/ci.yml`
+- `.github/workflows/playwright.yml`
+- `.github/workflows/release-unified.yml`
+- `vite.config.ts`
+- `vitest.config.ts`
 
 ## Implementation
 
@@ -23,6 +31,9 @@ Files changed:
 - `RuntimeDiagnosticsList` now uses `RuntimeDiagnosticList` from `nirs4all-ui/components` with a Studio row renderer, preserving current Studio visual rows while sharing list orchestration.
 - `RuntimeStatusBadge` now uses `RuntimeResultStatusBadge` from `nirs4all-ui/components` for the label/icon content while preserving Studio badge variants and local status icons.
 - `resultMetadata.test.ts` now expects the shared runtime diagnostic contract field `unsupportedCapability: null` instead of relying on its absence.
+- CI/Playwright now install local `dag-ml` and `dag-ml-data` Python bindings before installing the source checkout of `nirs4all`, avoiding a false dependency on unavailable PyPI RC packages.
+- CI/Playwright/release jobs now materialize the `file:../nirs4all-ui` sibling expected by `package.json`.
+- Vite/Vitest resolve shared UI sources from the in-workspace `nirs4all-ui-lib/src` checkout when present, and fall back to `../nirs4all-ui/src` locally. This keeps external shared UI sources able to resolve Studio's `node_modules/react`.
 
 ## Review
 
@@ -37,8 +48,14 @@ Files changed:
 - `npm run lint:tsc`
 - `npm run lint:eslint -- src/components/runtime/RuntimeEngineBadge.tsx src/components/runtime/RuntimeDiagnosticsList.tsx src/components/runtime/RuntimeStatus.tsx src/ui/runtime/resultMetadata.test.ts`
 - `npm run build` passed before the test expectation update; warnings were existing Vite/Tailwind chunk and ambiguous utility warnings.
+- `npm run test:frontend -- --run src/components/runtime/RuntimeComponents.test.tsx src/pages/Runs.test.tsx` (`16 passed`)
+- `npm run lint:eslint -- vite.config.ts vitest.config.ts`
+- `npm run build` after the Vite/Vitest alias update
 - `npm run lint:storage`
 - `git diff --check`
+- GitHub Actions on `c80949a`:
+  - Studio `CI` success (`28711305238`)
+  - Studio `Playwright E2E Tests` success (`28711305273`)
 
 ## Decisions
 
