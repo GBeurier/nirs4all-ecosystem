@@ -1,13 +1,13 @@
-# Wave 4BW - Ready E2E Batch
+# Wave 4BX - Ready E2E Batch
 
 ## Scope
 
-- Executed all currently ready cross-language E2E scenarios after the Web converter, performance lane, and native dag-ml artifact gate were integrated.
+- Executed all currently ready cross-language E2E scenarios after the Web converter, performance lane, native dag-ml artifact gate, and Web dag-ml runtime evidence gate were integrated.
 - Kept full parity deferred; this was the ready-scenario batch gate, not the exhaustive Python-reference parity suite.
 
 ## Command
 
-- `python3.11 scripts/n4a_e2e_scenarios.py --artifacts-dir /tmp/n4a-e2e-ready-4bw run-ready --execute`
+- `python3.11 scripts/n4a_e2e_scenarios.py --artifacts-dir /tmp/n4a-e2e-ready-4bx run-ready --execute`
 
 ## Result
 
@@ -27,17 +27,17 @@
 
 ## Artifacts Checked
 
-- `/tmp/n4a-e2e-ready-4bw/performance-compare/pipeline-family.json`
-- `/tmp/n4a-e2e-ready-4bw/performance-compare/python-vs-dagml.json`
-- `/tmp/n4a-e2e-ready-4bw/performance-compare/studio-web-runtime.json`
-- `/tmp/n4a-e2e-ready-4bw/legacy-converter/web-results-panels.json`
-- `/tmp/n4a-e2e-ready-4bw/formats-io-methods/binding-parity.json`
-- `/tmp/n4a-e2e-ready-4bw/formats-io-methods/predictions-by-language.json`
-- `/tmp/n4a-e2e-ready-4bw/wasm-repo-alt-dataset/web-results.png`
-- `/tmp/n4a-e2e-ready-4bw/legacy-converter/web-results.png`
+- `/tmp/n4a-e2e-ready-4bx/performance-compare/pipeline-family.json`
+- `/tmp/n4a-e2e-ready-4bx/performance-compare/python-vs-dagml.json`
+- `/tmp/n4a-e2e-ready-4bx/performance-compare/studio-web-runtime.json`
+- `/tmp/n4a-e2e-ready-4bx/legacy-converter/web-results-panels.json`
+- `/tmp/n4a-e2e-ready-4bx/formats-io-methods/binding-parity.json`
+- `/tmp/n4a-e2e-ready-4bx/formats-io-methods/predictions-by-language.json`
+- `/tmp/n4a-e2e-ready-4bx/wasm-repo-alt-dataset/web-results.png`
+- `/tmp/n4a-e2e-ready-4bx/legacy-converter/web-results.png`
 
 ## Notes
 
 - Performance artifact status: `passed` for Python legacy/dag-ml and `passed_web_with_studio_hold` for Web/Studio runtime, with Studio explicitly `not_executed_prod_hold`.
-- The dag-ml performance run now fails on legacy fallback and requires native result artifacts when `results_path` is requested.
+- The dag-ml performance run now fails on legacy fallback, requires native result artifacts when `results_path` is requested, and the Web smoke verifies observed `dag-ml-wasm + libn4m` execution with `schedulerFallback=false`.
 - Non-blocking warnings observed: Polars category deprecations, Web chunk-size warnings, and dependency deprecation warnings in cluster/IO smoke tests.

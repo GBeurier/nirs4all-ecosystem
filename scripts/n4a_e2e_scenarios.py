@@ -43,6 +43,9 @@ REQUIRED_TAGS = {
 TOOL_FALLBACKS = {
     "R": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/R")],
     "Rscript": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/Rscript")],
+    "node": [Path.home() / ".nvm/versions/node/v22.21.1/bin/node"],
+    "npm": [Path.home() / ".nvm/versions/node/v22.21.1/bin/npm"],
+    "google-chrome": [Path("/usr/bin/google-chrome"), Path("/usr/bin/chromium"), Path("/usr/bin/chromium-browser")],
 }
 ALLOWED_STEP_KINDS = {
     "prepare",
