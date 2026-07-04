@@ -61,6 +61,92 @@ def test_cross_language_e2e_manifest_validates_current_contract() -> None:
     }
 
 
+def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
+    manifest = _read_manifest()
+    scenarios = {scenario["id"]: scenario for scenario in manifest["scenarios"]}
+
+    expected = {
+        "e2e-r-dataset-io-pipeline-save": {
+            "languages": {"r", "python", "native"},
+            "repos": {"nirs4all-core", "nirs4all-providers", "nirs4all-datasets", "nirs4all-io", "nirs4all-methods"},
+            "tags": {"datasets", "io", "pipeline", "workspace_save", "parity"},
+        },
+        "e2e-python-reopen-paper-repository-refit": {
+            "languages": {"python", "native"},
+            "repos": {"nirs4all", "nirs4all-repository", "nirs4all-papers", "dag-ml"},
+            "tags": {"pipeline", "repository", "papers", "workspace_save", "parity"},
+        },
+        "e2e-wasm-open-repo-pipeline-alt-dataset": {
+            "languages": {"javascript_wasm", "web", "python"},
+            "repos": {"nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"},
+            "tags": {"pipeline", "repository", "predictions", "web_results"},
+        },
+        "e2e-multimodal-python-r-wasm-roundtrip": {
+            "languages": {"python", "r", "javascript_wasm", "web"},
+            "repos": {"nirs4all", "nirs4all-core", "nirs4all-web"},
+            "tags": {"multimodal", "pipeline", "parity", "predictions"},
+        },
+        "e2e-multisource-branching-stacking-replay": {
+            "languages": {"python", "native"},
+            "repos": {"nirs4all", "nirs4all-core", "dag-ml"},
+            "tags": {"multisource", "pipeline", "parity", "pipeline_generation"},
+        },
+        "e2e-converter-legacy-save-predictions-web": {
+            "languages": {"python", "web"},
+            "repos": {"nirs4all-tools", "nirs4all-web"},
+            "tags": {"workspace_save", "predictions", "web_results"},
+        },
+        "e2e-dataset-provider-repository-roundtrip": {
+            "languages": {"python", "javascript_wasm"},
+            "repos": {"nirs4all-core", "nirs4all-providers", "nirs4all-datasets", "nirs4all-repository"},
+            "tags": {"datasets", "repository", "pipeline", "parity"},
+        },
+        "e2e-pipeline-generation-performance-compare": {
+            "languages": {"python", "javascript_wasm", "web", "native"},
+            "repos": {"nirs4all", "dag-ml", "nirs4all-core", "nirs4all-web"},
+            "tags": {"pipeline_generation", "pipeline", "parity", "predictions", "web_results"},
+        },
+        "e2e-cluster-dag-rights-client-core": {
+            "languages": {"python", "native"},
+            "repos": {"nirs4all-cluster", "nirs4all-core", "dag-ml"},
+            "tags": {"pipeline", "workspace_save", "parity"},
+        },
+        "e2e-formats-io-datasets-methods-language-bindings": {
+            "languages": {"python", "r", "javascript_wasm", "rust_archive", "native"},
+            "repos": {"nirs4all-formats", "nirs4all-io", "nirs4all-datasets", "nirs4all-methods", "nirs4all-core"},
+            "tags": {"datasets", "io", "predictions", "parity", "pipeline"},
+        },
+    }
+
+    assert set(scenarios) == set(expected)
+    for scenario_id, requirements in expected.items():
+        scenario = scenarios[scenario_id]
+        assert requirements["languages"].issubset(set(scenario["languages"])), scenario_id
+        assert requirements["repos"].issubset(set(scenario["repos"])), scenario_id
+        assert requirements["tags"].issubset(set(scenario["tags"])), scenario_id
+        assert len(scenario["steps"]) >= 2, scenario_id
+        assert len(scenario["artifacts"]) >= 2, scenario_id
+        assert any(check["evidence_level"] == "strict" for check in scenario["parity_checks"]), scenario_id
+        phases = manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id]
+        assert any(phase["status"] == "strict" for phase in phases.values()), scenario_id
+
+
+def test_cross_language_e2e_current_workspace_plans_all_complex_workflows_ready(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    plans = [
+        e2e.plan_scenario(scenario, workspace_root=ROOT.parent, artifacts_dir=tmp_path / "artifacts")
+        for scenario in manifest["scenarios"]
+    ]
+
+    assert [plan["id"] for plan in plans] == [scenario["id"] for scenario in manifest["scenarios"]]
+    assert {plan["status"] for plan in plans} == {"ready"}
+    for plan in plans:
+        assert len(plan["steps"]) >= 2, plan["id"]
+        assert all(not step["missing"] for step in plan["steps"]), plan["id"]
+
+
 def test_cross_language_e2e_manifest_requires_exact_scenario_count(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     manifest = _read_manifest()

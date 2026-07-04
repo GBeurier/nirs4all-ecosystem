@@ -637,14 +637,15 @@
       "strictness_gaps": [
         "Current execution proves a dense fused-matrix multimodal proxy; native multimodal runtime and Web/Studio roundtrip steps are still pending."
       ],
-      "languages": ["python", "r", "javascript_wasm"],
-      "repos": ["nirs4all", "nirs4all-core"],
+      "languages": ["python", "r", "javascript_wasm", "web"],
+      "repos": ["nirs4all", "nirs4all-core", "nirs4all-web"],
       "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"],
       "artifacts": [
         "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
         "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet",
         "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet",
-        "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"
+        "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json",
+        "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json"
       ],
       "evidence": [
         "Multimodal schema validation",
@@ -800,7 +801,7 @@
       ],
       "languages": ["python", "javascript_wasm"],
       "repos": ["nirs4all-providers", "nirs4all-datasets", "nirs4all-io", "nirs4all-repository", "nirs4all-core"],
-      "tags": ["datasets", "io", "repository", "pipeline"],
+      "tags": ["datasets", "io", "repository", "pipeline", "parity"],
       "artifacts": [
         "{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json",
         "{artifacts_dir}/provider-repository-roundtrip/repository-index.json",
