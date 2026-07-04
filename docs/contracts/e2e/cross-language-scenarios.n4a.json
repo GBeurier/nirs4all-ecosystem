@@ -377,9 +377,9 @@
           "title": "Generate candidate pipeline family and Python oracle outputs",
           "kind": "execute",
           "repo": "nirs4all",
-          "requires_tools": ["python3"],
+          "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_pipeline_generation_performance.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && python3 -m pytest tests/e2e/test_pipeline_generation_performance.py::test_generate_family --artifacts-dir={artifacts_dir}/performance-compare"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_pipeline_generation_performance.py::test_generate_family --artifacts-dir={artifacts_dir}/performance-compare"],
           "produces": ["{artifacts_dir}/performance-compare/pipeline-family.json"]
         },
         {
@@ -387,9 +387,9 @@
           "title": "Compare Python, dag-ml/native, Studio, and Web runtimes",
           "kind": "verify",
           "repo": "nirs4all-web",
-          "requires_tools": ["python3", "npm"],
-          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/e2e/performance-compare.spec.ts"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && npm run test:e2e -- tests/e2e/performance-compare.spec.ts --artifacts-dir={artifacts_dir}/performance-compare"],
+          "requires_tools": ["npm"],
+          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/performance-compare-smoke.mjs"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/performance-compare npm run smoke:performance-compare"],
           "produces": ["{artifacts_dir}/performance-compare/python-vs-dagml.json", "{artifacts_dir}/performance-compare/studio-web-runtime.json"]
         }
       ]
