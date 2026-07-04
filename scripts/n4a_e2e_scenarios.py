@@ -213,6 +213,29 @@ def _produced_snapshot(paths: list[str]) -> dict[str, int | None]:
     return snapshot
 
 
+def _append_step_summary(lines: list[str]) -> None:
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not summary:
+        return
+    try:
+        with Path(summary).open("a", encoding="utf-8") as handle:
+            handle.write("\n".join(lines) + "\n")
+    except OSError:
+        return
+
+
+def _parse_allowed_blocked_requirements(values: list[str]) -> dict[str, set[str]]:
+    allowed: dict[str, set[str]] = {}
+    for value in values:
+        scenario_id, separator, fragment = value.partition("=")
+        if not separator or not scenario_id or not fragment:
+            raise E2EScenarioError(
+                "--allowed-blocked-requirement must use SCENARIO_ID=REQUIREMENT_FRAGMENT"
+            )
+        allowed.setdefault(scenario_id, set()).add(fragment)
+    return allowed
+
+
 def _validate_produced_artifacts(step: dict[str, Any], before: dict[str, int | None]) -> list[str]:
     failures: list[str] = []
     for raw_path in step.get("produces", []):
@@ -592,7 +615,13 @@ def execute_plan(plan: dict[str, Any], *, stop_on_blocked: bool = True) -> int:
     return 0
 
 
-def execute_ready_plans(plans: list[dict[str, Any]]) -> int:
+def execute_ready_plans(
+    plans: list[dict[str, Any]],
+    *,
+    allow_blocked: bool = False,
+    allowed_blocked_scenarios: set[str] | None = None,
+    allowed_blocked_requirements: dict[str, set[str]] | None = None,
+) -> int:
     ready = [plan for plan in plans if plan["status"] == "ready"]
     blocked = [plan for plan in plans if plan["status"] == "blocked"]
     if not ready:
@@ -604,12 +633,53 @@ def execute_ready_plans(plans: list[dict[str, Any]]) -> int:
         if returncode != 0:
             return returncode
     if blocked:
+        blocked_ids = {plan["id"] for plan in blocked}
         print(
             "BLOCKED: "
-            + ", ".join(plan["id"] for plan in blocked)
+            + ", ".join(sorted(blocked_ids))
             + " still have missing requirements",
             file=sys.stderr,
         )
+        for plan in blocked:
+            for step in plan["steps"]:
+                if step["status"] == "blocked":
+                    print(f"BLOCKED {plan['id']}.{step['id']}: {', '.join(step['missing'])}", file=sys.stderr)
+        if allow_blocked:
+            allowed = allowed_blocked_scenarios or set()
+            unexpected = blocked_ids - allowed
+            allowed_requirements = allowed_blocked_requirements or {}
+            unexpected_requirements: list[str] = []
+            for plan in blocked:
+                allowed_fragments = allowed_requirements.get(plan["id"], set())
+                for step in plan["steps"]:
+                    if step["status"] != "blocked":
+                        continue
+                    for missing in step["missing"]:
+                        if not allowed_fragments or not any(
+                            fragment in missing for fragment in allowed_fragments
+                        ):
+                            unexpected_requirements.append(f"{plan['id']}.{step['id']}: {missing}")
+            if not unexpected and not unexpected_requirements:
+                warning = "Allowlisted blocked E2E scenario(s): " + ", ".join(sorted(blocked_ids))
+                print(f"::warning title=NIRS4ALL E2E blocked scenarios::{warning}", file=sys.stderr)
+                _append_step_summary(
+                    [
+                        "## NIRS4ALL E2E ready execution",
+                        "",
+                        "Ready scenarios passed, but these allowlisted scenarios remain blocked:",
+                        *[f"- `{scenario_id}`" for scenario_id in sorted(blocked_ids)],
+                    ]
+                )
+                return 0
+            if unexpected:
+                print(
+                    "BLOCKED: unexpected blocked scenario(s): " + ", ".join(sorted(unexpected)),
+                    file=sys.stderr,
+                )
+            if unexpected_requirements:
+                print("BLOCKED: unexpected blocked requirement(s):", file=sys.stderr)
+                for requirement in unexpected_requirements:
+                    print(f"  {requirement}", file=sys.stderr)
         return 2
     return 0
 
@@ -647,6 +717,25 @@ def main(argv: list[str] | None = None) -> int:
     )
     run_ready_parser = subparsers.add_parser("run-ready", help="execute every currently ready scenario")
     run_ready_parser.add_argument("--execute", action="store_true", help="actually run commands")
+    run_ready_parser.add_argument(
+        "--allow-blocked",
+        action="store_true",
+        help="exit successfully after ready scenarios pass if every blocked scenario is explicitly allowlisted",
+    )
+    run_ready_parser.add_argument(
+        "--allowed-blocked-scenario",
+        action="append",
+        default=[],
+        metavar="SCENARIO_ID",
+        help="scenario id allowed to remain blocked when --allow-blocked is set; repeatable",
+    )
+    run_ready_parser.add_argument(
+        "--allowed-blocked-requirement",
+        action="append",
+        default=[],
+        metavar="SCENARIO_ID=REQUIREMENT_FRAGMENT",
+        help="missing requirement fragment allowed for an allowlisted blocked scenario; repeatable",
+    )
 
     args = parser.parse_args(argv)
     workspace_root = args.workspace_root.expanduser().resolve()
@@ -697,7 +786,14 @@ def main(argv: list[str] | None = None) -> int:
                 print(json.dumps(summary, ensure_ascii=True, indent=2, sort_keys=True))
                 print("Dry run only. Pass --execute to run ready scenarios.", file=sys.stderr)
                 return 0
-            return execute_ready_plans(plans)
+            return execute_ready_plans(
+                plans,
+                allow_blocked=args.allow_blocked,
+                allowed_blocked_scenarios=set(args.allowed_blocked_scenario),
+                allowed_blocked_requirements=_parse_allowed_blocked_requirements(
+                    args.allowed_blocked_requirement
+                ),
+            )
     except E2EScenarioError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

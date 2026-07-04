@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -509,6 +510,30 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     declared_repos = {repo for scenario in manifest["scenarios"] for repo in scenario["repos"]}
 
     assert "N4A_WORKSPACE_ROOT: ${{ github.workspace }}/nirs4all-ecosystem" in workflow
+    assert "allow_blocked:" in workflow
+    assert "run-ready --execute" in workflow
+    assert "--allow-blocked" in workflow
+    assert set(re.findall(r"--allowed-blocked-scenario ([a-z0-9-]+)", workflow)) == (
+        ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS
+    )
+    assert workflow.count("--allowed-blocked-scenario ") == len(ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS)
+    expected_blocked_requirements = {
+        "e2e-r-dataset-io-pipeline-save="
+        "nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json",
+        "e2e-cluster-dag-rights-client-core="
+        "nirs4all-data/regression/GRAPEVINE_LeafTraits/PSI_spxyG70_30_byCultivar_MicroNIR_NeoSpectra",
+    }
+    assert set(re.findall(r"--allowed-blocked-requirement ([^\s]+)", workflow)) == (
+        expected_blocked_requirements
+    )
+    assert workflow.count("--allowed-blocked-requirement ") == len(expected_blocked_requirements)
+    assert "N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}" in workflow
+    assert "N4A_ALLOW_BLOCKED: ${{ github.event.inputs.allow_blocked }}" in workflow
+    assert '[[ "$N4A_ALLOW_BLOCKED" == "true" ]]' in workflow
+    assert 'plan --scenario "$N4A_E2E_SCENARIO"' in workflow
+    assert 'args=(run "$N4A_E2E_SCENARIO" --execute)' in workflow
+    assert 'args=(run "${{ github.event.inputs.scenario }}" --execute)' not in workflow
+    assert '[[ "${{ github.event.inputs.allow_blocked }}" == "true" ]]' not in workflow
     assert "path: nirs4all-ecosystem" in workflow
     assert "submodules: recursive" in workflow
     assert "nirs4all-drafts" not in workflow
@@ -548,6 +573,192 @@ def test_cross_language_e2e_allow_blocked_never_returns_green(tmp_path: Path) ->
 
     assert executed.returncode == 2
     assert f"SKIP-BLOCKED {scenario_id}" in executed.stderr
+
+
+def test_cross_language_e2e_run_ready_can_allow_declared_blockers(
+    tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "ready-result.json"
+    ready_plan = {
+        "id": "ready-scenario",
+        "title": "Ready scenario",
+        "status": "ready",
+        "steps": [
+            {
+                "id": "ready-step",
+                "status": "ready",
+                "missing": [],
+                "command": [
+                    sys.executable,
+                    "-c",
+                    f"from pathlib import Path; Path({str(artifact)!r}).write_text('{{\"status\":\"passed\"}}\\n')",
+                ],
+                "produces": [str(artifact)],
+            }
+        ],
+    }
+    blocked_plan = {
+        "id": "blocked-scenario",
+        "title": "Blocked scenario",
+        "status": "blocked",
+        "steps": [
+            {
+                "id": "blocked-step",
+                "status": "blocked",
+                "missing": ["path:/missing/public-dataset"],
+                "command": [sys.executable, "-c", "raise SystemExit(99)"],
+                "produces": [],
+            }
+        ],
+    }
+
+    assert e2e.execute_ready_plans([ready_plan, blocked_plan]) == 2
+    artifact.unlink()
+    assert e2e.execute_ready_plans([ready_plan, blocked_plan], allow_blocked=True) == 2
+    artifact.unlink()
+    assert (
+        e2e.execute_ready_plans(
+            [ready_plan, blocked_plan],
+            allow_blocked=True,
+            allowed_blocked_scenarios={"blocked-scenario"},
+        )
+        == 2
+    )
+    artifact.unlink()
+    summary = tmp_path / "step-summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+    assert (
+        e2e.execute_ready_plans(
+            [ready_plan, blocked_plan],
+            allow_blocked=True,
+            allowed_blocked_scenarios={"blocked-scenario"},
+            allowed_blocked_requirements={"blocked-scenario": {"other-dataset"}},
+        )
+        == 2
+    )
+    artifact.unlink()
+    assert (
+        e2e.execute_ready_plans(
+            [ready_plan, blocked_plan],
+            allow_blocked=True,
+            allowed_blocked_scenarios={"blocked-scenario"},
+            allowed_blocked_requirements={"blocked-scenario": {"public-dataset"}},
+        )
+        == 0
+    )
+    captured = capsys.readouterr()
+    assert "BLOCKED: blocked-scenario still have missing requirements" in captured.err
+    assert "BLOCKED blocked-scenario.blocked-step: path:/missing/public-dataset" in captured.err
+    assert "unexpected blocked scenario(s): blocked-scenario" in captured.err
+    assert "unexpected blocked requirement(s):" in captured.err
+    assert "::warning title=NIRS4ALL E2E blocked scenarios::" in captured.err
+    assert "Ready scenarios passed" in summary.read_text(encoding="utf-8")
+    assert "- `blocked-scenario`" in summary.read_text(encoding="utf-8")
+
+
+def test_cross_language_e2e_run_ready_requires_complete_blocker_allowlist(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "ready-result.json"
+    ready_plan = {
+        "id": "ready-scenario",
+        "title": "Ready scenario",
+        "status": "ready",
+        "steps": [
+            {
+                "id": "ready-step",
+                "status": "ready",
+                "missing": [],
+                "command": [
+                    sys.executable,
+                    "-c",
+                    f"from pathlib import Path; Path({str(artifact)!r}).write_text('{{}}\\n')",
+                ],
+                "produces": [str(artifact)],
+            }
+        ],
+    }
+    blocked_a = {
+        "id": "blocked-a",
+        "title": "Blocked A",
+        "status": "blocked",
+        "steps": [
+            {
+                "id": "blocked-step",
+                "status": "blocked",
+                "missing": ["path:/missing/public-dataset-a"],
+                "command": [sys.executable, "-c", "raise SystemExit(99)"],
+                "produces": [],
+            }
+        ],
+    }
+    blocked_b = {
+        "id": "blocked-b",
+        "title": "Blocked B",
+        "status": "blocked",
+        "steps": [
+            {
+                "id": "blocked-step",
+                "status": "blocked",
+                "missing": ["path:/missing/public-dataset-b"],
+                "command": [sys.executable, "-c", "raise SystemExit(99)"],
+                "produces": [],
+            }
+        ],
+    }
+
+    assert (
+        e2e.execute_ready_plans(
+            [ready_plan, blocked_a, blocked_b],
+            allow_blocked=True,
+            allowed_blocked_scenarios={"blocked-a"},
+            allowed_blocked_requirements={"blocked-a": {"public-dataset-a"}},
+        )
+        == 2
+    )
+
+
+def test_cross_language_e2e_run_ready_allowlist_does_not_mask_ready_failure(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "never-written.json"
+    failing_ready_plan = {
+        "id": "ready-scenario",
+        "title": "Ready scenario",
+        "status": "ready",
+        "steps": [
+            {
+                "id": "failing-step",
+                "status": "ready",
+                "missing": [],
+                "command": [sys.executable, "-c", "raise SystemExit(7)"],
+                "produces": [str(artifact)],
+            }
+        ],
+    }
+    blocked_plan = {
+        "id": "blocked-scenario",
+        "title": "Blocked scenario",
+        "status": "blocked",
+        "steps": [
+            {
+                "id": "blocked-step",
+                "status": "blocked",
+                "missing": ["path:/missing/public-dataset"],
+                "command": [sys.executable, "-c", "raise SystemExit(99)"],
+                "produces": [],
+            }
+        ],
+    }
+
+    assert (
+        e2e.execute_ready_plans(
+            [failing_ready_plan, blocked_plan],
+            allow_blocked=True,
+            allowed_blocked_scenarios={"blocked-scenario"},
+            allowed_blocked_requirements={"blocked-scenario": {"public-dataset"}},
+        )
+        == 7
+    )
 
 
 def test_cross_language_e2e_successful_step_must_produce_declared_artifacts(tmp_path: Path) -> None:

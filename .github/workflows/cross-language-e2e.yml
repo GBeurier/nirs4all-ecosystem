@@ -15,6 +15,11 @@ on:
         required: true
         default: false
         type: boolean
+      allow_blocked:
+        description: "For run-ready execution, allow declared blocked scenarios to remain blocked after ready scenarios pass"
+        required: true
+        default: true
+        type: boolean
 
 jobs:
   validate-and-plan:
@@ -53,10 +58,33 @@ jobs:
         run: python3 scripts/n4a_e2e_scenarios.py plan
       - name: Execute ready scenarios
         if: ${{ !github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        run: python3 scripts/n4a_e2e_scenarios.py run-ready --execute
+        env:
+          N4A_ALLOW_BLOCKED: ${{ github.event.inputs.allow_blocked }}
+        run: |
+          args=(run-ready --execute)
+          if [[ "$N4A_ALLOW_BLOCKED" == "true" ]]; then
+            args+=(
+              --allow-blocked
+              --allowed-blocked-scenario e2e-r-dataset-io-pipeline-save
+              --allowed-blocked-requirement e2e-r-dataset-io-pipeline-save=nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json
+              --allowed-blocked-scenario e2e-cluster-dag-rights-client-core
+              --allowed-blocked-requirement e2e-cluster-dag-rights-client-core=nirs4all-data/regression/GRAPEVINE_LeafTraits/PSI_spxyG70_30_byCultivar_MicroNIR_NeoSpectra
+            )
+          fi
+          python3 scripts/n4a_e2e_scenarios.py "${args[@]}"
       - name: Plan selected scenario
         if: ${{ github.event.inputs.scenario && github.event.inputs.execute != 'true' }}
-        run: python3 scripts/n4a_e2e_scenarios.py plan --scenario "${{ github.event.inputs.scenario }}"
+        env:
+          N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}
+        run: python3 scripts/n4a_e2e_scenarios.py plan --scenario "$N4A_E2E_SCENARIO"
       - name: Execute selected scenario
         if: ${{ github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        run: python3 scripts/n4a_e2e_scenarios.py run "${{ github.event.inputs.scenario }}" --execute
+        env:
+          N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}
+          N4A_ALLOW_BLOCKED: ${{ github.event.inputs.allow_blocked }}
+        run: |
+          args=(run "$N4A_E2E_SCENARIO" --execute)
+          if [[ "$N4A_ALLOW_BLOCKED" == "true" ]]; then
+            args+=(--allow-blocked)
+          fi
+          python3 scripts/n4a_e2e_scenarios.py "${args[@]}"
