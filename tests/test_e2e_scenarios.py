@@ -229,7 +229,8 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     wasm_alt_dataset = _scenario_by_id(manifest, "e2e-wasm-open-repo-pipeline-alt-dataset")
     assert wasm_alt_dataset["evidence_level"] == "hybrid"
     assert any("no Python-vs-WASM numeric oracle" in gap for gap in wasm_alt_dataset["strictness_gaps"])
-    assert any("alternative catalog dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
+    assert any("non-demo uploaded fixture dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
+    assert any("provider/catalog dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
 
     multimodal = _scenario_by_id(manifest, "e2e-multimodal-python-r-wasm-roundtrip")
     assert multimodal["evidence_level"] == "hybrid"

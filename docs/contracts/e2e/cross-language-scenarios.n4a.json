@@ -27,12 +27,15 @@
         "{artifacts_dir}/r-dataset-io-pipeline/r-session-info.json",
         "{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json",
         "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json",
-        "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json"
+        "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json",
+        "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"
       ],
       "evidence": [
         "R session info and package versions",
         "Dataset card id, provider contract, IO spec, package summary, and IO reshape diff",
         "Saved pipeline/workspace SHA256",
+        "Reopened workspace/pipeline/prediction artifact roundtrip checks",
+        "Python portable oracle comparison when the fixture oracle is present",
         "Native methods parity summary"
       ],
       "parity_checks": [
@@ -45,7 +48,7 @@
         {
           "oracle": "catalog dataset IO materialization",
           "candidate": "R/native real dataset pipeline run",
-          "metric": "real dataset IO run preserves selected values and produces finite R/native predictions",
+          "metric": "real dataset IO run preserves selected values, reopens saved workspace/pipeline/predictions, reproduces RMSE and prediction vectors, and compares the portable Python oracle fixture when present",
           "evidence_level": "contract"
         }
       ],
@@ -81,7 +84,7 @@
           "requires_tools": ["Rscript"],
           "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/e2e_run_save_pipeline.R"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH make test-r-parity && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"],
-          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json"]
+          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json", "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"]
         }
       ]
     },
@@ -151,7 +154,7 @@
       "evidence_level": "hybrid",
       "strictness_gaps": [
         "Web roundtrip prediction preservation is strict inside the browser/WASM runtime, but no Python-vs-WASM numeric oracle is asserted in this scenario.",
-        "The current Playwright path uses the bundled demo/sample artifact; it does not yet execute the repository pipeline on an alternative catalog dataset."
+        "The current Playwright path now uses a deterministic non-demo uploaded fixture dataset; it still does not execute a provider/catalog dataset with a Python-vs-WASM oracle."
       ],
       "languages": ["javascript_wasm", "web", "python"],
       "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"],
@@ -163,7 +166,7 @@
       ],
       "evidence": [
         "WASM package version and web build hash",
-        "Repository pipeline descriptor and shared UI shim check",
+        "Repository pipeline descriptor, descriptor SHA256, stable pipeline id, non-demo dataset id, and shared UI shim check",
         "Client-only prediction artifact reuse with export/import hash evidence",
         "Imported pipeline execution screenshot and runtime resource hashes",
         "Source-vs-imported Web prediction comparison"
@@ -172,7 +175,7 @@
         {
           "oracle": "exported client-side pipeline artifact",
           "candidate": "fresh browser session imported pipeline execution",
-          "metric": "pipeline artifact imports, executes, and renders without console errors",
+          "metric": "repository pipeline fixture imports over a non-demo uploaded dataset, executes, renders, and records zero console errors plus non-empty screenshot/evidence artifacts",
           "evidence_level": "contract"
         },
         {
@@ -197,7 +200,8 @@
           "requires_tools": ["npm"],
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
-            "{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs"
+            "{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs",
+            "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/manifest.json"
           ],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"],
           "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json", "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"]
