@@ -13,24 +13,29 @@
       "title": "R dataset load, IO reshape, complex pipeline, and saved workspace",
       "objective": "In R, load a catalog dataset, change its structure through nirs4all-io, run a multi-step NIRS pipeline, and persist both pipeline and workspace artifacts.",
       "languages": ["r", "python", "native"],
-      "repos": ["nirs4all-core", "nirs4all-datasets", "nirs4all-io", "nirs4all-methods", "dag-ml-data"],
+      "repos": ["nirs4all-core", "nirs4all-providers", "nirs4all-datasets", "nirs4all-io", "nirs4all-methods", "dag-ml-data"],
       "tags": ["datasets", "io", "pipeline", "workspace_save", "parity"],
       "artifacts": [
+        "{artifacts_dir}/r-dataset-io-pipeline/dataset-card.json",
+        "{artifacts_dir}/r-dataset-io-pipeline/io-spec.n4a.json",
+        "{artifacts_dir}/r-dataset-io-pipeline/dataset-package-summary.json",
+        "{artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json",
+        "{artifacts_dir}/r-dataset-io-pipeline/r-session-info.json",
         "{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json",
         "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json",
         "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json"
       ],
       "evidence": [
         "R session info and package versions",
-        "Dataset card id and IO reshape diff",
+        "Dataset card id, provider contract, IO spec, package summary, and IO reshape diff",
         "Saved pipeline/workspace SHA256",
         "Native methods parity summary"
       ],
       "parity_checks": [
         {
           "oracle": "python nirs4all reference",
-          "candidate": "R nirs4all aggregate through nirs4all-methods",
-          "metric": "prediction_abs_max <= 1e-8"
+          "candidate": "R nirs4all aggregate through nirs4all-methods portable fixtures plus real dataset IO package run",
+          "metric": "make test-r-parity fixture gate passes; real dataset IO run preserves selected values and produces finite R/native predictions"
         }
       ],
       "steps": [
@@ -40,9 +45,22 @@
           "kind": "prepare",
           "repo": "nirs4all-core",
           "requires_tools": ["Rscript"],
-          "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/e2e_dataset_io_pipeline.R"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH Rscript bindings/r/tests/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"],
-          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json"]
+          "requires_paths": [
+            "{workspace_root}/nirs4all-core/bindings/r/tests/e2e_dataset_io_pipeline.R",
+            "{workspace_root}/nirs4all-core/scripts/e2e/prepare_r_dataset_io_pipeline.py",
+            "{workspace_root}/nirs4all-providers/src/nirs4all_providers/datasets.py",
+            "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/__init__.py",
+            "{workspace_root}/nirs4all-io/src/nirs4all_io/__init__.py",
+            "{workspace_root}/nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json"
+          ],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH PYTHONPATH={workspace_root}/nirs4all-providers/src:{workspace_root}/nirs4all-datasets/src:{workspace_root}/nirs4all-io/src:${{PYTHONPATH:-}} Rscript bindings/r/tests/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"],
+          "produces": [
+            "{artifacts_dir}/r-dataset-io-pipeline/dataset-card.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/io-spec.n4a.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/dataset-package-summary.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/r-session-info.json"
+          ]
         },
         {
           "id": "r-run-save",
