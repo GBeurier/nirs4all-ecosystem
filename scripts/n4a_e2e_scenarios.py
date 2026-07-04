@@ -40,6 +40,16 @@ REQUIRED_TAGS = {
     "pipeline_generation",
     "web_results",
 }
+ALLOWED_EVIDENCE_LEVELS = {
+    "contract_smoke",
+    "hybrid",
+    "strict",
+}
+ALLOWED_CHECK_EVIDENCE_LEVELS = {
+    "contract",
+    "hybrid",
+    "strict",
+}
 TOOL_FALLBACKS = {
     "R": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/R")],
     "Rscript": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/Rscript")],
@@ -241,6 +251,55 @@ def _validate_step(scenario_id: str, step: dict[str, Any], step_ids: set[str]) -
     _strings(step.get("produces", []), f"{scenario_id}.{step_id}.produces", allow_empty=True)
 
 
+def _contains_smoke_claim(value: str) -> bool:
+    normalized = value.strip().lower().replace("-", "_").replace(" ", "_")
+    return "smoke" in normalized
+
+
+def _validate_evidence_contract(
+    scenario_id: str,
+    scenario: dict[str, Any],
+    tags: set[str],
+    parity_checks: list[Any],
+) -> None:
+    evidence_level = scenario.get("evidence_level")
+    if evidence_level not in ALLOWED_EVIDENCE_LEVELS:
+        raise E2EScenarioError(
+            f"{scenario_id}.evidence_level must be one of: "
+            + ", ".join(sorted(ALLOWED_EVIDENCE_LEVELS))
+        )
+
+    strictness_gaps = _strings(
+        scenario.get("strictness_gaps", []),
+        f"{scenario_id}.strictness_gaps",
+        allow_empty=True,
+    )
+    if evidence_level == "strict" and strictness_gaps:
+        raise E2EScenarioError(f"{scenario_id}: strict scenarios must not declare strictness_gaps")
+    if evidence_level in {"contract_smoke", "hybrid"} and not strictness_gaps:
+        raise E2EScenarioError(f"{scenario_id}: {evidence_level} scenarios must declare strictness_gaps")
+    if evidence_level == "contract_smoke" and "parity" in tags:
+        raise E2EScenarioError(f"{scenario_id}: contract_smoke scenarios must not use the parity tag")
+
+    strict_check_seen = False
+    for index, check in enumerate(parity_checks):
+        check_level = check.get("evidence_level")
+        if check_level not in ALLOWED_CHECK_EVIDENCE_LEVELS:
+            raise E2EScenarioError(
+                f"{scenario_id}.parity_checks[{index}].evidence_level must be one of: "
+                + ", ".join(sorted(ALLOWED_CHECK_EVIDENCE_LEVELS))
+            )
+        metric = check.get("metric", "")
+        if check_level == "strict":
+            strict_check_seen = True
+            if _contains_smoke_claim(metric):
+                raise E2EScenarioError(
+                    f"{scenario_id}.parity_checks[{index}]: strict check metric must not be smoke-only"
+                )
+    if "parity" in tags and not strict_check_seen:
+        raise E2EScenarioError(f"{scenario_id}: parity tag requires at least one strict parity_check")
+
+
 def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
     manifest = _read_json(path)
     if manifest.get("schema_version") != SCHEMA_VERSION:
@@ -283,6 +342,7 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
             for field in ("oracle", "candidate", "metric"):
                 if not isinstance(check.get(field), str) or not check[field]:
                     raise E2EScenarioError(f"{scenario_id}.parity_checks[{index}].{field} must be non-empty")
+        _validate_evidence_contract(scenario_id, scenario, tags, parity_checks)
         steps = scenario.get("steps")
         if not isinstance(steps, list) or not steps:
             raise E2EScenarioError(f"{scenario_id}.steps must be a non-empty list")

@@ -12,6 +12,10 @@
       "id": "e2e-r-dataset-io-pipeline-save",
       "title": "R dataset load, IO reshape, complex pipeline, and saved workspace",
       "objective": "In R, load a catalog dataset, change its structure through nirs4all-io, run a multi-step NIRS pipeline, and persist both pipeline and workspace artifacts.",
+      "evidence_level": "hybrid",
+      "strictness_gaps": [
+        "The portable R parity fixture is strict, but the real catalog dataset path currently proves IO preservation and finite R/native predictions rather than numeric R-vs-Python parity on that dataset."
+      ],
       "languages": ["r", "python", "native"],
       "repos": ["nirs4all-core", "nirs4all-providers", "nirs4all-datasets", "nirs4all-io", "nirs4all-methods", "dag-ml-data"],
       "tags": ["datasets", "io", "pipeline", "workspace_save", "parity"],
@@ -33,9 +37,16 @@
       ],
       "parity_checks": [
         {
-          "oracle": "python nirs4all reference",
-          "candidate": "R nirs4all aggregate through nirs4all-methods portable fixtures plus real dataset IO package run",
-          "metric": "make test-r-parity fixture gate passes; real dataset IO run preserves selected values and produces finite R/native predictions"
+          "oracle": "python nirs4all reference fixture",
+          "candidate": "R nirs4all aggregate through nirs4all-methods portable fixtures",
+          "metric": "make test-r-parity fixture gate passes",
+          "evidence_level": "strict"
+        },
+        {
+          "oracle": "catalog dataset IO materialization",
+          "candidate": "R/native real dataset pipeline run",
+          "metric": "real dataset IO run preserves selected values and produces finite R/native predictions",
+          "evidence_level": "contract"
         }
       ],
       "steps": [
@@ -78,6 +89,7 @@
       "id": "e2e-python-reopen-paper-repository-refit",
       "title": "Python reopen pipeline, prove parity, export paper, and force repository best-pipeline refit",
       "objective": "Open a saved pipeline in full Python nirs4all, rerun it, compare against the Python oracle, export a reproducible paper bundle, and inject the best refit pipeline into repository metadata.",
+      "evidence_level": "strict",
       "languages": ["python", "native"],
       "repos": ["nirs4all", "nirs4all-repository", "nirs4all-papers", "dag-ml", "nirs4all-methods"],
       "tags": ["pipeline", "repository", "papers", "workspace_save", "parity"],
@@ -96,7 +108,8 @@
         {
           "oracle": "python nirs4all legacy reference",
           "candidate": "dag-ml backend refit",
-          "metric": "scores and predictions exactly match scenario tolerance ledger"
+          "metric": "scores and predictions exactly match scenario tolerance ledger",
+          "evidence_level": "strict"
         }
       ],
       "steps": [
@@ -123,12 +136,16 @@
       ]
     },
     {
-      "id": "e2e-wasm-open-repo-pipeline-parity-alt-dataset",
+      "id": "e2e-wasm-open-repo-pipeline-alt-dataset",
       "title": "WASM opens repository pipeline, executes client-side import smoke, and renders predictions",
       "objective": "Run the browser/WASM aggregate locally, export/import a pipeline repository artifact, execute the imported pipeline client-side, validate saved prediction artifact reuse, and verify the Web build consumes the shared nirs4all-ui shim.",
+      "evidence_level": "contract_smoke",
+      "strictness_gaps": [
+        "No Python-vs-WASM numeric prediction parity is asserted here; this scenario proves client-side import/export/rendering and shared UI contract only."
+      ],
       "languages": ["javascript_wasm", "web", "python"],
       "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"],
-      "tags": ["datasets", "pipeline", "repository", "predictions", "parity", "web_results"],
+      "tags": ["datasets", "pipeline", "repository", "predictions", "web_results"],
       "artifacts": [
         "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json",
         "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",
@@ -144,7 +161,8 @@
         {
           "oracle": "exported client-side pipeline artifact",
           "candidate": "fresh browser session imported pipeline execution",
-          "metric": "pipeline artifact imports, executes, and renders without console errors; this smoke does not claim numeric Python-vs-WASM parity"
+          "metric": "pipeline artifact imports, executes, and renders without console errors",
+          "evidence_level": "contract"
         }
       ],
       "steps": [
@@ -180,6 +198,7 @@
       "id": "e2e-multimodal-python-r-wasm-roundtrip",
       "title": "Multimodal Python/R/WASM pipeline roundtrip",
       "objective": "Generate a multimodal NIRS plus metadata pipeline in Python, roundtrip it through R and WASM, and verify predictions and saved manifests remain equivalent.",
+      "evidence_level": "strict",
       "languages": ["python", "r", "javascript_wasm"],
       "repos": ["nirs4all", "nirs4all-core"],
       "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"],
@@ -198,7 +217,8 @@
         {
           "oracle": "python multimodal predictions",
           "candidate": "R and WASM multimodal predictions",
-          "metric": "per-output prediction_abs_max <= 1e-8"
+          "metric": "per-output prediction_abs_max <= 1e-8",
+          "evidence_level": "strict"
         }
       ],
       "steps": [
@@ -228,6 +248,10 @@
       "id": "e2e-multisource-branching-stacking-replay",
       "title": "Multisource branching, stacking score replay, and native prediction-table audit",
       "objective": "Assemble multiple sources with distinct preprocessing branches, train stacking/OOF, save replay manifests, compare native score-set metrics against the direct Python oracle, and audit the native predictions.parquet schema/array coverage.",
+      "evidence_level": "hybrid",
+      "strictness_gaps": [
+        "Native score-set replay is strict, but vector-level native predictions are currently audited for schema/array coverage rather than enforced as full prediction-vector parity."
+      ],
       "languages": ["python", "native", "rust"],
       "repos": ["nirs4all", "dag-ml", "dag-ml-data", "nirs4all-core", "nirs4all-methods"],
       "tags": ["multisource", "pipeline_generation", "pipeline", "workspace_save", "parity"],
@@ -246,7 +270,8 @@
         {
           "oracle": "python nirs4all stacking replay",
           "candidate": "dag-ml/native replay",
-          "metric": "score_set cv/test RMSE deltas stay within tolerance; native prediction table schema, row count, partitions, folds, and current array coverage are audited explicitly"
+          "metric": "score_set cv/test RMSE deltas stay within tolerance; native prediction table schema, row count, partitions, folds, and current array coverage are audited explicitly",
+          "evidence_level": "strict"
         }
       ],
       "steps": [
@@ -276,6 +301,7 @@
       "id": "e2e-converter-legacy-save-predictions-web",
       "title": "Legacy save conversion, prediction lowering, and Web results rendering",
       "objective": "Convert a legacy workspace/save fixture, lower predictions into the V1 result contract, prove deterministic converter preservation against fixture values and checksums, open the output in Web, and verify every result panel renders.",
+      "evidence_level": "strict",
       "languages": ["python", "javascript_wasm", "web"],
       "repos": ["nirs4all-tools", "nirs4all", "nirs4all-web", "nirs4all-ui"],
       "tags": ["workspace_save", "predictions", "web_results", "pipeline", "parity"],
@@ -296,7 +322,8 @@
         {
           "oracle": "legacy fixture values and converter checksum manifest",
           "candidate": "converted V1 workspace and lowered runtime result contract",
-          "metric": "fixture prediction vectors, scores, row counts, checksums, and Web result panels match expected contract"
+          "metric": "fixture prediction vectors, scores, row counts, checksums, and Web result panels match expected contract",
+          "evidence_level": "strict"
         }
       ],
       "steps": [
@@ -329,9 +356,13 @@
       "id": "e2e-dataset-provider-repository-roundtrip",
       "title": "Dataset provider to repository to core roundtrip",
       "objective": "Resolve a dataset provider descriptor, materialize through IO, publish a repository pipeline descriptor, and consume it through core Python and JavaScript/WASM entrypoints.",
+      "evidence_level": "contract_smoke",
+      "strictness_gaps": [
+        "This scenario compares portable repository descriptors but does not execute the pipeline across Python, WASM, and R on the materialized dataset."
+      ],
       "languages": ["python", "javascript_wasm"],
       "repos": ["nirs4all-providers", "nirs4all-datasets", "nirs4all-io", "nirs4all-repository", "nirs4all-core"],
-      "tags": ["datasets", "io", "repository", "pipeline", "parity"],
+      "tags": ["datasets", "io", "repository", "pipeline"],
       "artifacts": [
         "{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json",
         "{artifacts_dir}/provider-repository-roundtrip/repository-index.json",
@@ -342,13 +373,14 @@
         "Provider descriptor contract validation",
         "Dataset manifest and IO materialization summary",
         "Repository index conformance",
-        "Python and JavaScript/WASM consumption parity"
+        "Python and JavaScript/WASM consumption contract"
       ],
       "parity_checks": [
         {
           "oracle": "nirs4all-core Python repository pipeline loader",
           "candidate": "nirs4all-core JavaScript/WASM repository pipeline loader",
-          "metric": "portable class sequence, random_state, and normalized pipeline metadata match"
+          "metric": "portable class sequence, random_state, and normalized pipeline metadata match",
+          "evidence_level": "contract"
         }
       ],
       "steps": [
@@ -378,6 +410,10 @@
       "id": "e2e-pipeline-generation-performance-compare",
       "title": "Complex pipeline generation with Python/Web performance comparison",
       "objective": "Generate a family of candidate pipelines, run Python reference and dag-ml/native backends, compare outputs, and record performance gains for library and client-side Web runtime paths. Studio runtime comparison is intentionally outside this Web-only gate until a dedicated Studio entrypoint exists.",
+      "evidence_level": "hybrid",
+      "strictness_gaps": [
+        "Python-vs-dag-ml prediction parity is strict, but Web timing remains a runtime/performance contract and Studio is explicitly outside this Web-only gate."
+      ],
       "languages": ["python", "javascript_wasm", "web", "native"],
       "repos": ["nirs4all", "dag-ml", "nirs4all-core", "nirs4all-web"],
       "tags": ["pipeline_generation", "pipeline", "parity", "predictions", "web_results"],
@@ -396,8 +432,15 @@
       "parity_checks": [
         {
           "oracle": "python nirs4all reference",
-          "candidate": "dag-ml/native and WASM runtimes",
-          "metric": "prediction parity plus performance ratio ledger"
+          "candidate": "dag-ml/native runtime",
+          "metric": "prediction parity plus performance ratio ledger",
+          "evidence_level": "strict"
+        },
+        {
+          "oracle": "Web dag-ml/WASM runtime ledger",
+          "candidate": "client-side browser runtime",
+          "metric": "web runtime executes generated family and records timing verdict",
+          "evidence_level": "contract"
         }
       ],
       "steps": [
@@ -427,6 +470,7 @@
       "id": "e2e-cluster-dag-rights-client-core",
       "title": "Cluster scheduler runs a DAG pipeline with rights checks and core client handoff",
       "objective": "Submit a DAG-shaped pipeline through the cluster client/server scheduler, enforce read/execute rights, return artifacts to core, recompute the scheduler aggregate from task results, and require a real nirs4all local-vs-cluster numeric oracle.",
+      "evidence_level": "strict",
       "languages": ["python", "native"],
       "repos": ["nirs4all-cluster", "nirs4all-core", "dag-ml", "nirs4all-methods"],
       "tags": ["pipeline", "workspace_save", "parity"],
@@ -447,12 +491,14 @@
         {
           "oracle": "local recompute from cluster task results",
           "candidate": "cluster scheduled execution",
-          "metric": "num_tasks, best_task_id, and best_metric parity"
+          "metric": "num_tasks, best_task_id, and best_metric parity",
+          "evidence_level": "strict"
         },
         {
           "oracle": "local Python nirs4all reference",
           "candidate": "cluster worker nirs4all.run",
-          "metric": "best_rmse abs_diff <= 1e-6"
+          "metric": "best_rmse abs_diff <= 1e-6",
+          "evidence_level": "strict"
         }
       ],
       "steps": [
@@ -487,6 +533,10 @@
       "id": "e2e-formats-io-datasets-methods-language-bindings",
       "title": "Formats, IO, datasets, and methods parity across native/Python/R/WASM plus Rust archive audit",
       "objective": "Read heterogeneous file formats, assemble reference datasets, invoke native methods through current release-target language bindings, compare exported predictions, and record the archived Rust binding status explicitly.",
+      "evidence_level": "hybrid",
+      "strictness_gaps": [
+        "Native/Python/R method parity is strict, but WASM remains fixture-scoped and Rust is archived as non-release-target evidence."
+      ],
       "languages": ["python", "r", "javascript_wasm", "rust_archive", "native"],
       "repos": ["nirs4all-formats", "nirs4all-io", "nirs4all-datasets", "nirs4all-methods", "nirs4all-core"],
       "tags": ["datasets", "io", "predictions", "parity", "pipeline"],
@@ -504,8 +554,15 @@
       "parity_checks": [
         {
           "oracle": "native nirs4all-methods ABI",
-          "candidate": "Python/R/WASM bindings, with archived Rust binding status recorded as non-release-target evidence",
-          "metric": "method outputs and predictions match tolerance ledger"
+          "candidate": "Python/R bindings",
+          "metric": "method outputs and predictions match tolerance ledger",
+          "evidence_level": "strict"
+        },
+        {
+          "oracle": "native nirs4all-methods ABI",
+          "candidate": "WASM fixture and archived Rust binding status",
+          "metric": "WASM fixture output is checked and archived Rust status is recorded as non-release-target evidence",
+          "evidence_level": "contract"
         }
       ],
       "steps": [

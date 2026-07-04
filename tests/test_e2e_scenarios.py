@@ -79,6 +79,60 @@ def test_cross_language_e2e_manifest_rejects_duplicate_step_ids(tmp_path: Path) 
         e2e.validate_scenarios(manifest_path)
 
 
+def test_cross_language_e2e_manifest_requires_evidence_levels(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    del manifest["scenarios"][0]["evidence_level"]
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="evidence_level must be one of"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_contract_smoke_cannot_claim_parity_tag(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario = manifest["scenarios"][0]
+    scenario["evidence_level"] = "contract_smoke"
+    scenario["strictness_gaps"] = ["numeric oracle pending"]
+    scenario["tags"] = sorted(set(scenario["tags"]) | {"parity"})
+    for check in scenario["parity_checks"]:
+        check["evidence_level"] = "contract"
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="contract_smoke scenarios must not use the parity tag"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_hybrid_scenarios_declare_strictness_gaps(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario = manifest["scenarios"][0]
+    scenario["evidence_level"] = "hybrid"
+    scenario["strictness_gaps"] = []
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="hybrid scenarios must declare strictness_gaps"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_parity_tag_requires_strict_check(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario = manifest["scenarios"][0]
+    scenario["tags"] = sorted(set(scenario["tags"]) | {"parity"})
+    for check in scenario["parity_checks"]:
+        check["evidence_level"] = "contract"
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="parity tag requires at least one strict parity_check"):
+        e2e.validate_scenarios(manifest_path)
+
+
 def test_cross_language_e2e_manifest_requires_artifacts_to_be_produced(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     manifest = _read_manifest()
@@ -138,7 +192,7 @@ def test_cross_language_e2e_cli_list_and_plan_json() -> None:
     )
     scenario_ids = json.loads(listed.stdout)
     assert len(scenario_ids) == 10
-    assert "e2e-wasm-open-repo-pipeline-parity-alt-dataset" in scenario_ids
+    assert "e2e-wasm-open-repo-pipeline-alt-dataset" in scenario_ids
 
     planned = subprocess.run(
         [sys.executable, str(script), "plan", "--scenario", scenario_ids[0], "--json"],
