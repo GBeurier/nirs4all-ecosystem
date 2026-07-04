@@ -18,7 +18,9 @@ refresh after the V1 RC publication/cockpit blocker updates.
   - Advanced the submodule pointer from `757e737` to cockpit collect snapshot
     `6ec3592`.
 - `nirs4all-ecosystem/nirs4all-org`
-  - Advanced the submodule pointer from `ed8075a` to org page update `5059439`.
+  - Advanced the submodule pointer from `ed8075a` to org page update `e4dea6b`.
+  - Confirmed `nirs4all-tools` is visible on the org page with source release
+    and PyPI-pending status, and aligned offline Studio/Python fallbacks.
 - `nirs4all-ecosystem/README.md`
   - Aligned the referenced-project table with the actual V1 RC submodules:
     `nirs4all-core`, `nirs4all-providers`, `nirs4all-tools`, `nirs4all-ui`,
