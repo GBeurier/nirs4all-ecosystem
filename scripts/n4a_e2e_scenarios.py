@@ -40,6 +40,10 @@ REQUIRED_TAGS = {
     "pipeline_generation",
     "web_results",
 }
+TOOL_FALLBACKS = {
+    "R": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/R")],
+    "Rscript": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/Rscript")],
+}
 ALLOWED_STEP_KINDS = {
     "prepare",
     "execute",
@@ -100,6 +104,15 @@ def _format_value(value: Any, workspace_root: Path, artifacts_dir: Path) -> Any:
     if isinstance(value, dict):
         return {key: _format_value(item, workspace_root, artifacts_dir) for key, item in value.items()}
     return value
+
+
+def _tool_available(tool: str) -> bool:
+    path = Path(tool).expanduser()
+    if path.is_file():
+        return True
+    if shutil.which(tool) is not None:
+        return True
+    return any(candidate.is_file() for candidate in TOOL_FALLBACKS.get(tool, []))
 
 
 def _validate_step(scenario_id: str, step: dict[str, Any], step_ids: set[str]) -> None:
@@ -202,7 +215,7 @@ def _scenario_by_id(manifest: dict[str, Any], scenario_id: str) -> dict[str, Any
 def _step_status(step: dict[str, Any], workspace_root: Path, artifacts_dir: Path) -> tuple[str, list[str]]:
     missing: list[str] = []
     for tool in step.get("requires_tools", []):
-        if shutil.which(tool) is None:
+        if not _tool_available(tool):
             missing.append(f"tool:{tool}")
     for env_name in step.get("requires_env", []):
         if not os.environ.get(env_name):

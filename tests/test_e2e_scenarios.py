@@ -171,8 +171,9 @@ def test_cross_language_e2e_allow_blocked_never_returns_green(tmp_path: Path) ->
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
     manifest = _read_manifest()
     scenario_id = manifest["scenarios"][0]["id"]
-    manifest["scenarios"][0]["steps"][0]["requires_tools"] = ["definitely-missing-n4a-e2e-tool"]
-    manifest["scenarios"][0]["steps"][0]["requires_paths"] = []
+    for step in manifest["scenarios"][0]["steps"]:
+        step["requires_tools"] = ["definitely-missing-n4a-e2e-tool"]
+        step["requires_paths"] = []
     manifest_path = tmp_path / "scenarios.json"
     _write_json(manifest_path, manifest)
 

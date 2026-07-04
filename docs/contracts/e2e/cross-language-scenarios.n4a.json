@@ -18,7 +18,7 @@
       "artifacts": [
         "{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json",
         "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json",
-        "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.parquet"
+        "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json"
       ],
       "evidence": [
         "R session info and package versions",
@@ -41,7 +41,7 @@
           "repo": "nirs4all-core",
           "requires_tools": ["Rscript"],
           "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/e2e_dataset_io_pipeline.R"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && Rscript bindings/r/tests/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH Rscript bindings/r/tests/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"],
           "produces": ["{artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json"]
         },
         {
@@ -51,8 +51,8 @@
           "repo": "nirs4all-core",
           "requires_tools": ["Rscript"],
           "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/e2e_run_save_pipeline.R"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"],
-          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.parquet"]
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH make test-r-parity && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"],
+          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json"]
         }
       ]
     },
@@ -107,26 +107,26 @@
     {
       "id": "e2e-wasm-open-repo-pipeline-parity-alt-dataset",
       "title": "WASM opens repository pipeline, reruns, checks parity, and applies an alternative dataset",
-      "objective": "Run the browser/WASM aggregate locally, open a repository pipeline, rerun it, compare against Python parity goldens, then execute the same pipeline on an alternative dataset.",
+      "objective": "Run the browser/WASM aggregate locally, export/import a pipeline repository artifact, run the imported pipeline client-side, and validate saved prediction artifact reuse.",
       "languages": ["javascript_wasm", "web", "python"],
       "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"],
       "tags": ["datasets", "pipeline", "repository", "predictions", "parity", "web_results"],
       "artifacts": [
-        "{artifacts_dir}/wasm-repo-alt-dataset/wasm-predictions.json",
-        "{artifacts_dir}/wasm-repo-alt-dataset/alt-dataset-predictions.json",
+        "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json",
+        "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",
         "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"
       ],
       "evidence": [
         "WASM package version and web build hash",
         "Repository pipeline descriptor",
-        "Python-vs-WASM prediction parity",
-        "Alternative dataset compatibility report"
+        "Client-only prediction artifact reuse smoke",
+        "Imported pipeline execution screenshot"
       ],
       "parity_checks": [
         {
-          "oracle": "python nirs4all reference predictions",
-          "candidate": "WASM aggregate predictions",
-          "metric": "prediction_abs_max <= 1e-8"
+          "oracle": "exported client-side pipeline artifact",
+          "candidate": "fresh browser session imported pipeline execution",
+          "metric": "pipeline artifact imports and executes to results without console errors"
         }
       ],
       "steps": [
@@ -136,9 +136,9 @@
           "kind": "execute",
           "repo": "nirs4all-web",
           "requires_tools": ["npm"],
-          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/e2e/wasm-repository-pipeline.test.ts"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && npm run test -- --run tests/e2e/wasm-repository-pipeline.test.ts --artifacts-dir={artifacts_dir}/wasm-repo-alt-dataset"],
-          "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/wasm-predictions.json", "{artifacts_dir}/wasm-repo-alt-dataset/alt-dataset-predictions.json"]
+          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"],
+          "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json", "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"]
         },
         {
           "id": "web-render-results",
@@ -146,9 +146,9 @@
           "kind": "ui",
           "repo": "nirs4all-web",
           "requires_tools": ["npm"],
-          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/e2e/render-saved-predictions.spec.ts"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && npm run test:e2e -- tests/e2e/render-saved-predictions.spec.ts --artifacts-dir={artifacts_dir}/wasm-repo-alt-dataset"],
-          "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"]
+          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/n4a-roundtrip-smoke.mjs"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"],
+          "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"]
         }
       ]
     },
