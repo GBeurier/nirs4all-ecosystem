@@ -17,7 +17,8 @@ hold were left untouched.
 | `nirs4all-datasets` | `2c414bda` | `docs/index.md` |
 | `nirs4all-io` | `4df6f1a` | `docs/index.md` |
 | `nirs4all-formats` | `fd3fcdc` | `docs/index.md` |
-| `nirs4all-methods` | `82a583a1` | `bindings/matlab/README.md` |
+| `nirs4all-methods` | `60641219` | `bindings/matlab/README.md`, `docs/about.md`, `bindings/js/README.md`, `bindings/js/INPUT_CONTRACT.md` |
+| `dag-ml` | `e6ee688` on `refactor/L20-lockstep` | `AGENTS.md`, `docs/index.md`, `docs/SUPPORTED.md`, `crates/dag-ml-wasm/README.md` |
 | `dag-ml-data` | `0850a71` on `rc/v1-full-refactor` | `docs/index.md` |
 | `nirs4all-web` | `9829e7e` | `CLAUDE.md` |
 
@@ -28,7 +29,9 @@ The `nirs4all-ecosystem` submodule pins were advanced to those heads.
 - `git diff --check` passed in each touched repo.
 - Targeted stale-doc search passed for the corrected files:
   `grid-item-card} nirs4all-lite`, `nirs4all-lite.readthedocs`,
-  stale `nirs4all-web` topology wording, and stale MATLAB parity wording.
+  stale `nirs4all-web` topology wording, stale MATLAB parity wording,
+  stale `dag-ml` downstream-chain wording, and stale JS methods aggregation
+  wording.
 - GitHub Actions were triggered on the pushed repos. At commit time several
   full CI runs were still queued/in progress; this batch is documentation-only.
 
@@ -51,3 +54,5 @@ The `nirs4all-ecosystem` submodule pins were advanced to those heads.
   docs build signal for this lightweight documentation batch.
 - `dag-ml-data` is pinned from `rc/v1-full-refactor`, not `main`, matching its
   current local release-candidate lane.
+- `dag-ml` is pinned from `refactor/L20-lockstep`, matching its current local
+  release-candidate lane.
