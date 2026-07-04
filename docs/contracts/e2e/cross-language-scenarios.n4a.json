@@ -740,7 +740,10 @@
       "id": "e2e-converter-legacy-save-predictions-web",
       "title": "Legacy save conversion, prediction lowering, and Web results rendering",
       "objective": "Convert a legacy workspace/save fixture, lower predictions into the V1 result contract, prove deterministic converter preservation against fixture values and checksums, open the output in Web, and verify every result panel renders.",
-      "evidence_level": "strict",
+      "evidence_level": "hybrid",
+      "strictness_gaps": [
+        "The converter/save/render slice is executable, but Python rerun, papers export, and repository best-refit phases are outside this scenario."
+      ],
       "languages": ["python", "javascript_wasm", "web"],
       "repos": ["nirs4all-tools", "nirs4all", "nirs4all-web", "nirs4all-ui"],
       "tags": ["workspace_save", "predictions", "web_results", "pipeline", "parity"],
@@ -916,7 +919,10 @@
       "id": "e2e-cluster-dag-rights-client-core",
       "title": "Cluster scheduler runs a DAG pipeline with rights checks and core client handoff",
       "objective": "Submit a DAG-shaped pipeline through the cluster client/server scheduler, enforce read/execute rights, return artifacts to core, recompute the scheduler aggregate from task results, and require a real nirs4all local-vs-cluster numeric oracle.",
-      "evidence_level": "strict",
+      "evidence_level": "hybrid",
+      "strictness_gaps": [
+        "The cluster numeric oracle is strict in a full local workspace, but the public checkout remains data-blocked and papers/repository/Web reuse phases are outside this scenario."
+      ],
       "languages": ["python", "native"],
       "repos": ["nirs4all-cluster", "nirs4all-core", "dag-ml", "nirs4all-methods", "nirs4all"],
       "tags": ["pipeline", "workspace_save", "parity"],

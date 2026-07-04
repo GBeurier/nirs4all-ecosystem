@@ -341,6 +341,7 @@ def _validate_v1_refactor_contract(
     value: Any,
     scenario_ids: list[str],
     scenario_artifacts: dict[str, set[str]],
+    scenario_evidence_levels: dict[str, str],
 ) -> dict[str, dict[str, Any]]:
     if not isinstance(value, dict):
         raise E2EScenarioError("manifest.v1_refactor_contract must be an object")
@@ -393,6 +394,7 @@ def _validate_v1_refactor_contract(
                 detail.append("unknown " + ", ".join(sorted(extra)))
             raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract phases mismatch: " + "; ".join(detail))
         validated[scenario_id] = scenario_coverage
+        scenario_gap_phases: set[str] = set()
         for phase, phase_contract in scenario_coverage.items():
             if not isinstance(phase_contract, dict):
                 raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase} must be an object")
@@ -423,6 +425,7 @@ def _validate_v1_refactor_contract(
                 )
             gap = phase_contract.get("gap")
             if status == "gap":
+                scenario_gap_phases.add(phase)
                 if not isinstance(gap, str) or not gap:
                     raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}.gap must explain the missing runtime/contract")
             else:
@@ -433,6 +436,11 @@ def _validate_v1_refactor_contract(
                     raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}.gap must be a non-empty string when present")
             if not evidence or not acceptance:
                 raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase} must declare evidence and acceptance")
+        if scenario_evidence_levels[scenario_id] == "strict" and scenario_gap_phases:
+            raise E2EScenarioError(
+                f"{scenario_id}: strict scenarios must not contain gap v1_refactor phases: "
+                + ", ".join(sorted(scenario_gap_phases))
+            )
 
     missing_non_gap_phases = V1_REFACTOR_PHASES - non_gap_phases
     if missing_non_gap_phases:
@@ -455,6 +463,7 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
 
     scenario_ids: list[str] = []
     scenario_artifacts: dict[str, set[str]] = {}
+    scenario_evidence_levels: dict[str, str] = {}
     covered_tags: set[str] = set()
     covered_languages: set[str] = set()
     for scenario in scenarios:
@@ -488,6 +497,7 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
                 if not isinstance(check.get(field), str) or not check[field]:
                     raise E2EScenarioError(f"{scenario_id}.parity_checks[{index}].{field} must be non-empty")
         _validate_evidence_contract(scenario_id, scenario, tags, parity_checks)
+        scenario_evidence_levels[scenario_id] = scenario["evidence_level"]
         steps = scenario.get("steps")
         if not isinstance(steps, list) or not steps:
             raise E2EScenarioError(f"{scenario_id}.steps must be a non-empty list")
@@ -516,6 +526,7 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         manifest.get("v1_refactor_contract"),
         scenario_ids,
         scenario_artifacts,
+        scenario_evidence_levels,
     )
     for scenario in scenarios:
         scenario["v1_refactor_contract"] = v1_refactor_contract[scenario["id"]]

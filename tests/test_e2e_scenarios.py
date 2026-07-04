@@ -331,6 +331,26 @@ def test_cross_language_e2e_manifest_rejects_strict_v1_refactor_gap(tmp_path: Pa
         e2e.validate_scenarios(manifest_path)
 
 
+def test_cross_language_e2e_strict_scenario_cannot_contain_gap_phases(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario_id = "e2e-r-dataset-io-pipeline-save"
+    scenario = _scenario_by_id(manifest, scenario_id)
+    scenario["evidence_level"] = "strict"
+    scenario["strictness_gaps"] = []
+    coverage = manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id]
+    for phase_contract in coverage.values():
+        phase_contract["status"] = "contract"
+        phase_contract.pop("gap", None)
+    coverage["python_rerun_pipeline"]["status"] = "gap"
+    coverage["python_rerun_pipeline"]["gap"] = "forced gap for strict scenario regression coverage"
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="strict scenarios must not contain gap v1_refactor phases"):
+        e2e.validate_scenarios(manifest_path)
+
+
 def test_cross_language_e2e_manifest_rejects_unknown_v1_refactor_artifact(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     manifest = _read_manifest()
