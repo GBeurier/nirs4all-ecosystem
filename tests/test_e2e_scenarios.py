@@ -48,6 +48,17 @@ def test_cross_language_e2e_manifest_validates_current_contract() -> None:
     assert "multimodal" in tags
     assert "multisource" in tags
     assert "web_results" in tags
+    assert set(manifest["v1_refactor_contract"]["scenario_coverage"]) == {
+        scenario["id"] for scenario in manifest["scenarios"]
+    }
+    assert set(manifest["v1_refactor_contract"]["phase_requirements"]) == {
+        "python_open_pipeline",
+        "python_rerun_pipeline",
+        "python_parity",
+        "papers_export",
+        "repository_forced_best_refit",
+        "wasm_web_reuse",
+    }
 
 
 def test_cross_language_e2e_manifest_requires_exact_scenario_count(tmp_path: Path) -> None:
@@ -151,6 +162,42 @@ def test_cross_language_e2e_manifest_requires_artifacts_to_be_produced(tmp_path:
         e2e.validate_scenarios(manifest_path)
 
 
+def test_cross_language_e2e_manifest_requires_v1_refactor_phase_coverage(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario_id = manifest["scenarios"][0]["id"]
+    del manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id]["wasm_web_reuse"]
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="v1_refactor_contract phases mismatch"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_manifest_rejects_strict_v1_refactor_gap(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    phase = manifest["v1_refactor_contract"]["scenario_coverage"]["e2e-python-reopen-paper-repository-refit"]["python_open_pipeline"]
+    phase["gap"] = "should not be allowed on strict coverage"
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="strict phases must not declare a gap"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_manifest_rejects_unknown_v1_refactor_artifact(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    phase = manifest["v1_refactor_contract"]["scenario_coverage"]["e2e-python-reopen-paper-repository-refit"]["papers_export"]
+    phase["artifacts"].append("{artifacts_dir}/python-paper-repository/not-a-scenario-artifact.json")
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="artifact\\(s\\) are not scenario artifacts"):
+        e2e.validate_scenarios(manifest_path)
+
+
 def test_cross_language_e2e_plan_formats_paths_and_reports_blockers(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     manifest = _read_manifest()
@@ -214,28 +261,46 @@ def test_cross_language_e2e_cli_list_and_plan_json() -> None:
     assert plan["evidence_level"] in {"contract_smoke", "hybrid", "strict"}
     assert "parity_checks" in plan
     assert "strictness_gaps" in plan
+    assert set(plan["v1_refactor_contract"]) == {
+        "python_open_pipeline",
+        "python_rerun_pipeline",
+        "python_parity",
+        "papers_export",
+        "repository_forced_best_refit",
+        "wasm_web_reuse",
+    }
     assert plan["steps"]
     assert "requires_paths" in plan["steps"][0]
 
 
 def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     manifest = _read_manifest()
+    flow = manifest["v1_refactor_contract"]["scenario_coverage"]
 
     repository_refit = _scenario_by_id(manifest, "e2e-python-reopen-paper-repository-refit")
     assert repository_refit["evidence_level"] == "hybrid"
     assert any("does not execute a repository best-pipeline refit yet" in gap for gap in repository_refit["strictness_gaps"])
-    assert any("executed=false" in check["metric"] for check in repository_refit["parity_checks"])
+    assert any("refit.executed=true" in check["metric"] for check in repository_refit["parity_checks"])
+    repository_flow = flow["e2e-python-reopen-paper-repository-refit"]
+    assert repository_flow["python_open_pipeline"]["status"] == "strict"
+    assert repository_flow["papers_export"]["status"] == "strict"
+    assert repository_flow["repository_forced_best_refit"]["status"] == "contract"
+    assert "force_best_refit=true" in repository_flow["repository_forced_best_refit"]["acceptance"][0]
+    assert repository_flow["wasm_web_reuse"]["status"] == "gap"
 
     wasm_alt_dataset = _scenario_by_id(manifest, "e2e-wasm-open-repo-pipeline-alt-dataset")
     assert wasm_alt_dataset["evidence_level"] == "hybrid"
-    assert any("no Python-vs-WASM numeric oracle" in gap for gap in wasm_alt_dataset["strictness_gaps"])
     assert any("non-demo uploaded fixture dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
-    assert any("provider/catalog dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
+    assert any("external provider/catalog dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
+    wasm_flow = flow["e2e-wasm-open-repo-pipeline-alt-dataset"]
+    assert wasm_flow["python_parity"]["status"] == "strict"
+    assert wasm_flow["wasm_web_reuse"]["status"] == "strict"
 
     multimodal = _scenario_by_id(manifest, "e2e-multimodal-python-r-wasm-roundtrip")
     assert multimodal["evidence_level"] == "hybrid"
     assert any("dense fused-matrix multimodal proxy" in gap for gap in multimodal["strictness_gaps"])
     assert any("proxy representation" in check["metric"] for check in multimodal["parity_checks"])
+    assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["wasm_web_reuse"]["status"] == "contract"
 
 
 def test_cross_language_e2e_plan_exposes_hybrid_web_gaps_and_strict_checks() -> None:
@@ -262,6 +327,8 @@ def test_cross_language_e2e_plan_exposes_hybrid_web_gaps_and_strict_checks() -> 
     assert plan["strictness_gaps"]
     assert "parity" not in plan["tags"]
     assert [check["evidence_level"] for check in plan["parity_checks"]].count("strict") >= 2
+    assert plan["v1_refactor_contract"]["python_parity"]["status"] == "strict"
+    assert plan["v1_refactor_contract"]["wasm_web_reuse"]["status"] == "strict"
 
 
 def test_cross_language_e2e_manifest_is_not_gitignored() -> None:
@@ -427,6 +494,8 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
     scenario_id = manifest["scenarios"][0]["id"]
     missing_artifact = tmp_path / "missing-cli-result.json"
     manifest["scenarios"][0]["artifacts"] = [str(missing_artifact)]
+    for phase in manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id].values():
+        phase["artifacts"] = []
     manifest["scenarios"][0]["steps"] = [
         {
             "id": "forgetful-cli-step",

@@ -50,6 +50,19 @@ ALLOWED_CHECK_EVIDENCE_LEVELS = {
     "hybrid",
     "strict",
 }
+V1_REFACTOR_PHASES = {
+    "python_open_pipeline",
+    "python_rerun_pipeline",
+    "python_parity",
+    "papers_export",
+    "repository_forced_best_refit",
+    "wasm_web_reuse",
+}
+ALLOWED_V1_REFACTOR_STATUSES = {
+    "strict",
+    "contract",
+    "gap",
+}
 TOOL_FALLBACKS = {
     "R": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/R")],
     "Rscript": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/Rscript")],
@@ -300,6 +313,112 @@ def _validate_evidence_contract(
         raise E2EScenarioError(f"{scenario_id}: parity tag requires at least one strict parity_check")
 
 
+def _validate_v1_refactor_contract(
+    value: Any,
+    scenario_ids: list[str],
+    scenario_artifacts: dict[str, set[str]],
+) -> dict[str, dict[str, Any]]:
+    if not isinstance(value, dict):
+        raise E2EScenarioError("manifest.v1_refactor_contract must be an object")
+    phase_requirements = value.get("phase_requirements")
+    if not isinstance(phase_requirements, dict):
+        raise E2EScenarioError("manifest.v1_refactor_contract.phase_requirements must be an object")
+    phase_names = set(phase_requirements)
+    if phase_names != V1_REFACTOR_PHASES:
+        missing = V1_REFACTOR_PHASES - phase_names
+        extra = phase_names - V1_REFACTOR_PHASES
+        detail = []
+        if missing:
+            detail.append("missing " + ", ".join(sorted(missing)))
+        if extra:
+            detail.append("unknown " + ", ".join(sorted(extra)))
+        raise E2EScenarioError("manifest.v1_refactor_contract.phase_requirements mismatch: " + "; ".join(detail))
+    for phase, requirement in phase_requirements.items():
+        if not isinstance(requirement, str) or not requirement:
+            raise E2EScenarioError(f"manifest.v1_refactor_contract.phase_requirements.{phase} must be a non-empty string")
+
+    coverage = value.get("scenario_coverage")
+    if not isinstance(coverage, dict):
+        raise E2EScenarioError("manifest.v1_refactor_contract.scenario_coverage must be an object")
+    coverage_ids = set(coverage)
+    expected_ids = set(scenario_ids)
+    if coverage_ids != expected_ids:
+        missing = expected_ids - coverage_ids
+        extra = coverage_ids - expected_ids
+        detail = []
+        if missing:
+            detail.append("missing " + ", ".join(sorted(missing)))
+        if extra:
+            detail.append("unknown " + ", ".join(sorted(extra)))
+        raise E2EScenarioError("manifest.v1_refactor_contract.scenario_coverage mismatch: " + "; ".join(detail))
+
+    non_gap_phases: set[str] = set()
+    validated: dict[str, dict[str, Any]] = {}
+    for scenario_id in scenario_ids:
+        scenario_coverage = coverage[scenario_id]
+        if not isinstance(scenario_coverage, dict):
+            raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract must be an object")
+        scenario_phases = set(scenario_coverage)
+        if scenario_phases != V1_REFACTOR_PHASES:
+            missing = V1_REFACTOR_PHASES - scenario_phases
+            extra = scenario_phases - V1_REFACTOR_PHASES
+            detail = []
+            if missing:
+                detail.append("missing " + ", ".join(sorted(missing)))
+            if extra:
+                detail.append("unknown " + ", ".join(sorted(extra)))
+            raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract phases mismatch: " + "; ".join(detail))
+        validated[scenario_id] = scenario_coverage
+        for phase, phase_contract in scenario_coverage.items():
+            if not isinstance(phase_contract, dict):
+                raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase} must be an object")
+            status = phase_contract.get("status")
+            if status not in ALLOWED_V1_REFACTOR_STATUSES:
+                raise E2EScenarioError(
+                    f"{scenario_id}.v1_refactor_contract.{phase}.status must be one of: "
+                    + ", ".join(sorted(ALLOWED_V1_REFACTOR_STATUSES))
+                )
+            evidence = _strings(
+                phase_contract.get("evidence"),
+                f"{scenario_id}.v1_refactor_contract.{phase}.evidence",
+            )
+            acceptance = _strings(
+                phase_contract.get("acceptance"),
+                f"{scenario_id}.v1_refactor_contract.{phase}.acceptance",
+            )
+            artifacts = _strings(
+                phase_contract.get("artifacts", []),
+                f"{scenario_id}.v1_refactor_contract.{phase}.artifacts",
+                allow_empty=True,
+            )
+            unknown_artifacts = sorted(set(artifacts) - scenario_artifacts[scenario_id])
+            if unknown_artifacts:
+                raise E2EScenarioError(
+                    f"{scenario_id}.v1_refactor_contract.{phase}: artifact(s) are not scenario artifacts: "
+                    + ", ".join(unknown_artifacts)
+                )
+            gap = phase_contract.get("gap")
+            if status == "gap":
+                if not isinstance(gap, str) or not gap:
+                    raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}.gap must explain the missing runtime/contract")
+            else:
+                non_gap_phases.add(phase)
+                if status == "strict" and gap is not None:
+                    raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}: strict phases must not declare a gap")
+                if gap is not None and (not isinstance(gap, str) or not gap):
+                    raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}.gap must be a non-empty string when present")
+            if not evidence or not acceptance:
+                raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase} must declare evidence and acceptance")
+
+    missing_non_gap_phases = V1_REFACTOR_PHASES - non_gap_phases
+    if missing_non_gap_phases:
+        raise E2EScenarioError(
+            "manifest.v1_refactor_contract lacks non-gap coverage for: "
+            + ", ".join(sorted(missing_non_gap_phases))
+        )
+    return validated
+
+
 def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
     manifest = _read_json(path)
     if manifest.get("schema_version") != SCHEMA_VERSION:
@@ -311,6 +430,7 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         raise E2EScenarioError(f"expected exactly {EXPECTED_SCENARIO_COUNT} scenarios, got {len(scenarios)}")
 
     scenario_ids: list[str] = []
+    scenario_artifacts: dict[str, set[str]] = {}
     covered_tags: set[str] = set()
     covered_languages: set[str] = set()
     for scenario in scenarios:
@@ -333,6 +453,7 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         _strings(scenario.get("repos"), f"{scenario_id}.repos")
         _strings(scenario.get("evidence"), f"{scenario_id}.evidence")
         artifacts = set(_strings(scenario.get("artifacts"), f"{scenario_id}.artifacts"))
+        scenario_artifacts[scenario_id] = artifacts
         parity_checks = scenario.get("parity_checks", [])
         if not isinstance(parity_checks, list):
             raise E2EScenarioError(f"{scenario_id}.parity_checks must be a list")
@@ -367,6 +488,13 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
     missing_languages = {"python", "r", "javascript_wasm", "web"} - covered_languages
     if missing_languages:
         raise E2EScenarioError(f"required runtime languages missing: {', '.join(sorted(missing_languages))}")
+    v1_refactor_contract = _validate_v1_refactor_contract(
+        manifest.get("v1_refactor_contract"),
+        scenario_ids,
+        scenario_artifacts,
+    )
+    for scenario in scenarios:
+        scenario["v1_refactor_contract"] = v1_refactor_contract[scenario["id"]]
     return manifest
 
 
@@ -426,6 +554,7 @@ def plan_scenario(
         "tags": scenario["tags"],
         "evidence_level": scenario["evidence_level"],
         "strictness_gaps": scenario.get("strictness_gaps", []),
+        "v1_refactor_contract": scenario.get("v1_refactor_contract", {}),
         "parity_checks": scenario.get("parity_checks", []),
         "steps": planned_steps,
         "evidence": scenario["evidence"],

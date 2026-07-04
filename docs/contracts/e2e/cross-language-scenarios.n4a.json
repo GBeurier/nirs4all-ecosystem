@@ -7,6 +7,408 @@
     "missing_runtime_policy": "Report as blocked by missing tool/env; do not xfail or silently skip.",
     "artifact_root": "{artifacts_dir}"
   },
+  "v1_refactor_contract": {
+    "phase_requirements": {
+      "python_open_pipeline": "Python must open a persisted pipeline, workspace, or repository descriptor before downstream handoff is considered covered.",
+      "python_rerun_pipeline": "Python must rerun or replay the opened pipeline and record finite result evidence.",
+      "python_parity": "Python outputs must be compared with the declared candidate runtime or backend using an explicit oracle/tolerance ledger.",
+      "papers_export": "A reproducible papers export must preserve the Python run provenance and hashes, or the gap must name the missing publisher path.",
+      "repository_forced_best_refit": "The repository handoff must force an artificial best-pipeline refit descriptor and state whether a real repository runtime executed it.",
+      "wasm_web_reuse": "WASM/Web reuse must import the repository/pipeline artifact and rerun or render it when that runtime surface exists."
+    },
+    "scenario_coverage": {
+      "e2e-r-dataset-io-pipeline-save": {
+        "python_open_pipeline": {
+          "status": "contract",
+          "evidence": ["R saves workspace/pipeline artifacts and the gate consults the Python portable oracle fixture when present."],
+          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json"],
+          "gap": "No Python reopen currently consumes the provider-backed R workspace produced by this scenario.",
+          "acceptance": ["Add a Python reopen step over workspace.n4a.json and pipeline.n4a.json and compare dataset hash, pipeline hash, RMSE, and prediction vectors."]
+        },
+        "python_rerun_pipeline": {
+          "status": "contract",
+          "evidence": ["The R roundtrip step reopens and reruns saved artifacts, with Python fixture comparison recorded separately."],
+          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json", "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"],
+          "gap": "The same provider-backed dataset is not rerun through full Python in this scenario yet.",
+          "acceptance": ["Promote to strict only after Python reruns the R-produced pipeline on the same reshaped dataset artifact."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["The portable fixture gate runs make test-r-parity and records native method parity."],
+          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"],
+          "acceptance": ["Keep the strict portable fixture parity gate green and add same-dataset parity before removing the hybrid gap."]
+        },
+        "papers_export": {
+          "status": "gap",
+          "evidence": ["This dataset/IO R scenario does not invoke the papers publisher."],
+          "gap": "No paper export is contractualized for this R dataset lane.",
+          "acceptance": ["If this lane becomes a paper fixture, add a paper manifest artifact that includes the R workspace, Python oracle hash, and dataset provenance."]
+        },
+        "repository_forced_best_refit": {
+          "status": "gap",
+          "evidence": ["No repository best-refit descriptor is produced by the R dataset lane."],
+          "gap": "The scenario stops at saved workspace/pipeline evidence and native/R parity.",
+          "acceptance": ["Add a repository handoff descriptor with force_best_refit=true only after a repository recipe is defined for the reshaped dataset."]
+        },
+        "wasm_web_reuse": {
+          "status": "gap",
+          "evidence": ["No WASM/Web consumer imports the saved R pipeline in this scenario."],
+          "gap": "The R aggregate saved workspace format is not yet imported by the Web runtime in this gate.",
+          "acceptance": ["Add a WASM/Web import of the saved pipeline and compare rendered predictions against the R/Python parity ledger."]
+        }
+      },
+      "e2e-python-reopen-paper-repository-refit": {
+        "python_open_pipeline": {
+          "status": "strict",
+          "evidence": ["Full Python opens a saved pipeline/workspace before rerun."],
+          "artifacts": ["{artifacts_dir}/python-paper-repository/reopened-result.json"],
+          "acceptance": ["The reopened-result ledger must include the saved source hashes and opened pipeline identity."]
+        },
+        "python_rerun_pipeline": {
+          "status": "strict",
+          "evidence": ["The Python e2e reruns the reopened pipeline through the dag-ml backend."],
+          "artifacts": ["{artifacts_dir}/python-paper-repository/reopened-result.json"],
+          "acceptance": ["The rerun ledger must report finite scores and prediction rows for the reopened artifact."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["Python legacy reference and dag-ml backend predictions are compared in the reopened-result ledger."],
+          "artifacts": ["{artifacts_dir}/python-paper-repository/reopened-result.json"],
+          "acceptance": ["Best-score and prediction-vector deltas must remain within the scenario tolerance ledger."]
+        },
+        "papers_export": {
+          "status": "strict",
+          "evidence": ["nirs4all-papers exports a reproducible bundle from the Python reopen ledger."],
+          "artifacts": ["{artifacts_dir}/python-paper-repository/paper-export.zip"],
+          "acceptance": ["The paper export must include source hashes and Python reopen provenance."]
+        },
+        "repository_forced_best_refit": {
+          "status": "contract",
+          "evidence": ["The papers/repository step writes repository-best-pipeline.json from the Python ledger and carries the Python-executed refit hashes."],
+          "artifacts": ["{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"],
+          "gap": "nirs4all-repository has no independent runtime in this contract; the forced best-refit is a descriptor/handoff backed by the paired Python refit evidence.",
+          "acceptance": ["repository-best-pipeline.json must declare force_best_refit=true, the selected artificial best pipeline id, source hashes, and refit.executed=true from the paired Python ledger until a repository runtime exists."]
+        },
+        "wasm_web_reuse": {
+          "status": "gap",
+          "evidence": ["The Python/papers/repository lane emits a repository descriptor but no WASM/Web import step."],
+          "gap": "No Web runtime currently consumes this paper-exported repository-best-pipeline artifact.",
+          "acceptance": ["Add a Web/WASM step that imports repository-best-pipeline.json and either reruns it or records an explicit missing-runtime blocker."]
+        }
+      },
+      "e2e-wasm-open-repo-pipeline-alt-dataset": {
+        "python_open_pipeline": {
+          "status": "gap",
+          "evidence": ["The current gate opens the repository pipeline in WASM/Web, not in Python."],
+          "gap": "No Python opener validates the same repository descriptor before the browser import.",
+          "acceptance": ["Add a Python repository descriptor load over the same manifest and record descriptor hash parity before Web execution."]
+        },
+        "python_rerun_pipeline": {
+          "status": "gap",
+          "evidence": ["The scenario reruns inside a fresh browser session only."],
+          "gap": "No Python rerun over the non-demo uploaded fixture dataset is asserted.",
+          "acceptance": ["Add Python rerun evidence with RMSE and prediction rows for the same pipeline/dataset hashes."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["The Web smoke computes a Python nirs4all/sklearn oracle over the browser-emitted dag-ml folds and compares Web/WASM predictions and metrics."],
+          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"],
+          "acceptance": ["Python-vs-WASM predictions, residuals, metrics, provider fingerprints, fold assignments, and descriptor hashes must match within the declared tolerance ledger."]
+        },
+        "papers_export": {
+          "status": "gap",
+          "evidence": ["This Web reuse lane does not export a paper bundle."],
+          "gap": "No papers publisher is part of the Web pipeline import smoke.",
+          "acceptance": ["If a paper companion is needed, export the repository pipeline, dataset fixture hash, browser evidence, and Python oracle ledger."]
+        },
+        "repository_forced_best_refit": {
+          "status": "contract",
+          "evidence": ["The Web smoke imports a deterministic repository pipeline fixture and records its descriptor hash."],
+          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"],
+          "gap": "The fixture is not a forced best-refit descriptor emitted by nirs4all-repository.",
+          "acceptance": ["Replace or pair the fixture with a repository descriptor carrying force_best_refit=true once the repository handoff format is published."]
+        },
+        "wasm_web_reuse": {
+          "status": "strict",
+          "evidence": ["A fresh Web/WASM session imports the pipeline artifact, executes it, renders predictions, and compares source vs imported outputs."],
+          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json", "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json", "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"],
+          "acceptance": ["CV/refit prediction rows, finite metrics, displayed prediction values, screenshot, and zero console-error evidence must pass."]
+        }
+      },
+      "e2e-multimodal-python-r-wasm-roundtrip": {
+        "python_open_pipeline": {
+          "status": "gap",
+          "evidence": ["Python generates a multimodal pipeline artifact but does not reopen a persisted one in this scenario."],
+          "gap": "The current proof starts from generation rather than a Python reopen of a saved multimodal pipeline.",
+          "acceptance": ["Add a Python reopen of multimodal-pipeline.n4a.json before R/WASM execution and verify manifest hash equality."]
+        },
+        "python_rerun_pipeline": {
+          "status": "contract",
+          "evidence": ["R and WASM execute the Python-generated multimodal pipeline artifact."],
+          "artifacts": ["{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"],
+          "gap": "The Python side does not reopen and rerun the saved multimodal artifact after persistence.",
+          "acceptance": ["Promote to strict after Python reruns the saved multimodal artifact and emits a reopen ledger."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["Python dense-fused multimodal proxy predictions are compared with R and WASM proxy predictions."],
+          "artifacts": ["{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"],
+          "acceptance": ["Prediction absolute max deltas must satisfy the proxy tolerance and preserve roundtrip manifest hashes."]
+        },
+        "papers_export": {
+          "status": "gap",
+          "evidence": ["No paper export consumes the multimodal roundtrip evidence."],
+          "gap": "Multimodal paper publication is not part of this E2E lane.",
+          "acceptance": ["Add a papers export only after native multimodal provenance and Web/Studio roundtrip evidence exist."]
+        },
+        "repository_forced_best_refit": {
+          "status": "gap",
+          "evidence": ["No repository best-refit descriptor is emitted for the multimodal proxy pipeline."],
+          "gap": "The repository recipe format for multimodal sources is not contractualized in this lane.",
+          "acceptance": ["Define a multimodal repository descriptor with force_best_refit=true before claiming repository refit coverage."]
+        },
+        "wasm_web_reuse": {
+          "status": "contract",
+          "evidence": ["The WASM binding consumes the generated dense-fused proxy pipeline, but no Web UI roundtrip is present."],
+          "artifacts": ["{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"],
+          "gap": "Web/Studio runtime reuse for multimodal source structure is still pending.",
+          "acceptance": ["Add a Web/WASM import/render step over the same multimodal pipeline and dataset hashes."]
+        }
+      },
+      "e2e-multisource-branching-stacking-replay": {
+        "python_open_pipeline": {
+          "status": "gap",
+          "evidence": ["Python builds a multisource stacking replay manifest but does not reopen a saved pipeline first."],
+          "gap": "The scenario lacks a Python reopen step for the saved multisource artifact.",
+          "acceptance": ["Add a Python open step for stacking-replay.n4a.json and assert branch/source identity before native replay."]
+        },
+        "python_rerun_pipeline": {
+          "status": "contract",
+          "evidence": ["The Python replay manifest is consumed by native/core replay."],
+          "artifacts": ["{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json", "{artifacts_dir}/multisource-stacking/native-replay.json"],
+          "gap": "Python does not rerun a reopened saved multisource pipeline artifact in this lane.",
+          "acceptance": ["Promote to strict when Python reopens and reruns stacking-replay.n4a.json before native replay."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["Python stacking replay and dag-ml/native replay compare score-set metrics and prediction table coverage."],
+          "artifacts": ["{artifacts_dir}/multisource-stacking/oof-ledger.json", "{artifacts_dir}/multisource-stacking/native-replay.json"],
+          "acceptance": ["Score deltas must stay within tolerance and native prediction-table schema/array coverage must be audited explicitly."]
+        },
+        "papers_export": {
+          "status": "gap",
+          "evidence": ["No paper bundle is exported for multisource stacking replay."],
+          "gap": "The multisource replay evidence is not published through nirs4all-papers yet.",
+          "acceptance": ["Add paper export after vector-level native predictions are persisted and compared."]
+        },
+        "repository_forced_best_refit": {
+          "status": "gap",
+          "evidence": ["No repository recipe or forced best-refit descriptor is produced for this stacking replay."],
+          "gap": "Repository stacking recipe publication is not contractualized in the current scenario.",
+          "acceptance": ["Add a repository forced-refit descriptor only after multisource branch and OOF semantics are representable in the repository contract."]
+        },
+        "wasm_web_reuse": {
+          "status": "gap",
+          "evidence": ["No WASM/Web runtime consumes the multisource stacking replay artifact."],
+          "gap": "Client-side multisource stacking replay is not available in this E2E lane.",
+          "acceptance": ["Add a Web/WASM import when the runtime supports multisource stacking replay without Python-only shims."]
+        }
+      },
+      "e2e-converter-legacy-save-predictions-web": {
+        "python_open_pipeline": {
+          "status": "contract",
+          "evidence": ["Python converter opens a legacy save/workspace fixture and emits a V1 workspace plus lowered prediction artifact."],
+          "artifacts": ["{artifacts_dir}/legacy-converter/converted-workspace.n4a.json", "{artifacts_dir}/legacy-converter/predictions.rt_result.json"],
+          "gap": "The converter opens a legacy save rather than a repository best-refit pipeline descriptor.",
+          "acceptance": ["Keep converter fixture values and checksums strict; add repository descriptor open coverage in the repository lane."]
+        },
+        "python_rerun_pipeline": {
+          "status": "gap",
+          "evidence": ["The converter lowers existing predictions; it does not rerun the converted pipeline in Python."],
+          "gap": "No Python rerun occurs after conversion in this scenario.",
+          "acceptance": ["Add a Python rerun of converted-workspace.n4a.json before claiming pipeline rerun coverage."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["Converted V1 workspace and lowered runtime result are checked against legacy fixture values and checksums."],
+          "artifacts": ["{artifacts_dir}/legacy-converter/converted-workspace.n4a.json", "{artifacts_dir}/legacy-converter/predictions.rt_result.json"],
+          "acceptance": ["Fixture prediction vectors, scores, row counts, checksums, and result contract validation must match expected values."]
+        },
+        "papers_export": {
+          "status": "gap",
+          "evidence": ["The legacy converter does not publish a paper export."],
+          "gap": "No paper companion path is defined for this migration fixture.",
+          "acceptance": ["Add a paper export only if the converted fixture becomes a deposited reproducibility artifact."]
+        },
+        "repository_forced_best_refit": {
+          "status": "gap",
+          "evidence": ["The converted workspace is not published as a repository forced-refit pipeline."],
+          "gap": "Repository best-refit handoff is outside the converter lane.",
+          "acceptance": ["Add a repository descriptor with force_best_refit=true if converted saves become repository recipes."]
+        },
+        "wasm_web_reuse": {
+          "status": "strict",
+          "evidence": ["Web opens converted predictions and verifies every result panel renders."],
+          "artifacts": ["{artifacts_dir}/legacy-converter/web-results-panels.json", "{artifacts_dir}/legacy-converter/web-results.png"],
+          "acceptance": ["The served Web app must render all result panels over the converted prediction artifact and produce screenshot/index evidence."]
+        }
+      },
+      "e2e-dataset-provider-repository-roundtrip": {
+        "python_open_pipeline": {
+          "status": "strict",
+          "evidence": ["nirs4all-core Python consumes the repository pipeline descriptor generated from provider materialization."],
+          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/repository-pipeline.n4a.json", "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"],
+          "acceptance": ["Python loader metadata, class sequence, random_state, and descriptor hashes must match the repository descriptor."]
+        },
+        "python_rerun_pipeline": {
+          "status": "strict",
+          "evidence": ["The Python portable pipeline executes over deterministic synthetic NIRS data for the repository descriptor."],
+          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"],
+          "acceptance": ["Python execution must record split, preprocessing, targets, RMSE, and finite predictions."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["Python and JavaScript/WASM portable pipeline execution compare numeric outputs within tolerance."],
+          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"],
+          "acceptance": ["Python/WASM RMSE and prediction vectors must match within 1e-10 on deterministic synthetic NIRS data."]
+        },
+        "papers_export": {
+          "status": "gap",
+          "evidence": ["Provider/repository roundtrip does not publish through nirs4all-papers."],
+          "gap": "No paper bundle is produced from the provider materialization evidence.",
+          "acceptance": ["Add a papers export if a provider-backed repository recipe is selected as a deposited reproducibility artifact."]
+        },
+        "repository_forced_best_refit": {
+          "status": "gap",
+          "evidence": ["The scenario publishes a repository descriptor but not a forced best-refit descriptor."],
+          "gap": "The provider repository descriptor is a consumption roundtrip, not an artificial best-pipeline refit handoff.",
+          "acceptance": ["Add force_best_refit=true, selected best-pipeline metadata, and explicit executed status before claiming forced-refit coverage."]
+        },
+        "wasm_web_reuse": {
+          "status": "strict",
+          "evidence": ["JavaScript/WASM consumes and executes the same repository descriptor as Python."],
+          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"],
+          "acceptance": ["WASM descriptor consumption and numeric execution must match the Python portable pipeline ledger."]
+        }
+      },
+      "e2e-pipeline-generation-performance-compare": {
+        "python_open_pipeline": {
+          "status": "gap",
+          "evidence": ["Python generates a pipeline family but does not reopen a persisted pipeline artifact before comparison."],
+          "gap": "The scenario starts from generation and runtime comparison, not Python reopen.",
+          "acceptance": ["Persist one generated candidate, reopen it in Python, and record pipeline identity before runtime comparison."]
+        },
+        "python_rerun_pipeline": {
+          "status": "strict",
+          "evidence": ["Python reference and dag-ml/native backends run generated candidates and record performance/parity evidence."],
+          "artifacts": ["{artifacts_dir}/performance-compare/pipeline-family.json", "{artifacts_dir}/performance-compare/python-vs-dagml.json"],
+          "acceptance": ["Python-vs-dag-ml prediction parity and performance ratio ledger must pass the regression budget."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["Python reference outputs are compared to dag-ml/native runtime outputs."],
+          "artifacts": ["{artifacts_dir}/performance-compare/python-vs-dagml.json"],
+          "acceptance": ["Prediction parity and score deltas must satisfy the generated-family tolerance ledger."]
+        },
+        "papers_export": {
+          "status": "gap",
+          "evidence": ["Performance comparison does not export a paper package."],
+          "gap": "No reproducible paper publisher is wired to this generated-family benchmark.",
+          "acceptance": ["Add papers export only after generated-family seeds, runtime hashes, and selected candidate provenance are stable."]
+        },
+        "repository_forced_best_refit": {
+          "status": "gap",
+          "evidence": ["Generated candidates are not published as a repository forced-refit recipe."],
+          "gap": "Repository best-refit handoff is outside this performance lane.",
+          "acceptance": ["Publish the selected generated candidate with force_best_refit=true before claiming repository refit coverage."]
+        },
+        "wasm_web_reuse": {
+          "status": "contract",
+          "evidence": ["Web runtime executes the generated family and records timing verdicts."],
+          "artifacts": ["{artifacts_dir}/performance-compare/web-runtime.json"],
+          "gap": "The Web path records runtime/performance evidence but not Python-vs-WASM numeric oracle parity for each candidate.",
+          "acceptance": ["Promote to strict when Web/WASM imports the selected candidate artifact and compares predictions against Python for that candidate."]
+        }
+      },
+      "e2e-cluster-dag-rights-client-core": {
+        "python_open_pipeline": {
+          "status": "gap",
+          "evidence": ["Cluster loads a YAML DAG pipeline and runs a local Python oracle, but Python does not reopen a persisted pipeline artifact first."],
+          "gap": "No saved pipeline/workspace reopen is part of the cluster rights lane.",
+          "acceptance": ["Persist the cluster-submitted pipeline, reopen it in Python, and compare identity before scheduler submission."]
+        },
+        "python_rerun_pipeline": {
+          "status": "strict",
+          "evidence": ["Local Python nirs4all.run is compared with the cluster worker execution."],
+          "artifacts": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json", "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"],
+          "acceptance": ["Local-vs-cluster best RMSE and scheduler aggregate recompute must stay within the strict tolerance ledger."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["The scenario requires a real local Python nirs4all numeric oracle against cluster nirs4all.run."],
+          "artifacts": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json", "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"],
+          "acceptance": ["best_rmse abs_diff must be <= 1e-6 and task aggregate parity must hold."]
+        },
+        "papers_export": {
+          "status": "gap",
+          "evidence": ["Cluster scheduler evidence is not exported through nirs4all-papers."],
+          "gap": "No papers publication path exists for cluster rights evidence.",
+          "acceptance": ["Add a paper export only after scheduler traces and rights logs are intended for deposited reproduction."]
+        },
+        "repository_forced_best_refit": {
+          "status": "gap",
+          "evidence": ["The cluster lane uses an example YAML pipeline, not a repository forced best-refit descriptor."],
+          "gap": "Repository best-refit handoff is not part of the cluster scheduler contract.",
+          "acceptance": ["Add repository descriptor import with force_best_refit=true before claiming repository-refit cluster coverage."]
+        },
+        "wasm_web_reuse": {
+          "status": "gap",
+          "evidence": ["No WASM/Web runtime consumes cluster-produced artifacts."],
+          "gap": "Cluster artifact reuse is validated through core client handoff, not Web/WASM.",
+          "acceptance": ["Add Web artifact rendering only after cluster result contracts are lowered into Web-readable runtime results."]
+        }
+      },
+      "e2e-formats-io-datasets-methods-language-bindings": {
+        "python_open_pipeline": {
+          "status": "gap",
+          "evidence": ["The lane assembles datasets and invokes methods bindings; it does not open a persisted pipeline."],
+          "gap": "No Python pipeline/workspace opener is part of the formats/IO/methods binding audit.",
+          "acceptance": ["Add a pipeline descriptor using assembled datasets before claiming Python open coverage."]
+        },
+        "python_rerun_pipeline": {
+          "status": "gap",
+          "evidence": ["The gate validates binding predictions, not a rerun of an opened Python pipeline."],
+          "gap": "Pipeline rerun semantics are outside this low-level binding parity lane.",
+          "acceptance": ["Add a Python rerun over an assembled dataset if this lane is promoted to pipeline-level coverage."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["Native methods ABI outputs are compared with Python/R bindings and WASM fixture evidence is recorded."],
+          "artifacts": ["{artifacts_dir}/formats-io-methods/binding-parity.json", "{artifacts_dir}/formats-io-methods/predictions-by-language.json"],
+          "acceptance": ["Native/Python/R method outputs and predictions must match the tolerance ledger; WASM remains fixture-scoped until release-target parity exists."]
+        },
+        "papers_export": {
+          "status": "gap",
+          "evidence": ["No paper export is produced for the binding parity audit."],
+          "gap": "Binding parity evidence is not currently published as a paper bundle.",
+          "acceptance": ["Add papers export only when the binding parity audit becomes a deposited reproducibility kit."]
+        },
+        "repository_forced_best_refit": {
+          "status": "gap",
+          "evidence": ["No repository pipeline descriptor or best-refit recipe is generated from the binding audit."],
+          "gap": "Repository refit semantics are outside the formats/IO/methods parity lane.",
+          "acceptance": ["Add a repository recipe after assembled dataset and methods binding choices map to a portable pipeline descriptor."]
+        },
+        "wasm_web_reuse": {
+          "status": "contract",
+          "evidence": ["WASM fixture output is checked and archived Rust status is recorded as non-release-target evidence."],
+          "artifacts": ["{artifacts_dir}/formats-io-methods/predictions-by-language.json"],
+          "gap": "This is fixture-level WASM binding evidence, not a Web UI import/rerun of a repository pipeline.",
+          "acceptance": ["Promote to strict only after WASM release-target binding parity and Web pipeline import share the same assembled dataset ledger."]
+        }
+      }
+    }
+  },
   "scenarios": [
     {
       "id": "e2e-r-dataset-io-pipeline-save",
@@ -120,7 +522,7 @@
         {
           "oracle": "paper export manifest",
           "candidate": "repository best-refit descriptor",
-          "metric": "handoff descriptor is written with source hashes and explicit executed=false status",
+          "metric": "handoff descriptor is written with source hashes, force_best_refit intent, and Python-backed refit.executed=true evidence",
           "evidence_level": "contract"
         }
       ],
@@ -153,8 +555,7 @@
       "objective": "Run the browser/WASM aggregate locally, export/import a pipeline repository artifact, execute the imported pipeline client-side, validate saved prediction artifact reuse, and verify the Web build consumes the shared nirs4all-ui shim.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
-        "Web roundtrip prediction preservation is strict inside the browser/WASM runtime, but no Python-vs-WASM numeric oracle is asserted in this scenario.",
-        "The current Playwright path now uses a deterministic non-demo uploaded fixture dataset; it still does not execute a provider/catalog dataset with a Python-vs-WASM oracle."
+        "The current Playwright path uses a deterministic non-demo uploaded fixture dataset materialized through dag-ml-data; it still does not execute an external provider/catalog dataset."
       ],
       "languages": ["javascript_wasm", "web", "python"],
       "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"],
@@ -169,6 +570,7 @@
         "Repository pipeline descriptor, descriptor SHA256, stable pipeline id, non-demo dataset id, and shared UI shim check",
         "Client-only prediction artifact reuse with export/import hash evidence",
         "Imported pipeline execution screenshot and runtime resource hashes",
+        "Python nirs4all/sklearn oracle comparison over browser-emitted dag-ml folds",
         "Source-vs-imported Web prediction comparison"
       ],
       "parity_checks": [
@@ -177,6 +579,12 @@
           "candidate": "fresh browser session imported pipeline execution",
           "metric": "repository pipeline fixture imports over a non-demo uploaded dataset, executes, renders, and records zero console errors plus non-empty screenshot/evidence artifacts",
           "evidence_level": "contract"
+        },
+        {
+          "oracle": "Python nirs4all/sklearn oracle over browser-emitted dag-ml folds",
+          "candidate": "Web/WASM repository pipeline execution",
+          "metric": "predictions, residuals, and CV metrics match with max_abs_delta <= 1e-5",
+          "evidence_level": "strict"
         },
         {
           "oracle": "source Web/WASM run before export",
