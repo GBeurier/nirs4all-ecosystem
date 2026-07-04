@@ -422,9 +422,9 @@
           "title": "Run DAG pipeline through cluster with rights checks",
           "kind": "execute",
           "repo": "nirs4all-cluster",
-          "requires_tools": ["python3"],
+          "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all-cluster/tests/e2e/test_cluster_dag_rights_core_client.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-cluster && python3 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-cluster && python3.11 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"],
           "produces": ["{artifacts_dir}/cluster-dag-rights/scheduler-run.json"]
         },
         {
@@ -432,9 +432,9 @@
           "title": "Verify core client artifact handoff and parity",
           "kind": "verify",
           "repo": "nirs4all-core",
-          "requires_tools": ["python3"],
+          "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/verify_cluster_handoff.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && python3 scripts/e2e/verify_cluster_handoff.py --artifacts-dir {artifacts_dir}/cluster-dag-rights"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && python3.11 scripts/e2e/verify_cluster_handoff.py --artifacts-dir {artifacts_dir}/cluster-dag-rights"],
           "produces": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"]
         }
       ]

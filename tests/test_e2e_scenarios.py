@@ -185,3 +185,27 @@ def test_cross_language_e2e_allow_blocked_never_returns_green(tmp_path: Path) ->
 
     assert executed.returncode == 2
     assert f"SKIP-BLOCKED {scenario_id}" in executed.stderr
+
+
+def test_cross_language_e2e_successful_step_must_produce_declared_artifacts(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    missing_artifact = tmp_path / "missing-result.json"
+
+    returncode = e2e.execute_plan(
+        {
+            "id": "synthetic",
+            "status": "ready",
+            "steps": [
+                {
+                    "id": "forgetful-step",
+                    "status": "ready",
+                    "missing": [],
+                    "command": [sys.executable, "-c", "pass"],
+                    "produces": [str(missing_artifact)],
+                }
+            ],
+        }
+    )
+
+    assert returncode == 1
+    assert not missing_artifact.exists()

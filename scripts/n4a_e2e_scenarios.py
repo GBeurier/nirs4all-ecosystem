@@ -259,6 +259,14 @@ def execute_plan(plan: dict[str, Any], *, stop_on_blocked: bool = True) -> int:
         if proc.returncode != 0:
             print(f"FAILED {plan['id']}.{step['id']}: exit {proc.returncode}", file=sys.stderr)
             return proc.returncode
+        missing_produced = [raw_path for raw_path in step.get("produces", []) if not Path(raw_path).exists()]
+        if missing_produced:
+            print(
+                f"FAILED {plan['id']}.{step['id']}: missing produced artifact(s): "
+                f"{', '.join(missing_produced)}",
+                file=sys.stderr,
+            )
+            return 1
     if blocked_seen:
         return 2
     return 0
