@@ -356,9 +356,9 @@
       "id": "e2e-dataset-provider-repository-roundtrip",
       "title": "Dataset provider to repository to core roundtrip",
       "objective": "Resolve a dataset provider descriptor, materialize through IO, publish a repository pipeline descriptor, and consume it through core Python and JavaScript/WASM entrypoints.",
-      "evidence_level": "contract_smoke",
+      "evidence_level": "hybrid",
       "strictness_gaps": [
-        "This scenario compares portable repository descriptors but does not execute the pipeline across Python, WASM, and R on the materialized dataset."
+        "Repository descriptor execution is strict for a deterministic Python/WASM portable pipeline proof, but it still does not execute R or run the provider materialized dataset through the same prediction parity gate."
       ],
       "languages": ["python", "javascript_wasm"],
       "repos": ["nirs4all-providers", "nirs4all-datasets", "nirs4all-io", "nirs4all-repository", "nirs4all-core"],
@@ -373,7 +373,8 @@
         "Provider descriptor contract validation",
         "Dataset manifest and IO materialization summary",
         "Repository index conformance",
-        "Python and JavaScript/WASM consumption contract"
+        "Python and JavaScript/WASM descriptor consumption contract",
+        "Strict Python/WASM portable pipeline execution comparison"
       ],
       "parity_checks": [
         {
@@ -381,6 +382,12 @@
           "candidate": "nirs4all-core JavaScript/WASM repository pipeline loader",
           "metric": "portable class sequence, random_state, and normalized pipeline metadata match",
           "evidence_level": "contract"
+        },
+        {
+          "oracle": "nirs4all-core Python portable pipeline execution",
+          "candidate": "nirs4all-core JavaScript/WASM portable pipeline execution",
+          "metric": "split, preprocessing, targets, RMSE, predictions, and predictPortablePipeline roundtrip match within 1e-10 on deterministic synthetic NIRS data",
+          "evidence_level": "strict"
         }
       ],
       "steps": [

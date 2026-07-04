@@ -40,11 +40,11 @@ Hybrid:
 - Multisource stacking replay: strict score parity, but native vector-level prediction equality is still only audited.
 - Pipeline generation performance: strict Python-vs-dag-ml parity, Web timing remains contract evidence and Studio is outside the gate.
 - Formats/IO/datasets/methods: strict native/Python/R method parity, WASM remains fixture-scoped and Rust is archive evidence.
+- Provider/dataset/repository descriptor roundtrip: strict Python/WASM portable pipeline execution was added in `nirs4all-core@a853894`, but R and provider-materialized dataset prediction parity remain outside this gate.
 
 Contract smoke:
 
 - Web/WASM repository pipeline import and result rendering.
-- Provider/dataset/repository descriptor roundtrip.
 
 ## Verification
 
@@ -60,5 +60,5 @@ From `nirs4all-ecosystem`:
 
 ## Risks / Next Work
 
-- The contract no longer overclaims, but the goal still requires replacing the two `contract_smoke` scenarios and four `hybrid` gaps with stricter numeric/runtime evidence.
+- The contract no longer overclaims, but the goal still requires replacing the remaining `contract_smoke` scenario and hybrid gaps with stricter numeric/runtime evidence.
 - Full parity remains intentionally deferred until the next large batch.
