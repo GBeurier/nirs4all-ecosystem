@@ -348,5 +348,7 @@ def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked() -> N
     summary = json.loads(planned.stdout)
 
     assert "e2e-r-dataset-io-pipeline-save" in summary["ready"]
-    assert "e2e-python-reopen-paper-repository-refit" in summary["blocked"]
+    assert "e2e-python-reopen-paper-repository-refit" in summary["ready"]
+    assert "e2e-multimodal-python-r-wasm-roundtrip" in summary["blocked"]
+    assert "e2e-multisource-branching-stacking-replay" in summary["blocked"]
     assert "Dry run only" in planned.stderr

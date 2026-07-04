@@ -87,9 +87,9 @@
           "title": "Open, rerun, and compare a saved pipeline",
           "kind": "execute",
           "repo": "nirs4all",
-          "requires_tools": ["python3"],
+          "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_pipeline_reopen_paper_repository.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && python3 -m pytest tests/e2e/test_pipeline_reopen_paper_repository.py::test_reopen_rerun_parity --artifacts-dir={artifacts_dir}/python-paper-repository"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_pipeline_reopen_paper_repository.py::test_reopen_rerun_parity --artifacts-dir={artifacts_dir}/python-paper-repository"],
           "produces": ["{artifacts_dir}/python-paper-repository/reopened-result.json"]
         },
         {
