@@ -334,11 +334,36 @@ def test_cross_language_e2e_run_ready_executes_ready_but_reports_blocked(tmp_pat
     assert returncode == 2
 
 
-def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked() -> None:
+def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked(tmp_path: Path) -> None:
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+    manifest = _read_manifest()
+    workspace_root = tmp_path / "workspace"
+    artifacts_dir = tmp_path / "artifacts"
+    workspace_root.mkdir()
+    artifacts_dir.mkdir()
+    for scenario in manifest["scenarios"]:
+        for step in scenario["steps"]:
+            step["requires_tools"] = []
+            step["requires_env"] = []
+            for raw_path in step.get("requires_paths", []):
+                path = Path(raw_path.format(workspace_root=workspace_root, artifacts_dir=artifacts_dir))
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("e2e entrypoint placeholder\n", encoding="utf-8")
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
 
     planned = subprocess.run(
-        [sys.executable, str(script), "run-ready"],
+        [
+            sys.executable,
+            str(script),
+            "--manifest",
+            str(manifest_path),
+            "--workspace-root",
+            str(workspace_root),
+            "--artifacts-dir",
+            str(artifacts_dir),
+            "run-ready",
+        ],
         cwd=ROOT,
         text=True,
         stdout=subprocess.PIPE,
