@@ -109,8 +109,8 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
             "tags": {"pipeline", "repository", "predictions", "web_results"},
         },
         "e2e-multimodal-python-r-wasm-roundtrip": {
-            "languages": {"python", "r", "javascript_wasm", "web"},
-            "repos": {"nirs4all", "nirs4all-core", "nirs4all-web"},
+            "languages": {"python", "r", "javascript_wasm"},
+            "repos": {"nirs4all", "nirs4all-core"},
             "tags": {"multimodal", "pipeline", "parity", "predictions"},
         },
         "e2e-multisource-branching-stacking-replay": {
@@ -296,6 +296,20 @@ def test_cross_language_e2e_parity_tag_requires_strict_check(tmp_path: Path) -> 
         e2e.validate_scenarios(manifest_path)
 
 
+def test_cross_language_e2e_strict_check_rejects_schema_only_metric(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-multisource-branching-stacking-replay")
+    scenario["parity_checks"][0]["metric"] = (
+        "score deltas pass but native prediction table schema/array coverage is only audited"
+    )
+    manifest_path = tmp_path / "schema-only-strict.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="numeric parity, not schema/array coverage"):
+        e2e.validate_scenarios(manifest_path)
+
+
 def test_cross_language_e2e_manifest_requires_artifacts_to_be_produced(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     manifest = _read_manifest()
@@ -304,6 +318,25 @@ def test_cross_language_e2e_manifest_requires_artifacts_to_be_produced(tmp_path:
     _write_json(manifest_path, manifest)
 
     with pytest.raises(e2e.E2EScenarioError, match="not produced by any step"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_manifest_requires_minimum_complexity(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    manifest["scenarios"][0]["steps"] = manifest["scenarios"][0]["steps"][:1]
+    manifest_path = tmp_path / "too-few-steps.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="at least 2 executable steps"):
+        e2e.validate_scenarios(manifest_path)
+
+    manifest = _read_manifest()
+    manifest["scenarios"][0]["artifacts"] = manifest["scenarios"][0]["artifacts"][:1]
+    manifest_path = tmp_path / "too-few-artifacts.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="at least 2 artifacts"):
         e2e.validate_scenarios(manifest_path)
 
 
@@ -331,6 +364,21 @@ def test_cross_language_e2e_manifest_rejects_strict_v1_refactor_gap(tmp_path: Pa
         e2e.validate_scenarios(manifest_path)
 
 
+def test_cross_language_e2e_manifest_requires_one_strict_v1_phase_per_scenario(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario_id = manifest["scenarios"][0]["id"]
+    coverage = manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id]
+    for phase_contract in coverage.values():
+        phase_contract["status"] = "contract"
+        phase_contract.pop("gap", None)
+    manifest_path = tmp_path / "no-strict-v1-phase.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="at least one strict V1 refactor phase"):
+        e2e.validate_scenarios(manifest_path)
+
+
 def test_cross_language_e2e_strict_scenario_cannot_contain_gap_phases(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     manifest = _read_manifest()
@@ -342,6 +390,7 @@ def test_cross_language_e2e_strict_scenario_cannot_contain_gap_phases(tmp_path: 
     for phase_contract in coverage.values():
         phase_contract["status"] = "contract"
         phase_contract.pop("gap", None)
+    coverage["python_parity"]["status"] = "strict"
     coverage["python_rerun_pipeline"]["status"] = "gap"
     coverage["python_rerun_pipeline"]["gap"] = "forced gap for strict scenario regression coverage"
     manifest_path = tmp_path / "scenarios.json"
@@ -435,6 +484,81 @@ def test_cross_language_e2e_cli_list_and_plan_json() -> None:
     }
     assert plan["steps"]
     assert "requires_paths" in plan["steps"][0]
+
+
+def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+
+    covered = subprocess.run(
+        [sys.executable, str(script), "coverage", "--json"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    )
+    report = json.loads(covered.stdout)
+
+    assert report["scenario_count"] == 10
+    assert report["expected_scenario_count"] == 10
+    assert report["evidence_levels"] == {"hybrid": 10}
+    assert set(report["required_languages"]) == {"python", "r", "javascript_wasm", "web"}
+    assert all(count > 0 for count in report["required_languages"].values())
+    assert all(count > 0 for count in report["required_tags"].values())
+    assert report["ready_count"] + report["blocked_count"] == 10
+    assert set(report["v1_refactor_phase_status_counts"]) == {
+        "python_open_pipeline",
+        "python_rerun_pipeline",
+        "python_parity",
+        "papers_export",
+        "repository_forced_best_refit",
+        "wasm_web_reuse",
+    }
+    for counts in report["v1_refactor_phase_status_counts"].values():
+        assert counts["strict"] + counts["contract"] + counts["gap"] == 10
+        assert counts["strict"] + counts["contract"] >= 1
+    for summary in report["scenario_summaries"].values():
+        assert summary["steps"] >= 2
+        assert summary["artifacts"] >= 2
+        assert summary["strict_parity_checks"] >= 1
+        assert summary["v1_refactor_summary"]["strict"] >= 1
+
+
+def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-multimodal-python-r-wasm-roundtrip")
+    scenario["languages"].append("web")
+    scenario["repos"].append("nirs4all-web")
+    scenario["tags"].append("web_results")
+    manifest_path = tmp_path / "false-web.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="web coverage requires a nirs4all-web step"):
+        e2e.validate_scenarios(manifest_path)
+
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-python-reopen-paper-repository-refit")
+    scenario["repos"] = [repo for repo in scenario["repos"] if repo != "nirs4all-papers"]
+    manifest_path = tmp_path / "papers-without-repo.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="papers tag requires nirs4all-papers repo"):
+        e2e.validate_scenarios(manifest_path)
+
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-dataset-provider-repository-roundtrip")
+    for step in scenario["steps"]:
+        step["produces"] = [path.replace("repository", "repo") for path in step.get("produces", [])]
+    scenario["artifacts"] = [path.replace("repository", "repo") for path in scenario["artifacts"]]
+    for phase in manifest["v1_refactor_contract"]["scenario_coverage"][scenario["id"]].values():
+        phase["artifacts"] = [path.replace("repository", "repo") for path in phase.get("artifacts", [])]
+    manifest_path = tmp_path / "repository-without-artifact.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="repository tag requires a repository artifact"):
+        e2e.validate_scenarios(manifest_path)
 
 
 def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
@@ -906,11 +1030,26 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
     manifest = _read_manifest()
     scenario_id = manifest["scenarios"][0]["id"]
+    ok_artifact = tmp_path / "ok-cli-result.json"
     missing_artifact = tmp_path / "missing-cli-result.json"
-    manifest["scenarios"][0]["artifacts"] = [str(missing_artifact)]
+    manifest["scenarios"][0]["artifacts"] = [str(ok_artifact), str(missing_artifact)]
     for phase in manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id].values():
         phase["artifacts"] = []
     manifest["scenarios"][0]["steps"] = [
+        {
+            "id": "write-cli-step",
+            "title": "Command writes one declared artifact",
+            "kind": "verify",
+            "repo": "nirs4all-ecosystem",
+            "requires_tools": [],
+            "requires_paths": [],
+            "command": [
+                sys.executable,
+                "-c",
+                f"from pathlib import Path; Path({str(ok_artifact)!r}).write_text('{{{{\"status\":\"passed\"}}}}\\n')",
+            ],
+            "produces": [str(ok_artifact)],
+        },
         {
             "id": "forgetful-cli-step",
             "title": "Command exits zero but omits its artifact",

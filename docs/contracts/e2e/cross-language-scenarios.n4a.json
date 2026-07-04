@@ -662,8 +662,8 @@
       "strictness_gaps": [
         "Current execution proves a dense fused-matrix multimodal proxy; native multimodal runtime and Web/Studio roundtrip steps are still pending."
       ],
-      "languages": ["python", "r", "javascript_wasm", "web"],
-      "repos": ["nirs4all", "nirs4all-core", "nirs4all-web"],
+      "languages": ["python", "r", "javascript_wasm"],
+      "repos": ["nirs4all", "nirs4all-core"],
       "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"],
       "artifacts": [
         "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
@@ -734,8 +734,14 @@
         {
           "oracle": "python nirs4all stacking replay",
           "candidate": "dag-ml/native replay",
-          "metric": "score_set cv/test RMSE deltas stay within tolerance; native prediction table schema, row count, partitions, folds, and current array coverage are audited explicitly",
+          "metric": "score_set cv/test RMSE deltas stay within tolerance",
           "evidence_level": "strict"
+        },
+        {
+          "oracle": "python nirs4all stacking replay prediction table",
+          "candidate": "native replay prediction table",
+          "metric": "schema, row count, partitions, folds, and current array coverage are audited explicitly pending full vector parity",
+          "evidence_level": "contract"
         }
       ],
       "steps": [

@@ -16,6 +16,8 @@ from typing import Any
 DEFAULT_MANIFEST = Path("docs/contracts/e2e/cross-language-scenarios.n4a.json")
 SCHEMA_VERSION = "n4a.cross-language-e2e/v1"
 EXPECTED_SCENARIO_COUNT = 10
+MIN_STEPS_PER_SCENARIO = 2
+MIN_ARTIFACTS_PER_SCENARIO = 2
 ALLOWED_LANGUAGES = {
     "python",
     "r",
@@ -333,6 +335,11 @@ def _validate_evidence_contract(
                 raise E2EScenarioError(
                     f"{scenario_id}.parity_checks[{index}]: strict check metric must not be smoke-only"
                 )
+            normalized_metric = metric.lower()
+            if "schema/array coverage" in normalized_metric or "schema, row count" in normalized_metric:
+                raise E2EScenarioError(
+                    f"{scenario_id}.parity_checks[{index}]: strict check metric must assert numeric parity, not schema/array coverage"
+                )
     if "parity" in tags and not strict_check_seen:
         raise E2EScenarioError(f"{scenario_id}: parity tag requires at least one strict parity_check")
 
@@ -395,6 +402,7 @@ def _validate_v1_refactor_contract(
             raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract phases mismatch: " + "; ".join(detail))
         validated[scenario_id] = scenario_coverage
         scenario_gap_phases: set[str] = set()
+        scenario_strict_phases: set[str] = set()
         for phase, phase_contract in scenario_coverage.items():
             if not isinstance(phase_contract, dict):
                 raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase} must be an object")
@@ -432,10 +440,14 @@ def _validate_v1_refactor_contract(
                 non_gap_phases.add(phase)
                 if status == "strict" and gap is not None:
                     raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}: strict phases must not declare a gap")
+                if status == "strict":
+                    scenario_strict_phases.add(phase)
                 if gap is not None and (not isinstance(gap, str) or not gap):
                     raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}.gap must be a non-empty string when present")
             if not evidence or not acceptance:
                 raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase} must declare evidence and acceptance")
+        if not scenario_strict_phases:
+            raise E2EScenarioError(f"{scenario_id}: must declare at least one strict V1 refactor phase")
         if scenario_evidence_levels[scenario_id] == "strict" and scenario_gap_phases:
             raise E2EScenarioError(
                 f"{scenario_id}: strict scenarios must not contain gap v1_refactor phases: "
@@ -449,6 +461,47 @@ def _validate_v1_refactor_contract(
             + ", ".join(sorted(missing_non_gap_phases))
         )
     return validated
+
+
+def _validate_scenario_semantics(
+    scenario_id: str,
+    scenario: dict[str, Any],
+    *,
+    languages: set[str],
+    tags: set[str],
+    phases: dict[str, dict[str, Any]],
+) -> None:
+    repos = set(scenario["repos"])
+    steps = scenario["steps"]
+
+    if "web" in languages or "web_results" in tags:
+        if "web" not in languages or "web_results" not in tags:
+            raise E2EScenarioError(
+                f"{scenario_id}: web language and web_results tag must be declared together"
+            )
+        if "nirs4all-web" not in repos:
+            raise E2EScenarioError(f"{scenario_id}: web coverage requires nirs4all-web repo")
+        if not any(step.get("repo") == "nirs4all-web" for step in steps):
+            raise E2EScenarioError(f"{scenario_id}: web coverage requires a nirs4all-web step")
+        if phases["wasm_web_reuse"]["status"] == "gap":
+            raise E2EScenarioError(f"{scenario_id}: web coverage requires non-gap wasm_web_reuse")
+
+    if "papers" in tags:
+        if "nirs4all-papers" not in repos:
+            raise E2EScenarioError(f"{scenario_id}: papers tag requires nirs4all-papers repo")
+        if phases["papers_export"]["status"] == "gap":
+            raise E2EScenarioError(f"{scenario_id}: papers tag requires non-gap papers_export")
+
+    if "repository" in tags:
+        if "nirs4all-repository" not in repos:
+            raise E2EScenarioError(f"{scenario_id}: repository tag requires nirs4all-repository repo")
+        produced = " ".join(
+            artifact
+            for step in steps
+            for artifact in step.get("produces", [])
+        )
+        if "repository" not in produced:
+            raise E2EScenarioError(f"{scenario_id}: repository tag requires a repository artifact")
 
 
 def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
@@ -486,6 +539,10 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         _strings(scenario.get("repos"), f"{scenario_id}.repos")
         _strings(scenario.get("evidence"), f"{scenario_id}.evidence")
         artifacts = set(_strings(scenario.get("artifacts"), f"{scenario_id}.artifacts"))
+        if len(artifacts) < MIN_ARTIFACTS_PER_SCENARIO:
+            raise E2EScenarioError(
+                f"{scenario_id}: must declare at least {MIN_ARTIFACTS_PER_SCENARIO} artifacts"
+            )
         scenario_artifacts[scenario_id] = artifacts
         parity_checks = scenario.get("parity_checks", [])
         if not isinstance(parity_checks, list):
@@ -501,6 +558,10 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         steps = scenario.get("steps")
         if not isinstance(steps, list) or not steps:
             raise E2EScenarioError(f"{scenario_id}.steps must be a non-empty list")
+        if len(steps) < MIN_STEPS_PER_SCENARIO:
+            raise E2EScenarioError(
+                f"{scenario_id}: must declare at least {MIN_STEPS_PER_SCENARIO} executable steps"
+            )
         step_ids: set[str] = set()
         produced_artifacts: set[str] = set()
         for step in steps:
@@ -530,6 +591,13 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
     )
     for scenario in scenarios:
         scenario["v1_refactor_contract"] = v1_refactor_contract[scenario["id"]]
+        _validate_scenario_semantics(
+            scenario["id"],
+            scenario,
+            languages=set(scenario["languages"]),
+            tags=set(scenario["tags"]),
+            phases=scenario["v1_refactor_contract"],
+        )
     return manifest
 
 
@@ -725,6 +793,90 @@ def _all_plans(manifest: dict[str, Any], workspace_root: Path, artifacts_dir: Pa
     ]
 
 
+def coverage_report(
+    manifest: dict[str, Any],
+    *,
+    workspace_root: Path,
+    artifacts_dir: Path,
+) -> dict[str, Any]:
+    """Return a compact readiness and coverage summary for the E2E board."""
+
+    plans = _all_plans(manifest, workspace_root, artifacts_dir)
+    scenarios = manifest["scenarios"]
+    phase_status_counts = {
+        phase: {status: 0 for status in ("strict", "contract", "gap")}
+        for phase in V1_REFACTOR_PHASE_ORDER
+    }
+    scenario_summaries: dict[str, dict[str, Any]] = {}
+    tags: dict[str, int] = {}
+    languages: dict[str, int] = {}
+    repos: dict[str, int] = {}
+    evidence_levels: dict[str, int] = {}
+
+    for scenario in scenarios:
+        scenario_id = scenario["id"]
+        for tag in scenario["tags"]:
+            tags[tag] = tags.get(tag, 0) + 1
+        for language in scenario["languages"]:
+            languages[language] = languages.get(language, 0) + 1
+        for repo in scenario["repos"]:
+            repos[repo] = repos.get(repo, 0) + 1
+        evidence_level = scenario["evidence_level"]
+        evidence_levels[evidence_level] = evidence_levels.get(evidence_level, 0) + 1
+
+        v1_summary = _v1_refactor_summary(scenario["v1_refactor_contract"])
+        for phase in V1_REFACTOR_PHASE_ORDER:
+            phase_status_counts[phase][scenario["v1_refactor_contract"][phase]["status"]] += 1
+        scenario_summaries[scenario_id] = {
+            "evidence_level": evidence_level,
+            "languages": scenario["languages"],
+            "repos": scenario["repos"],
+            "tags": scenario["tags"],
+            "steps": len(scenario["steps"]),
+            "artifacts": len(scenario["artifacts"]),
+            "strict_parity_checks": sum(
+                1
+                for check in scenario.get("parity_checks", [])
+                if check.get("evidence_level") == "strict"
+            ),
+            "strictness_gaps": len(scenario.get("strictness_gaps", [])),
+            "v1_refactor_summary": v1_summary,
+        }
+
+    ready = [plan["id"] for plan in plans if plan["status"] == "ready"]
+    blocked = [plan["id"] for plan in plans if plan["status"] == "blocked"]
+    blockers = {
+        plan["id"]: {
+            step["id"]: step["missing"]
+            for step in plan["steps"]
+            if step["status"] == "blocked"
+        }
+        for plan in plans
+        if plan["status"] == "blocked"
+    }
+    return {
+        "schema_version": manifest["schema_version"],
+        "scenario_count": len(scenarios),
+        "expected_scenario_count": EXPECTED_SCENARIO_COUNT,
+        "ready_count": len(ready),
+        "blocked_count": len(blocked),
+        "ready": ready,
+        "blocked": blocked,
+        "blockers": blockers,
+        "evidence_levels": dict(sorted(evidence_levels.items())),
+        "languages": dict(sorted(languages.items())),
+        "tags": dict(sorted(tags.items())),
+        "repos": dict(sorted(repos.items())),
+        "required_tags": {tag: tags.get(tag, 0) for tag in sorted(REQUIRED_TAGS)},
+        "required_languages": {
+            language: languages.get(language, 0)
+            for language in ("python", "r", "javascript_wasm", "web")
+        },
+        "v1_refactor_phase_status_counts": phase_status_counts,
+        "scenario_summaries": scenario_summaries,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
@@ -740,6 +892,9 @@ def main(argv: list[str] | None = None) -> int:
     plan_parser = subparsers.add_parser("plan", help="render execution plans without running them")
     plan_parser.add_argument("--scenario")
     plan_parser.add_argument("--json", action="store_true")
+
+    coverage_parser = subparsers.add_parser("coverage", help="summarize scenario coverage/readiness")
+    coverage_parser.add_argument("--json", action="store_true")
 
     run_parser = subparsers.add_parser("run", help="execute one scenario")
     run_parser.add_argument("scenario")
@@ -798,6 +953,37 @@ def main(argv: list[str] | None = None) -> int:
                     for step in plan["steps"]:
                         missing = f" ({', '.join(step['missing'])})" if step["missing"] else ""
                         print(f"  {step['id']}: {step['status']}{missing}")
+            return 0
+        if args.command == "coverage":
+            report = coverage_report(
+                manifest,
+                workspace_root=workspace_root,
+                artifacts_dir=artifacts_dir,
+            )
+            if args.json:
+                print(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True))
+            else:
+                print(
+                    f"{report['scenario_count']}/{report['expected_scenario_count']} scenarios; "
+                    f"ready={report['ready_count']} blocked={report['blocked_count']}"
+                )
+                print(
+                    "required languages: "
+                    + ", ".join(
+                        f"{key}={value}" for key, value in report["required_languages"].items()
+                    )
+                )
+                print(
+                    "required tags: "
+                    + ", ".join(
+                        f"{key}={value}" for key, value in report["required_tags"].items()
+                    )
+                )
+                for phase, counts in report["v1_refactor_phase_status_counts"].items():
+                    print(
+                        f"{phase}: strict={counts['strict']} "
+                        f"contract={counts['contract']} gap={counts['gap']}"
+                    )
             return 0
         if args.command == "run":
             plan = plan_scenario(
