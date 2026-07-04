@@ -90,10 +90,11 @@
           "acceptance": ["repository-best-pipeline.json must declare force_best_refit=true, the selected artificial best pipeline id, source hashes, and refit.executed=true from the paired Python ledger until a repository runtime exists."]
         },
         "wasm_web_reuse": {
-          "status": "gap",
-          "evidence": ["The Python/papers/repository lane emits a repository descriptor but no WASM/Web import step."],
-          "gap": "No Web runtime currently consumes this paper-exported repository-best-pipeline artifact.",
-          "acceptance": ["Add a Web/WASM step that imports repository-best-pipeline.json and either reruns it or records an explicit missing-runtime blocker."]
+          "status": "contract",
+          "evidence": ["The Web/WASM smoke imports repository-best-pipeline.json, lowers the supported SNV+PLS handoff into PipelineDSL, executes it client-side, and records runtime/screenshot/oracle evidence over an alternative non-demo dataset fixture."],
+          "artifacts": ["{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json"],
+          "gap": "The Web/WASM contract consumes the handoff wrapper and proves the runtime path on an alternative uploadable dataset fixture; it does not yet rerun the original Python 130x2151 dataset because that scenario dataset is not published as a web-uploadable artifact.",
+          "acceptance": ["web-repository-best-pipeline.json must prove repository-best-pipeline.json was imported, force_best_refit=true was preserved, dag-ml-wasm + libn4m executed without backend API calls, and the Web predictions match the smoke's Python oracle for the alternative dataset until the original Python dataset is exported for browser reuse."]
         }
       },
       "e2e-wasm-open-repo-pipeline-alt-dataset": {
@@ -492,25 +493,29 @@
     },
     {
       "id": "e2e-python-reopen-paper-repository-refit",
-      "title": "Python reopen pipeline, prove parity, export paper, and publish repository refit handoff",
-      "objective": "Open a saved pipeline in full Python nirs4all, rerun it, compare against the Python oracle, export a reproducible paper bundle, and emit the repository best-refit handoff descriptor.",
+      "title": "Python reopen pipeline, prove parity, export paper, publish repository refit handoff, and import it in Web/WASM",
+      "objective": "Open a saved pipeline in full Python nirs4all, rerun it, compare against the Python oracle, export a reproducible paper bundle, emit the repository best-refit handoff descriptor, and prove the client-only Web/WASM runtime can consume the handoff wrapper for the supported SNV+PLS subset.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
-        "Python reopen/rerun parity is strict, but the papers/repository step currently exports a handoff descriptor; it does not execute a repository best-pipeline refit yet."
+        "Python reopen/rerun parity is strict, but the papers/repository step currently exports a handoff descriptor; it does not execute a repository best-pipeline refit yet.",
+        "Web/WASM consumes the paper-exported repository-best-pipeline wrapper on an alternative uploadable dataset fixture; the original Python 130x2151 dataset is not yet exported as a browser-uploadable artifact, so this reuse is contract-level rather than strict."
       ],
-      "languages": ["python", "native"],
-      "repos": ["nirs4all", "nirs4all-repository", "nirs4all-papers", "dag-ml", "nirs4all-methods"],
-      "tags": ["pipeline", "repository", "papers", "workspace_save", "parity"],
+      "languages": ["python", "native", "javascript_wasm", "web"],
+      "repos": ["nirs4all", "nirs4all-repository", "nirs4all-papers", "nirs4all-web", "dag-ml", "nirs4all-methods"],
+      "tags": ["pipeline", "repository", "papers", "workspace_save", "parity", "web_results"],
       "artifacts": [
         "{artifacts_dir}/python-paper-repository/reopened-result.json",
         "{artifacts_dir}/python-paper-repository/paper-export.zip",
-        "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"
+        "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json",
+        "{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json",
+        "{artifacts_dir}/python-paper-repository/repository-best-pipeline-web-results.png"
       ],
       "evidence": [
         "Python oracle version and dag-ml backend version",
         "Reopen/rerun parity ledger",
         "Paper manifest with source hashes",
-        "Repository provider descriptor for best-refit handoff"
+        "Repository provider descriptor for best-refit handoff",
+        "Web/WASM import and execution evidence for the paper-exported repository-best-pipeline wrapper"
       ],
       "parity_checks": [
         {
@@ -523,6 +528,12 @@
           "oracle": "paper export manifest",
           "candidate": "repository best-refit descriptor",
           "metric": "handoff descriptor is written with source hashes, force_best_refit intent, and Python-backed refit.executed=true evidence",
+          "evidence_level": "contract"
+        },
+        {
+          "oracle": "repository-best-pipeline.json plus Python smoke oracle over the browser-emitted folds",
+          "candidate": "client-only Web/WASM import of the handoff wrapper",
+          "metric": "Web/WASM imports the SNV+PLS handoff wrapper, executes it with dag-ml-wasm + libn4m over an alternative uploadable dataset, and records prediction parity to the smoke oracle without backend API calls",
           "evidence_level": "contract"
         }
       ],
@@ -546,6 +557,20 @@
           "requires_paths": ["{workspace_root}/nirs4all-papers/tests/e2e/test_repository_refit_export.py"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-papers && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_repository_refit_export.py --artifacts-dir={artifacts_dir}/python-paper-repository"],
           "produces": ["{artifacts_dir}/python-paper-repository/paper-export.zip", "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"]
+        },
+        {
+          "id": "web-import-repository-best-pipeline",
+          "title": "Import the paper-exported repository best-pipeline handoff in Web/WASM",
+          "kind": "execute",
+          "repo": "nirs4all-web",
+          "requires_tools": ["node", "npm", "python3.11"],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-web/studio-lite/tests/repository-best-pipeline-smoke.mjs",
+            "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/repository_X_train.csv",
+            "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/repository_y_train.csv"
+          ],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_EVIDENCE={artifacts_dir}/python-paper-repository/repository-best-pipeline.json ARTIFACTS_DIR={artifacts_dir}/python-paper-repository npm run smoke:repository-best-pipeline"],
+          "produces": ["{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json", "{artifacts_dir}/python-paper-repository/repository-best-pipeline-web-results.png"]
         }
       ]
     },

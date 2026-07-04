@@ -450,7 +450,8 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert repository_flow["papers_export"]["status"] == "strict"
     assert repository_flow["repository_forced_best_refit"]["status"] == "contract"
     assert "force_best_refit=true" in repository_flow["repository_forced_best_refit"]["acceptance"][0]
-    assert repository_flow["wasm_web_reuse"]["status"] == "gap"
+    assert repository_flow["wasm_web_reuse"]["status"] == "contract"
+    assert "alternative uploadable dataset" in repository_flow["wasm_web_reuse"]["gap"]
 
     wasm_alt_dataset = _scenario_by_id(manifest, "e2e-wasm-open-repo-pipeline-alt-dataset")
     assert wasm_alt_dataset["evidence_level"] == "hybrid"
