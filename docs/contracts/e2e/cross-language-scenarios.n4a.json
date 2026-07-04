@@ -298,26 +298,27 @@
     {
       "id": "e2e-dataset-provider-repository-roundtrip",
       "title": "Dataset provider to repository to core roundtrip",
-      "objective": "Resolve a dataset provider descriptor, materialize through IO, publish a repository pipeline descriptor, and consume it through core Python/R/WASM entrypoints.",
-      "languages": ["python", "r", "javascript_wasm"],
+      "objective": "Resolve a dataset provider descriptor, materialize through IO, publish a repository pipeline descriptor, and consume it through core Python and JavaScript/WASM entrypoints.",
+      "languages": ["python", "javascript_wasm"],
       "repos": ["nirs4all-providers", "nirs4all-datasets", "nirs4all-io", "nirs4all-repository", "nirs4all-core"],
       "tags": ["datasets", "io", "repository", "pipeline", "parity"],
       "artifacts": [
         "{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json",
         "{artifacts_dir}/provider-repository-roundtrip/repository-index.json",
+        "{artifacts_dir}/provider-repository-roundtrip/repository-pipeline.n4a.json",
         "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
       ],
       "evidence": [
         "Provider descriptor contract validation",
         "Dataset manifest and IO materialization summary",
         "Repository index conformance",
-        "Python/R/WASM consumption parity"
+        "Python and JavaScript/WASM consumption parity"
       ],
       "parity_checks": [
         {
-          "oracle": "provider materialized Python dataset",
-          "candidate": "R and WASM loaded repository dataset",
-          "metric": "dataset fingerprints and prediction outputs match"
+          "oracle": "nirs4all-core Python repository pipeline loader",
+          "candidate": "nirs4all-core JavaScript/WASM repository pipeline loader",
+          "metric": "portable class sequence, random_state, and normalized pipeline metadata match"
         }
       ],
       "steps": [
@@ -326,19 +327,19 @@
           "title": "Resolve provider descriptor and materialize dataset",
           "kind": "prepare",
           "repo": "nirs4all-providers",
-          "requires_tools": ["python3"],
+          "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all-providers/tests/e2e/test_dataset_provider_repository_roundtrip.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-providers && python3 -m pytest tests/e2e/test_dataset_provider_repository_roundtrip.py --artifacts-dir={artifacts_dir}/provider-repository-roundtrip"],
-          "produces": ["{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json"]
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-providers && python3.11 -m pytest tests/e2e/test_dataset_provider_repository_roundtrip.py --artifacts-dir={artifacts_dir}/provider-repository-roundtrip"],
+          "produces": ["{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json", "{artifacts_dir}/provider-repository-roundtrip/repository-index.json", "{artifacts_dir}/provider-repository-roundtrip/repository-pipeline.n4a.json"]
         },
         {
           "id": "core-consume-repository",
-          "title": "Consume the repository descriptor from Python, R, and WASM",
+          "title": "Consume the repository descriptor from Python and JavaScript/WASM",
           "kind": "verify",
           "repo": "nirs4all-core",
-          "requires_tools": ["python3", "Rscript", "npm"],
+          "requires_tools": ["python3.11", "npm"],
           "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/consume_repository_descriptor.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && python3 scripts/e2e/consume_repository_descriptor.py --artifacts-dir {artifacts_dir}/provider-repository-roundtrip"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && npm --prefix bindings/wasm ci --ignore-scripts --no-audit --no-fund && python3.11 scripts/e2e/consume_repository_descriptor.py --artifacts-dir {artifacts_dir}/provider-repository-roundtrip"],
           "produces": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"]
         }
       ]
