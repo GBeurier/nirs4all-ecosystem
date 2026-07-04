@@ -42,6 +42,10 @@ Date: 2026-07-04
   - `. .venv/bin/activate && pytest -q` -> `99 passed`;
   - `. .venv/bin/activate && ruff check .` -> pass;
   - `n4a-cockpit admin actions --md` shows `rtd-activate-repository` pending with `readthedocs:nirs4all-repository status=missing version=—`.
+  - `version-guard` on `73f4af5` -> success;
+  - `collect` on `73f4af5` -> success, producing `73c1c41`;
+  - `pages` on `73c1c41` -> success after earlier transient Pages failures;
+  - live `https://cockpit.nirs4all.org/data/current.json?cachebust=73c1c41` reports `readthedocs:nirs4all-repository status=missing planned=false`.
 
 ## Remaining Blockers
 
