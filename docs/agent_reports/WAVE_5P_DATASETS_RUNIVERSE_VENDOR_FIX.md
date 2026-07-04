@@ -43,6 +43,12 @@ Date: 2026-07-04
   - `find /tmp -maxdepth 1 -type d -name 'n4ds-r-vendor.*' -print` after the forced fallback configure -> empty;
   - `./scripts/bump_version.sh --check` -> pass;
   - `git diff --check` -> pass.
+- GitHub gates on final commit `b053c67b`:
+  - `version-sync` -> success;
+  - `version-guard` -> success;
+  - `CI` -> success;
+  - `Site (GitHub Pages)` -> success after rerun of the transient Pages deploy failure;
+  - `ABI Surface` -> success on Windows, macOS, and Linux.
 
 ## Review
 
