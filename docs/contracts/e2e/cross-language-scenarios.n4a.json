@@ -232,7 +232,7 @@
           "repo": "nirs4all",
           "requires_tools": ["python3"],
           "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_multisource_stacking_replay.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && python3 -m pytest tests/e2e/test_multisource_stacking_replay.py --artifacts-dir={artifacts_dir}/multisource-stacking"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_multisource_stacking_replay.py --artifacts-dir={artifacts_dir}/multisource-stacking"],
           "produces": ["{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json", "{artifacts_dir}/multisource-stacking/oof-ledger.json"]
         },
         {
