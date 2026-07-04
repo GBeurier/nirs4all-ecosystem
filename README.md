@@ -1,9 +1,10 @@
 # nirs4all-ecosystem
 
 > **This repository is not a monorepo.** It is a *minimal* parent repository which groups
-> projects from the **nirs4all** ecosystem in the form of **Git submodules**. > Each project remains an **independent repository** (history, issues, releases and
+> projects from the **nirs4all** ecosystem in the form of **Git submodules**.
+> Each project remains an **independent repository** (history, issues, releases and
 > own access rights). This repository only **references a specific commit** of
-> each — it does not contain their code.
+> each; it does not contain their code.
 
 ## Projects referenced
 
@@ -15,13 +16,15 @@
 | `nirs4all-benchmarks` | `main` | public |
 | `nirs4all-repository` | `main` | public |
 | `nirs4all` | `main` | public |
-| `nirs4all-studio` | `master` | public |
+| `nirs4all-studio` | `main` | public |
 | `nirs4all-web` | `main` | public client-side-only browser/WASM app |
-| `nirs4all-lite` | `main` | public (RC V1 target name: `nirs4all-core`; submodule/repo rename pending) |
+| `nirs4all-core` | `main` | public canonical V1 RC portable aggregate |
+| `nirs4all-providers` | `main` | public provider/client contracts and Python client |
+| `nirs4all-tools` | `main` | public migration/conversion tools |
+| `nirs4all-ui` | `main` | public shared Studio/Web React components |
+| `nirs4all-cockpit` | `main` | public release/status cockpit |
 | `nirs4all-org` | `main` | public |
-| `nirs4all-drafts` | `main` | **private** |
 | `nirs4all-papers` | `main` | public |
-| `nirs4all-lab` | `main` | target audience, currently private |
 | `nirs4all-formats` | `main` | public |
 | `nirs4all-io` | `main` | public |
 | `nirs4all-methods` | `main` | public |
@@ -36,7 +39,7 @@
 
 ## Release topology notes
 
-- The RC V1 aggregate release target is **`nirs4all-core`**. The local/public rename target exists at `GBeurier/nirs4all-core`, but this parent repo still pins the historical `nirs4all-lite` submodule path and URL until that repo/directory rename is completed.
+- The RC V1 aggregate release target is **`nirs4all-core`**. `nirs4all-lite` remains only as a legacy compatibility alias during the package cutover.
 - The **aggregation lock is intentionally narrower than the full product matrix**. It pins the reproducible aggregate core/runtime member set; it does **not** claim to cover every product, plugin, site, or publication repo.
 - For RC V1, submodule gitlinks in this parent repository are **not** the release authority. Use `docs/contracts/release/aggregation-lock.n4a.lock.json` plus each manifest `selected_workspace_path` for aggregate members, and the surface matrix / agent reports for product surfaces outside the lock.
 - `nirs4all-web` is the **client-side-only** browser/WASM product surface. Its release surface must not imply a Python server or Python parity proof by itself.
@@ -59,14 +62,10 @@ Initialize the submodules after a simple clone:
 git submodule update --init --recursive
 ```
 
-### Partial pull (private submodules)
+### Partial pull
 
-`nirs4all-drafts`remains **private**. During migration,`nirs4all-lab`may
-still be private on GitHub until a release audit confirms
-that it contains nothing sensitive. A public repository can reference private
-submodules (only the URL is exposed, not the content). Without access rights,
-global init fails *for these submodules only*; the others initialize
-normally. To initialize only what you can access, target the desired paths:
+This parent repository references only public submodules. To initialize a subset
+of the ecosystem, target the desired paths:
 
 ```bash
 git submodule update --init nirs4all nirs4all-formats nirs4all-io   # exemple
