@@ -20,7 +20,7 @@ jobs:
   validate-and-plan:
     runs-on: ubuntu-latest
     env:
-      N4A_WORKSPACE_ROOT: ${{ github.workspace }}
+      N4A_WORKSPACE_ROOT: ${{ github.workspace }}/nirs4all-ecosystem
       PYTHONDONTWRITEBYTECODE: "1"
     defaults:
       run:
@@ -30,86 +30,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: nirs4all-ecosystem
-      - name: Checkout dag-ml
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/dag-ml
-          path: dag-ml
-      - name: Checkout dag-ml-data
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/dag-ml-data
-          path: dag-ml-data
-      - name: Checkout nirs4all Python reference
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all
-          path: nirs4all
-      - name: Checkout nirs4all cluster
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-cluster
-          path: nirs4all-cluster
-      - name: Checkout nirs4all core
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-core
-          path: nirs4all-core
-      - name: Checkout nirs4all datasets
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-datasets
-          path: nirs4all-datasets
-      - name: Checkout nirs4all formats
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-formats
-          path: nirs4all-formats
-      - name: Checkout nirs4all io
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-io
-          path: nirs4all-io
-      - name: Checkout nirs4all methods
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-methods
-          path: nirs4all-methods
-      - name: Checkout nirs4all papers
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-papers
-          path: nirs4all-papers
-      - name: Checkout nirs4all providers
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-providers
-          path: nirs4all-providers
-      - name: Checkout nirs4all repository
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-repository
-          path: nirs4all-repository
-      - name: Checkout nirs4all studio
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-studio
-          path: nirs4all-studio
-      - name: Checkout nirs4all tools
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-tools
-          path: nirs4all-tools
-      - name: Checkout nirs4all ui
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-ui
-          path: nirs4all-ui
-      - name: Checkout nirs4all web
-        uses: actions/checkout@v4
-        with:
-          repository: GBeurier/nirs4all-web
-          path: nirs4all-web
+          submodules: recursive
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"

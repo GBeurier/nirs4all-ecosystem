@@ -467,16 +467,18 @@ def test_cross_language_e2e_python311_steps_use_python311_command() -> None:
 
 def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     workflow = (ROOT / ".github" / "workflows" / "cross-language-e2e.yml").read_text(encoding="utf-8")
+    gitmodules = (ROOT / ".gitmodules").read_text(encoding="utf-8")
     manifest = _read_manifest()
     declared_repos = {repo for scenario in manifest["scenarios"] for repo in scenario["repos"]}
 
-    assert "N4A_WORKSPACE_ROOT: ${{ github.workspace }}" in workflow
+    assert "N4A_WORKSPACE_ROOT: ${{ github.workspace }}/nirs4all-ecosystem" in workflow
     assert "path: nirs4all-ecosystem" in workflow
+    assert "submodules: recursive" in workflow
     assert "nirs4all-drafts" not in workflow
     assert "nirs4all-lab" not in workflow
     for repo in sorted(declared_repos):
-        assert f"repository: GBeurier/{repo}" in workflow
-        assert f"path: {repo}" in workflow
+        assert f'path = {repo}' in gitmodules
+        assert f"url = https://github.com/GBeurier/{repo}.git" in gitmodules
 
 
 def test_cross_language_e2e_allow_blocked_never_returns_green(tmp_path: Path) -> None:
