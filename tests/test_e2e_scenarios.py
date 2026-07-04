@@ -31,6 +31,13 @@ def _write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, ensure_ascii=True, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _scenario_by_id(manifest: dict, scenario_id: str) -> dict:
+    for scenario in manifest["scenarios"]:
+        if scenario["id"] == scenario_id:
+            return scenario
+    raise AssertionError(f"missing scenario: {scenario_id}")
+
+
 def test_cross_language_e2e_manifest_validates_current_contract() -> None:
     e2e = _load_e2e_module()
 
@@ -209,6 +216,25 @@ def test_cross_language_e2e_cli_list_and_plan_json() -> None:
     assert "strictness_gaps" in plan
     assert plan["steps"]
     assert "requires_paths" in plan["steps"][0]
+
+
+def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
+    manifest = _read_manifest()
+
+    repository_refit = _scenario_by_id(manifest, "e2e-python-reopen-paper-repository-refit")
+    assert repository_refit["evidence_level"] == "hybrid"
+    assert any("does not execute a repository best-pipeline refit yet" in gap for gap in repository_refit["strictness_gaps"])
+    assert any("executed=false" in check["metric"] for check in repository_refit["parity_checks"])
+
+    wasm_alt_dataset = _scenario_by_id(manifest, "e2e-wasm-open-repo-pipeline-alt-dataset")
+    assert wasm_alt_dataset["evidence_level"] == "hybrid"
+    assert any("no Python-vs-WASM numeric oracle" in gap for gap in wasm_alt_dataset["strictness_gaps"])
+    assert any("alternative catalog dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
+
+    multimodal = _scenario_by_id(manifest, "e2e-multimodal-python-r-wasm-roundtrip")
+    assert multimodal["evidence_level"] == "hybrid"
+    assert any("dense fused-matrix multimodal proxy" in gap for gap in multimodal["strictness_gaps"])
+    assert any("proxy representation" in check["metric"] for check in multimodal["parity_checks"])
 
 
 def test_cross_language_e2e_plan_exposes_hybrid_web_gaps_and_strict_checks() -> None:

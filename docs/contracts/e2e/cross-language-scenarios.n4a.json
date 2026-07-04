@@ -87,9 +87,12 @@
     },
     {
       "id": "e2e-python-reopen-paper-repository-refit",
-      "title": "Python reopen pipeline, prove parity, export paper, and force repository best-pipeline refit",
-      "objective": "Open a saved pipeline in full Python nirs4all, rerun it, compare against the Python oracle, export a reproducible paper bundle, and inject the best refit pipeline into repository metadata.",
-      "evidence_level": "strict",
+      "title": "Python reopen pipeline, prove parity, export paper, and publish repository refit handoff",
+      "objective": "Open a saved pipeline in full Python nirs4all, rerun it, compare against the Python oracle, export a reproducible paper bundle, and emit the repository best-refit handoff descriptor.",
+      "evidence_level": "hybrid",
+      "strictness_gaps": [
+        "Python reopen/rerun parity is strict, but the papers/repository step currently exports a handoff descriptor; it does not execute a repository best-pipeline refit yet."
+      ],
       "languages": ["python", "native"],
       "repos": ["nirs4all", "nirs4all-repository", "nirs4all-papers", "dag-ml", "nirs4all-methods"],
       "tags": ["pipeline", "repository", "papers", "workspace_save", "parity"],
@@ -102,7 +105,7 @@
         "Python oracle version and dag-ml backend version",
         "Reopen/rerun parity ledger",
         "Paper manifest with source hashes",
-        "Repository provider descriptor for forced best refit"
+        "Repository provider descriptor for best-refit handoff"
       ],
       "parity_checks": [
         {
@@ -110,6 +113,12 @@
           "candidate": "dag-ml backend refit",
           "metric": "scores and predictions exactly match scenario tolerance ledger",
           "evidence_level": "strict"
+        },
+        {
+          "oracle": "paper export manifest",
+          "candidate": "repository best-refit descriptor",
+          "metric": "handoff descriptor is written with source hashes and explicit executed=false status",
+          "evidence_level": "contract"
         }
       ],
       "steps": [
@@ -125,7 +134,7 @@
         },
         {
           "id": "papers-export-repository-refit",
-          "title": "Export reproducible paper and force best refit into repository",
+          "title": "Export reproducible paper and write best-refit repository handoff",
           "kind": "export",
           "repo": "nirs4all-papers",
           "requires_tools": ["python3.11"],
@@ -141,7 +150,8 @@
       "objective": "Run the browser/WASM aggregate locally, export/import a pipeline repository artifact, execute the imported pipeline client-side, validate saved prediction artifact reuse, and verify the Web build consumes the shared nirs4all-ui shim.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
-        "Web roundtrip prediction preservation is strict inside the browser/WASM runtime, but no Python-vs-WASM numeric oracle is asserted in this scenario."
+        "Web roundtrip prediction preservation is strict inside the browser/WASM runtime, but no Python-vs-WASM numeric oracle is asserted in this scenario.",
+        "The current Playwright path uses the bundled demo/sample artifact; it does not yet execute the repository pipeline on an alternative catalog dataset."
       ],
       "languages": ["javascript_wasm", "web", "python"],
       "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"],
@@ -210,8 +220,11 @@
     {
       "id": "e2e-multimodal-python-r-wasm-roundtrip",
       "title": "Multimodal Python/R/WASM pipeline roundtrip",
-      "objective": "Generate a multimodal NIRS plus metadata pipeline in Python, roundtrip it through R and WASM, and verify predictions and saved manifests remain equivalent.",
-      "evidence_level": "strict",
+      "objective": "Generate a multimodal NIRS plus metadata pipeline in Python, roundtrip the current portable dense-fused representation through R and WASM, and verify predictions and saved manifests remain equivalent within that proxy contract.",
+      "evidence_level": "hybrid",
+      "strictness_gaps": [
+        "Current execution proves a dense fused-matrix multimodal proxy; native multimodal runtime and Web/Studio roundtrip steps are still pending."
+      ],
       "languages": ["python", "r", "javascript_wasm"],
       "repos": ["nirs4all", "nirs4all-core"],
       "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"],
@@ -228,9 +241,9 @@
       ],
       "parity_checks": [
         {
-          "oracle": "python multimodal predictions",
-          "candidate": "R and WASM multimodal predictions",
-          "metric": "per-output prediction_abs_max <= 1e-8",
+          "oracle": "python dense-fused multimodal proxy predictions",
+          "candidate": "R and WASM dense-fused multimodal proxy predictions",
+          "metric": "per-output prediction_abs_max <= 1e-8 within the current proxy representation",
           "evidence_level": "strict"
         }
       ],
