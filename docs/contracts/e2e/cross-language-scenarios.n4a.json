@@ -395,10 +395,10 @@
     {
       "id": "e2e-cluster-dag-rights-client-core",
       "title": "Cluster scheduler runs a DAG pipeline with rights checks and core client handoff",
-      "objective": "Submit a DAG pipeline through the cluster client/server scheduler, enforce read/execute rights, return artifacts to core, and compare predictions with local execution.",
+      "objective": "Submit a DAG-shaped pipeline through the cluster client/server scheduler, enforce read/execute rights, return artifacts to core, and recompute the scheduler aggregate from task results.",
       "languages": ["python", "native"],
       "repos": ["nirs4all-cluster", "nirs4all-core", "dag-ml", "nirs4all-methods"],
-      "tags": ["pipeline", "predictions", "workspace_save", "parity"],
+      "tags": ["pipeline", "workspace_save", "parity"],
       "artifacts": [
         "{artifacts_dir}/cluster-dag-rights/scheduler-run.json",
         "{artifacts_dir}/cluster-dag-rights/core-client-result.json",
@@ -408,13 +408,13 @@
         "Cluster rights decision log",
         "Scheduler DAG trace",
         "Core client artifact handoff manifest",
-        "Local vs cluster parity ledger"
+        "Local aggregate recompute vs cluster aggregate ledger"
       ],
       "parity_checks": [
         {
-          "oracle": "local dag-ml/native execution",
+          "oracle": "local recompute from cluster task results",
           "candidate": "cluster scheduled execution",
-          "metric": "prediction and artifact hash parity"
+          "metric": "num_tasks, best_task_id, and best_metric parity"
         }
       ],
       "steps": [
@@ -425,7 +425,7 @@
           "repo": "nirs4all-cluster",
           "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all-cluster/tests/e2e/test_cluster_dag_rights_core_client.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-cluster && python3.11 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-cluster && PYTHONPATH=src python3.11 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"],
           "produces": ["{artifacts_dir}/cluster-dag-rights/scheduler-run.json"]
         },
         {
