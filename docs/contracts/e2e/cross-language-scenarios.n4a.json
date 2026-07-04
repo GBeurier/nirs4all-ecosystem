@@ -257,13 +257,15 @@
       "artifacts": [
         "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
         "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
-        "{artifacts_dir}/legacy-converter/web-results-panels.json"
+        "{artifacts_dir}/legacy-converter/web-results-panels.json",
+        "{artifacts_dir}/legacy-converter/web-results.png"
       ],
       "evidence": [
         "Legacy input fixture hash",
         "Converter migration report",
         "Prediction result contract validation",
-        "Web panel coverage screenshot/index"
+        "Web panel coverage screenshot/index",
+        "Client-only served-app contract panel rendering"
       ],
       "parity_checks": [
         {
@@ -289,9 +291,9 @@
           "kind": "ui",
           "repo": "nirs4all-web",
           "requires_tools": ["npm"],
-          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/e2e/converted-predictions-render.spec.ts"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && npm run test:e2e -- tests/e2e/converted-predictions-render.spec.ts --artifacts-dir={artifacts_dir}/legacy-converter"],
-          "produces": ["{artifacts_dir}/legacy-converter/web-results-panels.json"]
+          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/converted-predictions-render-smoke.mjs"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"],
+          "produces": ["{artifacts_dir}/legacy-converter/web-results-panels.json", "{artifacts_dir}/legacy-converter/web-results.png"]
         }
       ]
     },
