@@ -15,7 +15,7 @@ hold were left untouched.
 | Repo | Commit | Files modified |
 | --- | --- | --- |
 | `nirs4all-datasets` | `2c414bda` | `docs/index.md` |
-| `nirs4all-io` | `a828c28` | `docs/index.md`, `.github/workflows/ci.yml` |
+| `nirs4all-io` | `2e5e2a5` | `docs/index.md`, `.github/workflows/ci.yml`, `tests/e2e/test_formats_io_datasets_methods.py` |
 | `nirs4all-formats` | `fd3fcdc` | `docs/index.md` |
 | `nirs4all-methods` | `60641219` | `bindings/matlab/README.md`, `docs/about.md`, `bindings/js/README.md`, `bindings/js/INPUT_CONTRACT.md` |
 | `dag-ml` | `222a1c3` on `refactor/L20-lockstep` | `AGENTS.md`, `Cargo.lock`, `docs/index.md`, `docs/SUPPORTED.md`, `docs/migration-nirs4all/README.md`, `crates/dag-ml-wasm/README.md` |
@@ -24,11 +24,13 @@ hold were left untouched.
 
 The `nirs4all-ecosystem` submodule pins were advanced to those heads.
 
-`nirs4all-io` received follow-up CI-only fixes after GitHub Actions exposed that
-the ecosystem E2E test expects the `nirs4all-datasets` sibling repository on the
-runner and imports its runtime dependencies from source. The workflow now checks
-out that sibling and installs the needed dataset runtime dependencies instead of
-skipping or weakening the E2E test.
+`nirs4all-io` received follow-up E2E fixes after GitHub Actions exposed that the
+ecosystem test was accidentally relying on local, untracked canonical dataset
+bytes. The workflow still checks out the `nirs4all-datasets` sibling source, but
+the test now generates two deterministic schema-2.0 leaves and canonicalizes
+them through the real `nirs4all-datasets.bootstrap` + `organize` APIs before
+validating the `NirsDataset -> nirs4all-io DatasetPackage` bridge. This keeps
+coverage active without depending on private/local canonical data.
 
 ## Tests and checks
 
@@ -39,6 +41,13 @@ skipping or weakening the E2E test.
 - The same targeted test passed after adding the CI install dependencies for
   `nirs4all-datasets` source imports (`pydantic`, `python-dotenv`, `matplotlib`,
   `requests`, `typer`).
+- `nirs4all-io`: `python3.11 -m pytest -q tests/e2e/test_formats_io_datasets_methods.py`
+  passed after replacing local canonical dataset assumptions with generated
+  canonical bridge fixtures (`1 passed`).
+- `nirs4all-io`: `python3.11 -m ruff check .` passed.
+- `nirs4all-io`: `python3.11 -m mypy .` passed.
+- `nirs4all-io`: `python3.11 -m pytest -q -m "not parity"` passed
+  (`233 passed, 3 skipped`).
 - `dag-ml`: `cargo test --workspace` passed (`575 passed, 2 ignored`).
 - `dag-ml`: `cargo audit --deny warnings` passed after updating `anyhow` from
   `1.0.102` to `1.0.103`.
@@ -69,8 +78,9 @@ skipping or weakening the E2E test.
 - `nirs4all-studio` docs were not edited in this batch because the user asked
   to hold the production-sensitive Studio repo outside the release path, except
   for the Windows RC installer.
-- The `nirs4all-io` failure was fixed by making the runner match the intended
-  multi-repo E2E workspace layout, not by reducing coverage.
+- The `nirs4all-io` failure was fixed by removing dependence on untracked local
+  canonical data and exercising the actual datasets canonicalization bridge in
+  the E2E test, not by reducing coverage.
 
 ## Risks
 
