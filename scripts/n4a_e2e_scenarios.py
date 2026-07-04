@@ -155,7 +155,7 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         covered_tags.update(tags)
         _strings(scenario.get("repos"), f"{scenario_id}.repos")
         _strings(scenario.get("evidence"), f"{scenario_id}.evidence")
-        _strings(scenario.get("artifacts"), f"{scenario_id}.artifacts")
+        artifacts = set(_strings(scenario.get("artifacts"), f"{scenario_id}.artifacts"))
         parity_checks = scenario.get("parity_checks", [])
         if not isinstance(parity_checks, list):
             raise E2EScenarioError(f"{scenario_id}.parity_checks must be a list")
@@ -169,10 +169,18 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         if not isinstance(steps, list) or not steps:
             raise E2EScenarioError(f"{scenario_id}.steps must be a non-empty list")
         step_ids: set[str] = set()
+        produced_artifacts: set[str] = set()
         for step in steps:
             if not isinstance(step, dict):
                 raise E2EScenarioError(f"{scenario_id}: each step must be an object")
             _validate_step(scenario_id, step, step_ids)
+            produced_artifacts.update(step.get("produces", []))
+        missing_artifacts = sorted(artifacts - produced_artifacts)
+        if missing_artifacts:
+            raise E2EScenarioError(
+                f"{scenario_id}: scenario artifact(s) are not produced by any step: "
+                + ", ".join(missing_artifacts)
+            )
 
     _unique(scenario_ids, "scenario ids")
     missing_tags = REQUIRED_TAGS - covered_tags

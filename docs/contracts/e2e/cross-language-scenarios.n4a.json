@@ -52,7 +52,7 @@
           "requires_tools": ["Rscript"],
           "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/e2e_run_save_pipeline.R"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"],
-          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.parquet"]
+          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.parquet"]
         }
       ]
     },
@@ -138,7 +138,7 @@
           "requires_tools": ["npm"],
           "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/e2e/wasm-repository-pipeline.test.ts"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && npm run test -- --run tests/e2e/wasm-repository-pipeline.test.ts --artifacts-dir={artifacts_dir}/wasm-repo-alt-dataset"],
-          "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/wasm-predictions.json"]
+          "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/wasm-predictions.json", "{artifacts_dir}/wasm-repo-alt-dataset/alt-dataset-predictions.json"]
         },
         {
           "id": "web-render-results",
@@ -186,7 +186,7 @@
           "requires_tools": ["python3"],
           "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_multimodal_roundtrip.py"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && python3 -m pytest tests/e2e/test_multimodal_roundtrip.py::test_generate_oracle --artifacts-dir={artifacts_dir}/multimodal-roundtrip"],
-          "produces": ["{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json"]
+          "produces": ["{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json", "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet"]
         },
         {
           "id": "r-wasm-roundtrip",
@@ -233,7 +233,7 @@
           "requires_tools": ["python3"],
           "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_multisource_stacking_replay.py"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && python3 -m pytest tests/e2e/test_multisource_stacking_replay.py --artifacts-dir={artifacts_dir}/multisource-stacking"],
-          "produces": ["{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json"]
+          "produces": ["{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json", "{artifacts_dir}/multisource-stacking/oof-ledger.json"]
         },
         {
           "id": "native-replay",
@@ -388,7 +388,7 @@
           "requires_tools": ["python3", "npm"],
           "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/e2e/performance-compare.spec.ts"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && npm run test:e2e -- tests/e2e/performance-compare.spec.ts --artifacts-dir={artifacts_dir}/performance-compare"],
-          "produces": ["{artifacts_dir}/performance-compare/studio-web-runtime.json"]
+          "produces": ["{artifacts_dir}/performance-compare/python-vs-dagml.json", "{artifacts_dir}/performance-compare/studio-web-runtime.json"]
         }
       ]
     },

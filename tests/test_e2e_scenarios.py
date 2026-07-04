@@ -79,6 +79,17 @@ def test_cross_language_e2e_manifest_rejects_duplicate_step_ids(tmp_path: Path) 
         e2e.validate_scenarios(manifest_path)
 
 
+def test_cross_language_e2e_manifest_requires_artifacts_to_be_produced(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    manifest["scenarios"][0]["artifacts"].append("{artifacts_dir}/never-produced.json")
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="not produced by any step"):
+        e2e.validate_scenarios(manifest_path)
+
+
 def test_cross_language_e2e_plan_formats_paths_and_reports_blockers(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     manifest = _read_manifest()
@@ -216,6 +227,7 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
     manifest = _read_manifest()
     scenario_id = manifest["scenarios"][0]["id"]
     missing_artifact = tmp_path / "missing-cli-result.json"
+    manifest["scenarios"][0]["artifacts"] = [str(missing_artifact)]
     manifest["scenarios"][0]["steps"] = [
         {
             "id": "forgetful-cli-step",
