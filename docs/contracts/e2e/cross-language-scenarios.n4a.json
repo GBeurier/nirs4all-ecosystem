@@ -470,9 +470,9 @@
           "title": "Read heterogeneous formats and assemble datasets",
           "kind": "prepare",
           "repo": "nirs4all-io",
-          "requires_tools": ["python3", "cargo"],
+          "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all-io/tests/e2e/test_formats_io_datasets_methods.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-io && python3 -m pytest tests/e2e/test_formats_io_datasets_methods.py::test_assemble_reference_datasets --artifacts-dir={artifacts_dir}/formats-io-methods"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-io && PYTHONPATH=src python3.11 -m pytest tests/e2e/test_formats_io_datasets_methods.py::test_assemble_reference_datasets --artifacts-dir={artifacts_dir}/formats-io-methods"],
           "produces": ["{artifacts_dir}/formats-io-methods/assembled-datasets.json"]
         },
         {
@@ -480,10 +480,10 @@
           "title": "Invoke methods through Python/R/WASM/Rust and compare outputs",
           "kind": "verify",
           "repo": "nirs4all-methods",
-          "requires_tools": ["python3", "Rscript", "npm", "cargo"],
+          "requires_tools": ["python3.11", "Rscript", "npm", "cargo"],
           "requires_paths": ["{workspace_root}/nirs4all-methods/scripts/e2e/cross_binding_methods_parity.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-methods && python3 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"],
-          "produces": ["{artifacts_dir}/formats-io-methods/binding-parity.json"]
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-methods && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"],
+          "produces": ["{artifacts_dir}/formats-io-methods/binding-parity.json", "{artifacts_dir}/formats-io-methods/predictions-by-language.json"]
         }
       ]
     }
