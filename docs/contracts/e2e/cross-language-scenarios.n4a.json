@@ -348,8 +348,8 @@
     },
     {
       "id": "e2e-pipeline-generation-performance-compare",
-      "title": "Complex pipeline generation with performance comparison against Studio/runtime",
-      "objective": "Generate a family of candidate pipelines, run Python reference and dag-ml/native backends, compare outputs, and record performance gains for library and Studio/Web runtime paths.",
+      "title": "Complex pipeline generation with Python/Web performance comparison and Studio hold marker",
+      "objective": "Generate a family of candidate pipelines, run Python reference and dag-ml/native backends, compare outputs, record performance gains for library and Web runtime paths, and explicitly mark Studio runtime comparison as held until its dedicated entrypoint exists.",
       "languages": ["python", "javascript_wasm", "web", "native"],
       "repos": ["nirs4all", "dag-ml", "nirs4all-core", "nirs4all-studio", "nirs4all-web"],
       "tags": ["pipeline_generation", "pipeline", "parity", "predictions", "web_results"],
@@ -361,7 +361,8 @@
       "evidence": [
         "Generated pipeline search-space manifest",
         "Python reference vs dag-ml parity ledger",
-        "Studio/Web runtime timing comparison",
+        "Web runtime timing comparison",
+        "Studio runtime prod-hold marker",
         "Regression budget verdict"
       ],
       "parity_checks": [
@@ -384,7 +385,7 @@
         },
         {
           "id": "compare-runtimes",
-          "title": "Compare Python, dag-ml/native, Studio, and Web runtimes",
+          "title": "Compare Python, dag-ml/native, and Web runtimes; record Studio hold",
           "kind": "verify",
           "repo": "nirs4all-web",
           "requires_tools": ["npm"],
