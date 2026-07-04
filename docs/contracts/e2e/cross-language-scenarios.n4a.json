@@ -918,7 +918,7 @@
       "objective": "Submit a DAG-shaped pipeline through the cluster client/server scheduler, enforce read/execute rights, return artifacts to core, recompute the scheduler aggregate from task results, and require a real nirs4all local-vs-cluster numeric oracle.",
       "evidence_level": "strict",
       "languages": ["python", "native"],
-      "repos": ["nirs4all-cluster", "nirs4all-core", "dag-ml", "nirs4all-methods"],
+      "repos": ["nirs4all-cluster", "nirs4all-core", "dag-ml", "nirs4all-methods", "nirs4all"],
       "tags": ["pipeline", "workspace_save", "parity"],
       "artifacts": [
         "{artifacts_dir}/cluster-dag-rights/scheduler-run.json",

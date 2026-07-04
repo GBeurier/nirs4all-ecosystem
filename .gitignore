@@ -5,6 +5,9 @@
 __pycache__/
 */__pycache__/
 
+# Cross-language E2E execution outputs are local/runtime evidence, not source.
+.n4a-e2e-artifacts/
+
 # --- untracked build/process docs (kept locally, 2026-06-16) ---
 ECOSYSTEM_RESTRUCTURE_LOG.md
 REVIEW_VISION.md

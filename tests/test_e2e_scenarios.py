@@ -456,6 +456,43 @@ def test_cross_language_e2e_manifest_is_not_gitignored() -> None:
     assert ignored.returncode == 1
 
 
+def test_cross_language_e2e_runtime_artifacts_are_gitignored() -> None:
+    ignored = subprocess.run(
+        ["git", "check-ignore", "-q", ".n4a-e2e-artifacts/probe.json"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    assert ignored.returncode == 0
+
+
+def test_cross_language_e2e_required_paths_stay_in_declared_repos_or_allowlisted_data_blockers() -> None:
+    manifest = _read_manifest()
+
+    for scenario in manifest["scenarios"]:
+        declared_repos = set(scenario["repos"])
+        for step in scenario["steps"]:
+            for raw_path in step.get("requires_paths", []):
+                prefix = "{workspace_root}/"
+                if not raw_path.startswith(prefix):
+                    continue
+                relative = raw_path[len(prefix) :]
+                top_level = relative.split("/", 1)[0]
+                if top_level in declared_repos:
+                    continue
+                assert scenario["id"] in ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS, (
+                    f"{scenario['id']}.{step['id']} requires {raw_path}, but {top_level!r} "
+                    "is not a declared repo and the scenario is not explicitly allowed as data-blocked"
+                )
+                assert any(fragment in relative for fragment in ALLOWED_PUBLIC_CHECKOUT_DATA_BLOCKERS), (
+                    f"{scenario['id']}.{step['id']} requires undeclared workspace path {raw_path!r} "
+                    "without a public-checkout data blocker allowlist entry"
+                )
+
+
 def test_cross_language_e2e_python311_steps_use_python311_command() -> None:
     manifest = _read_manifest()
 
