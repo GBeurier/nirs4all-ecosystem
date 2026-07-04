@@ -1,72 +1,80 @@
-[submodule "nirs4all-aom"]
-	path = nirs4all-aom
-	url = git@github.com:GBeurier/nirs4all-aom.git
-	branch = main
 [submodule "dag-ml"]
 	path = dag-ml
-	url = git@github.com:GBeurier/dag-ml.git
+	url = https://github.com/GBeurier/dag-ml.git
 	branch = main
 [submodule "dag-ml-data"]
 	path = dag-ml-data
-	url = git@github.com:GBeurier/dag-ml-data.git
-	branch = main
-[submodule "nirs4all-benchmarks"]
-	path = nirs4all-benchmarks
-	url = git@github.com:GBeurier/nirs4all-benchmarks.git
+	url = https://github.com/GBeurier/dag-ml-data.git
 	branch = main
 [submodule "nirs4all"]
 	path = nirs4all
-	url = git@github.com:GBeurier/nirs4all.git
+	url = https://github.com/GBeurier/nirs4all.git
 	branch = main
-[submodule "nirs4all-studio"]
-	path = nirs4all-studio
-	url = git@github.com:GBeurier/nirs4all-studio.git
-	branch = master
-[submodule "nirs4all-web"]
-	path = nirs4all-web
-	url = git@github.com:GBeurier/nirs4all-web.git
+[submodule "nirs4all-aom"]
+	path = nirs4all-aom
+	url = https://github.com/GBeurier/nirs4all-aom.git
 	branch = main
-[submodule "nirs4all-lite"]
-	path = nirs4all-lite
-	url = git@github.com:GBeurier/nirs4all-lite.git
-	branch = main
-[submodule "nirs4all-org"]
-	path = nirs4all-org
-	url = git@github.com:GBeurier/nirs4all-org.git
-	branch = main
-[submodule "nirs4all-drafts"]
-	path = nirs4all-drafts
-	url = git@github.com:GBeurier/nirs4all-drafts.git
-	branch = main
-[submodule "nirs4all-papers"]
-	path = nirs4all-papers
-	url = git@github.com:GBeurier/nirs4all-papers.git
-	branch = main
-[submodule "nirs4all-lab"]
-	path = nirs4all-lab
-	url = git@github.com:GBeurier/nirs4all-lab.git
-	branch = main
-[submodule "nirs4all-formats"]
-	path = nirs4all-formats
-	url = git@github.com:GBeurier/nirs4all-formats.git
-	branch = main
-[submodule "nirs4all-io"]
-	path = nirs4all-io
-	url = git@github.com:GBeurier/nirs4all-io.git
-	branch = main
-[submodule "nirs4all-methods"]
-	path = nirs4all-methods
-	url = git@github.com:GBeurier/nirs4all-methods.git
-	branch = main
-[submodule "nirs4all-datasets"]
-	path = nirs4all-datasets
-	url = git@github.com:GBeurier/nirs4all-datasets.git
+[submodule "nirs4all-benchmarks"]
+	path = nirs4all-benchmarks
+	url = https://github.com/GBeurier/nirs4all-benchmarks.git
 	branch = main
 [submodule "nirs4all-cluster"]
 	path = nirs4all-cluster
-	url = git@github.com:GBeurier/nirs4all-cluster.git
+	url = https://github.com/GBeurier/nirs4all-cluster.git
+	branch = main
+[submodule "nirs4all-cockpit"]
+	path = nirs4all-cockpit
+	url = https://github.com/GBeurier/nirs4all-cockpit.git
+	branch = main
+[submodule "nirs4all-core"]
+	path = nirs4all-core
+	url = https://github.com/GBeurier/nirs4all-core.git
+	branch = main
+[submodule "nirs4all-datasets"]
+	path = nirs4all-datasets
+	url = https://github.com/GBeurier/nirs4all-datasets.git
+	branch = main
+[submodule "nirs4all-formats"]
+	path = nirs4all-formats
+	url = https://github.com/GBeurier/nirs4all-formats.git
+	branch = main
+[submodule "nirs4all-io"]
+	path = nirs4all-io
+	url = https://github.com/GBeurier/nirs4all-io.git
+	branch = main
+[submodule "nirs4all-methods"]
+	path = nirs4all-methods
+	url = https://github.com/GBeurier/nirs4all-methods.git
+	branch = main
+[submodule "nirs4all-org"]
+	path = nirs4all-org
+	url = https://github.com/GBeurier/nirs4all-org.git
+	branch = main
+[submodule "nirs4all-papers"]
+	path = nirs4all-papers
+	url = https://github.com/GBeurier/nirs4all-papers.git
+	branch = main
+[submodule "nirs4all-providers"]
+	path = nirs4all-providers
+	url = https://github.com/GBeurier/nirs4all-providers.git
 	branch = main
 [submodule "nirs4all-repository"]
 	path = nirs4all-repository
-	url = git@github.com:GBeurier/nirs4all-repository.git
+	url = https://github.com/GBeurier/nirs4all-repository.git
+	branch = main
+[submodule "nirs4all-studio"]
+	path = nirs4all-studio
+	url = https://github.com/GBeurier/nirs4all-studio.git
+	branch = main
+[submodule "nirs4all-tools"]
+	path = nirs4all-tools
+	url = https://github.com/GBeurier/nirs4all-tools.git
+	branch = main
+[submodule "nirs4all-ui"]
+	path = nirs4all-ui
+	url = https://github.com/GBeurier/nirs4all-ui.git
+	branch = main
+[submodule "nirs4all-web"]
+	path = nirs4all-web
+	url = https://github.com/GBeurier/nirs4all-web.git
 	branch = main
