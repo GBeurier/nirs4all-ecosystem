@@ -18,7 +18,7 @@ hold were left untouched.
 | `nirs4all-io` | `a828c28` | `docs/index.md`, `.github/workflows/ci.yml` |
 | `nirs4all-formats` | `fd3fcdc` | `docs/index.md` |
 | `nirs4all-methods` | `60641219` | `bindings/matlab/README.md`, `docs/about.md`, `bindings/js/README.md`, `bindings/js/INPUT_CONTRACT.md` |
-| `dag-ml` | `e6ee688` on `refactor/L20-lockstep` | `AGENTS.md`, `docs/index.md`, `docs/SUPPORTED.md`, `crates/dag-ml-wasm/README.md` |
+| `dag-ml` | `222a1c3` on `refactor/L20-lockstep` | `AGENTS.md`, `Cargo.lock`, `docs/index.md`, `docs/SUPPORTED.md`, `docs/migration-nirs4all/README.md`, `crates/dag-ml-wasm/README.md` |
 | `dag-ml-data` | `0850a71` on `rc/v1-full-refactor` | `docs/index.md` |
 | `nirs4all-web` | `9829e7e` | `CLAUDE.md` |
 
@@ -39,6 +39,13 @@ skipping or weakening the E2E test.
 - The same targeted test passed after adding the CI install dependencies for
   `nirs4all-datasets` source imports (`pydantic`, `python-dotenv`, `matplotlib`,
   `requests`, `typer`).
+- `dag-ml`: `cargo test --workspace` passed (`575 passed, 2 ignored`).
+- `dag-ml`: `cargo audit --deny warnings` passed after updating `anyhow` from
+  `1.0.102` to `1.0.103`.
+- `dag-ml`: `sphinx-build -W --keep-going -b html docs docs/_build/html`
+  passed in a clean temporary worktree with the pending patch applied. The fix
+  includes the committed migration docs in the site toctree and keeps local-only
+  docs as literal paths.
 - `.github/workflows/ci.yml` YAML parsed successfully with `python3.11` /
   `yaml.safe_load`.
 - Targeted stale-doc search passed for the corrected files:
