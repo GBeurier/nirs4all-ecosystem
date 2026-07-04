@@ -294,6 +294,28 @@ def execute_plan(plan: dict[str, Any], *, stop_on_blocked: bool = True) -> int:
     return 0
 
 
+def execute_ready_plans(plans: list[dict[str, Any]]) -> int:
+    ready = [plan for plan in plans if plan["status"] == "ready"]
+    blocked = [plan for plan in plans if plan["status"] == "blocked"]
+    if not ready:
+        print("BLOCKED: no ready scenarios to execute", file=sys.stderr)
+        return 2
+    for plan in ready:
+        print(f"RUN {plan['id']}: {plan['title']}")
+        returncode = execute_plan(plan)
+        if returncode != 0:
+            return returncode
+    if blocked:
+        print(
+            "BLOCKED: "
+            + ", ".join(plan["id"] for plan in blocked)
+            + " still have missing requirements",
+            file=sys.stderr,
+        )
+        return 2
+    return 0
+
+
 def _all_plans(manifest: dict[str, Any], workspace_root: Path, artifacts_dir: Path) -> list[dict[str, Any]]:
     return [
         plan_scenario(scenario, workspace_root=workspace_root, artifacts_dir=artifacts_dir)
@@ -325,6 +347,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="run ready steps even when other steps are blocked; still exits 2 if any blocker remains",
     )
+    run_ready_parser = subparsers.add_parser("run-ready", help="execute every currently ready scenario")
+    run_ready_parser.add_argument("--execute", action="store_true", help="actually run commands")
 
     args = parser.parse_args(argv)
     workspace_root = args.workspace_root.expanduser().resolve()
@@ -365,6 +389,17 @@ def main(argv: list[str] | None = None) -> int:
                 print("Dry run only. Pass --execute to run commands.", file=sys.stderr)
                 return 0
             return execute_plan(plan, stop_on_blocked=not args.allow_blocked)
+        if args.command == "run-ready":
+            plans = _all_plans(manifest, workspace_root, artifacts_dir)
+            if not args.execute:
+                summary = {
+                    "ready": [plan["id"] for plan in plans if plan["status"] == "ready"],
+                    "blocked": [plan["id"] for plan in plans if plan["status"] == "blocked"],
+                }
+                print(json.dumps(summary, ensure_ascii=True, indent=2, sort_keys=True))
+                print("Dry run only. Pass --execute to run ready scenarios.", file=sys.stderr)
+                return 0
+            return execute_ready_plans(plans)
     except E2EScenarioError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

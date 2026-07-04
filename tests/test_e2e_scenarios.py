@@ -278,3 +278,66 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
     assert executed.returncode == 1
     assert "missing produced artifact(s)" in executed.stderr
     assert str(missing_artifact) in executed.stderr
+
+
+def test_cross_language_e2e_run_ready_executes_ready_but_reports_blocked(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    produced = tmp_path / "ready-result.json"
+
+    returncode = e2e.execute_ready_plans(
+        [
+            {
+                "id": "ready-scenario",
+                "title": "Ready synthetic scenario",
+                "status": "ready",
+                "steps": [
+                    {
+                        "id": "write-artifact",
+                        "status": "ready",
+                        "missing": [],
+                        "command": [
+                            sys.executable,
+                            "-c",
+                            f"from pathlib import Path; Path({str(produced)!r}).write_text('ok')",
+                        ],
+                        "produces": [str(produced)],
+                    }
+                ],
+            },
+            {
+                "id": "blocked-scenario",
+                "title": "Blocked synthetic scenario",
+                "status": "blocked",
+                "steps": [
+                    {
+                        "id": "missing-tool",
+                        "status": "blocked",
+                        "missing": ["tool:definitely-missing"],
+                        "command": [sys.executable, "-c", "raise SystemExit(99)"],
+                        "produces": [],
+                    }
+                ],
+            },
+        ]
+    )
+
+    assert produced.read_text(encoding="utf-8") == "ok"
+    assert returncode == 2
+
+
+def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked() -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+
+    planned = subprocess.run(
+        [sys.executable, str(script), "run-ready"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    )
+    summary = json.loads(planned.stdout)
+
+    assert "e2e-r-dataset-io-pipeline-save" in summary["ready"]
+    assert "e2e-python-reopen-paper-repository-refit" in summary["blocked"]
+    assert "Dry run only" in planned.stderr
