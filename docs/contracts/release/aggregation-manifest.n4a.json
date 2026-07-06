@@ -16,7 +16,7 @@
     "selected_branch_patterns": [
       "rc/v1-*"
     ],
-    "preferred_exact_tag": "n4a-v1-rc10-2026.07-refactor",
+    "preferred_exact_tag": "n4a-v1-rc11-2026.07-refactor",
     "repo_path_policy": "repo_path remains the public/canonical repository path recorded in the lock; selected_workspace_path names the local RC worktree used as release evidence.",
     "superseded_tag_policy": "Do not validate historical exact tags from main/refactor branches as RC V1 selection evidence; selected members must be on rc/v1-* branches."
   },

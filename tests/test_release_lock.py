@@ -502,7 +502,7 @@ def test_central_manifest_declares_reproducible_methods_and_lite_topology_source
     assert manifest["release_selection_policy"]["selected_branch_patterns"] == ["rc/v1-*"]
     assert (
         manifest["release_selection_policy"]["preferred_exact_tag"]
-        == "n4a-v1-rc10-2026.07-refactor"
+        == "n4a-v1-rc11-2026.07-refactor"
     )
     assert components["lite"]["repo_path"] == "nirs4all-core"
     assert components["lite"]["repo_url"] == "GBeurier/nirs4all-core"
