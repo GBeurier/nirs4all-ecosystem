@@ -179,7 +179,7 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
         "e2e-multimodal-python-r-wasm-roundtrip": {
             "languages": {"python", "r", "javascript_wasm"},
             "repos": {"nirs4all", "nirs4all-core"},
-            "tags": {"multimodal", "pipeline", "parity", "predictions"},
+            "tags": {"multimodal", "pipeline", "predictions"},
         },
         "e2e-multisource-branching-stacking-replay": {
             "languages": {"python", "native"},
@@ -221,9 +221,10 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
         assert requirements["tags"].issubset(set(scenario["tags"])), scenario_id
         assert len(scenario["steps"]) >= 2, scenario_id
         assert len(scenario["artifacts"]) >= 2, scenario_id
-        assert any(check["evidence_level"] == "strict" for check in scenario["parity_checks"]), scenario_id
+        if "parity" in scenario["tags"]:
+            assert any(check["evidence_level"] == "strict" for check in scenario["parity_checks"]), scenario_id
         phases = manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id]
-        assert any(phase["status"] == "strict" for phase in phases.values()), scenario_id
+        assert any(phase["status"] != "gap" for phase in phases.values()), scenario_id
 
 
 def test_cross_language_e2e_suite_spans_requested_surface_families() -> None:
@@ -358,6 +359,9 @@ def test_cross_language_e2e_strict_parity_checks_assert_real_oracle_comparisons(
         strict_checks = [
             check for check in scenario["parity_checks"] if check["evidence_level"] == "strict"
         ]
+        if scenario["id"] == "e2e-multimodal-python-r-wasm-roundtrip":
+            assert not strict_checks, scenario["id"]
+            continue
         assert strict_checks, scenario["id"]
         for check in strict_checks:
             metric = check["metric"].lower()
@@ -392,6 +396,60 @@ def test_cross_language_e2e_non_gap_v1_phases_are_artifact_backed() -> None:
             assert artifacts, f"{scenario['id']}.{phase}: non-gap phases need evidence artifacts"
             assert artifacts <= scenario_artifacts, f"{scenario['id']}.{phase}"
             assert artifacts <= produced_artifacts, f"{scenario['id']}.{phase}"
+
+
+def test_cross_language_e2e_repository_scenarios_document_repository_invocation() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    repository_scenarios = [
+        scenario for scenario in manifest["scenarios"] if "repository" in scenario["tags"]
+    ]
+    assert {scenario["id"] for scenario in repository_scenarios} == {
+        "e2e-python-reopen-paper-repository-refit",
+        "e2e-wasm-open-repo-pipeline-alt-dataset",
+        "e2e-dataset-provider-repository-roundtrip",
+    }
+
+    for scenario in repository_scenarios:
+        produced_artifacts = {
+            artifact
+            for step in scenario["steps"]
+            for artifact in step.get("produces", [])
+        }
+        repository_steps = [
+            step for step in scenario["steps"] if step["repo"] == "nirs4all-repository"
+        ]
+        repository_delegations = [
+            delegated
+            for step in scenario["steps"]
+            for delegated in step.get("delegated_invocations", [])
+            if delegated["repo"] == "nirs4all-repository"
+        ]
+        assert repository_steps or repository_delegations, scenario["id"]
+        for delegated in repository_delegations:
+            assert delegated["mode"], scenario["id"]
+            assert delegated["calls"], scenario["id"]
+            assert delegated["evidence"], scenario["id"]
+            assert set(delegated["artifacts"]) <= produced_artifacts, scenario["id"]
+
+
+def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    strict = [
+        (scenario["id"], scenario["v1_refactor_contract"]["repository_forced_best_refit"])
+        for scenario in manifest["scenarios"]
+        if scenario["v1_refactor_contract"]["repository_forced_best_refit"]["status"] == "strict"
+    ]
+
+    assert [scenario_id for scenario_id, _contract in strict] == [
+        "e2e-python-reopen-paper-repository-refit"
+    ]
+    assert strict[0][1]["artifacts"] == [
+        "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"
+    ]
 
 
 @pytest.mark.parametrize(
@@ -431,7 +489,7 @@ def test_cross_language_e2e_non_gap_v1_phases_are_artifact_backed() -> None:
                 "phase_statuses": {
                     "python_open_pipeline": "strict",
                     "papers_export": "strict",
-                    "repository_forced_best_refit": "contract",
+                    "repository_forced_best_refit": "strict",
                     "wasm_web_reuse": "contract",
                 },
             },
@@ -476,12 +534,12 @@ def test_cross_language_e2e_non_gap_v1_phases_are_artifact_backed() -> None:
             {
                 "steps": ["python-generate-multimodal", "r-wasm-roundtrip"],
                 "languages": {"python", "r", "javascript_wasm"},
-                "tags": {"multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"},
+                "tags": {"multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save"},
                 "tools": {"python3.11", "Rscript", "node"},
                 "produces": {"multimodal-pipeline.n4a.json", "r-predictions.parquet", "wasm-predictions.json"},
                 "commands": {"test_multimodal_roundtrip.py", "run_multimodal_roundtrip.py"},
-                "evidence": {"dense-fused multimodal", "roundtrip manifest hashes"},
-                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "contract"},
+                "evidence": {"dense-fused multimodal", "Roundtrip manifest hash equality"},
+                "phase_statuses": {"python_parity": "contract", "wasm_web_reuse": "contract"},
             },
         ),
         (
@@ -555,7 +613,7 @@ def test_cross_language_e2e_non_gap_v1_phases_are_artifact_backed() -> None:
                 "steps": ["assemble-reference-datasets", "cross-binding-methods-parity"],
                 "languages": {"python", "r", "javascript_wasm", "rust_archive", "native"},
                 "tags": {"datasets", "io", "predictions", "parity", "pipeline"},
-                "tools": {"python3.11", "cmake", "ninja"},
+                "tools": {"python3.11", "Rscript", "cmake", "ninja"},
                 "produces": {"assembled-datasets.json", "binding-parity.json", "predictions-by-language.json"},
                 "commands": {"test_formats_io_datasets_methods.py", "cross_binding_methods_parity.py"},
                 "evidence": {"Native methods ABI", "WASM fixture output"},
@@ -891,7 +949,23 @@ def test_cross_language_e2e_strict_check_rejects_schema_only_metric(tmp_path: Pa
     manifest_path = tmp_path / "schema-only-strict.json"
     _write_json(manifest_path, manifest)
 
-    with pytest.raises(e2e.E2EScenarioError, match="numeric parity, not schema/array coverage"):
+    with pytest.raises(e2e.E2EScenarioError, match="numeric parity"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_strict_check_rejects_proxy_representation_metric(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-multimodal-python-r-wasm-roundtrip")
+    scenario["tags"].append("parity")
+    scenario["parity_checks"][0]["evidence_level"] = "strict"
+    scenario["parity_checks"][0]["metric"] = (
+        "per-output prediction_abs_max <= 1e-8 within the current proxy representation"
+    )
+    manifest_path = tmp_path / "proxy-strict.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="proxy-only evidence"):
         e2e.validate_scenarios(manifest_path)
 
 
@@ -949,18 +1023,18 @@ def test_cross_language_e2e_manifest_rejects_strict_v1_refactor_gap(tmp_path: Pa
         e2e.validate_scenarios(manifest_path)
 
 
-def test_cross_language_e2e_manifest_requires_one_strict_v1_phase_per_scenario(tmp_path: Path) -> None:
+def test_cross_language_e2e_manifest_requires_one_non_gap_v1_phase_per_scenario(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     manifest = _read_manifest()
     scenario_id = manifest["scenarios"][0]["id"]
     coverage = manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id]
     for phase_contract in coverage.values():
-        phase_contract["status"] = "contract"
-        phase_contract.pop("gap", None)
-    manifest_path = tmp_path / "no-strict-v1-phase.json"
+        phase_contract["status"] = "gap"
+        phase_contract["gap"] = "forced all-gap contract for regression coverage"
+    manifest_path = tmp_path / "no-non-gap-v1-phase.json"
     _write_json(manifest_path, manifest)
 
-    with pytest.raises(e2e.E2EScenarioError, match="at least one strict V1 refactor phase"):
+    with pytest.raises(e2e.E2EScenarioError, match="at least one non-gap V1 refactor phase"):
         e2e.validate_scenarios(manifest_path)
 
 
@@ -994,6 +1068,37 @@ def test_cross_language_e2e_manifest_rejects_unknown_v1_refactor_artifact(tmp_pa
     _write_json(manifest_path, manifest)
 
     with pytest.raises(e2e.E2EScenarioError, match="artifact\\(s\\) are not scenario artifacts"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_manifest_requires_strict_repository_forced_refit_coverage(
+    tmp_path: Path,
+) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    phase = manifest["v1_refactor_contract"]["scenario_coverage"]["e2e-python-reopen-paper-repository-refit"]["repository_forced_best_refit"]
+    phase["status"] = "contract"
+    manifest_path = tmp_path / "no-strict-repository-forced-refit.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(
+        e2e.E2EScenarioError,
+        match="at least one strict repository_forced_best_refit",
+    ):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_manifest_requires_strict_repository_forced_refit_artifacts(
+    tmp_path: Path,
+) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    phase = manifest["v1_refactor_contract"]["scenario_coverage"]["e2e-python-reopen-paper-repository-refit"]["repository_forced_best_refit"]
+    phase["artifacts"] = []
+    manifest_path = tmp_path / "strict-repository-forced-refit-without-artifacts.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="strict repository forced-refit coverage requires artifact evidence"):
         e2e.validate_scenarios(manifest_path)
 
 
@@ -1145,16 +1250,17 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     expected_phase_counts = {
         "python_open_pipeline": {"strict": 2, "contract": 3, "gap": 6},
         "python_rerun_pipeline": {"strict": 4, "contract": 4, "gap": 3},
-        "python_parity": {"strict": 11, "contract": 0, "gap": 0},
+        "python_parity": {"strict": 10, "contract": 1, "gap": 0},
         "papers_export": {"strict": 1, "contract": 0, "gap": 10},
-        "repository_forced_best_refit": {"strict": 0, "contract": 2, "gap": 9},
+        "repository_forced_best_refit": {"strict": 1, "contract": 1, "gap": 9},
         "wasm_web_reuse": {"strict": 4, "contract": 4, "gap": 3},
     }
     assert report["v1_refactor_phase_status_counts"] == expected_phase_counts
     scenario_ids_by_phase = report["v1_refactor_phase_scenario_ids"]
-    assert scenario_ids_by_phase["repository_forced_best_refit"]["strict"] == []
-    assert set(scenario_ids_by_phase["repository_forced_best_refit"]["contract"]) == {
+    assert scenario_ids_by_phase["repository_forced_best_refit"]["strict"] == [
         "e2e-python-reopen-paper-repository-refit",
+    ]
+    assert set(scenario_ids_by_phase["repository_forced_best_refit"]["contract"]) == {
         "e2e-wasm-open-repo-pipeline-alt-dataset",
     }
     assert set(scenario_ids_by_phase["papers_export"]["gap"]) == {
@@ -1171,11 +1277,14 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     for counts in expected_phase_counts.values():
         assert counts["strict"] + counts["contract"] + counts["gap"] == 11
         assert counts["strict"] + counts["contract"] >= 1
-    for summary in report["scenario_summaries"].values():
+    for scenario_id, summary in report["scenario_summaries"].items():
         assert summary["steps"] >= 2
         assert summary["artifacts"] >= 2
-        assert summary["strict_parity_checks"] >= 1
-        assert summary["v1_refactor_summary"]["strict"] >= 1
+        if scenario_id == "e2e-multimodal-python-r-wasm-roundtrip":
+            assert summary["strict_parity_checks"] == 0
+        else:
+            assert summary["strict_parity_checks"] >= 1
+        assert summary["v1_refactor_summary"]["non_gap"] >= 1
 
 
 def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_path: Path) -> None:
@@ -1214,6 +1323,52 @@ def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_pat
     with pytest.raises(e2e.E2EScenarioError, match="repository tag requires a repository artifact"):
         e2e.validate_scenarios(manifest_path)
 
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-dataset-provider-repository-roundtrip")
+    for step in scenario["steps"]:
+        step.pop("delegated_invocations", None)
+        step.pop("delegates_to_repos", None)
+    manifest_path = tmp_path / "repository-without-delegate.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="nirs4all-repository step or documented delegated invocation"):
+        e2e.validate_scenarios(manifest_path)
+
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-core-ui-custom-app-host")
+    for step in scenario["steps"]:
+        step["requires_tools"] = [tool for tool in step.get("requires_tools", []) if tool != "Rscript"]
+    manifest_path = tmp_path / "r-without-rscript.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="r coverage requires an Rscript-gated step"):
+        e2e.validate_scenarios(manifest_path)
+
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-formats-io-datasets-methods-language-bindings")
+    for step in scenario["steps"]:
+        if "Rscript" in step.get("requires_tools", []):
+            step["command"] = [
+                part.replace("Rscript --version >/dev/null && ", "")
+                for part in step["command"]
+            ]
+    manifest_path = tmp_path / "rscript-without-probe.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="must invoke or probe Rscript"):
+        e2e.validate_scenarios(manifest_path)
+
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-core-ui-custom-app-host")
+    scenario["strictness_gaps"] = [
+        gap for gap in scenario["strictness_gaps"] if "full R numeric rerun" not in gap
+    ]
+    manifest_path = tmp_path / "structural-r-without-gap.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="without numeric R evidence"):
+        e2e.validate_scenarios(manifest_path)
+
 
 def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     manifest = _read_manifest()
@@ -1221,12 +1376,12 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
 
     repository_refit = _scenario_by_id(manifest, "e2e-python-reopen-paper-repository-refit")
     assert repository_refit["evidence_level"] == "hybrid"
-    assert any("does not execute a repository best-pipeline refit yet" in gap for gap in repository_refit["strictness_gaps"])
+    assert not any("does not execute a repository best-pipeline refit yet" in gap for gap in repository_refit["strictness_gaps"])
     assert any("refit.executed=true" in check["metric"] for check in repository_refit["parity_checks"])
     repository_flow = flow["e2e-python-reopen-paper-repository-refit"]
     assert repository_flow["python_open_pipeline"]["status"] == "strict"
     assert repository_flow["papers_export"]["status"] == "strict"
-    assert repository_flow["repository_forced_best_refit"]["status"] == "contract"
+    assert repository_flow["repository_forced_best_refit"]["status"] == "strict"
     repository_refit_contract = json.dumps(repository_flow["repository_forced_best_refit"], sort_keys=True)
     assert "force_best_refit=true" in repository_refit_contract
     assert "selected artificial best pipeline id" in repository_refit_contract
@@ -1247,7 +1402,8 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     multimodal = _scenario_by_id(manifest, "e2e-multimodal-python-r-wasm-roundtrip")
     assert multimodal["evidence_level"] == "hybrid"
     assert any("dense fused-matrix multimodal proxy" in gap for gap in multimodal["strictness_gaps"])
-    assert any("proxy representation" in check["metric"] for check in multimodal["parity_checks"])
+    assert not any("proxy representation" in check["metric"] for check in multimodal["parity_checks"])
+    assert any("dense-fused feature representation" in check["metric"] for check in multimodal["parity_checks"])
     assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["wasm_web_reuse"]["status"] == "contract"
 
     multisource = _scenario_by_id(manifest, "e2e-multisource-branching-stacking-replay")
@@ -1296,10 +1452,13 @@ def test_cross_language_e2e_plan_exposes_hybrid_web_gaps_and_strict_checks() -> 
 
     assert plan["evidence_level"] == "hybrid"
     assert plan["strictness_gaps"]
-    assert "parity" not in plan["tags"]
+    assert "parity" in plan["tags"]
     assert [check["evidence_level"] for check in plan["parity_checks"]].count("strict") >= 2
     assert plan["v1_refactor_contract"]["python_parity"]["status"] == "strict"
     assert plan["v1_refactor_contract"]["wasm_web_reuse"]["status"] == "strict"
+    assert plan["steps"][0]["delegates_to_repos"] == ["nirs4all-repository"]
+    assert plan["steps"][0]["delegated_invocations"][0]["repo"] == "nirs4all-repository"
+    assert plan["steps"][0]["delegated_invocations"][0]["artifacts"]
 
 
 def test_cross_language_e2e_manifest_is_not_gitignored() -> None:
@@ -1406,7 +1565,7 @@ def test_cross_language_e2e_allow_blocked_never_returns_green(tmp_path: Path) ->
     manifest = _read_manifest()
     scenario_id = manifest["scenarios"][0]["id"]
     for step in manifest["scenarios"][0]["steps"]:
-        step["requires_tools"] = ["definitely-missing-n4a-e2e-tool"]
+        step["requires_tools"] = ["Rscript", "definitely-missing-n4a-e2e-tool"]
         step["requires_paths"] = []
     manifest_path = tmp_path / "scenarios.json"
     _write_json(manifest_path, manifest)
@@ -1861,6 +2020,7 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
     manifest = _read_manifest()
     scenario_id = manifest["scenarios"][0]["id"]
+    manifest["scenarios"][0]["languages"] = ["python", "native"]
     ok_artifact = tmp_path / "ok-cli-result.json"
     extra_artifact = tmp_path / "extra-cli-result.json"
     missing_artifact = tmp_path / "missing-cli-result.json"
@@ -1998,7 +2158,9 @@ def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked(tmp_pa
     artifacts_dir.mkdir()
     for scenario in manifest["scenarios"]:
         for step in scenario["steps"]:
-            step["requires_tools"] = []
+            step["requires_tools"] = (
+                ["Rscript"] if "Rscript" in step.get("requires_tools", []) else []
+            )
             step["requires_env"] = []
             for raw_path in step.get("requires_paths", []):
                 path = Path(raw_path.format(workspace_root=workspace_root, artifacts_dir=artifacts_dir))
@@ -2035,6 +2197,6 @@ def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked(tmp_pa
     assert summary["v1_refactor_summary"]["e2e-wasm-open-repo-pipeline-alt-dataset"]["gap"] == 3
     assert (
         summary["v1_refactor_summary"]["e2e-python-reopen-paper-repository-refit"]["strict"]
-        == 4
+        == 5
     )
     assert "Dry run only" in planned.stderr

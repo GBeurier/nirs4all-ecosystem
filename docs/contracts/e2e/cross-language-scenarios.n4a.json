@@ -83,11 +83,10 @@
           "acceptance": ["The paper export must include source hashes and Python reopen provenance."]
         },
         "repository_forced_best_refit": {
-          "status": "contract",
-          "evidence": ["The papers/repository step writes repository-best-pipeline.json from the Python ledger, runs nirs4all-repository validate/open APIs, and carries repository-owned forced_best_refit_contract, repository_reopen, and provenance fingerprints alongside the Python-executed refit hashes."],
+          "status": "strict",
+          "evidence": ["The papers/repository step writes repository-best-pipeline.json from the Python ledger, delegates to nirs4all-repository in a subprocess, runs build_catalog, validate_pipeline, get_pipeline, to_nirs4all, and get_pipeline_list, and carries repository-owned forced_best_refit_contract, repository_reopen, repository_validation.ok=true, and provenance fingerprints alongside the Python-executed refit hashes."],
           "artifacts": ["{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"],
-          "gap": "nirs4all-repository has no independent runtime in this contract; the forced best-refit is a descriptor/handoff backed by the paired Python refit evidence.",
-          "acceptance": ["repository-best-pipeline.json must declare force_best_refit=true, the selected artificial best pipeline id, descriptor/manifest/catalog fingerprints, repository_reopen_validated=true from a repository validate/open pass, and refit.executed=true from the paired Python ledger until a repository runtime exists."]
+          "acceptance": ["repository-best-pipeline.json must declare force_best_refit=true, the selected artificial best pipeline id, descriptor/manifest/catalog fingerprints, repository_reopen_validated=true from a repository validate/open pass, repository_validation.ok=true, no repository validation errors/security findings, and refit.executed=true from the paired Python ledger."]
         },
         "wasm_web_reuse": {
           "status": "contract",
@@ -151,10 +150,11 @@
           "acceptance": ["Promote to strict after Python reruns the saved multimodal artifact and emits a reopen ledger."]
         },
         "python_parity": {
-          "status": "strict",
+          "status": "contract",
           "evidence": ["Python dense-fused multimodal proxy predictions are compared with R and WASM proxy predictions."],
           "artifacts": ["{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"],
-          "acceptance": ["Prediction absolute max deltas must satisfy the proxy tolerance and preserve roundtrip manifest hashes."]
+          "gap": "Dense fused proxy parity is not full multimodal runtime parity across native source-aware execution.",
+          "acceptance": ["Keep proxy prediction absolute max deltas within tolerance, but promote to strict only after source-aware multimodal runtime predictions are compared with the same dataset hashes."]
         },
         "papers_export": {
           "status": "gap",
@@ -537,7 +537,6 @@
       "objective": "Open a saved pipeline in full Python nirs4all, rerun it, compare against the Python oracle, export a reproducible paper bundle, emit the repository best-refit handoff descriptor, and prove the client-only Web/WASM runtime can consume the handoff wrapper for the supported SNV+PLS subset.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
-        "Python reopen/rerun parity is strict, but the papers/repository step currently exports a handoff descriptor; it does not execute a repository best-pipeline refit yet.",
         "Web/WASM consumes the paper-exported repository-best-pipeline wrapper on an alternative uploadable dataset fixture; the original Python 130x2151 dataset is not yet exported as a browser-uploadable artifact, so this reuse is contract-level rather than strict."
       ],
       "languages": ["python", "native", "javascript_wasm", "web"],
@@ -567,8 +566,8 @@
         {
           "oracle": "paper export manifest",
           "candidate": "repository best-refit descriptor",
-          "metric": "handoff descriptor is written with source hashes, repository-owned force_best_refit intent, selected_pipeline_id, descriptor/manifest/catalog fingerprints, repository reopen/validate evidence, and Python-backed refit.executed=true evidence",
-          "evidence_level": "contract"
+          "metric": "handoff descriptor is written with source hashes, repository-owned force_best_refit intent, selected_pipeline_id, descriptor/manifest/catalog fingerprints, repository_validation.ok=true, repository reopen/validate evidence, and Python-backed refit.executed=true metric evidence",
+          "evidence_level": "strict"
         },
         {
           "oracle": "repository-best-pipeline.json plus Python smoke oracle over the browser-emitted folds",
@@ -593,6 +592,16 @@
           "title": "Export reproducible paper and write best-refit repository handoff",
           "kind": "export",
           "repo": "nirs4all-papers",
+          "delegates_to_repos": ["nirs4all-repository"],
+          "delegated_invocations": [
+            {
+              "repo": "nirs4all-repository",
+              "mode": "subprocess",
+              "calls": ["build_catalog", "validate_pipeline", "get_pipeline", "to_nirs4all", "get_pipeline_list"],
+              "evidence": ["test_repository_refit_export.py runs a Python subprocess from nirs4all-repository with PYTHONPATH=src, writes forced_best_refit_contract, and records repository_validation.ok=true plus repository_reopen_validated=true in repository-best-pipeline.json."],
+              "artifacts": ["{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"]
+            }
+          ],
           "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all-papers/tests/e2e/test_repository_refit_export.py"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-papers && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_repository_refit_export.py --artifacts-dir={artifacts_dir}/python-paper-repository"],
@@ -624,7 +633,7 @@
       ],
       "languages": ["javascript_wasm", "web", "python"],
       "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"],
-      "tags": ["datasets", "pipeline", "repository", "predictions", "web_results"],
+      "tags": ["datasets", "pipeline", "repository", "predictions", "web_results", "parity"],
       "artifacts": [
         "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json",
         "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",
@@ -670,6 +679,16 @@
           "title": "Open repository pipeline and rerun in local WASM",
           "kind": "execute",
           "repo": "nirs4all-web",
+          "delegates_to_repos": ["nirs4all-repository"],
+          "delegated_invocations": [
+            {
+              "repo": "nirs4all-repository",
+              "mode": "fixture-provenance",
+              "calls": ["repository fixture manifest import", "repository descriptor_sha256 verification"],
+              "evidence": ["pipeline-repository-smoke.mjs verifies the checked-in repository fixture manifest and descriptor SHA256 before Web/WASM import, then records repository_pipeline_id, descriptor hash, and source-vs-imported execution evidence in pipeline-repository-smoke.json."],
+              "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"]
+            }
+          ],
           "requires_tools": ["npm"],
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
@@ -704,7 +723,7 @@
       ],
       "languages": ["python", "r", "javascript_wasm"],
       "repos": ["nirs4all", "nirs4all-core"],
-      "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"],
+      "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save"],
       "artifacts": [
         "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
         "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet",
@@ -714,15 +733,15 @@
       ],
       "evidence": [
         "Multimodal schema validation",
-        "Python/R/WASM prediction parity table",
+        "Python/R/WASM proxy prediction comparison table",
         "Roundtrip manifest hash equality"
       ],
       "parity_checks": [
         {
-          "oracle": "python dense-fused multimodal proxy predictions",
-          "candidate": "R and WASM dense-fused multimodal proxy predictions",
-          "metric": "per-output prediction_abs_max <= 1e-8 within the current proxy representation",
-          "evidence_level": "strict"
+          "oracle": "python dense-fused multimodal feature matrix predictions",
+          "candidate": "R and WASM dense-fused multimodal feature matrix predictions",
+          "metric": "per-output prediction_abs_max <= 1e-8 within the dense-fused feature representation",
+          "evidence_level": "contract"
         }
       ],
       "steps": [
@@ -743,7 +762,7 @@
           "repo": "nirs4all-core",
           "requires_tools": ["python3.11", "Rscript", "node"],
           "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/run_multimodal_roundtrip.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH LD_LIBRARY_PATH={workspace_root}/nirs4all-methods/build/dev-release/cpp/src:$LD_LIBRARY_PATH PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_multimodal_roundtrip.py --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}/multimodal-roundtrip"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH Rscript --version >/dev/null && LD_LIBRARY_PATH={workspace_root}/nirs4all-methods/build/dev-release/cpp/src:$LD_LIBRARY_PATH PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_multimodal_roundtrip.py --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}/multimodal-roundtrip"],
           "produces": ["{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json", "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json"]
         }
       ]
@@ -909,6 +928,16 @@
           "title": "Resolve provider descriptor and materialize dataset",
           "kind": "prepare",
           "repo": "nirs4all-providers",
+          "delegates_to_repos": ["nirs4all-repository"],
+          "delegated_invocations": [
+            {
+              "repo": "nirs4all-repository",
+              "mode": "provider-api",
+              "calls": ["PipelineProvider.get_pipeline_list", "PipelineProvider.card", "PipelineProvider.get_pipeline", "PipelineProvider.verify", "PipelineProvider.recipe", "PipelineProvider.get_bundle"],
+              "evidence": ["test_dataset_provider_repository_roundtrip.py adds nirs4all-repository/src to sys.path, resolves PipelineProvider(root=nirs4all-repository), verifies the selected pipeline, and emits provider-resolution.json plus repository-index.json and repository-pipeline.n4a.json."],
+              "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json", "{artifacts_dir}/provider-repository-roundtrip/repository-index.json", "{artifacts_dir}/provider-repository-roundtrip/repository-pipeline.n4a.json"]
+            }
+          ],
           "requires_tools": ["python3.11"],
           "requires_paths": ["{workspace_root}/nirs4all-providers/tests/e2e/test_dataset_provider_repository_roundtrip.py"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-providers && python3.11 -m pytest tests/e2e/test_dataset_provider_repository_roundtrip.py --artifacts-dir={artifacts_dir}/provider-repository-roundtrip"],
@@ -1104,9 +1133,9 @@
           "title": "Invoke methods through native/Python/R/WASM and audit archived Rust",
           "kind": "verify",
           "repo": "nirs4all-methods",
-          "requires_tools": ["python3.11", "cmake", "ninja"],
+          "requires_tools": ["python3.11", "Rscript", "cmake", "ninja"],
           "requires_paths": ["{workspace_root}/nirs4all-methods/scripts/e2e/cross_binding_methods_parity.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-methods && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-methods && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH Rscript --version >/dev/null && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"],
           "produces": ["{artifacts_dir}/formats-io-methods/binding-parity.json", "{artifacts_dir}/formats-io-methods/predictions-by-language.json"]
         }
       ]

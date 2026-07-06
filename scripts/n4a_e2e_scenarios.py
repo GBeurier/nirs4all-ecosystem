@@ -93,6 +93,31 @@ ALLOWED_CHECK_EVIDENCE_LEVELS = {
     "hybrid",
     "strict",
 }
+R_NUMERIC_EVIDENCE_FRAGMENTS = {
+    "make test-r-parity",
+    "native/python/r method",
+    "r and wasm",
+    "r method outputs",
+    "r native",
+    "r predictions",
+    "r-predictions",
+    "r-vs-python",
+}
+R_STRUCTURAL_GAP_FRAGMENTS = {
+    "binding-surface",
+    "not a full r numeric",
+    "not a full r rerun",
+    "not r numeric",
+    "structural binding",
+}
+STRICT_CHECK_DISALLOWED_EVIDENCE_FRAGMENTS = {
+    "array coverage": "strict checks must assert numeric parity rather than array coverage",
+    "arrays_present": "strict checks must assert numeric parity rather than schema/array presence",
+    "fixture-scoped": "strict checks must not rely on fixture-scoped evidence",
+    "proxy": "strict checks must not rely on proxy-only evidence",
+    "schema, row count": "strict checks must assert numeric parity, not schema/row coverage",
+    "schema/array coverage": "strict checks must assert numeric parity, not schema/array coverage",
+}
 V1_REFACTOR_PHASE_ORDER = (
     "python_open_pipeline",
     "python_rerun_pipeline",
@@ -102,6 +127,8 @@ V1_REFACTOR_PHASE_ORDER = (
     "wasm_web_reuse",
 )
 V1_REFACTOR_PHASES = set(V1_REFACTOR_PHASE_ORDER)
+REPOSITORY_REPO = "nirs4all-repository"
+REPOSITORY_FORCED_REFIT_PHASE = "repository_forced_best_refit"
 ALLOWED_V1_REFACTOR_STATUSES = {
     "strict",
     "contract",
@@ -357,7 +384,35 @@ def _validate_step(scenario_id: str, step: dict[str, Any], step_ids: set[str]) -
     _strings(step.get("requires_tools", []), f"{scenario_id}.{step_id}.requires_tools", allow_empty=True)
     _strings(step.get("requires_env", []), f"{scenario_id}.{step_id}.requires_env", allow_empty=True)
     _strings(step.get("requires_paths", []), f"{scenario_id}.{step_id}.requires_paths", allow_empty=True)
+    _strings(step.get("delegates_to_repos", []), f"{scenario_id}.{step_id}.delegates_to_repos", allow_empty=True)
     _strings(step.get("produces", []), f"{scenario_id}.{step_id}.produces", allow_empty=True)
+    delegated_invocations = step.get("delegated_invocations", [])
+    if not isinstance(delegated_invocations, list):
+        raise E2EScenarioError(f"{scenario_id}.{step_id}.delegated_invocations must be a list")
+    for index, delegated in enumerate(delegated_invocations):
+        if not isinstance(delegated, dict):
+            raise E2EScenarioError(
+                f"{scenario_id}.{step_id}.delegated_invocations[{index}] must be an object"
+            )
+        for field in ("repo", "mode"):
+            if not isinstance(delegated.get(field), str) or not delegated[field]:
+                raise E2EScenarioError(
+                    f"{scenario_id}.{step_id}.delegated_invocations[{index}].{field} "
+                    "must be a non-empty string"
+                )
+        _strings(
+            delegated.get("calls"),
+            f"{scenario_id}.{step_id}.delegated_invocations[{index}].calls",
+        )
+        _strings(
+            delegated.get("evidence"),
+            f"{scenario_id}.{step_id}.delegated_invocations[{index}].evidence",
+        )
+        _strings(
+            delegated.get("artifacts", []),
+            f"{scenario_id}.{step_id}.delegated_invocations[{index}].artifacts",
+            allow_empty=True,
+        )
     if not any(step.get(field) for field in ("requires_tools", "requires_env", "requires_paths")):
         raise E2EScenarioError(
             f"{scenario_id}.{step_id}: step must declare dependency gates via "
@@ -375,6 +430,10 @@ def _validate_step(scenario_id: str, step: dict[str, Any], step_ids: set[str]) -
 def _contains_smoke_claim(value: str) -> bool:
     normalized = value.strip().lower().replace("-", "_").replace(" ", "_")
     return "smoke" in normalized
+
+
+def _contract_blob(*values: Any) -> str:
+    return json.dumps(values, sort_keys=True).lower()
 
 
 def _validate_evidence_contract(
@@ -413,15 +472,20 @@ def _validate_evidence_contract(
         metric = check.get("metric", "")
         if check_level == "strict":
             strict_check_seen = True
+            check_text = _contract_blob(
+                check.get("oracle", ""),
+                check.get("candidate", ""),
+                metric,
+            )
             if _contains_smoke_claim(metric):
                 raise E2EScenarioError(
                     f"{scenario_id}.parity_checks[{index}]: strict check metric must not be smoke-only"
                 )
-            normalized_metric = metric.lower()
-            if "schema/array coverage" in normalized_metric or "schema, row count" in normalized_metric:
-                raise E2EScenarioError(
-                    f"{scenario_id}.parity_checks[{index}]: strict check metric must assert numeric parity, not schema/array coverage"
-                )
+            for fragment, reason in STRICT_CHECK_DISALLOWED_EVIDENCE_FRAGMENTS.items():
+                if fragment in check_text:
+                    raise E2EScenarioError(
+                        f"{scenario_id}.parity_checks[{index}]: {reason}"
+                    )
     if "parity" in tags and not strict_check_seen:
         raise E2EScenarioError(f"{scenario_id}: parity tag requires at least one strict parity_check")
 
@@ -467,6 +531,7 @@ def _validate_v1_refactor_contract(
         raise E2EScenarioError("manifest.v1_refactor_contract.scenario_coverage mismatch: " + "; ".join(detail))
 
     non_gap_phases: set[str] = set()
+    strict_repository_refit_with_artifacts: set[str] = set()
     validated: dict[str, dict[str, Any]] = {}
     for scenario_id in scenario_ids:
         scenario_coverage = coverage[scenario_id]
@@ -484,6 +549,7 @@ def _validate_v1_refactor_contract(
             raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract phases mismatch: " + "; ".join(detail))
         validated[scenario_id] = scenario_coverage
         scenario_gap_phases: set[str] = set()
+        scenario_non_gap_phases: set[str] = set()
         scenario_strict_phases: set[str] = set()
         for phase, phase_contract in scenario_coverage.items():
             if not isinstance(phase_contract, dict):
@@ -507,6 +573,13 @@ def _validate_v1_refactor_contract(
                 f"{scenario_id}.v1_refactor_contract.{phase}.artifacts",
                 allow_empty=True,
             )
+            if phase == REPOSITORY_FORCED_REFIT_PHASE and status == "strict":
+                if not artifacts:
+                    raise E2EScenarioError(
+                        f"{scenario_id}.v1_refactor_contract.{phase}: "
+                        "strict repository forced-refit coverage requires artifact evidence"
+                    )
+                strict_repository_refit_with_artifacts.add(scenario_id)
             unknown_artifacts = sorted(set(artifacts) - scenario_artifacts[scenario_id])
             if unknown_artifacts:
                 raise E2EScenarioError(
@@ -520,6 +593,7 @@ def _validate_v1_refactor_contract(
                     raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}.gap must explain the missing runtime/contract")
             else:
                 non_gap_phases.add(phase)
+                scenario_non_gap_phases.add(phase)
                 if status == "strict" and gap is not None:
                     raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}: strict phases must not declare a gap")
                 if status == "strict":
@@ -528,8 +602,8 @@ def _validate_v1_refactor_contract(
                     raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}.gap must be a non-empty string when present")
             if not evidence or not acceptance:
                 raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase} must declare evidence and acceptance")
-        if not scenario_strict_phases:
-            raise E2EScenarioError(f"{scenario_id}: must declare at least one strict V1 refactor phase")
+        if not scenario_non_gap_phases:
+            raise E2EScenarioError(f"{scenario_id}: must declare at least one non-gap V1 refactor phase")
         if scenario_evidence_levels[scenario_id] == "strict" and scenario_gap_phases:
             raise E2EScenarioError(
                 f"{scenario_id}: strict scenarios must not contain gap v1_refactor phases: "
@@ -541,6 +615,11 @@ def _validate_v1_refactor_contract(
         raise E2EScenarioError(
             "manifest.v1_refactor_contract lacks non-gap coverage for: "
             + ", ".join(sorted(missing_non_gap_phases))
+        )
+    if not strict_repository_refit_with_artifacts:
+        raise E2EScenarioError(
+            "manifest.v1_refactor_contract requires at least one strict "
+            "repository_forced_best_refit scenario with artifact evidence"
         )
     return validated
 
@@ -555,6 +634,58 @@ def _validate_scenario_semantics(
 ) -> None:
     repos = set(scenario["repos"])
     steps = scenario["steps"]
+
+    for step in steps:
+        for delegated_repo in step.get("delegates_to_repos", []):
+            if delegated_repo not in repos:
+                raise E2EScenarioError(
+                    f"{scenario_id}.{step['id']}: delegates_to_repos entry {delegated_repo!r} is not a declared repo"
+                )
+        for delegated in step.get("delegated_invocations", []):
+            delegated_repo = delegated["repo"]
+            if delegated_repo not in repos:
+                raise E2EScenarioError(
+                    f"{scenario_id}.{step['id']}: delegated invocation repo "
+                    f"{delegated_repo!r} is not a declared repo"
+                )
+            if delegated_repo not in step.get("delegates_to_repos", []):
+                raise E2EScenarioError(
+                    f"{scenario_id}.{step['id']}: delegated invocation repo "
+                    f"{delegated_repo!r} must be listed in delegates_to_repos"
+                )
+
+    if "r" in languages:
+        rscript_steps = [
+            step
+            for step in steps
+            if "Rscript" in set(step.get("requires_tools", []))
+        ]
+        if not rscript_steps:
+            raise E2EScenarioError(
+                f"{scenario_id}: r coverage requires an Rscript-gated step"
+            )
+        if not any("rscript" in " ".join(step["command"]).lower() for step in rscript_steps):
+            raise E2EScenarioError(
+                f"{scenario_id}: Rscript-gated step must invoke or probe Rscript"
+            )
+        evidence_text = _contract_blob(
+            scenario.get("evidence", []),
+            scenario.get("parity_checks", []),
+            scenario.get("strictness_gaps", []),
+            scenario.get("v1_refactor_contract", {}),
+            steps,
+        )
+        has_numeric_r_evidence = any(
+            fragment in evidence_text for fragment in R_NUMERIC_EVIDENCE_FRAGMENTS
+        )
+        gap_text = _contract_blob(scenario.get("strictness_gaps", []))
+        has_structural_r_gap = any(
+            fragment in gap_text for fragment in R_STRUCTURAL_GAP_FRAGMENTS
+        )
+        if not has_numeric_r_evidence and not has_structural_r_gap:
+            raise E2EScenarioError(
+                f"{scenario_id}: r coverage without numeric R evidence must declare a structural R gap"
+            )
 
     if "web" in languages or "web_results" in tags:
         if "web" not in languages or "web_results" not in tags:
@@ -575,15 +706,42 @@ def _validate_scenario_semantics(
             raise E2EScenarioError(f"{scenario_id}: papers tag requires non-gap papers_export")
 
     if "repository" in tags:
-        if "nirs4all-repository" not in repos:
-            raise E2EScenarioError(f"{scenario_id}: repository tag requires nirs4all-repository repo")
-        produced = " ".join(
+        if REPOSITORY_REPO not in repos:
+            raise E2EScenarioError(f"{scenario_id}: repository tag requires {REPOSITORY_REPO} repo")
+        produced_artifacts = {
             artifact
             for step in steps
             for artifact in step.get("produces", [])
-        )
+        }
+        produced = " ".join(produced_artifacts)
         if "repository" not in produced:
             raise E2EScenarioError(f"{scenario_id}: repository tag requires a repository artifact")
+        repository_steps = [step for step in steps if step.get("repo") == REPOSITORY_REPO]
+        repository_delegations = [
+            (step, delegated)
+            for step in steps
+            for delegated in step.get("delegated_invocations", [])
+            if delegated.get("repo") == REPOSITORY_REPO
+        ]
+        if not repository_steps and not repository_delegations:
+            raise E2EScenarioError(
+                f"{scenario_id}: repository tag requires a {REPOSITORY_REPO} step "
+                "or documented delegated invocation"
+            )
+        for step, delegated in repository_delegations:
+            artifacts = set(delegated.get("artifacts", []))
+            if not artifacts:
+                raise E2EScenarioError(
+                    f"{scenario_id}.{step['id']}: delegated {REPOSITORY_REPO} invocation "
+                    "requires artifact evidence"
+                )
+            unknown_artifacts = sorted(artifacts - produced_artifacts)
+            if unknown_artifacts:
+                raise E2EScenarioError(
+                    f"{scenario_id}.{step['id']}: delegated {REPOSITORY_REPO} "
+                    "artifact(s) are not produced by the scenario: "
+                    + ", ".join(unknown_artifacts)
+                )
 
 
 def _scenario_matches_workflow_surface(scenario: dict[str, Any], surface: dict[str, set[str]]) -> bool:
@@ -785,6 +943,12 @@ def plan_scenario(
                 "command": _format_value(step["command"], workspace_root, artifacts_dir),
                 "requires_paths": _format_value(step.get("requires_paths", []), workspace_root, artifacts_dir),
                 "produces": _format_value(step.get("produces", []), workspace_root, artifacts_dir),
+                "delegates_to_repos": step.get("delegates_to_repos", []),
+                "delegated_invocations": _format_value(
+                    step.get("delegated_invocations", []),
+                    workspace_root,
+                    artifacts_dir,
+                ),
             }
         )
     return {
