@@ -966,6 +966,15 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "r": 3,
         "web": 4,
     }
+    assert report["languages"] == {
+        "javascript_wasm": 7,
+        "native": 6,
+        "python": 10,
+        "r": 3,
+        "rust": 1,
+        "rust_archive": 1,
+        "web": 4,
+    }
     assert report["required_tags"] == {
         "datasets": 5,
         "io": 4,
@@ -979,6 +988,23 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "repository": 3,
         "web_results": 4,
         "workspace_save": 6,
+    }
+    assert report["repos"] == {
+        "dag-ml": 4,
+        "dag-ml-data": 2,
+        "nirs4all": 6,
+        "nirs4all-cluster": 1,
+        "nirs4all-core": 8,
+        "nirs4all-datasets": 4,
+        "nirs4all-formats": 1,
+        "nirs4all-io": 3,
+        "nirs4all-methods": 5,
+        "nirs4all-papers": 1,
+        "nirs4all-providers": 2,
+        "nirs4all-repository": 3,
+        "nirs4all-tools": 1,
+        "nirs4all-ui": 2,
+        "nirs4all-web": 4,
     }
     assert report["ready_count"] + report["blocked_count"] == 10
     assert set(report["v1_refactor_phase_status_counts"]) == {

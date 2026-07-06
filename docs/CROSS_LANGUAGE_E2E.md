@@ -21,6 +21,13 @@ The runner reports missing toolchains as `blocked`; it does not xfail or silentl
 skip. Full parity scenarios are meant to run after large integration batches or
 on selected release heads, not on every small commit.
 
+Current coverage is intentionally hybrid: every scenario has at least one strict
+parity check, but the manifest also records contract-level surfaces and explicit
+gaps for pending runtimes such as repository-owned best-refit execution, native
+multimodal replay, and some Web/WASM reuse paths. Do not present this suite as
+full strict ecosystem parity unless those phase statuses are promoted in the
+manifest and the coverage tests are updated with matching evidence.
+
 ## Orchestrated scenario set
 
 The manifest intentionally stays at ten complex scenarios. The validator enforces
