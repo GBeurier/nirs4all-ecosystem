@@ -80,6 +80,16 @@ PHASE_ACCEPTANCE_ACTION_FRAGMENTS = (
     "rerun",
     "verify",
 )
+DISALLOWED_PLACEHOLDER_FRAGMENTS = (
+    "coming soon",
+    "dummy",
+    "lorem ipsum",
+    "not implemented",
+    "placeholder",
+    "stub",
+    "tbd",
+    "todo",
+)
 
 
 def _load_e2e_module():
@@ -108,6 +118,24 @@ def _scenario_by_id(manifest: dict, scenario_id: str) -> dict:
 
 def _contract_text(*values: object) -> str:
     return json.dumps(values, sort_keys=True).lower()
+
+
+def _placeholder_hits(value: object, path: str = "$") -> list[str]:
+    hits: list[str] = []
+    if isinstance(value, str):
+        normalized = value.lower()
+        for fragment in DISALLOWED_PLACEHOLDER_FRAGMENTS:
+            if fragment in normalized:
+                hits.append(f"{path}: {fragment!r}")
+        return hits
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            hits.extend(_placeholder_hits(item, f"{path}[{index}]"))
+        return hits
+    if isinstance(value, dict):
+        for key, item in value.items():
+            hits.extend(_placeholder_hits(item, f"{path}.{key}"))
+    return hits
 
 
 def _assert_ready_or_only_public_checkout_data_blockers(plans: list[dict]) -> None:
@@ -883,6 +911,16 @@ def test_cross_language_e2e_manifest_rejects_commands_that_mask_divergence(
 
     with pytest.raises(e2e.E2EScenarioError, match="command contains disallowed fragment"):
         e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_manifest_contract_text_is_non_placeholder() -> None:
+    manifest = _read_manifest()
+    contract_payload = {
+        "scenarios": manifest["scenarios"],
+        "v1_refactor_contract": manifest["v1_refactor_contract"],
+    }
+
+    assert _placeholder_hits(contract_payload) == []
 
 
 def test_cross_language_e2e_manifest_requires_evidence_levels(tmp_path: Path) -> None:

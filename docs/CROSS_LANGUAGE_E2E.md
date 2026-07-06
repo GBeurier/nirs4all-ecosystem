@@ -6,7 +6,7 @@ The canonical scenario contract lives at
 The suite deliberately separates planning from execution:
 
 - `python3 scripts/n4a_e2e_scenarios.py validate` validates the manifest.
-- `python3 scripts/n4a_e2e_scenarios.py list` lists the ten scenarios.
+- `python3 scripts/n4a_e2e_scenarios.py list` lists the eleven scenarios.
 - `python3 scripts/n4a_e2e_scenarios.py plan --json` renders tool/env blockers
   without running long tests.
 - `python3 scripts/n4a_e2e_scenarios.py run <scenario-id>` is a dry run.
@@ -21,12 +21,14 @@ The runner reports missing toolchains as `blocked`; it does not xfail or silentl
 skip. Full parity scenarios are meant to run after large integration batches or
 on selected release heads, not on every small commit.
 
-Current coverage is intentionally hybrid: every scenario has at least one strict
-parity check, but the manifest also records contract-level surfaces and explicit
-gaps for pending runtimes such as repository-owned best-refit execution, native
-multimodal replay, and some Web/WASM reuse paths. Do not present this suite as
-full strict ecosystem parity unless those phase statuses are promoted in the
-manifest and the coverage tests are updated with matching evidence.
+Current coverage is intentionally hybrid: every parity-tagged scenario has at
+least one strict parity check, while the multimodal proxy scenario records
+contract-level roundtrip evidence without claiming strict numeric parity. The
+manifest also records contract-level surfaces and explicit gaps for pending
+runtimes such as native multimodal replay and some Web/WASM reuse paths. Do not
+present this suite as full strict ecosystem parity unless those phase statuses
+are promoted in the manifest and the coverage tests are updated with matching
+evidence.
 
 The validator also protects the suite shape from collapsing into shallow smoke
 claims. Each scenario must include Python as the portable oracle runtime, at
@@ -43,7 +45,7 @@ continue to include:
 
 ## Orchestrated scenario set
 
-The manifest intentionally stays at ten complex scenarios. The validator enforces
+The manifest intentionally stays at eleven complex scenarios. The validator enforces
 that count and the tests assert the expected handoff for each workflow:
 
 | Scenario | Primary orchestration proof |
