@@ -23,6 +23,11 @@ Date: 2026-07-06
 - PyPI: `nirs4all-core 0.2.7` wheel and sdist build and pass `twine check`; upload remains blocked by missing PyPI Trusted Publisher/token.
 - R: `nirs4all_0.2.7.tar.gz` builds locally; CRAN/R-universe publication remains separate/manual.
 
+## Coordination Tags
+
+- Pushed `n4a-v1-rc7-2026.07-refactor` on the selected non-production heads, excluding the held `nirs4all` Python production repo.
+- Regenerated the release lock after the tag push so `dag_ml`, `dag_ml_data`, and `lite`/`nirs4all-core` resolve to the RC7 coordination tag on their pinned commits.
+
 ## Validation
 
 - `nirs4all-core`: `scripts/bump_version.sh --check`
