@@ -241,6 +241,28 @@ def test_cross_language_e2e_declared_languages_are_backed_by_runtime_evidence() 
             assert any(fragment in text for fragment in fragments), f"{scenario['id']}: {language}"
 
 
+def test_cross_language_e2e_step_repos_and_path_gates_stay_on_declared_public_surfaces() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    for scenario in manifest["scenarios"]:
+        repos = set(scenario["repos"])
+        for step in scenario["steps"]:
+            step_id = f"{scenario['id']}.{step['id']}"
+            step_repo = step["repo"]
+            assert step_repo in repos, step_id
+
+            command = " ".join(step["command"])
+            assert f"cd {{workspace_root}}/{step_repo}" in command, step_id
+
+            for raw_path in step.get("requires_paths", []):
+                if any(fragment in raw_path for fragment in ALLOWED_PUBLIC_CHECKOUT_DATA_BLOCKERS):
+                    continue
+                assert raw_path.startswith("{workspace_root}/"), f"{step_id}: {raw_path}"
+                gated_repo = raw_path.removeprefix("{workspace_root}/").split("/", 1)[0]
+                assert gated_repo in repos, f"{step_id}: {raw_path}"
+
+
 def test_cross_language_e2e_tags_are_backed_by_domain_artifacts_or_evidence() -> None:
     e2e = _load_e2e_module()
     manifest = e2e.validate_scenarios(MANIFEST)
