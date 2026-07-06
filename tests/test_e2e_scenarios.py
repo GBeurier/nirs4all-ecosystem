@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import os
 import re
 import subprocess
 import sys
@@ -1470,6 +1471,27 @@ def test_cross_language_e2e_run_ready_executes_ready_but_reports_blocked(tmp_pat
 
     assert json.loads(produced.read_text(encoding="utf-8")) == {"status": "passed"}
     assert returncode == 2
+
+
+def test_cross_language_e2e_evidence_can_require_fresh_artifacts(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "archived-result.json"
+    artifact.write_text('{"status":"passed"}\n', encoding="utf-8")
+    os.utime(artifact, (1, 1))
+    plan = {
+        "id": "archived-scenario",
+        "artifacts": [str(artifact)],
+        "steps": [{"id": "write-artifact", "produces": [str(artifact)]}],
+    }
+
+    archived_report = e2e.artifact_evidence_report([plan])
+    fresh_report = e2e.artifact_evidence_report([plan], max_age_seconds=60)
+
+    assert archived_report["verified_count"] == 1
+    assert archived_report["failed_count"] == 0
+    assert fresh_report["verified_count"] == 0
+    assert fresh_report["failed_count"] == 1
+    assert "stale artifact age=" in fresh_report["scenarios"]["archived-scenario"]["failures"][0]
 
 
 def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked(tmp_path: Path) -> None:

@@ -12,6 +12,10 @@ The suite deliberately separates planning from execution:
 - `python3 scripts/n4a_e2e_scenarios.py run <scenario-id>` is a dry run.
 - `python3 scripts/n4a_e2e_scenarios.py run <scenario-id> --execute` runs the
   commands and fails with exit code 2 if required tools or env vars are missing.
+- `python3 scripts/n4a_e2e_scenarios.py coverage --json` reports readiness,
+  language/tag coverage, and V1 strict/contract/gap phase counts.
+- `python3 scripts/n4a_e2e_scenarios.py evidence` verifies an existing artifact
+  archive; add `--max-age-seconds <N>` when the gate must prove a fresh run.
 
 The runner reports missing toolchains as `blocked`; it does not xfail or silently
 skip. Full parity scenarios are meant to run after large integration batches or

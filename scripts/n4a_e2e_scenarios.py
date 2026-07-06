@@ -9,6 +9,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -270,17 +271,22 @@ def _validate_produced_artifacts(step: dict[str, Any], before: dict[str, int | N
     return failures
 
 
-def _validate_existing_artifact(raw_path: str) -> list[str]:
+def _validate_existing_artifact(raw_path: str, *, max_age_seconds: int | None = None) -> list[str]:
     path = Path(raw_path)
     if not path.exists():
         return [f"{raw_path}: missing"]
     if not path.is_file():
         return [f"{raw_path}: expected file artifact"]
     try:
-        if path.stat().st_size <= 0:
+        stat = path.stat()
+        if stat.st_size <= 0:
             return [f"{raw_path}: empty artifact"]
     except OSError as exc:
         return [f"{raw_path}: cannot stat artifact: {exc}"]
+    if max_age_seconds is not None:
+        age_seconds = time.time() - stat.st_mtime
+        if age_seconds > max_age_seconds:
+            return [f"{raw_path}: stale artifact age={age_seconds:.1f}s > {max_age_seconds}s"]
     if path.suffix.lower() != ".json":
         return []
     try:
@@ -913,7 +919,11 @@ def coverage_report(
     }
 
 
-def artifact_evidence_report(plans: list[dict[str, Any]]) -> dict[str, Any]:
+def artifact_evidence_report(
+    plans: list[dict[str, Any]],
+    *,
+    max_age_seconds: int | None = None,
+) -> dict[str, Any]:
     """Verify that expected post-run artifacts exist and contain passing evidence."""
 
     scenarios: dict[str, dict[str, Any]] = {}
@@ -931,7 +941,10 @@ def artifact_evidence_report(plans: list[dict[str, Any]]) -> dict[str, Any]:
         failures: list[str] = []
         verified_artifacts: list[str] = []
         for raw_path in sorted(artifact_sources):
-            artifact_failures = _validate_existing_artifact(raw_path)
+            artifact_failures = _validate_existing_artifact(
+                raw_path,
+                max_age_seconds=max_age_seconds,
+            )
             if artifact_failures:
                 failures.extend(artifact_failures)
             else:
@@ -981,6 +994,11 @@ def main(argv: list[str] | None = None) -> int:
     evidence_parser = subparsers.add_parser("evidence", help="verify expected post-run artifacts")
     evidence_parser.add_argument("--scenario")
     evidence_parser.add_argument("--json", action="store_true")
+    evidence_parser.add_argument(
+        "--max-age-seconds",
+        type=int,
+        help="fail if any expected artifact is older than this many seconds",
+    )
 
     run_parser = subparsers.add_parser("run", help="execute one scenario")
     run_parser.add_argument("scenario")
@@ -1077,7 +1095,7 @@ def main(argv: list[str] | None = None) -> int:
                 plan_scenario(scenario, workspace_root=workspace_root, artifacts_dir=artifacts_dir)
                 for scenario in scenarios
             ]
-            report = artifact_evidence_report(plans)
+            report = artifact_evidence_report(plans, max_age_seconds=args.max_age_seconds)
             if args.json:
                 print(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True))
             else:
