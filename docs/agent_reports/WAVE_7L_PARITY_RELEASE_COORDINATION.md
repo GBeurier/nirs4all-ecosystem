@@ -33,6 +33,15 @@ Date: 2026-07-06
 - `nirs4all-cockpit`
   - `python3 -m pytest -q tests/test_targets_topology.py -p no:cacheprovider` -> `13 passed`
   - `python3 -m cockpit.cli validate-targets ops/targets.yaml` -> `OK: 21 packages, 100 targets`
+- `nirs4all-web/studio-lite`
+  - `npm run test:client-only` -> `2 passed`
+  - `npm run smoke:shared-ui-contract` -> `3 passed`
+  - `npm run smoke:custom-app-host` -> `1 passed`
+  - `npm run typecheck` -> pass
+  - `npm run test` -> `144 passed`
+  - `npm run validate:catalog` -> `64 symbols referenced`, `702 exported upstream`, catalog/studio registry sync
+  - `npm run build` -> pass with existing Vite warnings for browser-externalized `node:module` and large chunks
+  - `npm run build:single` -> pass with the same browser-externalization warning
 - `nirs4all-cluster`
   - `python3 scripts/secret_shape_guard.py` -> pass
 
@@ -42,6 +51,7 @@ Date: 2026-07-06
 - `nirs4all-studio` remains held for production. The local Windows RC builder is prepared; native Windows execution is still a manual validation step.
 - `nirs4all-ui` was not modified. The current main checkout is dirty due to concurrent quality/UI work and must not be overwritten by this batch.
 - `web.nirs4all.org` is still client-side-only by static contract tests and Pages deployment shape, but Web and Studio are not yet fully converged onto `nirs4all-ui`.
+- Studio package/runtime tests that consume `file:../nirs4all-ui` were not re-run in this batch because the sibling UI checkout is intentionally dirty from concurrent `nirs4all-quality` work.
 - `nirs4all-core` is the canonical aggregate. Non-Python surfaces publish as `nirs4all`; the Python aggregate uses `nirs4all-core` because the full Python `nirs4all` package owns the bare name.
 
 ## Release state
