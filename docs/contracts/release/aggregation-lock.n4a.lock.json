@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:b7a6f5241a313e328b7f734db66562b98fd19b699815218fd8634d13f3acad6f",
+  "manifest_digest": "sha256:61e5b3de7902fa72c274efa0bd838feb33137dbccef1a9c9316d9c87994db15f",
   "members": {
     "dag_ml": {
       "availability": {
@@ -180,7 +180,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "4238443c2ce5530d084eb2dc7eb89f0c25d4ee2b",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc8-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc10-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -491,7 +491,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "181946f141ed8a313e8ed04f54053204fe3358f2",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc10-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1249,7 +1249,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "1708ab0305a80de5294763549596aa2191e26bc2",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc9-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc10-2026.07-refactor"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -1351,7 +1351,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "115077ae455176c71af527a5541ffc21080f07de",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc10-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1401,6 +1401,7 @@
     }
   },
   "release_selection_policy": {
+    "preferred_exact_tag": "n4a-v1-rc10-2026.07-refactor",
     "repo_path_policy": "repo_path remains the public/canonical repository path recorded in the lock; selected_workspace_path names the local RC worktree used as release evidence.",
     "selected_branch_patterns": [
       "rc/v1-*"

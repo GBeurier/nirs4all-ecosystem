@@ -92,13 +92,21 @@ def git_url(repo_url: str) -> str:
     return f"https://github.com/{repo_url}.git"
 
 
-def repo_state(repo_path: Path) -> dict[str, Any]:
+def exact_tag(repo_path: Path, preferred_exact_tag: str | None = None) -> str | None:
+    if preferred_exact_tag:
+        tags = run(["git", "tag", "--points-at", "HEAD"], repo_path)
+        if tags and preferred_exact_tag in tags.splitlines():
+            return preferred_exact_tag
+    return run(["git", "describe", "--tags", "--exact-match"], repo_path, allow_fail=True)
+
+
+def repo_state(repo_path: Path, preferred_exact_tag: str | None = None) -> dict[str, Any]:
     if not (repo_path / ".git").exists():
         raise RelError(f"not a git repository: {repo_path}")
     return {
         "commit": run(["git", "rev-parse", "HEAD"], repo_path),
         "branch": run(["git", "branch", "--show-current"], repo_path),
-        "exact_tag": run(["git", "describe", "--tags", "--exact-match"], repo_path, allow_fail=True),
+        "exact_tag": exact_tag(repo_path, preferred_exact_tag),
         "dirty": bool(run(["git", "status", "--porcelain"], repo_path)),
     }
 
@@ -436,10 +444,15 @@ def collect_glob_artifacts(repo_path: Path, pattern: str) -> dict[str, str]:
     return dict(sorted(matches.items()))
 
 
-def collect_member(workspace_root: Path, component: dict[str, Any]) -> dict[str, Any]:
+def collect_member(
+    workspace_root: Path,
+    component: dict[str, Any],
+    *,
+    preferred_exact_tag: str | None = None,
+) -> dict[str, Any]:
     selected_workspace_path = component.get("selected_workspace_path") or component["repo_path"]
     repo_path = (workspace_root / selected_workspace_path).resolve()
-    state = repo_state(repo_path)
+    state = repo_state(repo_path, preferred_exact_tag)
     branch_patterns = component.get("selected_branch_patterns", [])
     if branch_patterns and not matches_any_pattern(state.get("branch"), branch_patterns):
         raise RelError(
@@ -536,8 +549,14 @@ def generate_lock(manifest_path: Path, workspace_root: Path) -> dict[str, Any]:
         private = [component["key"] for component in manifest["components"] if component.get("private")]
         raise RelError(f"private repos are not allowed in aggregation manifest: {private}")
 
+    selection_policy = manifest.get("release_selection_policy", {})
+    preferred_exact_tag = selection_policy.get("preferred_exact_tag")
     members = {
-        component["key"]: collect_member(workspace_root, component)
+        component["key"]: collect_member(
+            workspace_root,
+            component,
+            preferred_exact_tag=preferred_exact_tag,
+        )
         for component in manifest.get("components", [])
     }
     lockstep_groups = build_lockstep_attestations(manifest, members)

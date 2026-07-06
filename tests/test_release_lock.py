@@ -197,6 +197,42 @@ def test_generate_lock_uses_selected_workspace_path_but_records_canonical_repo_p
     assert member["state"]["branch"] == "rc/v1-demo"
 
 
+def test_generate_lock_prefers_manifest_exact_tag_when_multiple_tags_match(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "manifest.json"
+    repo = tmp_path / "workspace" / "member"
+    repo.parent.mkdir()
+    _init_repo(repo)
+    (repo / "README.md").write_text("selected\n", encoding="utf-8")
+    _commit_all(repo)
+    _git(repo, "tag", "n4a-v1-rc8-test")
+    _git(repo, "tag", "n4a-v1-rc10-test")
+
+    _write_json(
+        manifest_path,
+        {
+            "schema_version": release_lock.MANIFEST_SCHEMA_VERSION,
+            "release_train": "test",
+            "status": "candidate",
+            "release_selection_policy": {
+                "preferred_exact_tag": "n4a-v1-rc10-test",
+            },
+            "components": [
+                {
+                    "key": "member",
+                    "repo_path": "member",
+                }
+            ],
+        },
+    )
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "workspace")
+
+    assert lock["members"]["member"]["state"]["exact_tag"] == "n4a-v1-rc10-test"
+
+
 def test_checkout_members_uses_selected_workspace_path_for_validation(tmp_path: Path) -> None:
     release_lock = _load_release_lock()
     manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
@@ -464,6 +500,10 @@ def test_central_manifest_declares_reproducible_methods_and_lite_topology_source
     )
     components = {component["key"]: component for component in manifest["components"]}
     assert manifest["release_selection_policy"]["selected_branch_patterns"] == ["rc/v1-*"]
+    assert (
+        manifest["release_selection_policy"]["preferred_exact_tag"]
+        == "n4a-v1-rc10-2026.07-refactor"
+    )
     assert components["lite"]["repo_path"] == "nirs4all-core"
     assert components["lite"]["repo_url"] == "GBeurier/nirs4all-core"
     assert components["lite"]["selected_workspace_path"] == "RC-v1-nirs4all-core"
