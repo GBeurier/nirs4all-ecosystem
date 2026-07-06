@@ -1,7 +1,7 @@
 # Providers — neutral service/content contracts
 
 **Lane:** RC-F (providers/contracts) · **Decision source:** `DEC-PROV-001` / `LOCK-PROV` (see `SW6_PROV_PLUGINS_spec.md`, `IMP_L14_PROVIDERS_IMPL_PLAN.md`).
-**Status:** contract freeze for the read slice (datasets · repository · benchmarks · papers). Publish/upload and the benchmark runner stay deferred and gated.
+**Status:** contract freeze for the public provider read slice (datasets · repository). Publish/upload, benchmark arenas, and paper exports stay in their owning packages.
 The published Python client repo is `GBeurier/nirs4all-providers`; this directory remains the canonical neutral contract surface that client must conform to.
 
 ## Why this exists
@@ -41,8 +41,9 @@ contract is stable against metric/profiling evolution.
 - **Execution.** A provider never runs ML. `capabilities.executes` is always `false`; runtime execution
   is the `rt_run_request.v1` / `rt_result.v1` surface (LOCK-RT), owned by runtime-python / cluster / WASM.
 - **Ecosystem write-back / publish / upload.** `capabilities.writes` reaches at most `local-cache`
-  (datasets), `local-store` (benchmark planning) or `local-output` (papers export). `gated` (admin/
-  governance-gated remote write) is reserved and never emitted by the read slice.
+  (datasets). `gated` (admin/governance-gated remote write) is reserved and never emitted by the read
+  slice. Benchmark planning stores and paper export directories belong to `nirs4all-benchmarks` and
+  `nirs4all-papers`, not to this provider descriptor.
 - **Assembly.** `nirs4all-io` remains the dataset-assembly owner. `DatasetProvider.to_dataset_package`
   is a transparent pass-through to `nirs4all-io`; it is not part of this neutral read contract and stays
   gated on `LOCK-IO`.
@@ -82,7 +83,7 @@ A conformant per-language provider read client is small:
 
 | Surface | Provider read client | State | Gate |
 |---|---|---|---|
-| Python | `nirs4all-providers` (`DatasetProvider`, `PipelineProvider`, …) | **implemented** — conformant emitter of `provider_descriptor.v1`; soft-imports the Python siblings for the rich object surface | `nirs4all-providers` `pytest` + `scripts/validate_contracts.py` |
+| Python | `nirs4all-providers` (`DatasetProvider`, `PipelineProvider`) | **implemented** — conformant emitter of `provider_descriptor.v1`; soft-imports the Python siblings for the rich object surface | `nirs4all-providers` `pytest` + `scripts/validate_contracts.py` |
 | R | catalogue/index + card/manifest read client over these schemas | **TODO — `GATE-PROV-R`** | not yet created; R aggregate is covered by locked `lite` for *reads of bytes*, but there is **no provider-level catalogue/discovery client** in R |
 | JS/WASM | catalogue/index + card/manifest read client (client-side, no server) | **TODO — `GATE-PROV-WASM`** | the `datasets_scoped` WASM surface reads dataset *bytes/formats*; a provider-level **index/card discovery** client over these schemas is not yet created |
 | Rust / MATLAB | same neutral client | **TODO — `GATE-PROV-NATIVE`** | deferred |
@@ -98,8 +99,9 @@ contract and file the gate — **never** to add a Python shim or make another pa
   dependency arrow points the other way or not at all: consumers depend on the **contract** (these
   schemas / the served artifacts), and may optionally use the Python client. Core exposes provider
   clients as *separate optional surfaces*, never as controllers (`DEC-CTRL-001`).
-- Each backing repo (`nirs4all-datasets`, `-repository`, `-benchmarks`, `-papers`) stays the single
-  source of truth for its domain; the contract mirrors its artifacts, it does not fork them.
+- Each backing repo stays the single source of truth for its domain. This contract mirrors dataset and
+  repository artifacts only; `nirs4all-benchmarks` and `nirs4all-papers` keep their own public APIs
+  instead of being provider facets here.
 - `nirs4all-drafts` / `nirs4all-lab` are private and out of scope.
 
 ## Conformance & sync
