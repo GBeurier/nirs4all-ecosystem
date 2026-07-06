@@ -10,7 +10,8 @@ production `nirs4all` Python or production `nirs4all-studio`.
 
 ## Authoritative state
 
-- `nirs4all-ecosystem`: `main` at `72749b5`.
+- `nirs4all-ecosystem`: release semantics include the E2E hardening committed at
+  `72749b5`; this audit itself is tracked by a later docs commit on `main`.
 - `aggregation-manifest.n4a.json` remains consistent with the intended topology:
   - aggregate target is `nirs4all-core`;
   - `nirs4all-lite` is legacy compatibility only;
