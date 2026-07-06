@@ -85,6 +85,16 @@ ALLOWED_STEP_KINDS = {
     "ui",
     "publish",
 }
+DISALLOWED_COMMAND_FRAGMENTS = {
+    "|| true": "shell soft-success masks failed e2e commands",
+    "set +e": "shell error ignoring masks failed e2e commands",
+    "pytest.skip": "pytest skips are not valid parity evidence",
+    "pytest.xfail": "pytest xfails are not valid parity evidence",
+    "@pytest.mark.skip": "pytest skip markers are not valid parity evidence",
+    "@pytest.mark.xfail": "pytest xfail markers are not valid parity evidence",
+    "continue-on-error": "continue-on-error masks failed e2e commands",
+    "--allow-failure": "allow-failure masks failed e2e commands",
+}
 STATUS_FIELD_NAMES = {"status", "parity_status", "result", "verdict"}
 DISALLOWED_ARTIFACT_STATUSES = {
     "blocked",
@@ -302,6 +312,18 @@ def _validate_step(scenario_id: str, step: dict[str, Any], step_ids: set[str]) -
     _strings(step.get("requires_env", []), f"{scenario_id}.{step_id}.requires_env", allow_empty=True)
     _strings(step.get("requires_paths", []), f"{scenario_id}.{step_id}.requires_paths", allow_empty=True)
     _strings(step.get("produces", []), f"{scenario_id}.{step_id}.produces", allow_empty=True)
+    if not any(step.get(field) for field in ("requires_tools", "requires_env", "requires_paths")):
+        raise E2EScenarioError(
+            f"{scenario_id}.{step_id}: step must declare dependency gates via "
+            "requires_tools, requires_env, or requires_paths"
+        )
+    normalized_command = " ".join(command).lower()
+    for fragment, reason in DISALLOWED_COMMAND_FRAGMENTS.items():
+        if fragment in normalized_command:
+            raise E2EScenarioError(
+                f"{scenario_id}.{step_id}: command contains disallowed fragment "
+                f"{fragment!r}: {reason}"
+            )
 
 
 def _contains_smoke_claim(value: str) -> bool:

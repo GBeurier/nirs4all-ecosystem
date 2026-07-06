@@ -158,6 +158,185 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
         assert any(phase["status"] == "strict" for phase in phases.values()), scenario_id
 
 
+@pytest.mark.parametrize(
+    ("scenario_id", "contract"),
+    [
+        (
+            "e2e-r-dataset-io-pipeline-save",
+            {
+                "steps": ["r-load-reshape", "r-run-save"],
+                "languages": {"r", "python", "native"},
+                "tags": {"datasets", "io", "pipeline", "workspace_save", "parity"},
+                "tools": {"Rscript"},
+                "produces": {"dataset-card.json", "workspace.n4a.json", "roundtrip-checks.json"},
+                "commands": {"e2e_dataset_io_pipeline.R", "make test-r-parity"},
+                "evidence": {"Python portable oracle", "Native methods parity"},
+                "phase_statuses": {"python_parity": "strict", "papers_export": "gap"},
+            },
+        ),
+        (
+            "e2e-python-reopen-paper-repository-refit",
+            {
+                "steps": [
+                    "python-reopen-rerun",
+                    "papers-export-repository-refit",
+                    "web-import-repository-best-pipeline",
+                ],
+                "languages": {"python", "native", "javascript_wasm", "web"},
+                "tags": {"pipeline", "repository", "papers", "workspace_save", "parity", "web_results"},
+                "tools": {"python3.11", "node", "npm"},
+                "produces": {"paper-export.zip", "repository-best-pipeline.json", "web-repository-best-pipeline.json"},
+                "commands": {
+                    "test_pipeline_reopen_paper_repository.py",
+                    "test_repository_refit_export.py",
+                    "smoke:repository-best-pipeline",
+                },
+                "evidence": {"force_best_refit", "Web/WASM import"},
+                "phase_statuses": {
+                    "python_open_pipeline": "strict",
+                    "papers_export": "strict",
+                    "repository_forced_best_refit": "contract",
+                    "wasm_web_reuse": "contract",
+                },
+            },
+        ),
+        (
+            "e2e-wasm-open-repo-pipeline-alt-dataset",
+            {
+                "steps": ["wasm-run-repository-pipeline", "web-render-results"],
+                "languages": {"javascript_wasm", "web", "python"},
+                "tags": {"datasets", "pipeline", "repository", "predictions", "web_results"},
+                "tools": {"npm"},
+                "produces": {"pipeline-repository-smoke.json", "predict-artifact-smoke.json", "web-results.png"},
+                "commands": {"smoke:pipeline-repository", "smoke:predict-artifact"},
+                "evidence": {"Python nirs4all/sklearn oracle", "fresh Web/WASM session"},
+                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "strict"},
+            },
+        ),
+        (
+            "e2e-multimodal-python-r-wasm-roundtrip",
+            {
+                "steps": ["python-generate-multimodal", "r-wasm-roundtrip"],
+                "languages": {"python", "r", "javascript_wasm"},
+                "tags": {"multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"},
+                "tools": {"python3.11", "Rscript", "node"},
+                "produces": {"multimodal-pipeline.n4a.json", "r-predictions.parquet", "wasm-predictions.json"},
+                "commands": {"test_multimodal_roundtrip.py", "run_multimodal_roundtrip.py"},
+                "evidence": {"dense-fused multimodal", "roundtrip manifest hashes"},
+                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "contract"},
+            },
+        ),
+        (
+            "e2e-multisource-branching-stacking-replay",
+            {
+                "steps": ["python-build-stacking", "native-replay"],
+                "languages": {"python", "native", "rust"},
+                "tags": {"multisource", "pipeline_generation", "pipeline", "workspace_save", "parity"},
+                "tools": {"python3", "python3.11", "cargo"},
+                "produces": {"stacking-replay.n4a.json", "oof-ledger.json", "native-replay.json"},
+                "commands": {"test_multisource_stacking_replay.py", "run_multisource_stacking_replay.py"},
+                "evidence": {"OOF", "native prediction-table schema/array coverage"},
+                "phase_statuses": {"python_parity": "strict", "python_rerun_pipeline": "contract"},
+            },
+        ),
+        (
+            "e2e-converter-legacy-save-predictions-web",
+            {
+                "steps": ["convert-legacy-save", "web-open-predictions"],
+                "languages": {"python", "javascript_wasm", "web"},
+                "tags": {"workspace_save", "predictions", "web_results", "pipeline", "parity"},
+                "tools": {"python3.11", "npm"},
+                "produces": {"converted-workspace.n4a.json", "predictions.rt_result.json", "web-results-panels.json"},
+                "commands": {"test_legacy_save_predictions_web.py", "smoke:converted-predictions"},
+                "evidence": {"legacy fixture values", "Web opens converted predictions"},
+                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "strict"},
+            },
+        ),
+        (
+            "e2e-dataset-provider-repository-roundtrip",
+            {
+                "steps": ["provider-materialize", "core-consume-repository"],
+                "languages": {"python", "javascript_wasm"},
+                "tags": {"datasets", "io", "repository", "pipeline", "parity"},
+                "tools": {"python3.11", "npm"},
+                "produces": {"provider-resolution.json", "repository-pipeline.n4a.json", "cross-language-consumption.json"},
+                "commands": {"test_dataset_provider_repository_roundtrip.py", "consume_repository_descriptor.py"},
+                "evidence": {"provider materialization", "Python/WASM RMSE"},
+                "phase_statuses": {"python_open_pipeline": "strict", "wasm_web_reuse": "strict"},
+            },
+        ),
+        (
+            "e2e-pipeline-generation-performance-compare",
+            {
+                "steps": ["generate-family", "compare-runtimes"],
+                "languages": {"python", "javascript_wasm", "web", "native"},
+                "tags": {"pipeline_generation", "pipeline", "parity", "predictions", "web_results"},
+                "tools": {"python3.11", "node", "npm", "google-chrome"},
+                "produces": {"pipeline-family.json", "python-vs-dagml.json", "web-runtime.json"},
+                "commands": {"test_pipeline_generation_performance.py", "smoke:performance-compare"},
+                "evidence": {"generated candidates", "performance ratio ledger"},
+                "phase_statuses": {"python_rerun_pipeline": "strict", "wasm_web_reuse": "contract"},
+            },
+        ),
+        (
+            "e2e-cluster-dag-rights-client-core",
+            {
+                "steps": ["cluster-run-dag", "core-client-handoff"],
+                "languages": {"python", "native"},
+                "tags": {"pipeline", "workspace_save", "parity"},
+                "tools": {"python3.11"},
+                "produces": {"scheduler-run.json", "local-vs-cluster-numeric.json", "core-client-result.json"},
+                "commands": {"test_cluster_dag_rights_core_client.py", "verify_cluster_handoff.py"},
+                "evidence": {"N4A_CLUSTER_NUMERIC_ORACLE=1", "Local-vs-cluster"},
+                "phase_statuses": {"python_rerun_pipeline": "strict", "python_parity": "strict"},
+            },
+        ),
+        (
+            "e2e-formats-io-datasets-methods-language-bindings",
+            {
+                "steps": ["assemble-reference-datasets", "cross-binding-methods-parity"],
+                "languages": {"python", "r", "javascript_wasm", "rust_archive", "native"},
+                "tags": {"datasets", "io", "predictions", "parity", "pipeline"},
+                "tools": {"python3.11", "cmake", "ninja"},
+                "produces": {"assembled-datasets.json", "binding-parity.json", "predictions-by-language.json"},
+                "commands": {"test_formats_io_datasets_methods.py", "cross_binding_methods_parity.py"},
+                "evidence": {"Native methods ABI", "WASM fixture output"},
+                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "contract"},
+            },
+        ),
+    ],
+)
+def test_cross_language_e2e_orchestrates_each_complex_workflow(
+    scenario_id: str,
+    contract: dict,
+) -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+    scenario = _scenario_by_id(manifest, scenario_id)
+
+    assert [step["id"] for step in scenario["steps"]] == contract["steps"]
+    assert contract["languages"].issubset(set(scenario["languages"]))
+    assert contract["tags"].issubset(set(scenario["tags"]))
+
+    tools = {tool for step in scenario["steps"] for tool in step.get("requires_tools", [])}
+    assert contract["tools"].issubset(tools), scenario_id
+
+    produced = "\n".join(path for step in scenario["steps"] for path in step.get("produces", []))
+    for fragment in contract["produces"]:
+        assert fragment in produced, scenario_id
+
+    commands = " ".join(part for step in scenario["steps"] for part in step["command"])
+    for fragment in contract["commands"]:
+        assert fragment in commands, scenario_id
+
+    evidence_text = json.dumps(scenario, sort_keys=True)
+    for fragment in contract["evidence"]:
+        assert fragment in evidence_text, scenario_id
+
+    for phase, status in contract["phase_statuses"].items():
+        assert scenario["v1_refactor_contract"][phase]["status"] == status, scenario_id
+
+
 def test_cross_language_e2e_current_workspace_plans_all_complex_workflows_ready(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     manifest = e2e.validate_scenarios(MANIFEST)
@@ -239,6 +418,47 @@ def test_cross_language_e2e_manifest_rejects_duplicate_step_ids(tmp_path: Path) 
     _write_json(manifest_path, manifest)
 
     with pytest.raises(e2e.E2EScenarioError, match="duplicate step id"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_manifest_requires_explicit_dependency_gates(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    step = manifest["scenarios"][0]["steps"][0]
+    step["requires_tools"] = []
+    step["requires_env"] = []
+    step["requires_paths"] = []
+    manifest_path = tmp_path / "no-dependency-gate.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="step must declare dependency gates"):
+        e2e.validate_scenarios(manifest_path)
+
+
+@pytest.mark.parametrize(
+    "fragment",
+    [
+        "|| true",
+        "set +e",
+        "pytest.skip",
+        "pytest.xfail",
+        "@pytest.mark.skip",
+        "@pytest.mark.xfail",
+        "continue-on-error",
+        "--allow-failure",
+    ],
+)
+def test_cross_language_e2e_manifest_rejects_commands_that_mask_divergence(
+    tmp_path: Path,
+    fragment: str,
+) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    manifest["scenarios"][0]["steps"][0]["command"] = ["bash", "-lc", f"python real_gate.py {fragment}"]
+    manifest_path = tmp_path / "soft-success-command.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="command contains disallowed fragment"):
         e2e.validate_scenarios(manifest_path)
 
 
@@ -1161,7 +1381,7 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
             "title": "Command writes one declared artifact",
             "kind": "verify",
             "repo": "nirs4all-ecosystem",
-            "requires_tools": [],
+            "requires_tools": [sys.executable],
             "requires_paths": [],
             "command": [
                 sys.executable,
@@ -1175,7 +1395,7 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
             "title": "Command exits zero but omits its artifact",
             "kind": "verify",
             "repo": "nirs4all-ecosystem",
-            "requires_tools": [],
+            "requires_tools": [sys.executable],
             "requires_paths": [],
             "command": [sys.executable, "-c", "pass"],
             "produces": [str(missing_artifact)],
