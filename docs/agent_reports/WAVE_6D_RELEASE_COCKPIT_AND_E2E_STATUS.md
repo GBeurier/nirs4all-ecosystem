@@ -135,3 +135,37 @@ because it verifies required post-run artifacts; it does not generate them.
    is accepted as the correct target state.
 3. Keep the cockpit showing missing/stale entries until the corresponding
    registry state is genuinely fixed.
+
+## PyPI Trusted Publisher claims to register
+
+The GitHub workflows are already using OIDC publishing with `environment: pypi`.
+`gh secret list` shows no PyPI token secret for the blocked repos, so there is
+no token-based fallback available in GitHub Actions today.
+
+Create or update Trusted Publisher entries on PyPI matching these claims:
+
+- PyPI project `nirs4all-core`
+  - repository: `GBeurier/nirs4all-core`
+  - workflow: `.github/workflows/release-python.yml`
+  - environment: `pypi`
+  - failing ref observed: `refs/tags/v0.2.4`
+- PyPI project `nirs4all-providers`
+  - repository: `GBeurier/nirs4all-providers`
+  - workflow: `.github/workflows/publish.yml`
+  - environment: `pypi`
+  - failing ref observed: `refs/tags/v0.2.4`
+- PyPI project `nirs4all-repository`
+  - repository: `GBeurier/nirs4all-repository`
+  - workflow: `.github/workflows/publish.yml`
+  - environment: `pypi`
+  - failing ref observed: `refs/tags/v0.1.5`
+- PyPI project `nirs4all-tools`
+  - repository: `GBeurier/nirs4all-tools`
+  - workflow: `.github/workflows/publish.yml`
+  - environment: `pypi`
+  - failing ref observed: `refs/tags/v0.0.2`
+- PyPI project `nirs4all-benchmarks`
+  - repository: `GBeurier/nirs4all-benchmarks`
+  - workflow: `.github/workflows/publish.yml`
+  - environment: `pypi`
+  - failing ref observed: `refs/tags/v0.1.3`
