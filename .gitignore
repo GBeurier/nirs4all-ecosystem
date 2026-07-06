@@ -17,6 +17,9 @@ REVIEW_VISION.md
 !/docs/
 /docs/*
 !/docs/CROSS_LANGUAGE_E2E.md
+!/docs/agent_reports/
+/docs/agent_reports/*
+!/docs/agent_reports/WAVE_7*.md
 !/docs/contracts/
 /docs/contracts/*
 !/docs/contracts/e2e/

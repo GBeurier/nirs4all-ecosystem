@@ -27,7 +27,8 @@
     "docs/agent_reports/WAVE_4V_STUDIO_WEB_SECURITY_GATES.md",
     "docs/agent_reports/WAVE_4W_STRICT_DAGML_WASM_STUDIO_DATASETS.md",
     "docs/agent_reports/WAVE_4AT_FULL_PARITY_REFRESH.md",
-    "docs/agent_reports/WAVE_4AU_CUTOVER_LANGUAGE_GATE_REFRESH.md"
+    "docs/agent_reports/WAVE_4AU_CUTOVER_LANGUAGE_GATE_REFRESH.md",
+    "docs/agent_reports/WAVE_7H_RELEASE_HEAD_AUDIT_2026-07-06.md"
   ],
   "aggregation_lock": {
     "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
