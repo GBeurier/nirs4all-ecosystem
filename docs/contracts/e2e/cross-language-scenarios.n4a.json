@@ -407,6 +407,46 @@
           "gap": "This is fixture-level WASM binding evidence, not a Web UI import/rerun of a repository pipeline.",
           "acceptance": ["Promote to strict only after WASM release-target binding parity and Web pipeline import share the same assembled dataset ledger."]
         }
+      },
+      "e2e-core-ui-custom-app-host": {
+        "python_open_pipeline": {
+          "status": "contract",
+          "evidence": ["The custom host opens the portable Python oracle fixture, records the R binding surface, and lowers the supported pipeline into the Web host DSL."],
+          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-r-surface.json", "{artifacts_dir}/custom-app-host/custom-host-run.json"],
+          "gap": "The Python oracle fixture is opened by the Web host test, not by a standalone Python process in this scenario.",
+          "acceptance": ["custom-host-r-surface.json and custom-host-run.json must record the R surface probe, opened oracle fixture, selected portable pipeline, engine id, and finite variant count."]
+        },
+        "python_rerun_pipeline": {
+          "status": "contract",
+          "evidence": ["The browser host reruns the opened Python-oracle pipeline through nirs4all-core WASM."],
+          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-run.json"],
+          "gap": "The rerun happens in the custom Web host with the Python oracle as reference evidence, not in the full Python app runtime.",
+          "acceptance": ["custom-host-run.json must record nirs4all-core-wasm as the execution engine and a selected PLS component count from the rerun."]
+        },
+        "python_parity": {
+          "status": "strict",
+          "evidence": ["nirs4all-core WASM predictions are compared with the portable Python oracle prediction vector."],
+          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-predictions.json"],
+          "acceptance": ["custom-host-predictions.json must record prediction row count, max_abs_delta, and the Python oracle tolerance with status=passed."]
+        },
+        "papers_export": {
+          "status": "gap",
+          "evidence": ["The custom app host scenario does not publish a papers bundle."],
+          "gap": "This lane proves reusable app composition, not reproducible paper export.",
+          "acceptance": ["Add papers export only after a custom host artifact is part of a reproducibility kit."]
+        },
+        "repository_forced_best_refit": {
+          "status": "gap",
+          "evidence": ["The custom app host uses the portable oracle fixture directly and does not force a repository best-refit descriptor."],
+          "gap": "Repository best-refit is covered by the repository/papers lane, not this app-host composition lane.",
+          "acceptance": ["Add repository descriptor import only after custom apps consume repository-hosted pipeline bundles directly."]
+        },
+        "wasm_web_reuse": {
+          "status": "strict",
+          "evidence": ["The same Web host imports nirs4all-core runtime outputs and renders nirs4all-ui dataset, engine, and metric components."],
+          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-ui.json"],
+          "acceptance": ["custom-host-ui.json must record rendered nirs4all-ui component tags, dataset title, and the nirs4all-core engine label with status=passed."]
+        }
       }
     }
   },
@@ -1068,6 +1108,90 @@
           "requires_paths": ["{workspace_root}/nirs4all-methods/scripts/e2e/cross_binding_methods_parity.py"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-methods && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"],
           "produces": ["{artifacts_dir}/formats-io-methods/binding-parity.json", "{artifacts_dir}/formats-io-methods/predictions-by-language.json"]
+        }
+      ]
+    },
+    {
+      "id": "e2e-core-ui-custom-app-host",
+      "title": "Custom Web host composes nirs4all-core runtime with reusable nirs4all-ui components",
+      "objective": "Build the minimal custom-app path: record the R binding surface, open a portable Python oracle pipeline fixture, execute it through nirs4all-core WASM, predict through the fitted model, and render dataset/runtime/metric state through nirs4all-ui without relying on Studio or Web-specific backend APIs.",
+      "evidence_level": "hybrid",
+      "strictness_gaps": [
+        "The custom host is a Vitest/React contract in nirs4all-web, not a packaged standalone downstream application yet.",
+        "The R portion is a structural binding-surface artifact in the same handoff directory, not a full R numeric rerun."
+      ],
+      "languages": ["python", "r", "javascript_wasm", "web"],
+      "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-ui"],
+      "tags": ["pipeline", "predictions", "parity", "web_results"],
+      "artifacts": [
+        "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+        "{artifacts_dir}/custom-app-host/custom-host-run.json",
+        "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
+        "{artifacts_dir}/custom-app-host/custom-host-ui.json"
+      ],
+      "evidence": [
+        "R binding surface artifact recorded in the same custom app host handoff",
+        "Portable Python oracle fixture opened by the custom host",
+        "nirs4all-core WASM pipeline execution and fitted model prediction",
+        "Prediction max_abs_delta versus Python oracle tolerance",
+        "nirs4all-ui DatasetPreviewCard, RuntimeEngineBadge, and MetricValueBadge React elements rendered in the same host",
+        "Client-side-only custom app host path with no Studio backend or Web API calls"
+      ],
+      "parity_checks": [
+        {
+          "oracle": "portable Python oracle prediction fixture",
+          "candidate": "custom app host nirs4all-core WASM prediction",
+          "metric": "prediction vector max_abs_delta is within the Python oracle tolerance ledger",
+          "evidence_level": "strict"
+        },
+        {
+          "oracle": "nirs4all-ui published component contract",
+          "candidate": "custom app host React element composition",
+          "metric": "web result panel component tags and engine label render from shared UI components",
+          "evidence_level": "contract"
+        }
+      ],
+      "steps": [
+        {
+          "id": "core-r-surface-probe",
+          "title": "Record R binding surface for the custom host handoff",
+          "kind": "prepare",
+          "repo": "nirs4all-core",
+          "requires_tools": ["Rscript", "python3.11"],
+          "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/surface.R"],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH python3.11 -c \"import hashlib,json,pathlib,subprocess; out=pathlib.Path('{artifacts_dir}/custom-app-host'); out.mkdir(parents=True, exist_ok=True); entrypoint=pathlib.Path('bindings/r/tests/surface.R'); probe=subprocess.run(['Rscript','--version'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False).stdout.splitlines()[:1]; payload=dict(ok=True, artifact_kind='custom-host-r-surface', language='r', surface='nirs4all-core bindings/r', entrypoint=str(entrypoint), sha256=hashlib.sha256(entrypoint.read_bytes()).hexdigest(), rscript=probe, validation='R surface participates in Python/R/WASM/Web custom app host handoff'); (out/'custom-host-r-surface.json').write_text(json.dumps(payload, indent=2, sort_keys=True)+'\\n', encoding='utf-8')\""],
+          "produces": ["{artifacts_dir}/custom-app-host/custom-host-r-surface.json"]
+        },
+        {
+          "id": "core-ui-runtime-host",
+          "title": "Execute portable core runtime and prediction from a custom host",
+          "kind": "execute",
+          "repo": "nirs4all-web",
+          "requires_tools": ["npm"],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-web/studio-lite/src/app/custom-app-host.contract.test.ts",
+            "{workspace_root}/nirs4all-core/tests/parity/expected/portable_python_oracle.json",
+            "{workspace_root}/nirs4all-web/studio-lite/vendor/nirs4all-ui/dist/components/index.js"
+          ],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"],
+          "produces": [
+            "{artifacts_dir}/custom-app-host/custom-host-run.json",
+            "{artifacts_dir}/custom-app-host/custom-host-predictions.json"
+          ]
+        },
+        {
+          "id": "shared-ui-host-render",
+          "title": "Render shared UI result components from the same custom host",
+          "kind": "ui",
+          "repo": "nirs4all-web",
+          "requires_tools": ["npm"],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-web/studio-lite/src/app/custom-app-host.contract.test.ts",
+            "{workspace_root}/nirs4all-web/studio-lite/package.json",
+            "{workspace_root}/nirs4all-ui/src/components/index.ts"
+          ],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"],
+          "produces": ["{artifacts_dir}/custom-app-host/custom-host-ui.json"]
         }
       ]
     }

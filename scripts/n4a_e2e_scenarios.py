@@ -16,7 +16,7 @@ from typing import Any
 
 DEFAULT_MANIFEST = Path("docs/contracts/e2e/cross-language-scenarios.n4a.json")
 SCHEMA_VERSION = "n4a.cross-language-e2e/v1"
-EXPECTED_SCENARIO_COUNT = 10
+EXPECTED_SCENARIO_COUNT = 11
 MIN_STEPS_PER_SCENARIO = 2
 MIN_ARTIFACTS_PER_SCENARIO = 2
 MIN_REPOS_PER_SCENARIO = 2
@@ -49,9 +49,9 @@ REQUIRED_TAGS = {
 }
 REQUIRED_SUITE_WORKFLOW_SURFACES = {
     "core_ui_web_custom_app": {
-        "languages": {"python", "javascript_wasm", "web"},
+        "languages": {"python", "r", "javascript_wasm", "web"},
         "repos": {"nirs4all-core", "nirs4all-ui", "nirs4all-web"},
-        "tags": {"pipeline", "web_results"},
+        "tags": {"pipeline", "predictions", "parity", "web_results"},
     },
     "r_python_wasm_roundtrip": {
         "languages": {"python", "r", "javascript_wasm"},

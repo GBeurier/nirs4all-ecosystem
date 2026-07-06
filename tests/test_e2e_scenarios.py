@@ -133,7 +133,7 @@ def test_cross_language_e2e_manifest_validates_current_contract() -> None:
 
     manifest = e2e.validate_scenarios(MANIFEST)
 
-    assert len(manifest["scenarios"]) == 10
+    assert len(manifest["scenarios"]) == 11
     tags = {tag for scenario in manifest["scenarios"] for tag in scenario["tags"]}
     assert "multimodal" in tags
     assert "multisource" in tags
@@ -170,6 +170,11 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
             "languages": {"javascript_wasm", "web", "python"},
             "repos": {"nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"},
             "tags": {"pipeline", "repository", "predictions", "web_results"},
+        },
+        "e2e-core-ui-custom-app-host": {
+            "languages": {"python", "r", "javascript_wasm", "web"},
+            "repos": {"nirs4all-core", "nirs4all-ui", "nirs4all-web"},
+            "tags": {"pipeline", "predictions", "parity", "web_results"},
         },
         "e2e-multimodal-python-r-wasm-roundtrip": {
             "languages": {"python", "r", "javascript_wasm"},
@@ -252,6 +257,11 @@ def test_cross_language_e2e_suite_spans_requested_surface_families() -> None:
             languages={"javascript_wasm", "web", "python"},
             tags={"repository", "predictions", "web_results"},
             repos={"nirs4all-web"},
+        ),
+        "custom_app_host_python_r_wasm_web": _match(
+            languages={"python", "r", "javascript_wasm", "web"},
+            tags={"pipeline", "predictions", "web_results"},
+            repos={"nirs4all-core", "nirs4all-ui", "nirs4all-web"},
         ),
         "converter_save_predictions": _match(
             languages={"python", "web"},
@@ -437,6 +447,28 @@ def test_cross_language_e2e_non_gap_v1_phases_are_artifact_backed() -> None:
                 "commands": {"smoke:pipeline-repository", "smoke:predict-artifact"},
                 "evidence": {"Python nirs4all/sklearn oracle", "fresh Web/WASM session"},
                 "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "strict"},
+            },
+        ),
+        (
+            "e2e-core-ui-custom-app-host",
+            {
+                "steps": ["core-r-surface-probe", "core-ui-runtime-host", "shared-ui-host-render"],
+                "languages": {"python", "r", "javascript_wasm", "web"},
+                "tags": {"pipeline", "predictions", "parity", "web_results"},
+                "tools": {"python3.11", "Rscript", "npm"},
+                "produces": {
+                    "custom-host-r-surface.json",
+                    "custom-host-run.json",
+                    "custom-host-predictions.json",
+                    "custom-host-ui.json",
+                },
+                "commands": {"smoke:custom-app-host", "check:ui-shim", "Rscript"},
+                "evidence": {"R binding surface", "nirs4all-core WASM", "nirs4all-ui"},
+                "phase_statuses": {
+                    "python_parity": "strict",
+                    "wasm_web_reuse": "strict",
+                    "python_rerun_pipeline": "contract",
+                },
             },
         ),
         (
@@ -629,6 +661,46 @@ def test_cross_language_e2e_manifest_requires_core_ui_web_custom_app_surface(tmp
     with pytest.raises(e2e.E2EScenarioError, match="required suite workflow missing: core_ui_web_custom_app"):
         e2e.validate_scenarios(manifest_path)
 
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-core-ui-custom-app-host")
+    scenario["languages"] = [language for language in scenario["languages"] if language != "r"]
+    manifest_path = tmp_path / "missing-custom-app-r-surface.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="required suite workflow missing: core_ui_web_custom_app"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_flow() -> None:
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-core-ui-custom-app-host")
+    phases = manifest["v1_refactor_contract"]["scenario_coverage"][scenario["id"]]
+
+    assert {"python", "r", "javascript_wasm", "web"}.issubset(set(scenario["languages"]))
+    assert {"nirs4all-core", "nirs4all-ui", "nirs4all-web"}.issubset(set(scenario["repos"]))
+    assert [step["id"] for step in scenario["steps"]] == [
+        "core-r-surface-probe",
+        "core-ui-runtime-host",
+        "shared-ui-host-render",
+    ]
+    assert scenario["steps"][0]["repo"] == "nirs4all-core"
+    assert {step["repo"] for step in scenario["steps"][1:]} == {"nirs4all-web"}
+    assert phases["python_open_pipeline"]["status"] == "contract"
+    assert phases["python_parity"]["status"] == "strict"
+    assert phases["wasm_web_reuse"]["status"] == "strict"
+
+    text = _contract_text(scenario, phases)
+    for fragment in (
+        "custom-host-r-surface.json",
+        "custom-host-run.json",
+        "custom-host-predictions.json",
+        "custom-host-ui.json",
+        "r binding surface",
+        "nirs4all-core wasm",
+        "nirs4all-ui",
+    ):
+        assert fragment in text
+
 
 def test_cross_language_e2e_current_workspace_plans_all_complex_workflows_ready(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
@@ -685,7 +757,7 @@ def test_cross_language_e2e_manifest_requires_exact_scenario_count(tmp_path: Pat
     manifest_path = tmp_path / "scenarios.json"
     _write_json(manifest_path, manifest)
 
-    with pytest.raises(e2e.E2EScenarioError, match="expected exactly 10 scenarios"):
+    with pytest.raises(e2e.E2EScenarioError, match="expected exactly 11 scenarios"):
         e2e.validate_scenarios(manifest_path)
 
 
@@ -971,7 +1043,7 @@ def test_cross_language_e2e_cli_list_and_plan_json() -> None:
         check=True,
     )
     scenario_ids = json.loads(listed.stdout)
-    assert len(scenario_ids) == 10
+    assert len(scenario_ids) == 11
     assert "e2e-wasm-open-repo-pipeline-alt-dataset" in scenario_ids
 
     planned = subprocess.run(
@@ -1012,23 +1084,23 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     )
     report = json.loads(covered.stdout)
 
-    assert report["scenario_count"] == 10
-    assert report["expected_scenario_count"] == 10
-    assert report["evidence_levels"] == {"hybrid": 10}
+    assert report["scenario_count"] == 11
+    assert report["expected_scenario_count"] == 11
+    assert report["evidence_levels"] == {"hybrid": 11}
     assert report["required_languages"] == {
-        "javascript_wasm": 7,
-        "python": 10,
-        "r": 3,
-        "web": 4,
+        "javascript_wasm": 8,
+        "python": 11,
+        "r": 4,
+        "web": 5,
     }
     assert report["languages"] == {
-        "javascript_wasm": 7,
+        "javascript_wasm": 8,
         "native": 6,
-        "python": 10,
-        "r": 3,
+        "python": 11,
+        "r": 4,
         "rust": 1,
         "rust_archive": 1,
-        "web": 4,
+        "web": 5,
     }
     assert report["required_tags"] == {
         "datasets": 5,
@@ -1036,12 +1108,12 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "multimodal": 1,
         "multisource": 1,
         "papers": 1,
-        "parity": 9,
-        "pipeline": 10,
+        "parity": 10,
+        "pipeline": 11,
         "pipeline_generation": 2,
-        "predictions": 5,
+        "predictions": 6,
         "repository": 3,
-        "web_results": 4,
+        "web_results": 5,
         "workspace_save": 6,
     }
     assert report["repos"] == {
@@ -1049,7 +1121,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "dag-ml-data": 2,
         "nirs4all": 6,
         "nirs4all-cluster": 1,
-        "nirs4all-core": 8,
+        "nirs4all-core": 9,
         "nirs4all-datasets": 4,
         "nirs4all-formats": 1,
         "nirs4all-io": 3,
@@ -1058,10 +1130,10 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "nirs4all-providers": 2,
         "nirs4all-repository": 3,
         "nirs4all-tools": 1,
-        "nirs4all-ui": 2,
-        "nirs4all-web": 4,
+        "nirs4all-ui": 3,
+        "nirs4all-web": 5,
     }
-    assert report["ready_count"] + report["blocked_count"] == 10
+    assert report["ready_count"] + report["blocked_count"] == 11
     assert set(report["v1_refactor_phase_status_counts"]) == {
         "python_open_pipeline",
         "python_rerun_pipeline",
@@ -1071,12 +1143,12 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "wasm_web_reuse",
     }
     expected_phase_counts = {
-        "python_open_pipeline": {"strict": 2, "contract": 2, "gap": 6},
-        "python_rerun_pipeline": {"strict": 4, "contract": 3, "gap": 3},
-        "python_parity": {"strict": 10, "contract": 0, "gap": 0},
-        "papers_export": {"strict": 1, "contract": 0, "gap": 9},
-        "repository_forced_best_refit": {"strict": 0, "contract": 2, "gap": 8},
-        "wasm_web_reuse": {"strict": 3, "contract": 4, "gap": 3},
+        "python_open_pipeline": {"strict": 2, "contract": 3, "gap": 6},
+        "python_rerun_pipeline": {"strict": 4, "contract": 4, "gap": 3},
+        "python_parity": {"strict": 11, "contract": 0, "gap": 0},
+        "papers_export": {"strict": 1, "contract": 0, "gap": 10},
+        "repository_forced_best_refit": {"strict": 0, "contract": 2, "gap": 9},
+        "wasm_web_reuse": {"strict": 4, "contract": 4, "gap": 3},
     }
     assert report["v1_refactor_phase_status_counts"] == expected_phase_counts
     scenario_ids_by_phase = report["v1_refactor_phase_scenario_ids"]
@@ -1091,12 +1163,13 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         if scenario_id != "e2e-python-reopen-paper-repository-refit"
     }
     assert set(scenario_ids_by_phase["wasm_web_reuse"]["strict"]) == {
+        "e2e-core-ui-custom-app-host",
         "e2e-converter-legacy-save-predictions-web",
         "e2e-dataset-provider-repository-roundtrip",
         "e2e-wasm-open-repo-pipeline-alt-dataset",
     }
     for counts in expected_phase_counts.values():
-        assert counts["strict"] + counts["contract"] + counts["gap"] == 10
+        assert counts["strict"] + counts["contract"] + counts["gap"] == 11
         assert counts["strict"] + counts["contract"] >= 1
     for summary in report["scenario_summaries"].values():
         assert summary["steps"] >= 2
