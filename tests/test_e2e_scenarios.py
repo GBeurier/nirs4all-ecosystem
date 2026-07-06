@@ -569,10 +569,65 @@ def test_cross_language_e2e_each_scenario_keeps_complex_cross_runtime_shape() ->
 
     for scenario in manifest["scenarios"]:
         scenario_id = scenario["id"]
-        assert len(set(scenario["languages"])) >= 2, scenario_id
-        assert len(set(scenario["repos"])) >= 2, scenario_id
-        assert len({step["kind"] for step in scenario["steps"]}) >= 2, scenario_id
-        assert len({path for step in scenario["steps"] for path in step.get("produces", [])}) >= 3, scenario_id
+        languages = set(scenario["languages"])
+        repos = set(scenario["repos"])
+        produced_artifacts = {path for step in scenario["steps"] for path in step.get("produces", [])}
+        assert e2e.REQUIRED_SCENARIO_LANGUAGE in languages, scenario_id
+        assert len(languages) >= 2, scenario_id
+        assert len(repos) >= e2e.MIN_REPOS_PER_SCENARIO, scenario_id
+        assert len({step["kind"] for step in scenario["steps"]}) >= e2e.MIN_STEP_KINDS_PER_SCENARIO, scenario_id
+        assert len(produced_artifacts) >= e2e.MIN_PRODUCED_ARTIFACTS_PER_SCENARIO, scenario_id
+        if "javascript_wasm" in languages:
+            assert {"nirs4all-core", "nirs4all-web"} & repos, scenario_id
+
+
+def test_cross_language_e2e_manifest_rejects_flat_runtime_claims(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+
+    manifest = _read_manifest()
+    scenario = manifest["scenarios"][0]
+    scenario["languages"] = [language for language in scenario["languages"] if language != "python"]
+    manifest_path = tmp_path / "missing-python-oracle.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="portable oracle runtime"):
+        e2e.validate_scenarios(manifest_path)
+
+    manifest = _read_manifest()
+    scenario = manifest["scenarios"][0]
+    for step in scenario["steps"]:
+        step["kind"] = "execute"
+    manifest_path = tmp_path / "one-step-kind.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="mix at least 2 step kinds"):
+        e2e.validate_scenarios(manifest_path)
+
+    manifest = _read_manifest()
+    scenario = manifest["scenarios"][0]
+    scenario["artifacts"] = [
+        "{artifacts_dir}/flat/a.json",
+        "{artifacts_dir}/flat/b.json",
+    ]
+    scenario["steps"][0]["produces"] = [scenario["artifacts"][0]]
+    scenario["steps"][1]["produces"] = [scenario["artifacts"][1]]
+    manifest_path = tmp_path / "too-few-produced-artifacts.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="at least 3 unique artifacts"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_manifest_requires_core_ui_web_custom_app_surface(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    for scenario in manifest["scenarios"]:
+        scenario["repos"] = [repo for repo in scenario["repos"] if repo != "nirs4all-ui"]
+    manifest_path = tmp_path / "missing-core-ui-web-surface.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="required suite workflow missing: core_ui_web_custom_app"):
+        e2e.validate_scenarios(manifest_path)
 
 
 def test_cross_language_e2e_current_workspace_plans_all_complex_workflows_ready(tmp_path: Path) -> None:
@@ -1734,25 +1789,30 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
     manifest = _read_manifest()
     scenario_id = manifest["scenarios"][0]["id"]
     ok_artifact = tmp_path / "ok-cli-result.json"
+    extra_artifact = tmp_path / "extra-cli-result.json"
     missing_artifact = tmp_path / "missing-cli-result.json"
     manifest["scenarios"][0]["artifacts"] = [str(ok_artifact), str(missing_artifact)]
     for phase in manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id].values():
         phase["artifacts"] = []
     manifest["scenarios"][0]["steps"] = [
         {
-            "id": "write-cli-step",
-            "title": "Command writes one declared artifact",
-            "kind": "verify",
-            "repo": "nirs4all-ecosystem",
-            "requires_tools": [sys.executable],
-            "requires_paths": [],
-            "command": [
-                sys.executable,
-                "-c",
-                f"from pathlib import Path; Path({str(ok_artifact)!r}).write_text('{{{{\"status\":\"passed\"}}}}\\n')",
-            ],
-            "produces": [str(ok_artifact)],
-        },
+                "id": "write-cli-step",
+                "title": "Command writes one declared artifact",
+                "kind": "prepare",
+                "repo": "nirs4all-ecosystem",
+                "requires_tools": [sys.executable],
+                "requires_paths": [],
+                "command": [
+                    sys.executable,
+                    "-c",
+                    (
+                        "from pathlib import Path; "
+                        f"Path({str(ok_artifact)!r}).write_text('{{{{\"status\":\"passed\"}}}}\\n'); "
+                        f"Path({str(extra_artifact)!r}).write_text('{{{{\"status\":\"passed\"}}}}\\n')"
+                    ),
+                ],
+                "produces": [str(ok_artifact), str(extra_artifact)],
+            },
         {
             "id": "forgetful-cli-step",
             "title": "Command exits zero but omits its artifact",

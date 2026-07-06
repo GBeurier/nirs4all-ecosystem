@@ -28,6 +28,19 @@ multimodal replay, and some Web/WASM reuse paths. Do not present this suite as
 full strict ecosystem parity unless those phase statuses are promoted in the
 manifest and the coverage tests are updated with matching evidence.
 
+The validator also protects the suite shape from collapsing into shallow smoke
+claims. Each scenario must include Python as the portable oracle runtime, at
+least two runtime/language surfaces, at least two repos, at least two step kinds,
+and at least three unique produced artifacts. Suite-level workflow coverage must
+continue to include:
+
+- a `nirs4all-core` + `nirs4all-ui` + `nirs4all-web` custom app path;
+- R/Python/WASM roundtrip execution;
+- datasets/IO/repository handoff;
+- papers/repository/workspace-save provenance;
+- multimodal and multisource workflows;
+- formats/IO/datasets/methods language-binding parity.
+
 ## Orchestrated scenario set
 
 The manifest intentionally stays at ten complex scenarios. The validator enforces

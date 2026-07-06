@@ -19,6 +19,10 @@ SCHEMA_VERSION = "n4a.cross-language-e2e/v1"
 EXPECTED_SCENARIO_COUNT = 10
 MIN_STEPS_PER_SCENARIO = 2
 MIN_ARTIFACTS_PER_SCENARIO = 2
+MIN_REPOS_PER_SCENARIO = 2
+MIN_STEP_KINDS_PER_SCENARIO = 2
+MIN_PRODUCED_ARTIFACTS_PER_SCENARIO = 3
+REQUIRED_SCENARIO_LANGUAGE = "python"
 ALLOWED_LANGUAGES = {
     "python",
     "r",
@@ -42,6 +46,42 @@ REQUIRED_TAGS = {
     "multisource",
     "pipeline_generation",
     "web_results",
+}
+REQUIRED_SUITE_WORKFLOW_SURFACES = {
+    "core_ui_web_custom_app": {
+        "languages": {"python", "javascript_wasm", "web"},
+        "repos": {"nirs4all-core", "nirs4all-ui", "nirs4all-web"},
+        "tags": {"pipeline", "web_results"},
+    },
+    "r_python_wasm_roundtrip": {
+        "languages": {"python", "r", "javascript_wasm"},
+        "repos": {"nirs4all-core"},
+        "tags": {"pipeline", "predictions", "parity"},
+    },
+    "datasets_io_repository": {
+        "languages": {"python", "javascript_wasm"},
+        "repos": {"nirs4all-core", "nirs4all-datasets", "nirs4all-io", "nirs4all-repository"},
+        "tags": {"datasets", "io", "repository", "pipeline"},
+    },
+    "papers_repository_save": {
+        "languages": {"python"},
+        "repos": {"nirs4all-papers", "nirs4all-repository"},
+        "tags": {"papers", "repository", "workspace_save"},
+    },
+    "multimodal_roundtrip": {
+        "languages": {"python", "r", "javascript_wasm"},
+        "tags": {"multimodal", "workspace_save", "predictions"},
+    },
+    "multisource_generation_replay": {
+        "languages": {"python", "native"},
+        "repos": {"dag-ml", "nirs4all-core"},
+        "tags": {"multisource", "pipeline_generation", "workspace_save", "parity"},
+    },
+    "bindings_multi_language_methods": {
+        "languages": {"python", "r", "javascript_wasm", "native"},
+        "repos": {"nirs4all-formats", "nirs4all-io", "nirs4all-datasets", "nirs4all-methods", "nirs4all-core"},
+        "tags": {"datasets", "io", "predictions", "parity"},
+    },
 }
 ALLOWED_EVIDENCE_LEVELS = {
     "contract_smoke",
@@ -546,6 +586,21 @@ def _validate_scenario_semantics(
             raise E2EScenarioError(f"{scenario_id}: repository tag requires a repository artifact")
 
 
+def _scenario_matches_workflow_surface(scenario: dict[str, Any], surface: dict[str, set[str]]) -> bool:
+    return (
+        surface.get("languages", set()).issubset(set(scenario["languages"]))
+        and surface.get("repos", set()).issubset(set(scenario["repos"]))
+        and surface.get("tags", set()).issubset(set(scenario["tags"]))
+    )
+
+
+def _validate_suite_workflow_surfaces(scenarios: list[dict[str, Any]]) -> None:
+    for surface_name, surface in REQUIRED_SUITE_WORKFLOW_SURFACES.items():
+        if any(_scenario_matches_workflow_surface(scenario, surface) for scenario in scenarios):
+            continue
+        raise E2EScenarioError(f"required suite workflow missing: {surface_name}")
+
+
 def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
     manifest = _read_json(path)
     if manifest.get("schema_version") != SCHEMA_VERSION:
@@ -578,7 +633,17 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         covered_languages.update(languages)
         tags = set(_strings(scenario.get("tags"), f"{scenario_id}.tags"))
         covered_tags.update(tags)
-        _strings(scenario.get("repos"), f"{scenario_id}.repos")
+        repos = set(_strings(scenario.get("repos"), f"{scenario_id}.repos"))
+        if len(repos) < MIN_REPOS_PER_SCENARIO:
+            raise E2EScenarioError(f"{scenario_id}: must cover at least {MIN_REPOS_PER_SCENARIO} repos")
+        if REQUIRED_SCENARIO_LANGUAGE not in languages:
+            raise E2EScenarioError(
+                f"{scenario_id}: must include {REQUIRED_SCENARIO_LANGUAGE} as the portable oracle runtime"
+            )
+        if "javascript_wasm" in languages and not {"nirs4all-core", "nirs4all-web"} & repos:
+            raise E2EScenarioError(
+                f"{scenario_id}: javascript_wasm coverage requires nirs4all-core or nirs4all-web"
+            )
         _strings(scenario.get("evidence"), f"{scenario_id}.evidence")
         artifacts = set(_strings(scenario.get("artifacts"), f"{scenario_id}.artifacts"))
         if len(artifacts) < MIN_ARTIFACTS_PER_SCENARIO:
@@ -606,11 +671,21 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
             )
         step_ids: set[str] = set()
         produced_artifacts: set[str] = set()
+        step_kinds: set[str] = set()
         for step in steps:
             if not isinstance(step, dict):
                 raise E2EScenarioError(f"{scenario_id}: each step must be an object")
             _validate_step(scenario_id, step, step_ids)
+            step_kinds.add(step["kind"])
             produced_artifacts.update(step.get("produces", []))
+        if len(step_kinds) < MIN_STEP_KINDS_PER_SCENARIO:
+            raise E2EScenarioError(
+                f"{scenario_id}: must mix at least {MIN_STEP_KINDS_PER_SCENARIO} step kinds"
+            )
+        if len(produced_artifacts) < MIN_PRODUCED_ARTIFACTS_PER_SCENARIO:
+            raise E2EScenarioError(
+                f"{scenario_id}: must produce at least {MIN_PRODUCED_ARTIFACTS_PER_SCENARIO} unique artifacts"
+            )
         missing_artifacts = sorted(artifacts - produced_artifacts)
         if missing_artifacts:
             raise E2EScenarioError(
@@ -640,6 +715,7 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
             tags=set(scenario["tags"]),
             phases=scenario["v1_refactor_contract"],
         )
+    _validate_suite_workflow_surfaces(scenarios)
     return manifest
 
 
