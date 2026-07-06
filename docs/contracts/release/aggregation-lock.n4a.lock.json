@@ -26,14 +26,14 @@
           "canonical_json_equal": true,
           "members": [
             {
-              "canonical_json_sha256": "sha256:5d467307b457f49f98b2db3783251993cfb04254df3ff22b947834b96859fc55",
+              "canonical_json_sha256": "sha256:4ee367097c8417ca6f7c9b44bdd8899bd8547d9e7b758ada82028fc01948f2de",
               "member": "dag_ml",
-              "raw_sha256": "sha256:fea7a7986610384b8f5ee7eb51ae76f90f0002c9be180461e78b432b189512e8"
+              "raw_sha256": "sha256:cbd15a87ec759e1701cd214b9b28acaf82411ccbd8ec70870907d2186d9cf751"
             },
             {
-              "canonical_json_sha256": "sha256:5d467307b457f49f98b2db3783251993cfb04254df3ff22b947834b96859fc55",
+              "canonical_json_sha256": "sha256:4ee367097c8417ca6f7c9b44bdd8899bd8547d9e7b758ada82028fc01948f2de",
               "member": "dag_ml_data",
-              "raw_sha256": "sha256:fea7a7986610384b8f5ee7eb51ae76f90f0002c9be180461e78b432b189512e8"
+              "raw_sha256": "sha256:cbd15a87ec759e1701cd214b9b28acaf82411ccbd8ec70870907d2186d9cf751"
             }
           ],
           "raw_equal": true
@@ -42,14 +42,14 @@
           "canonical_json_equal": true,
           "members": [
             {
-              "canonical_json_sha256": "sha256:eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67",
+              "canonical_json_sha256": "sha256:1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6",
               "member": "dag_ml",
-              "raw_sha256": "sha256:c3e2fa3e60ae8ad8d0e31b0cef822c66b186df84b205f53e94db205ac5d9750a"
+              "raw_sha256": "sha256:9b5628373adb141e3e12a919f45faca0738456ebe27d54976c1b0b3d0afd39e3"
             },
             {
-              "canonical_json_sha256": "sha256:eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67",
+              "canonical_json_sha256": "sha256:1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6",
               "member": "dag_ml_data",
-              "raw_sha256": "sha256:c3e2fa3e60ae8ad8d0e31b0cef822c66b186df84b205f53e94db205ac5d9750a"
+              "raw_sha256": "sha256:9b5628373adb141e3e12a919f45faca0738456ebe27d54976c1b0b3d0afd39e3"
             }
           ],
           "raw_equal": true
@@ -70,7 +70,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:5d467307b457f49f98b2db3783251993cfb04254df3ff22b947834b96859fc55",
+          "canonical_json_sha256": "sha256:4ee367097c8417ca6f7c9b44bdd8899bd8547d9e7b758ada82028fc01948f2de",
           "contracts": {
             "coordinator_branch_view.v1": {
               "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
@@ -88,7 +88,7 @@
               "normalized_sha256": "43001ff6f7a286924ec01ca85b95233c7a50fe9cc8595d67da1eb2a35704dddf"
             },
             "parity_oracle.v1": {
-              "canonical_json_sha256": "eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67"
+              "canonical_json_sha256": "1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6"
             },
             "representation_registry.v1": {
               "canonical_json_sha256": "66446af592341061c4967eb2944e32c4e785c58c2baf05db7f00bff10a431508"
@@ -98,15 +98,15 @@
           "kind": "conformance_pack",
           "pack_id": "dag-ml.shared.conformance.v1",
           "path": "docs/contracts/conformance_pack.v1.json",
-          "raw_sha256": "sha256:fea7a7986610384b8f5ee7eb51ae76f90f0002c9be180461e78b432b189512e8"
+          "raw_sha256": "sha256:cbd15a87ec759e1701cd214b9b28acaf82411ccbd8ec70870907d2186d9cf751"
         },
         {
-          "canonical_json_sha256": "sha256:eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67",
+          "canonical_json_sha256": "sha256:1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6",
           "id": "parity_oracle",
           "kind": "parity_oracle",
           "oracle_id": "dag-ml.nirs4all.parity_oracle.v1",
           "path": "docs/contracts/parity_oracle.v1.json",
-          "raw_sha256": "sha256:c3e2fa3e60ae8ad8d0e31b0cef822c66b186df84b205f53e94db205ac5d9750a",
+          "raw_sha256": "sha256:9b5628373adb141e3e12a919f45faca0738456ebe27d54976c1b0b3d0afd39e3",
           "required_case_count": 5,
           "required_case_ids": [
             "nirs4all_lite_browser_compile_plan",
@@ -117,7 +117,7 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:0734af33b13c4b32f519bc92050897dd4d08e028b85fba5c6a4efb92b9cf0a4c",
+          "canonical_json_sha256": "sha256:9db9877e48f7b45890bd1da976e9839b2e54c08c7333f22612b66e8e05789c5f",
           "crate": "dag-ml",
           "headers": [
             {
@@ -127,9 +127,9 @@
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.2.2",
+          "package_version": "0.2.3",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:2ff558dac3e36e7dee437616fe8d88f6e96021983a2cc6b577f10f33de9e0a55"
+          "raw_sha256": "sha256:5c0f5998042e633ae6c3c5aaea541d1fad0521602076971339da0df13775e0e6"
         }
       ],
       "default_inclusion": "base",
@@ -178,9 +178,9 @@
       "selected_workspace_path": "RC-v1-dagml",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "d7ee3ccd3c64779c3f81db409584e6f40e70db06",
+        "commit": "4238443c2ce5530d084eb2dc7eb89f0c25d4ee2b",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc3-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -189,19 +189,19 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.2.2"
+          "value": "0.2.3"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-py/pyproject.toml",
-          "value": "0.2.2"
+          "value": "0.2.3"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.2.2"
+          "value": "0.2.3"
         }
       }
     },
@@ -215,7 +215,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:5d467307b457f49f98b2db3783251993cfb04254df3ff22b947834b96859fc55",
+          "canonical_json_sha256": "sha256:4ee367097c8417ca6f7c9b44bdd8899bd8547d9e7b758ada82028fc01948f2de",
           "contracts": {
             "coordinator_branch_view.v1": {
               "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
@@ -233,7 +233,7 @@
               "normalized_sha256": "43001ff6f7a286924ec01ca85b95233c7a50fe9cc8595d67da1eb2a35704dddf"
             },
             "parity_oracle.v1": {
-              "canonical_json_sha256": "eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67"
+              "canonical_json_sha256": "1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6"
             },
             "representation_registry.v1": {
               "canonical_json_sha256": "66446af592341061c4967eb2944e32c4e785c58c2baf05db7f00bff10a431508"
@@ -243,15 +243,15 @@
           "kind": "conformance_pack",
           "pack_id": "dag-ml.shared.conformance.v1",
           "path": "docs/contracts/conformance_pack.v1.json",
-          "raw_sha256": "sha256:fea7a7986610384b8f5ee7eb51ae76f90f0002c9be180461e78b432b189512e8"
+          "raw_sha256": "sha256:cbd15a87ec759e1701cd214b9b28acaf82411ccbd8ec70870907d2186d9cf751"
         },
         {
-          "canonical_json_sha256": "sha256:eb754d832f8c4c059349bbe810683f0afee606b8cab995d85201dd8bf1e83a67",
+          "canonical_json_sha256": "sha256:1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6",
           "id": "parity_oracle",
           "kind": "parity_oracle",
           "oracle_id": "dag-ml.nirs4all.parity_oracle.v1",
           "path": "docs/contracts/parity_oracle.v1.json",
-          "raw_sha256": "sha256:c3e2fa3e60ae8ad8d0e31b0cef822c66b186df84b205f53e94db205ac5d9750a",
+          "raw_sha256": "sha256:9b5628373adb141e3e12a919f45faca0738456ebe27d54976c1b0b3d0afd39e3",
           "required_case_count": 5,
           "required_case_ids": [
             "nirs4all_lite_browser_compile_plan",
@@ -262,7 +262,7 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:07849d1b1e9ab51326f5bb1382cb6426ca4a30ae4a7171bb347fd1a131ab87a8",
+          "canonical_json_sha256": "sha256:b37bc402156b96dbf5f292c7294c2e4eb6725cacad1cec445f32321df93f0302",
           "crate": "dag-ml-data",
           "headers": [
             {
@@ -272,9 +272,9 @@
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.2.3",
+          "package_version": "0.2.4",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:3a25703a9f081f0873157099bc3551ce44bbf01322d24b10e27f850c13bba1e3"
+          "raw_sha256": "sha256:edd42f6d93f5fcabcce02e92829c448a9ba3602e59142bbe6f011c4e3c503013"
         }
       ],
       "default_inclusion": "base",
@@ -328,9 +328,9 @@
       "selected_workspace_path": "RC-v1-dmd",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "22157227e2a8c678292cc91db6c31bf92e04d37a",
+        "commit": "f8483800cae189bf064b094498d0fb26bd9ffff8",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc3-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -339,13 +339,13 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.2.3"
+          "value": "0.2.4"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-data-py/pyproject.toml",
-          "value": "0.2.3"
+          "value": "0.2.4"
         },
         "r": {
           "kind": "description",
@@ -357,7 +357,7 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.2.3"
+          "value": "0.2.4"
         }
       }
     },
@@ -1235,9 +1235,9 @@
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "19e69417ad896f6f5637f8573a055997ccb60b79",
+        "commit": "715aa59076b2c978950bfc7f005fbca44f91a0c0",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc5-2026.07-refactor"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -1246,25 +1246,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.2.2"
+          "value": "0.2.6"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.2.2"
+          "value": "0.2.6"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.2.2"
+          "value": "0.2.6"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.2.2"
+          "value": "0.2.6"
         }
       }
     },
