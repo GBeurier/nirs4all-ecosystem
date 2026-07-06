@@ -1542,6 +1542,35 @@ def test_cross_language_e2e_cli_evidence_json_selected_scenario(tmp_path: Path) 
     assert report["failed_count"] == 0
     assert report["scenarios"][scenario["id"]]["artifact_count"] == len(scenario["artifacts"])
 
+    archived_artifact = Path(
+        scenario["artifacts"][0].format(workspace_root=tmp_path, artifacts_dir=artifacts_dir)
+    )
+    os.utime(archived_artifact, (1, 1))
+    stale = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--workspace-root",
+            str(tmp_path),
+            "--artifacts-dir",
+            str(artifacts_dir),
+            "evidence",
+            "--scenario",
+            scenario["id"],
+            "--max-age-seconds",
+            "60",
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    assert stale.returncode == 1
+    assert "failed" in stale.stdout
+    assert "stale artifact age=" in stale.stdout
+
     missing = subprocess.run(
         [
             sys.executable,
