@@ -22,6 +22,64 @@ ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS = {
     "e2e-r-dataset-io-pipeline-save",
     "e2e-cluster-dag-rights-client-core",
 }
+LANGUAGE_EVIDENCE_FRAGMENTS = {
+    "python": ("python", "python3", "nirs4all"),
+    "r": ("rscript", "r-predictions", "python/r", "r and wasm", "python/r bindings"),
+    "rust": ("cargo", "rust"),
+    "rust_archive": ("archived rust", "rust status"),
+    "javascript_wasm": ("wasm", "javascript/wasm", "node", "npm"),
+    "web": ("web", "nirs4all-web", "screenshot", ".png"),
+    "native": ("native", "dag-ml", "nirs4all-methods", "cluster worker", "libn4m"),
+}
+TAG_EVIDENCE_FRAGMENTS = {
+    "datasets": ("dataset", "provider", "assembled"),
+    "io": ("io", "reshape", "roundtrip", "manifest hash"),
+    "pipeline": ("pipeline", "descriptor", "dag"),
+    "repository": ("repository", "best-refit", "descriptor"),
+    "papers": ("paper", "papers", "publisher"),
+    "predictions": ("prediction", "predictions", "predict"),
+    "workspace_save": ("workspace", "save", "saved", ".n4a.json", "persist", "handoff"),
+    "parity": ("parity", "match", "delta", "tolerance", "oracle"),
+    "multimodal": ("multimodal", "dense-fused"),
+    "multisource": ("multisource", "branch", "stacking"),
+    "pipeline_generation": ("generated", "generate", "pipeline-family", "stacking"),
+    "web_results": ("web-results", "web results", "web-runtime", "result panel", "screenshot", ".png"),
+}
+STRICT_PARITY_METRIC_FRAGMENTS = (
+    "prediction",
+    "rmse",
+    "score",
+    "metric",
+    "method output",
+    "fixture gate",
+    "parity",
+)
+PHASE_ACCEPTANCE_ACTION_FRAGMENTS = (
+    "add ",
+    "assert",
+    "compare",
+    "consume",
+    "declare",
+    "define",
+    "emit",
+    "execute",
+    "export",
+    "include",
+    "import",
+    "keep",
+    "match",
+    "must",
+    "open",
+    "persist",
+    "preserve",
+    "promote",
+    "prove",
+    "publish",
+    "record",
+    "replace",
+    "rerun",
+    "verify",
+)
 
 
 def _load_e2e_module():
@@ -46,6 +104,10 @@ def _scenario_by_id(manifest: dict, scenario_id: str) -> dict:
         if scenario["id"] == scenario_id:
             return scenario
     raise AssertionError(f"missing scenario: {scenario_id}")
+
+
+def _contract_text(*values: object) -> str:
+    return json.dumps(values, sort_keys=True).lower()
 
 
 def _assert_ready_or_only_public_checkout_data_blockers(plans: list[dict]) -> None:
@@ -159,6 +221,90 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
         assert any(phase["status"] == "strict" for phase in phases.values()), scenario_id
 
 
+def test_cross_language_e2e_declared_languages_are_backed_by_runtime_evidence() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    for scenario in manifest["scenarios"]:
+        text = _contract_text(
+            scenario["objective"],
+            scenario["repos"],
+            scenario["artifacts"],
+            scenario["evidence"],
+            scenario["parity_checks"],
+            scenario["steps"],
+            scenario["strictness_gaps"],
+        )
+        for language in scenario["languages"]:
+            fragments = LANGUAGE_EVIDENCE_FRAGMENTS.get(language)
+            assert fragments is not None, f"{scenario['id']}: no test fragments for language {language!r}"
+            assert any(fragment in text for fragment in fragments), f"{scenario['id']}: {language}"
+
+
+def test_cross_language_e2e_tags_are_backed_by_domain_artifacts_or_evidence() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    for scenario in manifest["scenarios"]:
+        text = _contract_text(
+            scenario["title"],
+            scenario["objective"],
+            scenario["artifacts"],
+            scenario["evidence"],
+            scenario["parity_checks"],
+            scenario["strictness_gaps"],
+            scenario["v1_refactor_contract"],
+        )
+        for tag in scenario["tags"]:
+            fragments = TAG_EVIDENCE_FRAGMENTS.get(tag)
+            assert fragments is not None, f"{scenario['id']}: no test fragments for tag {tag!r}"
+            assert any(fragment in text for fragment in fragments), f"{scenario['id']}: {tag}"
+
+
+def test_cross_language_e2e_strict_parity_checks_assert_real_oracle_comparisons() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    for scenario in manifest["scenarios"]:
+        strict_checks = [
+            check for check in scenario["parity_checks"] if check["evidence_level"] == "strict"
+        ]
+        assert strict_checks, scenario["id"]
+        for check in strict_checks:
+            metric = check["metric"].lower()
+            assert any(fragment in metric for fragment in STRICT_PARITY_METRIC_FRAGMENTS), (
+                f"{scenario['id']}: {check['metric']}"
+            )
+            assert "schema/array coverage" not in metric, scenario["id"]
+            assert "smoke-only" not in metric, scenario["id"]
+
+
+def test_cross_language_e2e_non_gap_v1_phases_are_artifact_backed() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    for scenario in manifest["scenarios"]:
+        scenario_artifacts = set(scenario["artifacts"])
+        produced_artifacts = {
+            artifact
+            for step in scenario["steps"]
+            for artifact in step.get("produces", [])
+        }
+        for phase, contract in scenario["v1_refactor_contract"].items():
+            acceptance = _contract_text(contract["acceptance"])
+            assert any(fragment in acceptance for fragment in PHASE_ACCEPTANCE_ACTION_FRAGMENTS), (
+                f"{scenario['id']}.{phase}: acceptance must name an actionable condition"
+            )
+            if contract["status"] == "gap":
+                assert contract.get("gap"), f"{scenario['id']}.{phase}"
+                continue
+
+            artifacts = set(contract.get("artifacts", []))
+            assert artifacts, f"{scenario['id']}.{phase}: non-gap phases need evidence artifacts"
+            assert artifacts <= scenario_artifacts, f"{scenario['id']}.{phase}"
+            assert artifacts <= produced_artifacts, f"{scenario['id']}.{phase}"
+
+
 @pytest.mark.parametrize(
     ("scenario_id", "contract"),
     [
@@ -192,7 +338,7 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
                     "test_repository_refit_export.py",
                     "smoke:repository-best-pipeline",
                 },
-                "evidence": {"force_best_refit", "Web/WASM import"},
+                "evidence": {"force_best_refit", "repository_reopen", "Web/WASM import"},
                 "phase_statuses": {
                     "python_open_pipeline": "strict",
                     "papers_export": "strict",
@@ -819,7 +965,12 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert repository_flow["python_open_pipeline"]["status"] == "strict"
     assert repository_flow["papers_export"]["status"] == "strict"
     assert repository_flow["repository_forced_best_refit"]["status"] == "contract"
-    assert "force_best_refit=true" in repository_flow["repository_forced_best_refit"]["acceptance"][0]
+    repository_refit_contract = json.dumps(repository_flow["repository_forced_best_refit"], sort_keys=True)
+    assert "force_best_refit=true" in repository_refit_contract
+    assert "selected artificial best pipeline id" in repository_refit_contract
+    assert "descriptor/manifest/catalog fingerprints" in repository_refit_contract
+    assert "repository_reopen_validated=true" in repository_refit_contract
+    assert "repository-owned forced_best_refit_contract" in repository_refit_contract
     assert repository_flow["wasm_web_reuse"]["status"] == "contract"
     assert "alternative uploadable dataset" in repository_flow["wasm_web_reuse"]["gap"]
 

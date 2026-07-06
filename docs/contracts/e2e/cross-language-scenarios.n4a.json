@@ -84,10 +84,10 @@
         },
         "repository_forced_best_refit": {
           "status": "contract",
-          "evidence": ["The papers/repository step writes repository-best-pipeline.json from the Python ledger and carries the Python-executed refit hashes."],
+          "evidence": ["The papers/repository step writes repository-best-pipeline.json from the Python ledger, runs nirs4all-repository validate/open APIs, and carries repository-owned forced_best_refit_contract, repository_reopen, and provenance fingerprints alongside the Python-executed refit hashes."],
           "artifacts": ["{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"],
           "gap": "nirs4all-repository has no independent runtime in this contract; the forced best-refit is a descriptor/handoff backed by the paired Python refit evidence.",
-          "acceptance": ["repository-best-pipeline.json must declare force_best_refit=true, the selected artificial best pipeline id, source hashes, and refit.executed=true from the paired Python ledger until a repository runtime exists."]
+          "acceptance": ["repository-best-pipeline.json must declare force_best_refit=true, the selected artificial best pipeline id, descriptor/manifest/catalog fingerprints, repository_reopen_validated=true from a repository validate/open pass, and refit.executed=true from the paired Python ledger until a repository runtime exists."]
         },
         "wasm_web_reuse": {
           "status": "contract",
@@ -527,7 +527,7 @@
         {
           "oracle": "paper export manifest",
           "candidate": "repository best-refit descriptor",
-          "metric": "handoff descriptor is written with source hashes, force_best_refit intent, and Python-backed refit.executed=true evidence",
+          "metric": "handoff descriptor is written with source hashes, repository-owned force_best_refit intent, selected_pipeline_id, descriptor/manifest/catalog fingerprints, repository reopen/validate evidence, and Python-backed refit.executed=true evidence",
           "evidence_level": "contract"
         },
         {
