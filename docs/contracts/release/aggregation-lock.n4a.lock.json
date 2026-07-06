@@ -607,7 +607,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:f44485721ed2153334d17844c91ba170f5374d23b0272cc553b1d2de587ddfa6",
+          "canonical_json_sha256": "sha256:e35dfb5ca07e76e4964020c739cdadf80840301540d3dd66a33ab2fd00566869",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -615,10 +615,11 @@
               "default_inclusion": "base",
               "id": "nirs4all-core",
               "legacy_id": "nirs4all-lite",
+              "legacy_repo": "GBeurier/nirs4all-lite",
               "owner_boundary": "aggregate",
               "private": false,
-              "repo": "GBeurier/nirs4all-lite",
-              "repo_rename_status": "pending-github-rename",
+              "repo": "GBeurier/nirs4all-core",
+              "repo_rename_status": "completed",
               "target_repo": "GBeurier/nirs4all-core"
             },
             "core_contract": {
@@ -1002,7 +1003,7 @@
                   "c_abi": [],
                   "matlab": [],
                   "npm": [
-                    "nirs4all-formats-wasm"
+                    "@nirs4all/formats-wasm"
                   ],
                   "r": [
                     "nirs4allformats"
@@ -1031,7 +1032,7 @@
                   "c_abi": [],
                   "matlab": [],
                   "npm": [
-                    "nirs4all-io-wasm"
+                    "@nirs4all/io-wasm"
                   ],
                   "r": [
                     "nirs4allio"
@@ -1129,7 +1130,9 @@
                 "package_manifest": "bindings/python/pyproject.toml",
                 "registry": "pypi",
                 "release_workflow": "release-python.yml",
-                "tool_policy": "required"
+                "tool_policy": "required",
+                "version_source": "bindings/python/pyproject.toml:project.version",
+                "version_spelling": "pep440"
               },
               {
                 "distribution": "nirs4all",
@@ -1139,7 +1142,9 @@
                 "package_manifest": "bindings/wasm/package.json",
                 "registry": "npm",
                 "release_workflow": "release-npm.yml",
-                "tool_policy": "required"
+                "tool_policy": "required",
+                "version_source": "bindings/wasm/package.json:version",
+                "version_spelling": "cargo-semver"
               },
               {
                 "distribution": "nirs4all",
@@ -1149,7 +1154,10 @@
                 "package_manifest": "bindings/rust/nirs4all/Cargo.toml",
                 "registry": "crates.io",
                 "release_workflow": "release-crates.yml",
-                "tool_policy": "required"
+                "tool_policy": "required",
+                "version_source": "bindings/rust/nirs4all/Cargo.toml:package.version",
+                "version_source_of_truth": true,
+                "version_spelling": "cargo-semver"
               },
               {
                 "distribution": "nirs4all",
@@ -1159,7 +1167,9 @@
                 "package_manifest": "bindings/r/DESCRIPTION",
                 "registry": "cran/r-universe",
                 "release_workflow": "release-r.yml",
-                "tool_policy": "skip-locally-if-r-missing"
+                "tool_policy": "skip-locally-if-r-missing",
+                "version_source": "bindings/r/DESCRIPTION:Version",
+                "version_spelling": "r-description"
               },
               {
                 "distribution": "nirs4all-matlab-octave",
@@ -1169,14 +1179,16 @@
                 "package_manifest": "bindings/matlab/README.md",
                 "registry": "github-release",
                 "release_workflow": "release-matlab.yml",
-                "tool_policy": "skip-locally-if-octave-missing"
+                "tool_policy": "skip-locally-if-octave-missing",
+                "version_source": "bindings/rust/nirs4all/Cargo.toml:package.version",
+                "version_spelling": "derived-cargo-semver"
               }
             ]
           },
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_lite/_topology.py",
-          "raw_sha256": "sha256:bf4248377d394d280133f7bbe7d2d19b20683db696951b26715786dda9bae396",
+          "raw_sha256": "sha256:8277603d662cd8f6d8765a2a0d0d121caa416c660c196ff2c09154c6b856c554",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -1235,9 +1247,9 @@
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "715aa59076b2c978950bfc7f005fbca44f91a0c0",
+        "commit": "5c652e66855908cc2a7ac60cb9fa20164e9bde6b",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc5-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc6-2026.07-refactor"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -1246,25 +1258,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.2.6"
+          "value": "0.2.7"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.2.6"
+          "value": "0.2.7"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.2.6"
+          "value": "0.2.7"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.2.6"
+          "value": "0.2.7"
         }
       }
     },
