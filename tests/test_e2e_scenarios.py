@@ -179,6 +179,16 @@ def test_cross_language_e2e_manifest_validates_current_contract() -> None:
     }
 
 
+def test_cross_language_e2e_docs_list_every_orchestrated_scenario() -> None:
+    manifest = _read_manifest()
+    docs = (ROOT / "docs" / "CROSS_LANGUAGE_E2E.md").read_text(encoding="utf-8")
+
+    documented_ids = re.findall(r"\| `(e2e-[^`]+)` \|", docs)
+
+    assert documented_ids == [scenario["id"] for scenario in manifest["scenarios"]]
+    assert len(documented_ids) == 11
+
+
 def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
     manifest = _read_manifest()
     scenarios = {scenario["id"]: scenario for scenario in manifest["scenarios"]}
