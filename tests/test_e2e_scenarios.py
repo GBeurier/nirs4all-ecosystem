@@ -221,6 +221,63 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
         assert any(phase["status"] == "strict" for phase in phases.values()), scenario_id
 
 
+def test_cross_language_e2e_suite_spans_requested_surface_families() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    def _match(*, languages: set[str], tags: set[str], repos: set[str]) -> str:
+        for scenario in manifest["scenarios"]:
+            if (
+                languages.issubset(set(scenario["languages"]))
+                and tags.issubset(set(scenario["tags"]))
+                and repos.issubset(set(scenario["repos"]))
+            ):
+                return scenario["id"]
+        raise AssertionError(
+            f"no scenario covers languages={sorted(languages)} tags={sorted(tags)} repos={sorted(repos)}"
+        )
+
+    matched_ids = {
+        "r_python_dataset_io_save": _match(
+            languages={"r", "python"},
+            tags={"datasets", "io", "workspace_save"},
+            repos={"nirs4all-datasets", "nirs4all-io"},
+        ),
+        "papers_repository_refit": _match(
+            languages={"python"},
+            tags={"papers", "repository", "workspace_save"},
+            repos={"nirs4all-papers", "nirs4all-repository"},
+        ),
+        "wasm_web_repository_predictions": _match(
+            languages={"javascript_wasm", "web", "python"},
+            tags={"repository", "predictions", "web_results"},
+            repos={"nirs4all-web"},
+        ),
+        "converter_save_predictions": _match(
+            languages={"python", "web"},
+            tags={"workspace_save", "predictions", "web_results"},
+            repos={"nirs4all-tools", "nirs4all-web"},
+        ),
+        "multimodal_roundtrip": _match(
+            languages={"python", "r", "javascript_wasm"},
+            tags={"multimodal", "predictions"},
+            repos={"nirs4all"},
+        ),
+        "multisource_generation": _match(
+            languages={"python", "native"},
+            tags={"multisource", "pipeline_generation"},
+            repos={"dag-ml", "nirs4all-core"},
+        ),
+        "formats_io_bindings": _match(
+            languages={"python", "r", "javascript_wasm", "native"},
+            tags={"datasets", "io", "predictions"},
+            repos={"nirs4all-formats", "nirs4all-methods"},
+        ),
+    }
+
+    assert len(set(matched_ids.values())) == len(matched_ids)
+
+
 def test_cross_language_e2e_declared_languages_are_backed_by_runtime_evidence() -> None:
     e2e = _load_e2e_module()
     manifest = e2e.validate_scenarios(MANIFEST)
@@ -504,6 +561,18 @@ def test_cross_language_e2e_orchestrates_each_complex_workflow(
 
     for phase, status in contract["phase_statuses"].items():
         assert scenario["v1_refactor_contract"][phase]["status"] == status, scenario_id
+
+
+def test_cross_language_e2e_each_scenario_keeps_complex_cross_runtime_shape() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    for scenario in manifest["scenarios"]:
+        scenario_id = scenario["id"]
+        assert len(set(scenario["languages"])) >= 2, scenario_id
+        assert len(set(scenario["repos"])) >= 2, scenario_id
+        assert len({step["kind"] for step in scenario["steps"]}) >= 2, scenario_id
+        assert len({path for step in scenario["steps"] for path in step.get("produces", [])}) >= 3, scenario_id
 
 
 def test_cross_language_e2e_current_workspace_plans_all_complex_workflows_ready(tmp_path: Path) -> None:
@@ -891,9 +960,26 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["scenario_count"] == 10
     assert report["expected_scenario_count"] == 10
     assert report["evidence_levels"] == {"hybrid": 10}
-    assert set(report["required_languages"]) == {"python", "r", "javascript_wasm", "web"}
-    assert all(count > 0 for count in report["required_languages"].values())
-    assert all(count > 0 for count in report["required_tags"].values())
+    assert report["required_languages"] == {
+        "javascript_wasm": 7,
+        "python": 10,
+        "r": 3,
+        "web": 4,
+    }
+    assert report["required_tags"] == {
+        "datasets": 5,
+        "io": 4,
+        "multimodal": 1,
+        "multisource": 1,
+        "papers": 1,
+        "parity": 9,
+        "pipeline": 10,
+        "pipeline_generation": 2,
+        "predictions": 5,
+        "repository": 3,
+        "web_results": 4,
+        "workspace_save": 6,
+    }
     assert report["ready_count"] + report["blocked_count"] == 10
     assert set(report["v1_refactor_phase_status_counts"]) == {
         "python_open_pipeline",
