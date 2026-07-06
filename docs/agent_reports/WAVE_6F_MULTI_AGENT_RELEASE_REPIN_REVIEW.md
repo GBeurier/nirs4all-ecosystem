@@ -29,6 +29,11 @@ release batch. The production `nirs4all` Python package and production
   Web still carries many local primitives.
 - Release/cockpit Claude audit: confirmed cockpit state is current, but the
   ecosystem meta-repo submodule pins lagged the published sibling heads.
+- Providers/repository/tools/benchmarks/papers audit: clarified that
+  `nirs4all-providers` is a Python convenience client over neutral contracts,
+  not the multi-language source of truth; it found ambiguous bridge-extra docs.
+- Cockpit target audit: confirmed the CRAN `nirs4allformats` target conflicted
+  with the manual policy that says not to submit it to CRAN.
 
 ## Integrated changes
 
@@ -37,11 +42,11 @@ heads for non-prod projects:
 
 - `nirs4all-benchmarks` -> `a7fcd12a89f7`
 - `nirs4all-cluster` -> `c0b428248d40`
-- `nirs4all-cockpit` -> `ea1c439381a8`
+- `nirs4all-cockpit` -> `3e1ac71b0e4c`
 - `nirs4all-datasets` -> `c6275ad0e66c`
 - `nirs4all-org` -> `25307a2a449e`
 - `nirs4all-papers` -> `b6e521c3fb62`
-- `nirs4all-providers` -> `5414fb160889`
+- `nirs4all-providers` -> `8f15913ab8d9`
 - `nirs4all-repository` -> `09ef4c47eec7`
 - `nirs4all-ui` -> `456e048c0f4c`
 - `nirs4all-web` -> `b64900be5fa5`
@@ -75,6 +80,12 @@ Additional local targeted checks run during review:
   `npm run build`.
 - `nirs4all-web/studio-lite`: `npm run test:client-only`, 
   `npm run smoke:shared-ui-contract`, `npm run typecheck`, `npm run build`.
+- `nirs4all-providers`: `.venv/bin/ruff check .`, `.venv/bin/mypy src`,
+  `.venv/bin/python -m pytest -q`, local sibling release gate, and
+  `.venv/bin/twine check dist/*` after rebuilding local `0.2.4` artifacts.
+- `nirs4all-cockpit`: `n4a-cockpit validate-targets ops/targets.yaml`,
+  `.venv/bin/python -m pytest -q tests/test_targets_topology.py`, and
+  `.venv/bin/python -m pytest -q`.
 
 ## Current truths
 
@@ -91,7 +102,14 @@ Additional local targeted checks run during review:
   `nirs4all-ui` remains incomplete.
 - `nirs4all-providers` is a dependency-light Python read layer over datasets,
   repository, benchmarks, and papers. It does not own NIRS runtime, IO,
-  parsing, ML, or write-back logic.
+  parsing, ML, or write-back logic. Its Python package is one client of the
+  provider contracts; R/WASM/Rust clients should port the neutral schemas and
+  fetch/verify behavior, not depend on this Python package.
+- `nirs4all-providers[all]` installs provider backings only. Bridge extras
+  owned by those backings remain explicit, for example
+  `nirs4all-datasets[nirs4all]` for `DatasetProvider.to_spectro_dataset()`.
+- Cockpit now models `cran:nirs4allformats` as `excluded`, matching the manual
+  policy that says not to submit that R surface to CRAN.
 
 ## Remaining blockers / decisions
 
@@ -113,4 +131,3 @@ Additional local targeted checks run during review:
    behind targeted contract tests.
 6. Finish the heavy parity/e2e artifact execution only after the current
    release topology is accepted and the PyPI first-publish blockers are removed.
-
