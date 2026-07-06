@@ -328,9 +328,9 @@
       "selected_workspace_path": "RC-v1-dmd",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "f8483800cae189bf064b094498d0fb26bd9ffff8",
+        "commit": "0ba4cf686b02fa321a2b3ad93bb4a98b43d8b1da",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc8-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc10-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -351,7 +351,7 @@
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-data-r/DESCRIPTION",
-          "value": "0.1.0"
+          "value": "0.2.4"
         },
         "rust_workspace": {
           "kind": "toml",
@@ -407,9 +407,9 @@
       "selected_workspace_path": "RC-v1-datasets",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "c46042dabe295a10099e441000c9a62379d8d748",
+        "commit": "f7b9caa1137bfd5752034a67f317642a4fc91a3a",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc10-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -418,19 +418,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "pyproject.toml",
-          "value": "0.3.2"
+          "value": "0.3.4"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/nirs4alldatasets/DESCRIPTION",
-          "value": "0.3.2"
+          "value": "0.3.4"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.3.2"
+          "value": "0.3.4"
         }
       }
     },
@@ -570,9 +570,9 @@
       "selected_workspace_path": "RC-v1-io",
       "state": {
         "branch": "rc/v1-full-refactor",
-        "commit": "1fc6c12088dcd5e8d8702fedd3cf339d296c3a02",
+        "commit": "ccf9a7d2f7991108c13e87e1a85ef809c3a017b0",
         "dirty": false,
-        "exact_tag": "n4a-v1-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc10-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -581,19 +581,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/Cargo.toml",
-          "value": "0.1.5"
+          "value": "0.1.6"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.1.5"
+          "value": "0.1.6"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.1.5"
+          "value": "0.1.6"
         }
       }
     },
