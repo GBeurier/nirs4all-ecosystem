@@ -849,6 +849,10 @@ def coverage_report(
         phase: {status: 0 for status in ("strict", "contract", "gap")}
         for phase in V1_REFACTOR_PHASE_ORDER
     }
+    phase_status_scenario_ids = {
+        phase: {status: [] for status in ("strict", "contract", "gap")}
+        for phase in V1_REFACTOR_PHASE_ORDER
+    }
     scenario_summaries: dict[str, dict[str, Any]] = {}
     tags: dict[str, int] = {}
     languages: dict[str, int] = {}
@@ -868,7 +872,9 @@ def coverage_report(
 
         v1_summary = _v1_refactor_summary(scenario["v1_refactor_contract"])
         for phase in V1_REFACTOR_PHASE_ORDER:
-            phase_status_counts[phase][scenario["v1_refactor_contract"][phase]["status"]] += 1
+            phase_status = scenario["v1_refactor_contract"][phase]["status"]
+            phase_status_counts[phase][phase_status] += 1
+            phase_status_scenario_ids[phase][phase_status].append(scenario_id)
         scenario_summaries[scenario_id] = {
             "evidence_level": evidence_level,
             "languages": scenario["languages"],
@@ -915,6 +921,7 @@ def coverage_report(
             for language in ("python", "r", "javascript_wasm", "web")
         },
         "v1_refactor_phase_status_counts": phase_status_counts,
+        "v1_refactor_phase_scenario_ids": phase_status_scenario_ids,
         "scenario_summaries": scenario_summaries,
     }
 

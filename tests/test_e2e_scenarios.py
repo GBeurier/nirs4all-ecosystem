@@ -735,7 +735,32 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "repository_forced_best_refit",
         "wasm_web_reuse",
     }
-    for counts in report["v1_refactor_phase_status_counts"].values():
+    expected_phase_counts = {
+        "python_open_pipeline": {"strict": 2, "contract": 2, "gap": 6},
+        "python_rerun_pipeline": {"strict": 4, "contract": 3, "gap": 3},
+        "python_parity": {"strict": 10, "contract": 0, "gap": 0},
+        "papers_export": {"strict": 1, "contract": 0, "gap": 9},
+        "repository_forced_best_refit": {"strict": 0, "contract": 2, "gap": 8},
+        "wasm_web_reuse": {"strict": 3, "contract": 4, "gap": 3},
+    }
+    assert report["v1_refactor_phase_status_counts"] == expected_phase_counts
+    scenario_ids_by_phase = report["v1_refactor_phase_scenario_ids"]
+    assert scenario_ids_by_phase["repository_forced_best_refit"]["strict"] == []
+    assert set(scenario_ids_by_phase["repository_forced_best_refit"]["contract"]) == {
+        "e2e-python-reopen-paper-repository-refit",
+        "e2e-wasm-open-repo-pipeline-alt-dataset",
+    }
+    assert set(scenario_ids_by_phase["papers_export"]["gap"]) == {
+        scenario_id
+        for scenario_id in report["scenario_summaries"]
+        if scenario_id != "e2e-python-reopen-paper-repository-refit"
+    }
+    assert set(scenario_ids_by_phase["wasm_web_reuse"]["strict"]) == {
+        "e2e-converter-legacy-save-predictions-web",
+        "e2e-dataset-provider-repository-roundtrip",
+        "e2e-wasm-open-repo-pipeline-alt-dataset",
+    }
+    for counts in expected_phase_counts.values():
         assert counts["strict"] + counts["contract"] + counts["gap"] == 10
         assert counts["strict"] + counts["contract"] >= 1
     for summary in report["scenario_summaries"].values():
@@ -811,6 +836,29 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert any("dense fused-matrix multimodal proxy" in gap for gap in multimodal["strictness_gaps"])
     assert any("proxy representation" in check["metric"] for check in multimodal["parity_checks"])
     assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["wasm_web_reuse"]["status"] == "contract"
+
+    multisource = _scenario_by_id(manifest, "e2e-multisource-branching-stacking-replay")
+    assert multisource["evidence_level"] == "hybrid"
+    assert any("schema/array coverage" in gap for gap in multisource["strictness_gaps"])
+    assert flow["e2e-multisource-branching-stacking-replay"]["repository_forced_best_refit"]["status"] == "gap"
+    assert "not contractualized" in flow["e2e-multisource-branching-stacking-replay"]["repository_forced_best_refit"]["gap"]
+
+    dataset_roundtrip = _scenario_by_id(manifest, "e2e-dataset-provider-repository-roundtrip")
+    assert dataset_roundtrip["evidence_level"] == "hybrid"
+    assert any("does not execute R" in gap for gap in dataset_roundtrip["strictness_gaps"])
+    assert flow["e2e-dataset-provider-repository-roundtrip"]["wasm_web_reuse"]["status"] == "strict"
+    assert flow["e2e-dataset-provider-repository-roundtrip"]["repository_forced_best_refit"]["status"] == "gap"
+
+    formats_bindings = _scenario_by_id(manifest, "e2e-formats-io-datasets-methods-language-bindings")
+    assert formats_bindings["evidence_level"] == "hybrid"
+    assert any("WASM remains fixture-scoped" in gap for gap in formats_bindings["strictness_gaps"])
+    assert flow["e2e-formats-io-datasets-methods-language-bindings"]["wasm_web_reuse"]["status"] == "contract"
+
+    cluster = _scenario_by_id(manifest, "e2e-cluster-dag-rights-client-core")
+    assert cluster["evidence_level"] == "hybrid"
+    assert any("public checkout remains data-blocked" in gap for gap in cluster["strictness_gaps"])
+    assert flow["e2e-cluster-dag-rights-client-core"]["python_parity"]["status"] == "strict"
+    assert flow["e2e-cluster-dag-rights-client-core"]["wasm_web_reuse"]["status"] == "gap"
 
 
 def test_cross_language_e2e_plan_exposes_hybrid_web_gaps_and_strict_checks() -> None:
