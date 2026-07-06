@@ -180,7 +180,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "4238443c2ce5530d084eb2dc7eb89f0c25d4ee2b",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc7-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc8-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -330,7 +330,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "f8483800cae189bf064b094498d0fb26bd9ffff8",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc7-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc8-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1249,7 +1249,7 @@
         "branch": "rc/v1-full-refactor",
         "commit": "5c652e66855908cc2a7ac60cb9fa20164e9bde6b",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc7-2026.07-refactor"
+        "exact_tag": "n4a-v1-rc8-2026.07-refactor"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",

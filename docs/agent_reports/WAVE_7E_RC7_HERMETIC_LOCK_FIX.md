@@ -27,6 +27,7 @@ Date: 2026-07-06
 
 - Pushed `n4a-v1-rc7-2026.07-refactor` on the selected non-production heads, excluding the held `nirs4all` Python production repo.
 - Regenerated the release lock after the tag push so `dag_ml`, `dag_ml_data`, and `lite`/`nirs4all-core` resolve to the RC7 coordination tag on their pinned commits.
+- Pushed the follow-up immutable `n4a-v1-rc8-2026.07-refactor` coordination tag after the final Studio Windows-RC preparation and cockpit refresh work started; regenerated the lock again so the pinned `dag_ml`, `dag_ml_data`, and `lite`/`nirs4all-core` commits resolve to RC8 without moving RC7.
 
 ## Validation
 
