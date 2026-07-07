@@ -340,7 +340,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.2.3",
+      "preferred_exact_tag": "v0.2.4",
       "repo_url": "GBeurier/nirs4all-formats",
       "role": "Vendor readers and bindings",
       "owner_boundary": "readers",

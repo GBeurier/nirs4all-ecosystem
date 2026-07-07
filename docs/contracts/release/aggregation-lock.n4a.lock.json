@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:2958250f392c4d072067b43b6e0ff556580102e755db303c628396c4e23fec57",
+  "manifest_digest": "sha256:d4204551ba98f2cae36d6f64dfb6fda227f07e5710f81f1d1dd18824354dee8f",
   "members": {
     "core": {
       "availability": {
@@ -1177,9 +1177,9 @@
       "selected_workspace_path": "nirs4all-formats",
       "state": {
         "branch": "main",
-        "commit": "6c5ad98733bddc9c0c6bc5a6a64dca3a11c2e8cc",
+        "commit": "8bb34fc2dc5af5f574f93513dc5f1902e65b744d",
         "dirty": false,
-        "exact_tag": "v0.2.3"
+        "exact_tag": "v0.2.4"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1188,19 +1188,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/Cargo.toml",
-          "value": "0.2.3"
+          "value": "0.2.4"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/nirs4allformats/DESCRIPTION",
-          "value": "0.2.3"
+          "value": "0.2.4"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.2.3"
+          "value": "0.2.4"
         }
       }
     },

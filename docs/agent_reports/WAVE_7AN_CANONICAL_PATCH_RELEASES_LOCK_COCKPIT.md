@@ -12,7 +12,7 @@ Date: 2026-07-07
 ## Files Modified
 
 - `nirs4all-core`: version manifests only, committed as `38f5363 chore(release): bump core to 0.2.13`, tag `v0.2.13`.
-- `nirs4all-formats`: version manifests only, committed as `6c5ad98 chore(release): bump formats to 0.2.3`, tag `v0.2.3`.
+- `nirs4all-formats`: version manifests plus Python NumPy extra constraint, committed as `8bb34fc fix(python): constrain numpy wheel test extra`, tag `v0.2.4`.
 - `nirs4all-ecosystem/docs/contracts/release/aggregation-manifest.n4a.json`
 - `nirs4all-ecosystem/docs/contracts/release/aggregation-lock.n4a.lock.json`
 - `nirs4all-ecosystem/scripts/n4a_release_lock.py`
@@ -32,7 +32,7 @@ Date: 2026-07-07
 ## Publication State
 
 - `nirs4all-core v0.2.13`: crates, npm, source, R, MATLAB workflows succeeded; Python failed on PyPI Trusted Publisher `invalid-publisher`.
-- `nirs4all-formats v0.2.3`: crates, npm, source succeeded; R/release workflows were still propagating at the time of this report; PyPI may remain stale until Trusted Publisher/release propagation catches up.
+- `nirs4all-formats v0.2.4`: patch release superseding `v0.2.3`, whose Python wheel job failed while testing `[numpy]` against NumPy 2.5 on manylinux2014. Crates/npm/source/R workflows were launched for `v0.2.4`; PyPI/GitHub release status must be checked after wheel completion.
 - `dag-ml v0.2.5` and `dag-ml-data v0.2.5`: crates/npm succeeded; Python failed on PyPI Trusted Publisher `invalid-publisher`.
 - `nirs4all-providers v0.2.7` and `nirs4all-tools v0.0.4`: GitHub releases exist; PyPI remains blocked by Trusted Publisher `invalid-publisher`.
 
