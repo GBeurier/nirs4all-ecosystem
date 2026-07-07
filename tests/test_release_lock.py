@@ -448,7 +448,7 @@ def test_python_function_json_artifact_reads_git_head_not_dirty_worktree(tmp_pat
     release_lock = _load_release_lock()
     repo = tmp_path / "repo"
     _init_repo(repo)
-    topology = repo / "bindings" / "python" / "src" / "nirs4all_lite" / "_topology.py"
+    topology = repo / "bindings" / "python" / "src" / "nirs4all_core" / "_topology.py"
     topology.parent.mkdir(parents=True)
     topology.write_text(
         """
@@ -479,7 +479,7 @@ def release_topology_manifest():
     artifact = {
         "id": "release_topology_manifest",
         "kind": "python_function_json",
-        "path": "bindings/python/src/nirs4all_lite/_topology.py",
+        "path": "bindings/python/src/nirs4all_core/_topology.py",
         "function": "release_topology_manifest",
         "read_from": "git_head",
         "allowed_imports": ["copy"],
