@@ -216,6 +216,69 @@ def _synthetic_evidence_payload(path: Path) -> dict:
                 "predictions_tolerance": 1e-6,
             },
         }
+    if key == "legacy-converter/python-open-pipeline.json":
+        return {
+            "schema_version": "n4a.e2e.python_open_pipeline.v1",
+            "scenario_id": "e2e-converter-legacy-save-predictions-web",
+            "status": "passed",
+            "legacy_workspace_opened": True,
+            "converted_workspace_reopened": True,
+            "store_reopened_read_only": True,
+            "sqlite_integrity_ok": True,
+            "sqlite_foreign_key_check_ok": True,
+            "required_tables_present": True,
+            "runtime_result_reopened": True,
+            "pipeline_metadata_reopened": True,
+            "chain_metadata_reopened": True,
+            "prediction_metadata_reopened": True,
+            "store_hash_match": True,
+            "array_hash_match": True,
+            "manifest_source_fingerprint_match": True,
+            "report_verification_summary_match": True,
+            "store_user_version": 2,
+            "expected_store_user_version": 2,
+            "store_user_version_match": True,
+            "row_counts_match_report": True,
+            "workspace_artifact_counts_match_store": True,
+            "run_pipeline_fk_match": True,
+            "chain_pipeline_fk_match": True,
+            "prediction_pipeline_fk_match": True,
+            "prediction_chain_fk_match": True,
+            "pipeline_dataset_match": True,
+            "chain_dataset_match": True,
+            "chain_model_class_match": True,
+            "chain_model_name_match": True,
+            "runtime_result_pipeline_id_match": True,
+            "runtime_result_prediction_id_match": True,
+            "runtime_result_rows_match": True,
+            "array_prediction_id_match": True,
+            "array_rows_match": True,
+            "pipeline_step_count": 2,
+            "pipeline_classes": ["sklearn.cross_decomposition.PLSRegression"],
+            "prediction_rows": 3,
+            "workspace_row_counts": {"runs": 1, "pipelines": 1, "chains": 1, "predictions": 1, "arrays": 1},
+            "store_row_counts": {"chains": 1, "pipelines": 1, "predictions": 1, "runs": 1},
+            "fingerprints": {
+                "store_sha256": "sha256:" + "3" * 64,
+                "runtime_array_sha256": "sha256:" + "4" * 64,
+            },
+            "converted": {
+                "run_id": "run-2024-legacy",
+                "pipeline_id": "pipeline-pls",
+                "chain_id": "chain-1",
+                "prediction_id": "pred-loose-001",
+                "dataset_name": "cassava-drymatter-2024",
+                "model_name": "PLSRegression",
+                "model_class": "sklearn.cross_decomposition.PLSRegression",
+                "metric": "rmse",
+                "task_type": "regression",
+                "prediction_scope": "loose-predictions",
+                "prediction_level": "prediction-row",
+                "run_datasets": ["cassava-drymatter-2024"],
+                "pipeline_config": {"source_kind": "loose-predictions"},
+                "pipeline_generator_choices": [],
+            },
+        }
     if key == "legacy-converter/python-rerun-pipeline.json":
         return {
             "schema_version": "n4a.e2e.python_rerun_pipeline.v1",
@@ -850,6 +913,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "produces": {
                     "converted-workspace.n4a.json",
                     "predictions.rt_result.json",
+                    "python-open-pipeline.json",
                     "python-rerun-pipeline.json",
                     "web-results-panels.json",
                 },
@@ -858,8 +922,14 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "test_python_rerun_converted_pipeline",
                     "smoke:converted-predictions",
                 },
-                "evidence": {"legacy fixture values", "Python rerun converted workspace", "Web opens converted predictions"},
+                "evidence": {
+                    "legacy fixture values",
+                    "Python reopened converted workspace/pipeline metadata ledger",
+                    "Python rerun converted workspace",
+                    "Web opens converted predictions",
+                },
                 "phase_statuses": {
+                    "python_open_pipeline": "strict",
                     "python_rerun_pipeline": "strict",
                     "python_parity": "strict",
                     "wasm_web_reuse": "strict",
@@ -1891,7 +1961,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "strict": 17,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
-    assert report["debt_summary"]["v1_contract_phase_count"] == 8
+    assert report["debt_summary"]["v1_contract_phase_count"] == 7
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
@@ -1945,7 +2015,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "wasm_web_reuse",
     }
     expected_phase_counts = {
-        "python_open_pipeline": {"strict": 7, "contract": 2, "gap": 0, "not_applicable": 2},
+        "python_open_pipeline": {"strict": 8, "contract": 1, "gap": 0, "not_applicable": 2},
         "python_rerun_pipeline": {"strict": 9, "contract": 1, "gap": 0, "not_applicable": 1},
         "python_parity": {"strict": 11, "contract": 0, "gap": 0, "not_applicable": 0},
         "papers_export": {"strict": 1, "contract": 0, "gap": 0, "not_applicable": 10},
@@ -1995,7 +2065,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=12 v1_contract_phases=8 "
+        "debt: strictness_gaps=12 v1_contract_phases=7 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout

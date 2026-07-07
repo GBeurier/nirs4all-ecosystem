@@ -388,17 +388,17 @@
       },
       "e2e-converter-legacy-save-predictions-web": {
         "python_open_pipeline": {
-          "status": "contract",
+          "status": "strict",
           "evidence": [
-            "Python converter opens a legacy save/workspace fixture and emits a V1 workspace plus lowered prediction artifact."
+            "Python converter opens a legacy save/workspace fixture, emits a V1 workspace plus lowered prediction artifact, then reopens the converted SQLite workspace, pipeline/chain/prediction metadata, runtime result, and array sidecar with read-only SQLite, FK, checksum, and row-count checks."
           ],
           "artifacts": [
             "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
-            "{artifacts_dir}/legacy-converter/predictions.rt_result.json"
+            "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
+            "{artifacts_dir}/legacy-converter/python-open-pipeline.json"
           ],
-          "gap": "The converter opens a legacy save rather than a repository best-refit pipeline descriptor.",
           "acceptance": [
-            "Keep converter fixture values and checksums strict; add repository descriptor open coverage in the repository lane."
+            "python-open-pipeline.json must report status=passed, converted_workspace_reopened=true, store_reopened_read_only=true, sqlite_integrity_ok=true, pipeline_metadata_reopened=true, FK identity matches, store/array hash matches against the migration manifest, and prediction_rows>0."
           ]
         },
         "python_rerun_pipeline": {
@@ -1519,6 +1519,7 @@
       "artifacts": [
         "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
         "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
+        "{artifacts_dir}/legacy-converter/python-open-pipeline.json",
         "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json",
         "{artifacts_dir}/legacy-converter/web-results-panels.json",
         "{artifacts_dir}/legacy-converter/web-results.png"
@@ -1526,6 +1527,7 @@
       "evidence": [
         "Legacy input fixture hash and converter checksum manifest",
         "Converter migration report",
+        "Python reopened converted workspace/pipeline metadata ledger",
         "Python rerun converted workspace pipeline",
         "Prediction result contract validation",
         "Web panel coverage screenshot/index",
@@ -1540,6 +1542,7 @@
           "artifacts": [
             "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
             "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
+            "{artifacts_dir}/legacy-converter/python-open-pipeline.json",
             "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json",
             "{artifacts_dir}/legacy-converter/web-results-panels.json"
           ]
@@ -1585,6 +1588,7 @@
             "cd {workspace_root}/nirs4all-tools && PYTHONPATH={workspace_root}/nirs4all:$PYTHONPATH PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_legacy_save_predictions_web.py::test_python_rerun_converted_pipeline --artifacts-dir={artifacts_dir}/legacy-converter"
           ],
           "produces": [
+            "{artifacts_dir}/legacy-converter/python-open-pipeline.json",
             "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json"
           ]
         },
