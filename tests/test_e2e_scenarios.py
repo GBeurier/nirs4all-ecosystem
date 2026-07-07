@@ -164,6 +164,58 @@ def _synthetic_evidence_payload(path: Path) -> dict:
                 "descriptor": {"id": "synthetic"},
             },
         }
+    if key == "wasm-repo-alt-dataset/pipeline-repository-smoke.json":
+        return {
+            "status": "passed",
+            "repository_pipeline_id": "synthetic-repository-pipeline",
+            "repository_dataset_id": "synthetic-non-demo-dataset",
+            "repository_descriptor_sha256": "0" * 64,
+            "repository_descriptor_verified": True,
+            "repository_dataset_id_non_demo_sample": True,
+            "repository_dataset_files_sha256": "1" * 64,
+            "provider_runtime_assertions": {
+                "original_folds": {
+                    "assignment_sha256": "2" * 64,
+                },
+            },
+            "python_open_pipeline": {
+                "status": "passed",
+                "pipeline_reopened": True,
+                "descriptor_hash_match": True,
+                "repository_pipeline_id": "synthetic-repository-pipeline",
+                "repository_dataset_id": "synthetic-non-demo-dataset",
+                "descriptor_sha256": "0" * 64,
+            },
+            "python_rerun_pipeline": {
+                "status": "passed",
+                "executed": True,
+                "finite_predictions": True,
+                "repository_pipeline_id": "synthetic-repository-pipeline",
+                "repository_dataset_id": "synthetic-non-demo-dataset",
+                "dataset_files_sha256": "1" * 64,
+                "dataset_hash_match": True,
+                "fold_assignment_sha256": "2" * 64,
+                "python_fold_assignment_sha256": "2" * 64,
+                "fold_assignment_hash_match": True,
+                "prediction_rows": 4,
+                "rmse": 0.1,
+            },
+            "executed_imported_pipeline": True,
+            "console_error_count": 0,
+            "prediction_comparison": {
+                "compared_rows": 4,
+                "max_abs_delta": 0,
+                "tolerance": 1e-6,
+            },
+            "python_oracle_comparison": {
+                "max_abs_delta": 0,
+                "predictions_tolerance": 1e-6,
+            },
+            "imported_python_oracle_comparison": {
+                "max_abs_delta": 0,
+                "predictions_tolerance": 1e-6,
+            },
+        }
     return {
         "status": "passed",
         "ok": True,
@@ -645,11 +697,16 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "steps": ["wasm-run-repository-pipeline", "web-render-results"],
                 "languages": {"javascript_wasm", "web", "python"},
                 "tags": {"datasets", "pipeline", "repository", "predictions", "web_results"},
-                "tools": {"npm"},
+                "tools": {"npm", "python3.11"},
                 "produces": {"pipeline-repository-smoke.json", "predict-artifact-smoke.json", "web-results.png"},
                 "commands": {"smoke:pipeline-repository", "smoke:predict-artifact"},
-                "evidence": {"Python nirs4all/sklearn oracle", "fresh Web/WASM session"},
-                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "strict"},
+                "evidence": {"Python nirs4all/sklearn oracle", "fresh Web/WASM session", "python_rerun_pipeline"},
+                "phase_statuses": {
+                    "python_open_pipeline": "strict",
+                    "python_rerun_pipeline": "strict",
+                    "python_parity": "strict",
+                    "wasm_web_reuse": "strict",
+                },
             },
         ),
         (
@@ -1029,14 +1086,19 @@ def test_cross_language_e2e_plan_summarizes_v1_refactor_gaps(tmp_path: Path) -> 
     assert plan["evidence_level"] == "hybrid"
     assert plan["v1_refactor_summary"] == {
         "total": 6,
-        "strict": 2,
+        "strict": 4,
         "contract": 1,
-        "gap": 2,
+        "gap": 0,
         "not_applicable": 1,
-        "non_gap": 3,
-        "strict_phases": ["python_parity", "wasm_web_reuse"],
+        "non_gap": 5,
+        "strict_phases": [
+            "python_open_pipeline",
+            "python_rerun_pipeline",
+            "python_parity",
+            "wasm_web_reuse",
+        ],
         "contract_phases": ["repository_forced_best_refit"],
-        "gap_phases": ["python_open_pipeline", "python_rerun_pipeline"],
+        "gap_phases": [],
         "not_applicable_phases": ["papers_export"],
     }
 
@@ -1340,6 +1402,84 @@ def test_cross_language_e2e_evidence_accepts_required_scenario_artifact_shape(
 
     assert report["verified_count"] == 1
     assert report["failed_count"] == 0
+
+
+def test_cross_language_e2e_wasm_repository_evidence_requires_python_reopen_rerun(
+    tmp_path: Path,
+) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "wasm-repo-alt-dataset" / "pipeline-repository-smoke.json"
+    artifact.parent.mkdir(parents=True)
+    _write_json(
+        artifact,
+        {
+            "status": "passed",
+            "repository_descriptor_verified": True,
+            "repository_dataset_id_non_demo_sample": True,
+            "executed_imported_pipeline": True,
+            "console_error_count": 0,
+            "prediction_comparison": {
+                "compared_rows": 4,
+                "max_abs_delta": 0,
+                "tolerance": 1e-6,
+            },
+            "python_oracle_comparison": {
+                "max_abs_delta": 0,
+                "predictions_tolerance": 1e-6,
+            },
+            "imported_python_oracle_comparison": {
+                "max_abs_delta": 0,
+                "predictions_tolerance": 1e-6,
+            },
+        },
+    )
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "e2e-wasm-open-repo-pipeline-alt-dataset",
+                "artifacts": [str(artifact)],
+                "steps": [],
+                "parity_checks": [],
+            }
+        ]
+    )
+
+    assert report["failed_count"] == 1
+    failures = "\n".join(report["scenarios"]["e2e-wasm-open-repo-pipeline-alt-dataset"]["failures"])
+    assert "missing required evidence field python_open_pipeline.status" in failures
+    assert "missing required evidence field python_rerun_pipeline.status" in failures
+
+
+def test_cross_language_e2e_wasm_repository_evidence_rejects_hash_mismatches(
+    tmp_path: Path,
+) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "wasm-repo-alt-dataset" / "pipeline-repository-smoke.json"
+    artifact.parent.mkdir(parents=True)
+    payload = _synthetic_evidence_payload(artifact)
+    payload["python_open_pipeline"]["descriptor_sha256"] = "a" * 64
+    payload["python_rerun_pipeline"]["dataset_files_sha256"] = "b" * 64
+    payload["python_rerun_pipeline"]["fold_assignment_sha256"] = "c" * 64
+    payload["python_rerun_pipeline"]["python_fold_assignment_sha256"] = "c" * 64
+    _write_json(artifact, payload)
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "e2e-wasm-open-repo-pipeline-alt-dataset",
+                "artifacts": [str(artifact)],
+                "steps": [],
+                "parity_checks": [],
+            }
+        ]
+    )
+
+    assert report["failed_count"] == 1
+    failures = "\n".join(report["scenarios"]["e2e-wasm-open-repo-pipeline-alt-dataset"]["failures"])
+    assert "python_open_pipeline.descriptor_sha256" in failures
+    assert "python_rerun_pipeline.dataset_files_sha256" in failures
+    assert "python_rerun_pipeline.fold_assignment_sha256" in failures
 
 
 def test_cross_language_e2e_parity_check_artifacts_must_be_scenario_artifacts(tmp_path: Path) -> None:
@@ -1648,7 +1788,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["v1_contract_phase_count"] == 10
-    assert report["debt_summary"]["v1_gap_phase_count"] == 6
+    assert report["debt_summary"]["v1_gap_phase_count"] == 4
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
         "strictness_gaps": 2,
@@ -1657,6 +1797,14 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 1,
         "strict_parity_checks": 2,
+    }
+    assert report["debt_summary"]["scenario_phase_debt"]["e2e-wasm-open-repo-pipeline-alt-dataset"] == {
+        "strictness_gaps": 1,
+        "contract_phases": ["repository_forced_best_refit"],
+        "gap_phases": [],
+        "not_applicable_phases": ["papers_export"],
+        "contract_parity_checks": 1,
+        "strict_parity_checks": 3,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-multimodal-python-r-wasm-roundtrip"] == {
         "strictness_gaps": 1,
@@ -1693,8 +1841,8 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "wasm_web_reuse",
     }
     expected_phase_counts = {
-        "python_open_pipeline": {"strict": 3, "contract": 2, "gap": 4, "not_applicable": 2},
-        "python_rerun_pipeline": {"strict": 5, "contract": 3, "gap": 2, "not_applicable": 1},
+        "python_open_pipeline": {"strict": 4, "contract": 2, "gap": 3, "not_applicable": 2},
+        "python_rerun_pipeline": {"strict": 6, "contract": 3, "gap": 1, "not_applicable": 1},
         "python_parity": {"strict": 11, "contract": 0, "gap": 0, "not_applicable": 0},
         "papers_export": {"strict": 1, "contract": 0, "gap": 0, "not_applicable": 10},
         "repository_forced_best_refit": {"strict": 1, "contract": 1, "gap": 0, "not_applicable": 9},
@@ -1744,7 +1892,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
 
     assert (
         "debt: strictness_gaps=12 v1_contract_phases=10 "
-        "v1_gap_phases=6 v1_not_applicable_phases=25"
+        "v1_gap_phases=4 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
@@ -1785,7 +1933,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
     assert "| strictness gaps | 12 |" in report
-    assert "| V1 gap phases | 6 |" in report
+    assert "| V1 gap phases | 4 |" in report
     assert "| V1 not applicable phases | 25 |" in report
     assert "e2e-core-ui-custom-app-host" in report
     assert "repository_forced_best_refit" in report
@@ -1903,6 +2051,10 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert any("non-demo uploaded fixture dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
     assert any("external provider/catalog dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
     wasm_flow = flow["e2e-wasm-open-repo-pipeline-alt-dataset"]
+    assert wasm_flow["python_open_pipeline"]["status"] == "strict"
+    assert wasm_flow["python_rerun_pipeline"]["status"] == "strict"
+    assert "python_open_pipeline.status=passed" in json.dumps(wasm_flow["python_open_pipeline"], sort_keys=True)
+    assert "python_rerun_pipeline.status=passed" in json.dumps(wasm_flow["python_rerun_pipeline"], sort_keys=True)
     assert wasm_flow["python_parity"]["status"] == "strict"
     assert wasm_flow["wasm_web_reuse"]["status"] == "strict"
 
@@ -3121,7 +3273,7 @@ def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked(tmp_pa
     assert "e2e-multimodal-python-r-wasm-roundtrip" in summary["ready"]
     assert "e2e-multisource-branching-stacking-replay" in summary["ready"]
     assert summary["blocked"] == []
-    assert summary["v1_refactor_summary"]["e2e-wasm-open-repo-pipeline-alt-dataset"]["gap"] == 2
+    assert summary["v1_refactor_summary"]["e2e-wasm-open-repo-pipeline-alt-dataset"]["gap"] == 0
     assert summary["v1_refactor_summary"]["e2e-wasm-open-repo-pipeline-alt-dataset"]["not_applicable"] == 1
     assert (
         summary["v1_refactor_summary"]["e2e-python-reopen-paper-repository-refit"]["strict"]

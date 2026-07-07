@@ -166,23 +166,27 @@
       },
       "e2e-wasm-open-repo-pipeline-alt-dataset": {
         "python_open_pipeline": {
-          "status": "gap",
+          "status": "strict",
           "evidence": [
-            "The current gate opens the repository pipeline in WASM/Web, not in Python."
+            "The Web smoke launches a full Python nirs4all/sklearn oracle harness that opens the same repository descriptor JSON before browser import, records descriptor hash parity, and exposes the result in pipeline-repository-smoke.json."
           ],
-          "gap": "No Python opener validates the same repository descriptor before the browser import.",
+          "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
+          ],
           "acceptance": [
-            "Add a Python repository descriptor load over the same manifest and record descriptor hash parity before Web execution."
+            "pipeline-repository-smoke.json must report python_open_pipeline.status=passed, pipeline_reopened=true, descriptor_hash_match=true, and the repository pipeline/dataset ids used by the Web import."
           ]
         },
         "python_rerun_pipeline": {
-          "status": "gap",
+          "status": "strict",
           "evidence": [
-            "The scenario reruns inside a fresh browser session only."
+            "The Python oracle harness reruns the opened repository pipeline over the same non-demo fixture and dag-ml emitted fold assignments before the fresh Web/WASM import is compared."
           ],
-          "gap": "No Python rerun over the non-demo uploaded fixture dataset is asserted.",
-          "acceptance": [
-            "Add Python rerun evidence with RMSE and prediction rows for the same pipeline/dataset hashes."
+          "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
+          ],
+      "acceptance": [
+            "pipeline-repository-smoke.json must report python_rerun_pipeline.status=passed, executed=true, finite_predictions=true, prediction_rows>0, non-negative RMSE, dataset_files_sha256 matching repository_dataset_files_sha256, and fold_assignment_sha256 matching the dag-ml emitted fold ledger."
           ]
         },
         "python_parity": {
@@ -1219,9 +1223,10 @@
               ]
             }
           ],
-          "requires_tools": [
-            "npm"
-          ],
+      "requires_tools": [
+        "npm",
+        "python3.11"
+      ],
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
             "{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs",
@@ -1230,7 +1235,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
+        "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
           ],
           "produces": [
             "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",

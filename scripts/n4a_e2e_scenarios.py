@@ -303,6 +303,29 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "status", "equals": "passed"},
             {"path": "repository_descriptor_verified", "equals": True},
             {"path": "repository_dataset_id_non_demo_sample", "equals": True},
+            {"path": "repository_dataset_files_sha256", "non_empty": True},
+            {"path": "python_open_pipeline.status", "equals": "passed"},
+            {"path": "python_open_pipeline.pipeline_reopened", "equals": True},
+            {"path": "python_open_pipeline.descriptor_hash_match", "equals": True},
+            {"path": "python_open_pipeline.repository_pipeline_id", "non_empty": True},
+            {"path": "python_open_pipeline.repository_pipeline_id", "equals_path": "repository_pipeline_id"},
+            {"path": "python_open_pipeline.repository_dataset_id", "equals_path": "repository_dataset_id"},
+            {"path": "python_open_pipeline.descriptor_sha256", "equals_path": "repository_descriptor_sha256"},
+            {"path": "python_rerun_pipeline.status", "equals": "passed"},
+            {"path": "python_rerun_pipeline.executed", "equals": True},
+            {"path": "python_rerun_pipeline.finite_predictions", "equals": True},
+            {"path": "python_rerun_pipeline.repository_pipeline_id", "equals_path": "repository_pipeline_id"},
+            {"path": "python_rerun_pipeline.repository_dataset_id", "equals_path": "repository_dataset_id"},
+            {"path": "python_rerun_pipeline.dataset_files_sha256", "equals_path": "repository_dataset_files_sha256"},
+            {"path": "python_rerun_pipeline.dataset_hash_match", "equals": True},
+            {
+                "path": "python_rerun_pipeline.fold_assignment_sha256",
+                "equals_path": "provider_runtime_assertions.original_folds.assignment_sha256",
+            },
+            {"path": "python_rerun_pipeline.python_fold_assignment_sha256", "equals_path": "python_rerun_pipeline.fold_assignment_sha256"},
+            {"path": "python_rerun_pipeline.fold_assignment_hash_match", "equals": True},
+            {"path": "python_rerun_pipeline.prediction_rows", "gt": 0},
+            {"path": "python_rerun_pipeline.rmse", "gte": 0},
             {"path": "executed_imported_pipeline", "equals": True},
             {"path": "console_error_count", "equals": 0},
             {"path": "prediction_comparison.compared_rows", "gt": 0},
@@ -722,6 +745,13 @@ def _validate_artifact_requirement(
     failures: list[str] = []
     if "equals" in requirement and value != requirement["equals"]:
         failures.append(f"{raw_path}: {path}={value!r} != {requirement['equals']!r}")
+    if "equals_path" in requirement:
+        expected_path = requirement["equals_path"]
+        expected_exists, expected_value = _json_path(payload, expected_path)
+        if not expected_exists:
+            failures.append(f"{raw_path}: missing required comparison field {expected_path}")
+        elif value != expected_value:
+            failures.append(f"{raw_path}: {path}={value!r} != {expected_path}={expected_value!r}")
     if requirement.get("non_empty") and not value:
         failures.append(f"{raw_path}: {path} must be non-empty")
     if requirement.get("empty") and value:

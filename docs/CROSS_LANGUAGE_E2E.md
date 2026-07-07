@@ -48,9 +48,10 @@ Current coverage is intentionally hybrid: every parity-tagged scenario has at
 least one strict parity check, including the multimodal dense-fused
 Python/R/WASM prediction contract. The manifest still records contract-level
 surfaces and explicit gaps for pending runtimes such as source-aware native
-multimodal replay and some Web/WASM reuse paths. Do not present this suite as
-full strict ecosystem parity unless those phase statuses are promoted in the
-manifest and the coverage tests are updated with matching evidence.
+multimodal replay, converted-save Python rerun, and generated-pipeline Python
+reopen evidence. Do not present this suite as full strict ecosystem parity
+unless those phase statuses are promoted in the manifest and the coverage tests
+are updated with matching evidence.
 
 The validator also protects the suite shape from collapsing into shallow smoke
 claims. Each scenario must include Python as the portable oracle runtime, at
@@ -80,7 +81,7 @@ that count and the tests assert the expected handoff for each workflow:
 | --- | --- |
 | `e2e-r-dataset-io-pipeline-save` | R loads a catalog dataset, reshapes it through IO, runs/saves a pipeline, and records Python/native parity evidence. |
 | `e2e-python-reopen-paper-repository-refit` | Python reopens/reruns a saved pipeline, papers export preserves provenance, repository handoff is emitted, and Web/WASM imports it. |
-| `e2e-wasm-open-repo-pipeline-alt-dataset` | A fresh Web/WASM session imports a repository pipeline over an alternate dataset and compares against a Python oracle. |
+| `e2e-wasm-open-repo-pipeline-alt-dataset` | A Python oracle opens and reruns the repository descriptor, then a fresh Web/WASM session imports the same pipeline over an alternate dataset and compares predictions. |
 | `e2e-multimodal-python-r-wasm-roundtrip` | Python creates multimodal evidence and R/WASM consume the persisted dense-fused artifacts with strict numeric parity against the Python oracle. |
 | `e2e-multisource-branching-stacking-replay` | Python builds multisource stacking replay evidence and native/core replay verifies score parity. |
 | `e2e-converter-legacy-save-predictions-web` | Python converts a legacy save and Web renders the lowered prediction result panels. |
