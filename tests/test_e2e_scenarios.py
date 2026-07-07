@@ -557,10 +557,11 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "custom-host-r-surface.json",
                     "custom-host-run.json",
                     "custom-host-predictions.json",
+                    "custom-host-runtime-contracts.json",
                     "custom-host-ui.json",
                 },
                 "commands": {"smoke:custom-app-host", "check:ui-shim", "Rscript"},
-                "evidence": {"R binding surface", "nirs4all-core WASM", "nirs4all-ui"},
+                "evidence": {"R binding surface", "nirs4all-core WASM", "runtimeContracts", "nirs4all-ui"},
                 "phase_statuses": {
                     "python_parity": "strict",
                     "wasm_web_reuse": "strict",
@@ -1273,7 +1274,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["debt_summary"]["strictness_gap_count"] == 12
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 9,
-        "strict": 14,
+        "strict": 15,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == [
         "e2e-multimodal-python-r-wasm-roundtrip"
@@ -1285,7 +1286,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "contract_phases": ["python_open_pipeline", "python_rerun_pipeline"],
         "gap_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 1,
-        "strict_parity_checks": 1,
+        "strict_parity_checks": 2,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-multimodal-python-r-wasm-roundtrip"] == {
         "strictness_gaps": 1,

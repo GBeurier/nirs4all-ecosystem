@@ -1143,7 +1143,7 @@
     {
       "id": "e2e-core-ui-custom-app-host",
       "title": "Custom Web host composes nirs4all-core runtime with reusable nirs4all-ui components",
-      "objective": "Build the minimal custom-app path: record the R binding surface, open a portable Python oracle pipeline fixture, execute it through nirs4all-core WASM, predict through the fitted model, and render dataset/runtime/metric state through nirs4all-ui without relying on Studio or Web-specific backend APIs.",
+      "objective": "Build the minimal custom-app path: record the R binding surface, open a portable Python oracle pipeline fixture, execute it through nirs4all-core WASM, prove that standalone serialized-model prediction is a WASM-only runtime contract today, predict through the fitted model, and render dataset/runtime/metric state through nirs4all-ui without relying on Studio or Web-specific backend APIs.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
         "The custom host is a Vitest/React contract in nirs4all-web, not a packaged standalone downstream application yet.",
@@ -1156,11 +1156,13 @@
         "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
         "{artifacts_dir}/custom-app-host/custom-host-run.json",
         "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
+        "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",
         "{artifacts_dir}/custom-app-host/custom-host-ui.json"
       ],
       "evidence": [
         "R binding surface artifact recorded in the same custom app host handoff",
         "Portable Python oracle fixture opened by the custom host",
+        "runtimeContracts artifact records that only javascript_wasm supports serialized-model prediction through predictPortablePipeline",
         "nirs4all-core WASM pipeline execution and fitted model prediction",
         "Prediction max_abs_delta versus Python oracle tolerance",
         "nirs4all-ui DatasetPreviewCard, RuntimeEngineBadge, and MetricValueBadge React elements rendered in the same host",
@@ -1178,6 +1180,12 @@
           "candidate": "custom app host React element composition",
           "metric": "web result panel component tags and engine label render from shared UI components",
           "evidence_level": "contract"
+        },
+        {
+          "oracle": "nirs4all-core capability manifest runtimeContracts",
+          "candidate": "custom app host runtime contract artifact",
+          "metric": "prediction contract parity: serialized_model_predict_surfaces is exactly ['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline",
+          "evidence_level": "strict"
         }
       ],
       "steps": [
@@ -1205,7 +1213,8 @@
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-run.json",
-            "{artifacts_dir}/custom-app-host/custom-host-predictions.json"
+            "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
+            "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json"
           ]
         },
         {
