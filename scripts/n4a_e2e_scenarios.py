@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -183,14 +184,66 @@ DISALLOWED_ARTIFACT_STATUS_SUBSTRINGS = {
     "not_executed",
 }
 BOOLEAN_EVIDENCE_FIELDS = {
+    "browser_runtime_executed",
+    "client_side_only",
+    "descriptor_hash_match",
+    "executed",
     "finite_predictions",
     "legacy_python_replay",
+    "matches_oracle",
     "numeric_oracle_valid",
     "ok",
     "passed",
+    "parity_ok",
+    "rendered",
+    "repository_reopen_validated",
+    "source_hash_match",
     "success",
     "valid",
+    "within_tolerance",
 }
+POSITIVE_EVIDENCE_FIELDS = {
+    "artifact_count",
+    "fold_count",
+    "n_predictions",
+    "n_prediction_rows",
+    "n_samples",
+    "prediction_count",
+    "prediction_rows",
+    "sample_count",
+}
+FINITE_NUMERIC_FIELD_FRAGMENTS = (
+    "delta",
+    "duration_ms",
+    "elapsed_ms",
+    "mae",
+    "metric",
+    "mse",
+    "ratio",
+    "rmse",
+    "score",
+    "tolerance",
+)
+NONNEGATIVE_NUMERIC_FIELD_FRAGMENTS = (
+    "absolute_delta",
+    "duration_ms",
+    "elapsed_ms",
+    "max_abs_delta",
+    "mae",
+    "mse",
+    "ratio",
+    "rmse",
+    "tolerance",
+)
+DELTA_FIELD_FRAGMENTS = (
+    "absolute_delta",
+    "max_abs_delta",
+    "metric_delta",
+    "prediction_delta",
+    "rmse_delta",
+    "score_delta",
+)
+TOLERANCE_FIELD_FRAGMENTS = ("atol", "rtol", "tolerance")
 
 
 class E2EScenarioError(RuntimeError):
@@ -257,6 +310,88 @@ def _normal_status(value: str) -> str:
     return value.strip().lower().replace("-", "_").replace(" ", "_")
 
 
+def _is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _numeric_failures(key_name: str, item: Any, child_path: str) -> list[str]:
+    if key_name in POSITIVE_EVIDENCE_FIELDS and not _is_number(item):
+        return [f"{child_path}={item!r} must be numeric"]
+    if not _is_number(item):
+        return []
+    value = float(item)
+    failures: list[str] = []
+    if any(fragment in key_name for fragment in FINITE_NUMERIC_FIELD_FRAGMENTS) and not math.isfinite(value):
+        failures.append(f"{child_path}={item!r} is not finite")
+    is_delta = any(fragment in key_name for fragment in DELTA_FIELD_FRAGMENTS)
+    is_absolute_delta = "absolute_delta" in key_name or "max_abs_delta" in key_name
+    if (
+        any(fragment in key_name for fragment in NONNEGATIVE_NUMERIC_FIELD_FRAGMENTS)
+        and (not is_delta or is_absolute_delta)
+        and math.isfinite(value)
+        and value < 0
+    ):
+        failures.append(f"{child_path}={item!r} must be non-negative")
+    if key_name in POSITIVE_EVIDENCE_FIELDS and (not math.isfinite(value) or value <= 0):
+        failures.append(f"{child_path}={item!r} must be > 0")
+    return failures
+
+
+def _tolerance_key_for_delta(delta_key: str, values: dict[str, Any]) -> str | None:
+    normalized_keys = {str(key).lower(): str(key) for key in values}
+    prefixes: list[str] = []
+    for suffix in (
+        "_max_abs_delta",
+        "_absolute_delta",
+        "_prediction_delta",
+        "_score_delta",
+        "_rmse_delta",
+        "_metric_delta",
+        "_delta",
+    ):
+        if delta_key.endswith(suffix):
+            prefix = delta_key[: -len(suffix)]
+            if prefix:
+                prefixes.append(prefix)
+    if delta_key.endswith("_delta"):
+        prefix = delta_key[: -len("_delta")]
+        if prefix:
+            prefixes.append(prefix)
+    for prefix in dict.fromkeys(prefixes):
+        for tolerance_suffix in (f"_{fragment}" for fragment in TOLERANCE_FIELD_FRAGMENTS):
+            candidate = prefix + tolerance_suffix
+            if candidate in normalized_keys:
+                return normalized_keys[candidate]
+    for candidate in TOLERANCE_FIELD_FRAGMENTS:
+        if candidate in normalized_keys:
+            return normalized_keys[candidate]
+    return None
+
+
+def _delta_tolerance_failures(values: dict[str, Any], path: str) -> list[str]:
+    failures: list[str] = []
+    for key, item in values.items():
+        key_name = str(key).lower()
+        if not _is_number(item) or not any(fragment in key_name for fragment in DELTA_FIELD_FRAGMENTS):
+            continue
+        tolerance_key = _tolerance_key_for_delta(key_name, values)
+        if tolerance_key is None:
+            continue
+        tolerance_value = values[tolerance_key]
+        if not _is_number(tolerance_value):
+            failures.append(f"{path}.{tolerance_key}={tolerance_value!r} is not numeric")
+            continue
+        delta = float(item)
+        tolerance = float(tolerance_value)
+        if not math.isfinite(delta) or not math.isfinite(tolerance):
+            failures.append(f"{path}.{key}={item!r} / {tolerance_key}={tolerance_value!r} must be finite")
+        elif tolerance < 0:
+            failures.append(f"{path}.{tolerance_key}={tolerance_value!r} must be non-negative")
+        elif abs(delta) > tolerance:
+            failures.append(f"{path}.{key}={item!r} exceeds {tolerance_key}={tolerance_value!r}")
+    return failures
+
+
 def _json_semantic_failures(value: Any, path: str = "$") -> list[str]:
     failures: list[str] = []
     if isinstance(value, dict):
@@ -274,7 +409,9 @@ def _json_semantic_failures(value: Any, path: str = "$") -> list[str]:
                     failures.append(f"{child_path}={item!r}")
             if key_name in BOOLEAN_EVIDENCE_FIELDS and item is False:
                 failures.append(f"{child_path}=false")
+            failures.extend(_numeric_failures(key_name, item, child_path))
             failures.extend(_json_semantic_failures(item, child_path))
+        failures.extend(_delta_tolerance_failures(value, path))
     elif isinstance(value, list):
         for index, item in enumerate(value):
             failures.extend(_json_semantic_failures(item, f"{path}[{index}]"))
@@ -1355,6 +1492,11 @@ def main(argv: list[str] | None = None) -> int:
 
     evidence_parser = subparsers.add_parser("evidence", help="verify expected post-run artifacts")
     evidence_parser.add_argument("--scenario")
+    evidence_parser.add_argument(
+        "--ready-only",
+        action="store_true",
+        help="verify artifacts only for scenarios whose requirements are currently ready",
+    )
     evidence_parser.add_argument("--json", action="store_true")
     evidence_parser.add_argument(
         "--max-age-seconds",
@@ -1461,11 +1603,17 @@ def main(argv: list[str] | None = None) -> int:
                     )
             return 0
         if args.command == "evidence":
+            if args.ready_only and args.scenario:
+                raise E2EScenarioError("--ready-only cannot be combined with --scenario")
             scenarios = [_scenario_by_id(manifest, args.scenario)] if args.scenario else manifest["scenarios"]
             plans = [
                 plan_scenario(scenario, workspace_root=workspace_root, artifacts_dir=artifacts_dir)
                 for scenario in scenarios
             ]
+            if args.ready_only:
+                plans = [plan for plan in plans if plan["status"] == "ready"]
+                if not plans:
+                    raise E2EScenarioError("--ready-only matched no ready scenarios")
             report = artifact_evidence_report(plans, max_age_seconds=args.max_age_seconds)
             if args.json:
                 print(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True))

@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       N4A_WORKSPACE_ROOT: ${{ github.workspace }}/nirs4all-ecosystem
+      N4A_E2E_MAX_ARTIFACT_AGE_SECONDS: "14400"
       PYTHONDONTWRITEBYTECODE: "1"
     defaults:
       run:
@@ -72,6 +73,12 @@ jobs:
             )
           fi
           python3 scripts/n4a_e2e_scenarios.py "${args[@]}"
+      - name: Verify ready scenario artifacts
+        if: ${{ !github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
+        run: >
+          python3 scripts/n4a_e2e_scenarios.py evidence
+          --ready-only
+          --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
       - name: Plan selected scenario
         if: ${{ github.event.inputs.scenario && github.event.inputs.execute != 'true' }}
         env:
@@ -88,3 +95,11 @@ jobs:
             args+=(--allow-blocked)
           fi
           python3 scripts/n4a_e2e_scenarios.py "${args[@]}"
+      - name: Verify selected scenario artifacts
+        if: ${{ github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
+        env:
+          N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}
+        run: >
+          python3 scripts/n4a_e2e_scenarios.py evidence
+          --scenario "$N4A_E2E_SCENARIO"
+          --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"

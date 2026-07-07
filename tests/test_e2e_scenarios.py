@@ -1617,8 +1617,13 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     declared_repos = {repo for scenario in manifest["scenarios"] for repo in scenario["repos"]}
 
     assert "N4A_WORKSPACE_ROOT: ${{ github.workspace }}/nirs4all-ecosystem" in workflow
+    assert 'N4A_E2E_MAX_ARTIFACT_AGE_SECONDS: "14400"' in workflow
     assert "allow_blocked:" in workflow
     assert "run-ready --execute" in workflow
+    assert "Verify ready scenario artifacts" in workflow
+    assert "python3 scripts/n4a_e2e_scenarios.py evidence" in workflow
+    assert "--ready-only" in workflow
+    assert '--max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"' in workflow
     assert "--allow-blocked" in workflow
     assert set(re.findall(r"--allowed-blocked-scenario ([a-z0-9-]+)", workflow)) == (
         ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS
@@ -1639,6 +1644,8 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert '[[ "$N4A_ALLOW_BLOCKED" == "true" ]]' in workflow
     assert 'plan --scenario "$N4A_E2E_SCENARIO"' in workflow
     assert 'args=(run "$N4A_E2E_SCENARIO" --execute)' in workflow
+    assert "Verify selected scenario artifacts" in workflow
+    assert '--scenario "$N4A_E2E_SCENARIO"' in workflow
     assert 'args=(run "${{ github.event.inputs.scenario }}" --execute)' not in workflow
     assert '[[ "${{ github.event.inputs.allow_blocked }}" == "true" ]]' not in workflow
     assert "path: nirs4all-ecosystem" in workflow
@@ -1957,13 +1964,144 @@ def test_cross_language_e2e_rejects_non_passing_json_artifacts(tmp_path: Path, p
     assert returncode == 1
 
 
+@pytest.mark.parametrize(
+    ("payload", "expected"),
+    [
+        (
+            {
+                "status": "passed",
+                "prediction_rows": "12",
+            },
+            "prediction_rows='12' must be numeric",
+        ),
+        (
+            {
+                "status": "passed",
+                "prediction_rows": 0,
+            },
+            "prediction_rows=0 must be > 0",
+        ),
+        (
+            {
+                "status": "passed",
+                "prediction_rows": 12,
+                "duration_ms": -5,
+            },
+            "duration_ms=-5 must be non-negative",
+        ),
+        (
+            {
+                "status": "passed",
+                "prediction_rows": 12,
+                "prediction_max_abs_delta": 0.002,
+                "prediction_tolerance": 0.001,
+            },
+            "prediction_max_abs_delta=0.002 exceeds prediction_tolerance=0.001",
+        ),
+        (
+            {
+                "status": "passed",
+                "prediction_rows": 12,
+                "rmse": float("nan"),
+            },
+            "rmse=nan is not finite",
+        ),
+        (
+            {
+                "status": "passed",
+                "prediction_rows": 12,
+                "parity_ok": False,
+            },
+            "parity_ok=false",
+        ),
+        (
+            {
+                "status": "passed",
+                "prediction_rows": 12,
+                "within_tolerance": False,
+            },
+            "within_tolerance=false",
+        ),
+    ],
+)
+def test_cross_language_e2e_rejects_semantically_weak_numeric_artifacts(
+    tmp_path: Path,
+    payload: dict,
+    expected: str,
+) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "weak-numeric-result.json"
+    artifact.write_text(json.dumps(payload), encoding="utf-8")
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "synthetic",
+                "artifacts": [str(artifact)],
+                "steps": [
+                    {
+                        "id": "write-evidence",
+                        "produces": [str(artifact)],
+                    }
+                ],
+            }
+        ]
+    )
+
+    assert report["verified_count"] == 0
+    assert report["failed_count"] == 1
+    assert expected in "\n".join(report["scenarios"]["synthetic"]["failures"])
+
+
+def test_cross_language_e2e_accepts_signed_delta_within_tolerance(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "signed-delta-result.json"
+    artifact.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "prediction_rows": 12,
+                "rmse_delta": -0.001,
+                "rmse_tolerance": 0.01,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "synthetic",
+                "artifacts": [str(artifact)],
+                "steps": [{"id": "write-evidence", "produces": [str(artifact)]}],
+            }
+        ]
+    )
+
+    assert report["verified_count"] == 1
+    assert report["failed_count"] == 0
+
+
 def test_cross_language_e2e_artifact_evidence_report_verifies_existing_artifacts(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     json_artifact = tmp_path / "passing-result.json"
     png_artifact = tmp_path / "web-results.png"
     zip_artifact = tmp_path / "paper-export.zip"
     parquet_artifact = tmp_path / "predictions.parquet"
-    json_artifact.write_text('{"status": "passed", "ok": true}\n', encoding="utf-8")
+    json_artifact.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "ok": True,
+                "prediction_rows": 4,
+                "prediction_max_abs_delta": 1e-9,
+                "prediction_tolerance": 1e-6,
+                "within_tolerance": True,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     png_artifact.write_bytes(
         b"\x89PNG\r\n\x1a\n"
         b"\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde"
@@ -2162,6 +2300,147 @@ def test_cross_language_e2e_cli_evidence_json_selected_scenario(tmp_path: Path) 
     assert missing.returncode == 1
     assert "failed" in missing.stdout
     assert "missing" in missing.stdout
+
+
+def test_cross_language_e2e_cli_evidence_ready_only_skips_blocked_scenarios(tmp_path: Path) -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+    manifest = _read_manifest()
+    ready_scenario = manifest["scenarios"][1]
+    ready_id = ready_scenario["id"]
+    blocked_ids = {scenario["id"] for scenario in manifest["scenarios"] if scenario["id"] != ready_id}
+    workspace_root = tmp_path / "workspace"
+    artifacts_dir = tmp_path / "artifacts"
+    missing_path = tmp_path / "missing-public-dataset.json"
+    workspace_root.mkdir()
+    artifacts_dir.mkdir()
+
+    for step in ready_scenario["steps"]:
+        step["requires_tools"] = [sys.executable]
+        step["requires_env"] = []
+        step["requires_paths"] = []
+    for scenario in manifest["scenarios"]:
+        if scenario["id"] == ready_id:
+            continue
+        for step in scenario["steps"]:
+            step["requires_paths"] = [*step.get("requires_paths", []), str(missing_path)]
+
+    for raw_path in ready_scenario["artifacts"]:
+        artifact = Path(raw_path.format(workspace_root=workspace_root, artifacts_dir=artifacts_dir))
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "status": "passed",
+            "ok": True,
+            "prediction_rows": 1,
+            "prediction_max_abs_delta": 0,
+            "prediction_tolerance": 1e-6,
+        }
+        if artifact.suffix == ".zip":
+            with zipfile.ZipFile(artifact, "w") as archive:
+                archive.writestr("evidence.json", json.dumps(payload))
+            continue
+        if artifact.suffix == ".png":
+            artifact.write_bytes(
+                b"\x89PNG\r\n\x1a\n"
+                b"\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
+                b"\x08\x02\x00\x00\x00\x90wS\xde"
+                b"\x00\x00\x00\x0cIDAT\x08\xd7c\xf8\xcf\xc0\x00\x00\x03\x01\x01\x00"
+                b"\x18\xdd\x8d\xb0"
+                b"\x00\x00\x00\x00IEND\xaeB`\x82"
+            )
+            continue
+        artifact.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    verified = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--manifest",
+            str(manifest_path),
+            "--workspace-root",
+            str(workspace_root),
+            "--artifacts-dir",
+            str(artifacts_dir),
+            "evidence",
+            "--ready-only",
+            "--json",
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    )
+    report = json.loads(verified.stdout)
+
+    assert report["scenario_count"] == 1
+    assert report["verified_count"] == 1
+    assert set(report["scenarios"]) == {ready_id}
+    assert blocked_ids.isdisjoint(report["scenarios"])
+
+    incompatible = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--manifest",
+            str(manifest_path),
+            "evidence",
+            "--scenario",
+            ready_id,
+            "--ready-only",
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    assert incompatible.returncode == 1
+    assert "--ready-only cannot be combined with --scenario" in incompatible.stderr
+
+
+def test_cross_language_e2e_cli_evidence_ready_only_rejects_empty_ready_set(tmp_path: Path) -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+    manifest = _read_manifest()
+    workspace_root = tmp_path / "workspace"
+    artifacts_dir = tmp_path / "artifacts"
+    missing_path = tmp_path / "missing-public-dataset.json"
+    workspace_root.mkdir()
+    artifacts_dir.mkdir()
+
+    for scenario in manifest["scenarios"]:
+        for step in scenario["steps"]:
+            step["requires_paths"] = [*step.get("requires_paths", []), str(missing_path)]
+
+    manifest_path = tmp_path / "scenarios.json"
+    _write_json(manifest_path, manifest)
+
+    empty = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--manifest",
+            str(manifest_path),
+            "--workspace-root",
+            str(workspace_root),
+            "--artifacts-dir",
+            str(artifacts_dir),
+            "evidence",
+            "--ready-only",
+            "--json",
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    assert empty.returncode == 1
+    assert "--ready-only matched no ready scenarios" in empty.stderr
 
 
 def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path: Path) -> None:
