@@ -16,7 +16,7 @@ Date: 2026-07-07 05:42 CEST
 - `nirs4all-tools` pinned to `cc72fc4` / `v0.0.3`.
 - `nirs4all-benchmarks` pinned to `79724f2` / `v0.1.5`.
 - `nirs4all-org` pinned to `fe18d5c`.
-- `nirs4all-cockpit` pinned to `68b95d4`.
+- `nirs4all-cockpit` pinned to `37323fc`.
 
 ## Local Validation
 
@@ -56,15 +56,13 @@ Date: 2026-07-07 05:42 CEST
 - `nirs4all-benchmarks v0.1.5`: GitHub Release created and sdist/wheel attached; CI,
   version guard and Pages green. PyPI publish is blocked by PyPI Trusted Publisher
   `invalid-publisher`.
-- `nirs4all-datasets v0.3.5`: Python wheels/sdist and GitHub Release assets published; CI,
-  ABI, npm, crates, source and Pages green at report time. The R GitHub Actions lane is
-  green on Linux/macOS and still running on Windows at report time; the R tarball is not
-  attached until that lane completes.
+- `nirs4all-datasets v0.3.5`: Python wheels/sdist, R source tarball and GitHub Release
+  assets published; CI, ABI, npm, crates, source, Pages and R release lane green.
 - `nirs4all-io v0.1.7`: CI, ABI, npm, crates, source, Python binding, WASM binding,
   Octave binding, parity oracle, cross-binding parity and R release lane green; the R tarball
   is attached to the GitHub Release.
 - `nirs4all-org`: Pages and version guard green for the cluster tools-hub update.
-- `nirs4all-cockpit`: version guard green for the RC16 wording update.
+- `nirs4all-cockpit`: collect and Pages green for the refreshed release state.
 - Registry spot checks: PyPI has `nirs4all-io 0.1.7` and `nirs4all-datasets 0.3.5`;
   npm has `@nirs4all/io-wasm 0.1.7`, `@nirs4all/datasets-wasm 0.3.5`, and `nirs4all 0.2.12`;
   crates.io search shows `nirs4all-io* 0.1.7`, `nirs4all-datasets-* 0.3.5`, and `nirs4all 0.2.12`.
@@ -81,9 +79,8 @@ Date: 2026-07-07 05:42 CEST
 - Cross-language E2E coverage is evidence-green, but still has known strictness debt:
   `strictness_gaps=12`, `v1_contract_phase_count=13`, `v1_gap_phase_count=31`, and
   `e2e-multimodal-python-r-wasm-roundtrip` still has no strict parity check.
-- R/CRAN-style release lanes remain manual/long-running; use the GitHub Actions run status
-  and R-universe freshness before treating R publication as complete. At report time,
-  `nirs4all-datasets` R release is still waiting on Windows.
+- R-universe freshness still lags GitHub/PyPI/npm/crates publication status and should be
+  rechecked before treating the R-universe package index as current.
 
 ## Decisions
 
