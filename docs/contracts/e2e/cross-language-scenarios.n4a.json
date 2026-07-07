@@ -330,17 +330,16 @@
           ]
         },
         "python_rerun_pipeline": {
-          "status": "contract",
+          "status": "strict",
           "evidence": [
-            "The Python replay manifest is consumed by native/core replay."
+            "Python reopens stacking-replay.n4a.json, reruns the direct stacking oracle from the persisted pipeline descriptor, and records branch, fold, score, target, and prediction identity in python-rerun-ledger.json."
           ],
           "artifacts": [
             "{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json",
-            "{artifacts_dir}/multisource-stacking/native-replay.json"
+            "{artifacts_dir}/multisource-stacking/python-rerun-ledger.json"
           ],
-          "gap": "Python does not rerun a reopened saved multisource pipeline artifact in this lane.",
           "acceptance": [
-            "Promote to strict when Python reopens and reruns stacking-replay.n4a.json before native replay."
+            "python-rerun-ledger.json must report schema_version=n4a.e2e.python_rerun_pipeline.v1, status=passed, pipeline_reopened=true, replay_manifest_reopened=true, python_rerun_executed=true, finite_predictions=true, prediction_rows>0, matching pipeline/branch/fold hashes, and prediction/target/score deltas within tolerance."
           ]
         },
         "python_parity": {
@@ -1412,11 +1411,13 @@
       "artifacts": [
         "{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json",
         "{artifacts_dir}/multisource-stacking/python-open-ledger.json",
+        "{artifacts_dir}/multisource-stacking/python-rerun-ledger.json",
         "{artifacts_dir}/multisource-stacking/oof-ledger.json",
         "{artifacts_dir}/multisource-stacking/native-replay.json"
       ],
       "evidence": [
         "Per-source preprocessing branch manifest",
+        "Python saved stacking replay rerun ledger",
         "OOF stacking leakage audit",
         "Native replay score parity ledger",
         "Native predictions.parquet schema and arrays_present audit"
@@ -1462,6 +1463,7 @@
           "produces": [
             "{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json",
             "{artifacts_dir}/multisource-stacking/python-open-ledger.json",
+            "{artifacts_dir}/multisource-stacking/python-rerun-ledger.json",
             "{artifacts_dir}/multisource-stacking/oof-ledger.json"
           ]
         },
