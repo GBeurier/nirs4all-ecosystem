@@ -254,17 +254,17 @@
           ]
         },
         "python_rerun_pipeline": {
-          "status": "contract",
+          "status": "strict",
           "evidence": [
-            "R and WASM execute the Python-generated multimodal pipeline artifact."
+            "Python reopens the persisted multimodal pipeline and dataset, reruns the oracle, and records hash, split, component, prediction, target, and RMSE identity in python-rerun-ledger.json."
           ],
           "artifacts": [
             "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
-            "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"
+            "{artifacts_dir}/multimodal-roundtrip/multimodal-dataset.json",
+            "{artifacts_dir}/multimodal-roundtrip/python-rerun-ledger.json"
           ],
-          "gap": "The Python side does not reopen and rerun the saved multimodal artifact after persistence.",
           "acceptance": [
-            "Promote to strict after Python reruns the saved multimodal artifact and emits a reopen ledger."
+            "python-rerun-ledger.json must report schema_version=n4a.e2e.python_rerun_pipeline.v1, status=passed, pipeline_reopened=true, dataset_reopened=true, python_rerun_executed=true, finite_predictions=true, prediction_rows>0, matching pipeline/dataset/split hashes, matching selected n_components, and prediction/target/RMSE deltas within tolerance."
           ]
         },
         "python_parity": {
@@ -1305,7 +1305,9 @@
       ],
       "artifacts": [
         "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
+        "{artifacts_dir}/multimodal-roundtrip/multimodal-dataset.json",
         "{artifacts_dir}/multimodal-roundtrip/python-open-ledger.json",
+        "{artifacts_dir}/multimodal-roundtrip/python-rerun-ledger.json",
         "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet",
         "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet",
         "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json",
@@ -1313,6 +1315,7 @@
       ],
       "evidence": [
         "Multimodal schema validation",
+        "Python saved artifact rerun ledger",
         "Python/R/WASM proxy prediction comparison table",
         "Roundtrip manifest hash equality"
       ],
@@ -1347,7 +1350,9 @@
           ],
           "produces": [
             "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
+            "{artifacts_dir}/multimodal-roundtrip/multimodal-dataset.json",
             "{artifacts_dir}/multimodal-roundtrip/python-open-ledger.json",
+            "{artifacts_dir}/multimodal-roundtrip/python-rerun-ledger.json",
             "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet"
           ]
         },
