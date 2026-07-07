@@ -555,7 +555,7 @@ def generate_lock(manifest_path: Path, workspace_root: Path) -> dict[str, Any]:
         component["key"]: collect_member(
             workspace_root,
             component,
-            preferred_exact_tag=preferred_exact_tag,
+            preferred_exact_tag=component.get("preferred_exact_tag") or preferred_exact_tag,
         )
         for component in manifest.get("components", [])
     }

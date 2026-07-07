@@ -233,6 +233,40 @@ def test_generate_lock_prefers_manifest_exact_tag_when_multiple_tags_match(tmp_p
     assert lock["members"]["member"]["state"]["exact_tag"] == "n4a-v1-rc10-test"
 
 
+def test_generate_lock_prefers_component_exact_tag_over_ambiguous_commit_tags(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "manifest.json"
+    repo = tmp_path / "workspace" / "member"
+    repo.parent.mkdir()
+    _init_repo(repo)
+    (repo / "README.md").write_text("selected\n", encoding="utf-8")
+    _commit_all(repo)
+    _git(repo, "tag", "n4a-v1-rc12-test")
+    _git(repo, "tag", "v0.3.5")
+
+    _write_json(
+        manifest_path,
+        {
+            "schema_version": release_lock.MANIFEST_SCHEMA_VERSION,
+            "release_train": "test",
+            "status": "candidate",
+            "components": [
+                {
+                    "key": "member",
+                    "repo_path": "member",
+                    "preferred_exact_tag": "v0.3.5",
+                }
+            ],
+        },
+    )
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "workspace")
+
+    assert lock["members"]["member"]["state"]["exact_tag"] == "v0.3.5"
+
+
 def test_checkout_members_uses_selected_workspace_path_for_validation(tmp_path: Path) -> None:
     release_lock = _load_release_lock()
     manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"

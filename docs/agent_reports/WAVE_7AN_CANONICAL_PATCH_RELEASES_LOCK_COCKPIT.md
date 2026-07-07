@@ -15,6 +15,7 @@ Date: 2026-07-07
 - `nirs4all-formats`: version manifests only, committed as `6c5ad98 chore(release): bump formats to 0.2.3`, tag `v0.2.3`.
 - `nirs4all-ecosystem/docs/contracts/release/aggregation-manifest.n4a.json`
 - `nirs4all-ecosystem/docs/contracts/release/aggregation-lock.n4a.lock.json`
+- `nirs4all-ecosystem/scripts/n4a_release_lock.py`
 - `nirs4all-ecosystem/tests/test_release_lock.py`
 - `nirs4all-cockpit/ops/targets.yaml`
 - `nirs4all-cockpit/ops/manual-actions.yaml`
@@ -25,7 +26,7 @@ Date: 2026-07-07
 
 - `nirs4all-core`: `cargo test --workspace`; `PYTHONPATH=bindings/python/src python3.11 -m unittest discover -s bindings/python/tests`; `PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm test --prefix bindings/wasm`.
 - `nirs4all-formats`: `cargo fmt --all --check`; `cargo test --workspace`; `cargo clippy --workspace --all-targets -- -D warnings`; `cargo build -p nirs4all-formats --no-default-features`.
-- `nirs4all-ecosystem`: `scripts/n4a_release_lock.py validate`; `scripts/n4a_release_surface_matrix.py validate`; `pytest -q tests/test_release_lock.py tests/test_release_surface_matrix.py tests/test_cutover_state_gate.py tests/test_submodule_repin_plan.py tests/test_gitmodules_topology.py`.
+- `nirs4all-ecosystem`: `scripts/n4a_release_lock.py validate`; validation against a fresh `checkout-members` workspace; `scripts/n4a_release_surface_matrix.py validate`; `pytest -q tests/test_release_lock.py tests/test_release_surface_matrix.py tests/test_cutover_state_gate.py tests/test_submodule_repin_plan.py tests/test_gitmodules_topology.py`.
 - `nirs4all-cockpit`: `n4a-cockpit validate-targets ops/targets.yaml`; `n4a-cockpit collect --out data/current.json`; `pytest -q`; `ruff check .`.
 
 ## Publication State
@@ -39,6 +40,7 @@ Date: 2026-07-07
 
 - Kept the full Python `nirs4all` and `nirs4all-studio` production release lines held.
 - Chose exact semver patch tags for `core`/`formats` even though a read-only audit noted the deltas were mostly tests/docs, because the release lock should not point at RC tags or floating untagged commits.
+- Fixed release-lock generation to honor each component-level `preferred_exact_tag`; this makes commits with both semver and historical RC tags deterministic across local and CI clones.
 - Did not run the long full parity suite in this batch; only targeted release/lock/cockpit gates were run.
 
 ## Risks
