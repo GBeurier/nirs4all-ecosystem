@@ -406,10 +406,10 @@
       ],
       "selected_workspace_path": "RC-v1-datasets",
       "state": {
-        "branch": "rc/v1-full-refactor",
-        "commit": "f7b9caa1137bfd5752034a67f317642a4fc91a3a",
+        "branch": "rc/v1-published-0.3.5",
+        "commit": "ed16875162263207b350ec099ba718e8c30cf5c0",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc11-2026.07-refactor"
+        "exact_tag": "v0.3.5"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -418,19 +418,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "pyproject.toml",
-          "value": "0.3.4"
+          "value": "0.3.5"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/nirs4alldatasets/DESCRIPTION",
-          "value": "0.3.4"
+          "value": "0.3.5"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.3.4"
+          "value": "0.3.5"
         }
       }
     },
@@ -569,10 +569,10 @@
       ],
       "selected_workspace_path": "RC-v1-io",
       "state": {
-        "branch": "rc/v1-full-refactor",
-        "commit": "ccf9a7d2f7991108c13e87e1a85ef809c3a017b0",
+        "branch": "rc/v1-published-0.1.7",
+        "commit": "d275a7bb89fb3996b1da1748a294d6443f107d7e",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc11-2026.07-refactor"
+        "exact_tag": "v0.1.7"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -581,19 +581,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/Cargo.toml",
-          "value": "0.1.6"
+          "value": "0.1.7"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.1.6"
+          "value": "0.1.7"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.1.6"
+          "value": "0.1.7"
         }
       }
     },
