@@ -839,6 +839,10 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
         "serialized_model_predict_surfaces",
         "predictportablepipeline",
         "nirs4all-ui",
+        "dataset title",
+        "selected pipeline",
+        "prediction count",
+        "result panel",
     ):
         assert fragment in text
 
@@ -864,6 +868,10 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
         (
             "drop-shared-ui-check",
             "custom app host requires shared UI render artifact evidence",
+        ),
+        (
+            "weaken-shared-ui-flow",
+            "custom app host shared UI evidence must mention dataset",
         ),
         (
             "weaken-python-parity-phase",
@@ -893,6 +901,11 @@ def test_cross_language_e2e_manifest_enforces_custom_app_host_contract(
             for check in scenario["parity_checks"]
             if "{artifacts_dir}/custom-app-host/custom-host-ui.json" not in check["artifacts"]
         ]
+    elif mutation == "weaken-shared-ui-flow":
+        for check in scenario["parity_checks"]:
+            if "{artifacts_dir}/custom-app-host/custom-host-ui.json" in check["artifacts"]:
+                check["metric"] = "component tags and engine label render from shared UI components"
+                break
     elif mutation == "weaken-python-parity-phase":
         manifest["v1_refactor_contract"]["scenario_coverage"][scenario["id"]]["python_parity"]["status"] = "contract"
     else:

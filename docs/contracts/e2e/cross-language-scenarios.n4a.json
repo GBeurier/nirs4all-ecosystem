@@ -440,9 +440,9 @@
         },
         "wasm_web_reuse": {
           "status": "strict",
-          "evidence": ["The same Web host imports nirs4all-core runtime outputs and renders nirs4all-ui dataset, engine, and metric components."],
+          "evidence": ["The same Web host imports nirs4all-core runtime outputs and renders nirs4all-ui dataset, pipeline, prediction result panel, engine, and metric components."],
           "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-ui.json"],
-          "acceptance": ["custom-host-ui.json must record rendered nirs4all-ui component tags, dataset title, and the nirs4all-core engine label with status=passed."]
+          "acceptance": ["custom-host-ui.json must record rendered nirs4all-ui component tags, dataset title, selected pipeline id, prediction result panel/count, and the nirs4all-core engine label with status=passed."]
         }
       }
     }
@@ -1214,7 +1214,7 @@
         {
           "oracle": "nirs4all-ui published component contract",
           "candidate": "custom app host React element composition",
-          "metric": "web result panel component tags and engine label render from shared UI components",
+          "metric": "nirs4all-ui web result panel component tags, dataset title, selected pipeline id, prediction count, and engine label render from shared UI components",
           "evidence_level": "contract",
           "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-ui.json"]
         },

@@ -1091,7 +1091,14 @@ def _validate_custom_app_host_contract(
         shared_ui_check.get("candidate", ""),
         shared_ui_check.get("metric", ""),
     )
-    for fragment in ("component", "engine label"):
+    for fragment in (
+        "dataset",
+        "pipeline",
+        "prediction",
+        "result panel",
+        "engine label",
+        "nirs4all-ui",
+    ):
         if fragment not in shared_ui_text:
             raise E2EScenarioError(
                 f"{scenario_id}: custom app host shared UI evidence must mention {fragment}"
