@@ -23,7 +23,7 @@ Date: 2026-07-07 06:15 CEST
   - `nirs4all-benchmarks` commit `64b7e46`.
 - Updated `nirs4all-cockpit` targets/manual actions/tests:
   - `ec42572`: records current `invalid-publisher` blockers and fallback release assets.
-  - `fd4f249`: refreshed `data/current.json` through the collect workflow.
+  - `b98c70c`: refreshed `data/current.json` through the final collect workflow.
 - Updated `nirs4all-org`:
   - `77c6250`: refreshed hardcoded release versions for `io 0.1.7`, `datasets 0.3.5`,
     `benchmarks 0.1.5`, and `tools 0.0.3`.
