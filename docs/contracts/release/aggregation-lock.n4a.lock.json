@@ -607,7 +607,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:e06378ed8d777a82ab788ef8c0766c9dfa630b2462092d15d095c561396ea0e3",
+          "canonical_json_sha256": "sha256:77167d7548121720ca441ee9ed9ef4d5838c7bdb63680287b1ea7facb0831cbc",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -644,6 +644,8 @@
                 "PipelineDefinition",
                 "Upstream",
                 "available_upstreams",
+                "capability_manifest",
+                "controller_capabilities",
                 "dag_ml",
                 "dag_ml_data",
                 "datasets",
@@ -654,6 +656,7 @@
                 "methods",
                 "portable_class_names",
                 "require_upstream",
+                "runtime_surfaces",
                 "upstream_status",
                 "upstreams"
               ],
@@ -1189,7 +1192,7 @@
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_lite/_topology.py",
-          "raw_sha256": "sha256:d170b42a55a5c21d5e8b7568052f4b78f17bf3d89df5e2332b9e48350fc43311",
+          "raw_sha256": "sha256:76a6260839af90a19e5b00d587797d0213598ba1020c14349e7291c69d7fb0c5",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -1249,9 +1252,9 @@
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "54fcdc5ee2afedf87d94a611725d38fe455fe4bc",
+        "commit": "615a154f8870186cd2e66c348762dbc5be135ea2",
         "dirty": false,
-        "exact_tag": "v0.2.8"
+        "exact_tag": "v0.2.11"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -1260,25 +1263,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.2.8"
+          "value": "0.2.11"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.2.8"
+          "value": "0.2.11"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.2.8"
+          "value": "0.2.11"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.2.8"
+          "value": "0.2.11"
         }
       }
     },
