@@ -68,7 +68,7 @@
       "release_role": "Dataset assembly and DatasetPackage bridge"
     },
     {
-      "key": "lite",
+      "key": "core",
       "repo_path": "nirs4all-core",
       "release_role": "Portable aggregate bindings, selected from RC-v1-nirs4all-core. nirs4all-core is the canonical RC repository/package target; nirs4all-lite remains a legacy/current artifact alias during cutover."
     },
@@ -117,10 +117,10 @@
       "namespace": "nirs4all_core",
       "repo_path": "nirs4all-core",
       "lock_relation": "covered_by_locked_member",
-      "lock_member_key": "lite",
+      "lock_member_key": "core",
       "required_for_nirs4all_v1": true,
       "proof_boundary": "Python aggregate target distribution is covered by the selected RC-v1-nirs4all-core member; the historical nirs4all oracle remains a separate outside-lock surface.",
-      "local_gate_policy": "lite/core Python topology tests plus pyref_oracle_full on final selected heads."
+      "local_gate_policy": "core Python topology tests plus pyref_oracle_full on final selected heads."
     },
     {
       "id": "nirs4all.r.aggregate",
@@ -130,9 +130,9 @@
       "namespace": "library(nirs4all)",
       "repo_path": "nirs4all-core",
       "lock_relation": "covered_by_locked_member",
-      "lock_member_key": "lite",
+      "lock_member_key": "core",
       "required_for_nirs4all_v1": true,
-      "proof_boundary": "Package topology is covered by the locked lite member; V1 release proof requires the strict R runtime parity gate, not an if-available local smoke.",
+      "proof_boundary": "Package topology is covered by the locked core member; V1 release proof requires the strict R runtime parity gate, not an if-available local smoke.",
       "local_gate_policy": "test-r-parity passed in Wave 4AU for the selected RC core/methods heads; rerun on any later aggregate or methods movement. test-r-if-available is developer convenience only and a missing R runtime is not a green release proof."
     },
     {
@@ -143,9 +143,9 @@
       "namespace": "nirs4all",
       "repo_path": "nirs4all-core",
       "lock_relation": "covered_by_locked_member",
-      "lock_member_key": "lite",
+      "lock_member_key": "core",
       "required_for_nirs4all_v1": true,
-      "proof_boundary": "Package topology is covered by the locked lite member; browser/runtime parity and product e2e remain separate gates.",
+      "proof_boundary": "Package topology is covered by the locked core member; browser/runtime parity and product e2e remain separate gates.",
       "local_gate_policy": "test-wasm and browser smoke where the touched surface requires it."
     },
     {
@@ -182,10 +182,10 @@
       "namespace": "nirs4all",
       "repo_path": "nirs4all-core",
       "lock_relation": "covered_by_locked_member",
-      "lock_member_key": "lite",
+      "lock_member_key": "core",
       "required_for_nirs4all_v1": true,
       "proof_boundary": "Rust aggregate crate is covered by the selected RC-v1-nirs4all-core member; crate publication/fetchability remains a separate release gate.",
-      "local_gate_policy": "lite/core Rust package tests and release topology checks on selected heads."
+      "local_gate_policy": "core Rust package tests and release topology checks on selected heads."
     },
     {
       "id": "nirs4all.matlab_octave.aggregate",
@@ -195,7 +195,7 @@
       "namespace": "+nirs4all",
       "repo_path": "nirs4all-core",
       "lock_relation": "covered_by_locked_member",
-      "lock_member_key": "lite",
+      "lock_member_key": "core",
       "required_for_nirs4all_v1": true,
       "proof_boundary": "MATLAB/Octave namespace archive is covered by the selected RC-v1-nirs4all-core member; V1 release proof requires the strict MATLAB/Octave runtime parity gate, not an if-available smoke.",
       "local_gate_policy": "test-matlab-parity passed under Octave in Wave 4AU for the selected RC core/methods heads; rerun on any later aggregate or methods movement. Licensed MATLAB host proof remains an explicit release risk, not a skipped green proof."

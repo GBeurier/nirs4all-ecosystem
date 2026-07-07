@@ -248,8 +248,8 @@
       ]
     },
     {
-      "id": "lite_v1_surfaces",
-      "title": "Lite aggregate Python/R/WASM/Rust/MATLAB V1 surfaces",
+      "id": "core_v1_surfaces",
+      "title": "Core aggregate Python/R/WASM/Rust/MATLAB V1 surfaces",
       "lane": "W2N/W2T-E",
       "required": true,
       "cwd": "_worktrees/RC-v1-nirs4all-core",

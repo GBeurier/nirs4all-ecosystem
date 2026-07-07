@@ -89,7 +89,7 @@ def test_covered_surface_distribution_must_be_declared_by_lock_member(tmp_path: 
     matrix_path = tmp_path / "matrix.json"
     _write_json(matrix_path, matrix)
 
-    with pytest.raises(surface_matrix.SurfaceMatrixError, match="is not declared by lock member lite"):
+    with pytest.raises(surface_matrix.SurfaceMatrixError, match="is not declared by lock member core"):
         surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)
 
 

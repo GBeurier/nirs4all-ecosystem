@@ -475,7 +475,7 @@
       ]
     },
     {
-      "key": "lite",
+      "key": "core",
       "repo_path": "nirs4all-core",
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "selected_branch_patterns": [
@@ -530,10 +530,10 @@
         "native": "full"
       },
       "required_gates": [
-        "lite_version_guard",
-        "lite_release_topology_manifest",
-        "lite_release_source",
-        "lite_pipeline_parity"
+        "core_version_guard",
+        "core_release_topology_manifest",
+        "core_release_source",
+        "core_pipeline_parity"
       ],
       "version_sources": [
         {

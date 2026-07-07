@@ -89,7 +89,7 @@ def test_nirs4all_cutover_state_rejects_stale_default_and_fallback(tmp_path: Pat
     assert "nirs4all.coverage_meter.fallback_zero" in failures
 
 
-def test_release_non_full_gates_promote_w2s_and_lite_evidence() -> None:
+def test_release_non_full_gates_promote_w2s_and_core_evidence() -> None:
     manifest = json.loads((ROOT / "docs" / "contracts" / "cutover" / "drop-gates.n4a.json").read_text(encoding="utf-8"))
     gates = {gate["id"]: gate for gate in manifest["gates"]}
 
@@ -108,12 +108,12 @@ def test_release_non_full_gates_promote_w2s_and_lite_evidence() -> None:
     assert "ln -s {workspace_root}/_worktrees/RC-v1-repository" in providers_command
     assert "--dependency-path {workspace_root}/_worktrees/RC-v1-io/src" in providers_command
 
-    assert gates["lite_v1_surfaces"]["required"] is True
-    assert gates["lite_v1_surfaces"]["cwd"] == "_worktrees/RC-v1-nirs4all-core"
-    lite_command = " ".join(gates["lite_v1_surfaces"]["command"])
-    assert "PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH" in lite_command
-    assert "PYTHONPATH=bindings/python/src" in lite_command
-    assert "make test-v1-surfaces" in lite_command
+    assert gates["core_v1_surfaces"]["required"] is True
+    assert gates["core_v1_surfaces"]["cwd"] == "_worktrees/RC-v1-nirs4all-core"
+    core_command = " ".join(gates["core_v1_surfaces"]["command"])
+    assert "PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH" in core_command
+    assert "PYTHONPATH=bindings/python/src" in core_command
+    assert "make test-v1-surfaces" in core_command
 
 
 def test_cutover_gates_target_selected_rc_worktrees() -> None:
@@ -148,7 +148,7 @@ def test_readiness_matrix_requires_promoted_release_gates() -> None:
     expected = {
         "W2S-INSTALLED-N4M-001": "installed_n4m_proof",
         "PROV-READ-001": "providers_local_sibling_release",
-        "LITE-V1-SURFACE-001": "lite_v1_surfaces",
+        "CORE-V1-SURFACE-001": "core_v1_surfaces",
     }
     for blocker_id, gate_id in expected.items():
         blocker = blockers[blocker_id]

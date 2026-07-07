@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:066c4b7c12e8c3becd1a7207ca8331abfb29cea0d06f6a12f4910162a6d63e8d",
+  "manifest_digest": "sha256:1faf8fe02a420b5f82bd135cd67b015aa76f06ad4205b8a9544dd107d896567c",
   "members": {
     "dag_ml": {
       "availability": {
@@ -166,7 +166,7 @@
       "repo_aliases": [],
       "repo_path": "dag-ml",
       "repo_url": "GBeurier/dag-ml",
-      "required_gates": [
+    "required_gates": [
         "dagml_validate_contracts",
         "dagml_abi_snapshot",
         "dagml_parity_oracle"
@@ -597,7 +597,7 @@
         }
       }
     },
-    "lite": {
+    "core": {
       "availability": {
         "matlab": "subset",
         "native": "full",
@@ -1240,10 +1240,10 @@
       "repo_path": "nirs4all-core",
       "repo_url": "GBeurier/nirs4all-core",
       "required_gates": [
-        "lite_version_guard",
-        "lite_release_topology_manifest",
-        "lite_release_source",
-        "lite_pipeline_parity"
+        "core_version_guard",
+        "core_release_topology_manifest",
+        "core_release_source",
+        "core_pipeline_parity"
       ],
       "role": "Portable aggregate bindings, renamed nirs4all-core on the RC V1 head (Python distribution nirs4all-core; nirs4all-lite remains a legacy/current artifact alias during cutover)",
       "selected_branch_patterns": [
@@ -1427,7 +1427,11 @@
       "python3 scripts/validate_contracts.py --require-sibling --sibling-root external/<sibling>  # in dag-ml and dag-ml-data"
     ],
     "private_repos_present": false,
-    "required_gates": [
+      "required_gates": [
+      "core_pipeline_parity",
+      "core_release_source",
+      "core_release_topology_manifest",
+      "core_version_guard",
       "dagml_abi_snapshot",
       "dagml_data_abi_snapshot",
       "dagml_data_parity_oracle",
@@ -1440,10 +1444,6 @@
       "formats_version_guard",
       "io_dagml_path_override",
       "io_workspace",
-      "lite_pipeline_parity",
-      "lite_release_source",
-      "lite_release_topology_manifest",
-      "lite_version_guard",
       "methods_cross_binding_parity",
       "methods_installed_ci",
       "n4m_abi_symbols",

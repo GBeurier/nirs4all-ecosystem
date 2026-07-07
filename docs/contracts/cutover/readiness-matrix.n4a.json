@@ -210,15 +210,15 @@
       "next_owner_action": "Keep release_lock_validation and release_lock_fetchability_audit green whenever the manifest, lock, or selected member heads change."
     },
     {
-      "id": "LITE-V1-SURFACE-001",
-      "title": "Lite aggregate exposes the required Python/R/WASM/Rust/MATLAB V1 surfaces",
+      "id": "CORE-V1-SURFACE-001",
+      "title": "Core aggregate exposes the required Python/R/WASM/Rust/MATLAB V1 surfaces",
       "lane": "W2N/W2T-E",
-      "owner_repo": "nirs4all-lite",
+      "owner_repo": "nirs4all-core",
       "status": "passed",
       "required_for_cutover": true,
-      "primary_gate_id": "lite_v1_surfaces",
+      "primary_gate_id": "core_v1_surfaces",
       "gate_ids": [
-        "lite_v1_surfaces",
+        "core_v1_surfaces",
         "release_lock_validation"
       ],
       "expected_evidence": [
@@ -228,8 +228,8 @@
         "make test-r-parity passes for the R aggregate runtime surface",
         "make test-matlab-parity passes for the MATLAB/Octave aggregate runtime surface"
       ],
-      "missing_contract": "None for the selected RC local proof: Wave 4AU records strict R parity and strict Octave execution parity inside the required lite_v1_surfaces gate. Missing R or Octave runtime proof remains a blocker for any later selected head.",
-      "next_owner_action": "Keep lite_v1_surfaces green with Linux Node/npm, R, Octave, and the selected Methods root; record a licensed MATLAB host proof separately before any GA claim that depends on licensed MATLAB."
+      "missing_contract": "None for the selected RC local proof: Wave 4AU records strict R parity and strict Octave execution parity inside the required core_v1_surfaces gate. Missing R or Octave runtime proof remains a blocker for any later selected head.",
+      "next_owner_action": "Keep core_v1_surfaces green with Linux Node/npm, R, Octave, and the selected Methods root; record a licensed MATLAB host proof separately before any GA claim that depends on licensed MATLAB."
     },
     {
       "id": "DROP-002-DEFAULT-ENGINE",

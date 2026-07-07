@@ -46,7 +46,7 @@
 - `nirs4all-ui` is a shared React component and pure TypeScript view-model package consumed by product surfaces such as Studio/Web. It is accounted for as a public release surface outside the aggregation lock, not as a backend, parser, persistence, ML, or parity-proof surface.
 - `nirs4all-providers` is a separately published Python client (`GBeurier/nirs4all-providers`), but the canonical provider surface for core/R/WASM/native consumers remains the neutral contracts under `docs/contracts/providers/`.
 - `nirs4all-org` and `nirs4all-cockpit` are publication surfaces outside the aggregation lock. They should be accounted for as public release surfaces, not as aggregate-core lock members.
-- Skip/xfail debt remains explicit release evidence, not implied green status: the Python parity/xfail inventory stays under the cutover gates, and the lite R surface may skip locally only when R is unavailable and must still be reported as release risk.
+- Skip/xfail debt remains explicit release evidence, not implied green status: the Python parity/xfail inventory stays under the cutover gates, and the core R surface may skip locally only when R is unavailable and must still be reported as release risk.
 
 ## Cloner
 

@@ -492,7 +492,7 @@ def release_topology_manifest():
         release_lock.collect_contract_artifact(repo, artifact)
 
 
-def test_central_manifest_declares_reproducible_methods_and_lite_topology_sources() -> None:
+def test_central_manifest_declares_reproducible_methods_and_core_topology_sources() -> None:
     manifest = json.loads(
         (ROOT / "docs" / "contracts" / "release" / "aggregation-manifest.n4a.json").read_text(
             encoding="utf-8"
@@ -504,11 +504,11 @@ def test_central_manifest_declares_reproducible_methods_and_lite_topology_source
         manifest["release_selection_policy"]["preferred_exact_tag"]
         == "n4a-v1-rc12-2026.07-refactor"
     )
-    assert components["lite"]["repo_path"] == "nirs4all-core"
-    assert components["lite"]["repo_url"] == "GBeurier/nirs4all-core"
-    assert components["lite"]["selected_workspace_path"] == "RC-v1-nirs4all-core"
-    assert components["lite"]["target_repo_path"] == "nirs4all-core"
-    assert "nirs4all-lite" in components["lite"]["repo_aliases"]
+    assert components["core"]["repo_path"] == "nirs4all-core"
+    assert components["core"]["repo_url"] == "GBeurier/nirs4all-core"
+    assert components["core"]["selected_workspace_path"] == "RC-v1-nirs4all-core"
+    assert components["core"]["target_repo_path"] == "nirs4all-core"
+    assert "nirs4all-lite" in components["core"]["repo_aliases"]
     methods_sources = {
         source["key"]: source for source in components["methods"]["version_sources"]
     }
@@ -534,11 +534,11 @@ def test_central_manifest_declares_reproducible_methods_and_lite_topology_source
         assert source["module"] == module
         assert source["generated_output_path"] == generated_path
 
-    lite_artifacts = {
+    core_artifacts = {
         artifact["id"]: artifact
-        for artifact in components["lite"].get("contract_artifacts", [])
+        for artifact in components["core"].get("contract_artifacts", [])
     }
-    topology = lite_artifacts["release_topology_manifest"]
+    topology = core_artifacts["release_topology_manifest"]
     assert topology["kind"] == "python_function_json"
     assert topology["read_from"] == "git_head"
     assert topology["function"] == "release_topology_manifest"
