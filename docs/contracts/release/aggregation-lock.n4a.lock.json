@@ -1252,9 +1252,9 @@
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "615a154f8870186cd2e66c348762dbc5be135ea2",
+        "commit": "563d3340e4596993a6486f351256f76b7aeaebbf",
         "dirty": false,
-        "exact_tag": "v0.2.11"
+        "exact_tag": "v0.2.12"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -1263,25 +1263,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.2.11"
+          "value": "0.2.12"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.2.11"
+          "value": "0.2.12"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.2.11"
+          "value": "0.2.12"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.2.11"
+          "value": "0.2.12"
         }
       }
     },
