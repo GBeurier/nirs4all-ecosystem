@@ -612,6 +612,42 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
         ],
     },
     "e2e-core-ui-custom-app-host": {
+        "custom-app-host/custom-host-python-open.json": [
+            {"path": "schema_version", "equals": "n4a.e2e.python_open_pipeline.v1"},
+            {"path": "scenario_id", "equals": "e2e-core-ui-custom-app-host"},
+            {"path": "status", "equals": "passed"},
+            {"path": "oracle_reopened", "equals": True},
+            {"path": "pipeline_reopened", "equals": True},
+            {"path": "dataset_reopened", "equals": True},
+            {"path": "fixture_path_match", "equals": True},
+            {"path": "pipeline_name_match", "equals": True},
+            {"path": "case_name_match", "equals": True},
+            {"path": "pipeline_classes", "non_empty": True},
+            {"path": "plan_step_count", "gt": 0},
+            {"path": "selected_n_components_expected", "gt": 0},
+            {"path": "dataset.rows", "gt": 0},
+            {"path": "dataset.cols", "gt": 0},
+            {"path": "fingerprints.oracle_sha256", "non_empty": True},
+            {"path": "fingerprints.pipeline_descriptor_sha256", "non_empty": True},
+        ],
+        "custom-app-host/custom-host-python-rerun.json": [
+            {"path": "schema_version", "equals": "n4a.e2e.python_rerun_pipeline.v1"},
+            {"path": "scenario_id", "equals": "e2e-core-ui-custom-app-host"},
+            {"path": "status", "equals": "passed"},
+            {"path": "oracle_reopened", "equals": True},
+            {"path": "pipeline_reopened", "equals": True},
+            {"path": "python_rerun_executed", "equals": True},
+            {"path": "finite_predictions", "equals": True},
+            {"path": "prediction_rows", "gt": 0},
+            {"path": "split_match", "equals": True},
+            {"path": "variant_count_match", "equals": True},
+            {"path": "selected_n_components_match", "equals": True},
+            {"path": "target_max_abs_delta", "lte_path": "target_tolerance"},
+            {"path": "prediction_max_abs_delta", "lte_path": "prediction_tolerance"},
+            {"path": "rmse_delta", "lte_path": "rmse_tolerance"},
+            {"path": "variant_rmse_max_abs_delta", "lte_path": "rmse_tolerance"},
+            {"path": "variant_prediction_max_abs_delta", "lte_path": "prediction_tolerance"},
+        ],
         "custom-app-host/custom-host-predictions.json": [
             {"path": "status", "equals": "passed"},
             {"path": "prediction_rows", "gt": 0},
@@ -1518,6 +1554,8 @@ def _validate_custom_app_host_contract(
 
     required_artifacts = {
         "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+        "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
+        "{artifacts_dir}/custom-app-host/custom-host-python-rerun.json",
         "{artifacts_dir}/custom-app-host/custom-host-run.json",
         "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
         "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",
@@ -1533,6 +1571,10 @@ def _validate_custom_app_host_contract(
     expected_step_artifacts = {
         "core-r-surface-probe": {
             "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+        },
+        "core-python-open-rerun": {
+            "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
+            "{artifacts_dir}/custom-app-host/custom-host-python-rerun.json",
         },
         "core-ui-runtime-host": {
             "{artifacts_dir}/custom-app-host/custom-host-run.json",
@@ -1559,8 +1601,8 @@ def _validate_custom_app_host_contract(
             )
 
     expected_phase_statuses = {
-        "python_open_pipeline": "contract",
-        "python_rerun_pipeline": "contract",
+        "python_open_pipeline": "strict",
+        "python_rerun_pipeline": "strict",
         "python_parity": "strict",
         "wasm_web_reuse": "strict",
     }

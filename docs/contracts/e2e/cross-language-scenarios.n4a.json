@@ -185,7 +185,7 @@
           "artifacts": [
             "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
           ],
-      "acceptance": [
+          "acceptance": [
             "pipeline-repository-smoke.json must report python_rerun_pipeline.status=passed, executed=true, finite_predictions=true, prediction_rows>0, non-negative RMSE, dataset_files_sha256 matching repository_dataset_files_sha256, and fold_assignment_sha256 matching the dag-ml emitted fold ledger."
           ]
         },
@@ -743,30 +743,30 @@
       },
       "e2e-core-ui-custom-app-host": {
         "python_open_pipeline": {
-          "status": "contract",
+          "status": "strict",
           "evidence": [
-            "The custom host opens the portable Python oracle fixture, records the R binding surface, and lowers the supported pipeline into the Web host DSL."
+            "A standalone nirs4all-core Python process opens the portable Python oracle fixture and portable pipeline descriptor before the Web custom host handoff."
           ],
           "artifacts": [
             "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+            "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
             "{artifacts_dir}/custom-app-host/custom-host-run.json"
           ],
-          "gap": "The Python oracle fixture is opened by the Web host test, not by a standalone Python process in this scenario.",
           "acceptance": [
-            "custom-host-r-surface.json and custom-host-run.json must record the R surface probe, opened oracle fixture, selected portable pipeline, engine id, and finite variant count."
+            "custom-host-python-open.json must report schema_version=n4a.e2e.python_open_pipeline.v1, status=passed, oracle_reopened=true, pipeline_reopened=true, dataset_reopened=true, fixture_path_match=true, pipeline_name_match=true, case_name_match=true, non-empty pipeline classes, descriptor/oracle fingerprints, and dataset row/column counts."
           ]
         },
         "python_rerun_pipeline": {
-          "status": "contract",
+          "status": "strict",
           "evidence": [
-            "The browser host reruns the opened Python-oracle pipeline through nirs4all-core WASM."
+            "The standalone nirs4all-core Python process reruns the opened portable pipeline against the full Python nirs4all oracle, while the browser host separately reruns the same pipeline through nirs4all-core WASM."
           ],
           "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-python-rerun.json",
             "{artifacts_dir}/custom-app-host/custom-host-run.json"
           ],
-          "gap": "The rerun happens in the custom Web host with the Python oracle as reference evidence, not in the full Python app runtime.",
           "acceptance": [
-            "custom-host-run.json must record nirs4all-core-wasm as the execution engine and a selected PLS component count from the rerun."
+            "custom-host-python-rerun.json must report schema_version=n4a.e2e.python_rerun_pipeline.v1, status=passed, python_rerun_executed=true, finite_predictions=true, split/variant/selected-component matches, prediction_rows>0, and target/prediction/RMSE deltas within tolerance."
           ]
         },
         "python_parity": {
@@ -1234,10 +1234,10 @@
               ]
             }
           ],
-      "requires_tools": [
-        "npm",
-        "python3.11"
-      ],
+          "requires_tools": [
+            "npm",
+            "python3.11"
+          ],
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
             "{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs",
@@ -1246,7 +1246,7 @@
           "command": [
             "bash",
             "-lc",
-        "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
           ],
           "produces": [
             "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",
@@ -2084,6 +2084,7 @@
       "repos": [
         "nirs4all-web",
         "nirs4all-core",
+        "nirs4all-methods",
         "nirs4all-ui"
       ],
       "tags": [
@@ -2094,6 +2095,8 @@
       ],
       "artifacts": [
         "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+        "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
+        "{artifacts_dir}/custom-app-host/custom-host-python-rerun.json",
         "{artifacts_dir}/custom-app-host/custom-host-run.json",
         "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
         "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",
@@ -2102,6 +2105,8 @@
       "evidence": [
         "R binding surface artifact recorded in the same custom app host handoff",
         "Portable Python oracle fixture opened by the custom host",
+        "Standalone nirs4all-core Python rerun parity ledger",
+        "Standalone nirs4all-core Python oracle fixture open ledger",
         "runtimeContracts artifact records that only javascript_wasm supports serialized-model prediction through predictPortablePipeline",
         "nirs4all-core WASM pipeline execution and fitted model prediction",
         "Prediction max_abs_delta versus Python oracle tolerance",
@@ -2109,6 +2114,16 @@
         "Client-side-only custom app host path with no Studio backend or Web API calls"
       ],
       "parity_checks": [
+        {
+          "oracle": "portable Python oracle pipeline fixture reopened by nirs4all-core Python",
+          "candidate": "custom app host standalone Python open/rerun ledger",
+          "metric": "python_open_pipeline and python_rerun_pipeline ledgers record descriptor/oracle fingerprints, split/variant/selected-component matches, finite predictions, prediction max_abs_delta, and RMSE deltas within tolerance",
+          "evidence_level": "strict",
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
+            "{artifacts_dir}/custom-app-host/custom-host-python-rerun.json"
+          ]
+        },
         {
           "oracle": "portable Python oracle prediction fixture",
           "candidate": "custom app host nirs4all-core WASM prediction",
@@ -2157,6 +2172,30 @@
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-r-surface.json"
+          ]
+        },
+        {
+          "id": "core-python-open-rerun",
+          "title": "Open and rerun the portable pipeline in nirs4all-core Python",
+          "kind": "execute",
+          "repo": "nirs4all-core",
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-core/scripts/e2e/run_custom_app_host.py",
+            "{workspace_root}/nirs4all-core/tests/parity/expected/portable_python_oracle.json",
+            "{workspace_root}/nirs4all-core/tests/parity/fixtures/portable_methods_pipeline.json",
+            "{workspace_root}/nirs4all-methods/bindings/python/src/n4m"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-core && PYTHONPATH={workspace_root}/nirs4all-methods/bindings/python/src:bindings/python/src:$PYTHONPATH PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_custom_app_host.py --artifacts-dir {artifacts_dir}/custom-app-host"
+          ],
+          "produces": [
+            "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
+            "{artifacts_dir}/custom-app-host/custom-host-python-rerun.json"
           ]
         },
         {
