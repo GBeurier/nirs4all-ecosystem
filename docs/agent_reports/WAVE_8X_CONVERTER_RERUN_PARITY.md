@@ -19,6 +19,7 @@ Date: 2026-07-07
   - `tests/fixtures/legacy/old_workspace_mixed/rerunnable_pipeline.n4a.json`
   - `tests/test_real_golden_fixtures.py`
 - `nirs4all-ecosystem`
+  - `.github/workflows/cross-language-e2e.yml`
   - `docs/contracts/e2e/cross-language-scenarios.n4a.json`
   - `scripts/n4a_e2e_scenarios.py`
   - `tests/test_e2e_scenarios.py`
@@ -37,6 +38,10 @@ Date: 2026-07-07
 - Kept `papers_export` and `repository_forced_best_refit` outside this
   converter scenario; those are covered by the dedicated papers/repository
   lane.
+- Hardened the E2E GitHub Actions runner by removing flaky preinstalled
+  Microsoft apt feeds before `setup-r`; the failed run was blocked by
+  `packages.microsoft.com` `NOSPLIT` during `apt-get update`, before NIRS4ALL
+  validation started.
 
 ## Validation
 
@@ -55,5 +60,8 @@ Date: 2026-07-07
   `npm run check:ui-shim` because `nirs4all-ui` is dirty/behind from another
   agent's work. The Web rendering smoke passes when that drift guard is
   bypassed; no `nirs4all-ui` files were changed in this wave.
+- The first pushed ecosystem Actions run failed before validation in
+  `r-lib/actions/setup-r@v2` because GitHub's preinstalled Microsoft apt feeds
+  were broken. The workflow was hardened and must be re-run on the new head.
 - The fixture is intentionally small and deterministic. It proves the
   converter/rerun contract, not broad model coverage.
