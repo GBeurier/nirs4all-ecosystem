@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:cc6c6332a32b2521ae0c112fba0d6de264941424259f5ece9bb90aef6e77e28f",
+  "manifest_digest": "sha256:1829a1e9d601db0e2a2c9df18d09c5d49d1472c9c53158f7228bead2132c3767",
   "members": {
     "core": {
       "availability": {
@@ -717,9 +717,9 @@
       "selected_workspace_path": "nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "d8308793081457aa073b88e4376171e0c08bb535",
+        "commit": "3ff5bb21a23852f708665d9089f33d47b33f5dbf",
         "dirty": false,
-        "exact_tag": "v0.3.0"
+        "exact_tag": "n4a-v1-rc15-2026.07-refactor"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
