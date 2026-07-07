@@ -26,14 +26,14 @@
           "canonical_json_equal": true,
           "members": [
             {
-              "canonical_json_sha256": "sha256:4ee367097c8417ca6f7c9b44bdd8899bd8547d9e7b758ada82028fc01948f2de",
+              "canonical_json_sha256": "sha256:00e0308214732c34938be72968cafb9e6ee11d0e33a9060c20533fd7335a4239",
               "member": "dag_ml",
-              "raw_sha256": "sha256:cbd15a87ec759e1701cd214b9b28acaf82411ccbd8ec70870907d2186d9cf751"
+              "raw_sha256": "sha256:1ebd3e8ec3c257aaaddcba753072a85a48293742f2afc4a7e43434d9e1bbc187"
             },
             {
-              "canonical_json_sha256": "sha256:4ee367097c8417ca6f7c9b44bdd8899bd8547d9e7b758ada82028fc01948f2de",
+              "canonical_json_sha256": "sha256:00e0308214732c34938be72968cafb9e6ee11d0e33a9060c20533fd7335a4239",
               "member": "dag_ml_data",
-              "raw_sha256": "sha256:cbd15a87ec759e1701cd214b9b28acaf82411ccbd8ec70870907d2186d9cf751"
+              "raw_sha256": "sha256:1ebd3e8ec3c257aaaddcba753072a85a48293742f2afc4a7e43434d9e1bbc187"
             }
           ],
           "raw_equal": true
@@ -42,14 +42,14 @@
           "canonical_json_equal": true,
           "members": [
             {
-              "canonical_json_sha256": "sha256:1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6",
+              "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
               "member": "dag_ml",
-              "raw_sha256": "sha256:9b5628373adb141e3e12a919f45faca0738456ebe27d54976c1b0b3d0afd39e3"
+              "raw_sha256": "sha256:651dfdb2d1833e45e5d4d8a50bd6cd67bed76d62517c46816c21cdabfb45b9c1"
             },
             {
-              "canonical_json_sha256": "sha256:1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6",
+              "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
               "member": "dag_ml_data",
-              "raw_sha256": "sha256:9b5628373adb141e3e12a919f45faca0738456ebe27d54976c1b0b3d0afd39e3"
+              "raw_sha256": "sha256:651dfdb2d1833e45e5d4d8a50bd6cd67bed76d62517c46816c21cdabfb45b9c1"
             }
           ],
           "raw_equal": true
@@ -760,7 +760,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:4ee367097c8417ca6f7c9b44bdd8899bd8547d9e7b758ada82028fc01948f2de",
+          "canonical_json_sha256": "sha256:00e0308214732c34938be72968cafb9e6ee11d0e33a9060c20533fd7335a4239",
           "contracts": {
             "coordinator_branch_view.v1": {
               "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
@@ -778,7 +778,7 @@
               "normalized_sha256": "43001ff6f7a286924ec01ca85b95233c7a50fe9cc8595d67da1eb2a35704dddf"
             },
             "parity_oracle.v1": {
-              "canonical_json_sha256": "1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6"
+              "canonical_json_sha256": "0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953"
             },
             "representation_registry.v1": {
               "canonical_json_sha256": "66446af592341061c4967eb2944e32c4e785c58c2baf05db7f00bff10a431508"
@@ -788,18 +788,18 @@
           "kind": "conformance_pack",
           "pack_id": "dag-ml.shared.conformance.v1",
           "path": "docs/contracts/conformance_pack.v1.json",
-          "raw_sha256": "sha256:cbd15a87ec759e1701cd214b9b28acaf82411ccbd8ec70870907d2186d9cf751"
+          "raw_sha256": "sha256:1ebd3e8ec3c257aaaddcba753072a85a48293742f2afc4a7e43434d9e1bbc187"
         },
         {
-          "canonical_json_sha256": "sha256:1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6",
+          "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
           "id": "parity_oracle",
           "kind": "parity_oracle",
           "oracle_id": "dag-ml.nirs4all.parity_oracle.v1",
           "path": "docs/contracts/parity_oracle.v1.json",
-          "raw_sha256": "sha256:9b5628373adb141e3e12a919f45faca0738456ebe27d54976c1b0b3d0afd39e3",
+          "raw_sha256": "sha256:651dfdb2d1833e45e5d4d8a50bd6cd67bed76d62517c46816c21cdabfb45b9c1",
           "required_case_count": 5,
           "required_case_ids": [
-            "nirs4all_lite_browser_compile_plan",
+            "nirs4all_core_browser_compile_plan",
             "repetition_group_leakage_refusal",
             "controller_registry_selector_parity",
             "branch_merge_oof_refit_replay",
@@ -868,7 +868,7 @@
       "selected_workspace_path": "dag-ml",
       "state": {
         "branch": "main",
-        "commit": "2deae6c78c4540e6c08fef1c3cb3ddb3c082e886",
+        "commit": "2bd269f87f1e1e6a898c22a33559fdcef5718cf8",
         "dirty": false,
         "exact_tag": null
       },
@@ -905,7 +905,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:4ee367097c8417ca6f7c9b44bdd8899bd8547d9e7b758ada82028fc01948f2de",
+          "canonical_json_sha256": "sha256:00e0308214732c34938be72968cafb9e6ee11d0e33a9060c20533fd7335a4239",
           "contracts": {
             "coordinator_branch_view.v1": {
               "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
@@ -923,7 +923,7 @@
               "normalized_sha256": "43001ff6f7a286924ec01ca85b95233c7a50fe9cc8595d67da1eb2a35704dddf"
             },
             "parity_oracle.v1": {
-              "canonical_json_sha256": "1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6"
+              "canonical_json_sha256": "0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953"
             },
             "representation_registry.v1": {
               "canonical_json_sha256": "66446af592341061c4967eb2944e32c4e785c58c2baf05db7f00bff10a431508"
@@ -933,18 +933,18 @@
           "kind": "conformance_pack",
           "pack_id": "dag-ml.shared.conformance.v1",
           "path": "docs/contracts/conformance_pack.v1.json",
-          "raw_sha256": "sha256:cbd15a87ec759e1701cd214b9b28acaf82411ccbd8ec70870907d2186d9cf751"
+          "raw_sha256": "sha256:1ebd3e8ec3c257aaaddcba753072a85a48293742f2afc4a7e43434d9e1bbc187"
         },
         {
-          "canonical_json_sha256": "sha256:1ff851b7b35402cf8707463ca8759305de3601c77f1ea5fede6e81e8338131f6",
+          "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
           "id": "parity_oracle",
           "kind": "parity_oracle",
           "oracle_id": "dag-ml.nirs4all.parity_oracle.v1",
           "path": "docs/contracts/parity_oracle.v1.json",
-          "raw_sha256": "sha256:9b5628373adb141e3e12a919f45faca0738456ebe27d54976c1b0b3d0afd39e3",
+          "raw_sha256": "sha256:651dfdb2d1833e45e5d4d8a50bd6cd67bed76d62517c46816c21cdabfb45b9c1",
           "required_case_count": 5,
           "required_case_ids": [
-            "nirs4all_lite_browser_compile_plan",
+            "nirs4all_core_browser_compile_plan",
             "repetition_group_leakage_refusal",
             "controller_registry_selector_parity",
             "branch_merge_oof_refit_replay",
@@ -1018,7 +1018,7 @@
       "selected_workspace_path": "dag-ml-data",
       "state": {
         "branch": "main",
-        "commit": "a27985350e6f31092faeb904c78bde94f7bd1081",
+        "commit": "1932123ee0a956c8c5c883e9af8ed185da789f27",
         "dirty": false,
         "exact_tag": null
       },
