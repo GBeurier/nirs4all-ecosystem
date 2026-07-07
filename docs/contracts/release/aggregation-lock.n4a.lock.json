@@ -607,7 +607,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:77167d7548121720ca441ee9ed9ef4d5838c7bdb63680287b1ea7facb0831cbc",
+          "canonical_json_sha256": "sha256:fee17813b8d0ea3c4e3cb671fd6144a4a5862f387cfdd2fa648a42bcc8555cc3",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -656,6 +656,7 @@
                 "methods",
                 "portable_class_names",
                 "require_upstream",
+                "runtime_contracts",
                 "runtime_surfaces",
                 "upstream_status",
                 "upstreams"
@@ -1192,7 +1193,7 @@
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_lite/_topology.py",
-          "raw_sha256": "sha256:76a6260839af90a19e5b00d587797d0213598ba1020c14349e7291c69d7fb0c5",
+          "raw_sha256": "sha256:e77fe345c0d61434f804d71c258cba4218bc2b783e0cf27aa3986c6cb5009431",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
