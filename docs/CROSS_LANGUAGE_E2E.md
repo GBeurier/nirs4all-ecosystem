@@ -14,6 +14,8 @@ The suite deliberately separates planning from execution:
   commands and fails with exit code 2 if required tools or env vars are missing.
 - `python3 scripts/n4a_e2e_scenarios.py coverage --json` reports readiness,
   language/tag coverage, and V1 strict/contract/gap phase counts.
+- `python3 scripts/n4a_e2e_scenarios.py coverage --markdown-out <path>`
+  writes the same readiness/debt board as a human-readable Markdown artifact.
 - `python3 scripts/n4a_e2e_scenarios.py evidence` verifies an existing artifact
   archive; add `--max-age-seconds <N>` when the gate must prove a fresh run.
 - `python3 scripts/n4a_e2e_scenarios.py evidence --json-out <path>` writes the
@@ -23,9 +25,12 @@ The runner reports missing toolchains as `blocked`; it does not xfail or silentl
 skip. Full parity scenarios are meant to run after large integration batches or
 on selected release heads, not on every small commit.
 
-GitHub Actions validates and plans on push/PR. Runtime execution is explicit:
-dispatch `Cross-language E2E scenarios` with `execute=true`, optionally selecting
-one scenario. Those manual runs upload `.n4a-e2e-artifacts`, including
+GitHub Actions validates and plans on push/PR. Every run uploads a coverage debt
+board under `.n4a-e2e-artifacts/coverage/`, including `coverage-summary.json`
+and `coverage-debt.md`, so the hybrid-vs-strict state is visible even when the
+runtime scenarios are only planned. Runtime execution is explicit: dispatch
+`Cross-language E2E scenarios` with `execute=true`, optionally selecting one
+scenario. Those manual runs additionally upload `.n4a-e2e-artifacts`, including
 `evidence-summary.json`, so fresh runtime proof can be audited after the job.
 
 Coverage output also includes an explicit `debt_summary`. Keep this visible in

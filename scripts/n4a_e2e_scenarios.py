@@ -1711,6 +1711,95 @@ def coverage_report(
     }
 
 
+def _markdown_table(headers: list[str], rows: list[list[str]]) -> list[str]:
+    return [
+        "| " + " | ".join(headers) + " |",
+        "| " + " | ".join("---" for _ in headers) + " |",
+        *["| " + " | ".join(row) + " |" for row in rows],
+    ]
+
+
+def render_coverage_markdown(report: dict[str, Any]) -> str:
+    """Render the coverage report as a human audit board."""
+
+    debt = report["debt_summary"]
+    lines = [
+        "# NIRS4ALL Cross-language E2E Coverage",
+        "",
+        "This report is generated from the canonical cross-language E2E manifest. "
+        "It is a release audit board, not a claim that every V1 phase is strict.",
+        "",
+        "## Summary",
+        "",
+        *_markdown_table(
+            ["metric", "value"],
+            [
+                ["scenarios", f"{report['scenario_count']}/{report['expected_scenario_count']}"],
+                ["ready", str(report["ready_count"])],
+                ["blocked", str(report["blocked_count"])],
+                ["evidence levels", ", ".join(f"{k}={v}" for k, v in report["evidence_levels"].items())],
+                ["strictness gaps", str(debt["strictness_gap_count"])],
+                ["V1 contract phases", str(debt["v1_contract_phase_count"])],
+                ["V1 gap phases", str(debt["v1_gap_phase_count"])],
+            ],
+        ),
+        "",
+        "## V1 Phase Strictness",
+        "",
+        *_markdown_table(
+            ["phase", "strict", "contract", "gap"],
+            [
+                [
+                    phase,
+                    str(counts["strict"]),
+                    str(counts["contract"]),
+                    str(counts["gap"]),
+                ]
+                for phase, counts in report["v1_refactor_phase_status_counts"].items()
+            ],
+        ),
+        "",
+        "## Scenario Debt",
+        "",
+        *_markdown_table(
+            ["scenario", "strict checks", "contract checks", "strictness gaps", "contract phases", "gap phases"],
+            [
+                [
+                    scenario_id,
+                    str(debt_item["strict_parity_checks"]),
+                    str(debt_item["contract_parity_checks"]),
+                    str(debt_item["strictness_gaps"]),
+                    ", ".join(debt_item["contract_phases"]) or "-",
+                    ", ".join(debt_item["gap_phases"]) or "-",
+                ]
+                for scenario_id, debt_item in debt["scenario_phase_debt"].items()
+            ],
+        ),
+        "",
+        "## Required Surface Coverage",
+        "",
+        *_markdown_table(
+            ["language", "scenario count"],
+            [[language, str(count)] for language, count in report["required_languages"].items()],
+        ),
+        "",
+        *_markdown_table(
+            ["tag", "scenario count"],
+            [[tag, str(count)] for tag, count in report["required_tags"].items()],
+        ),
+    ]
+    if debt["scenarios_without_strict_parity_check"]:
+        lines.extend(
+            [
+                "",
+                "## Missing Strict Parity Checks",
+                "",
+                *[f"- `{scenario_id}`" for scenario_id in debt["scenarios_without_strict_parity_check"]],
+            ]
+        )
+    return "\n".join(lines) + "\n"
+
+
 def artifact_evidence_report(
     plans: list[dict[str, Any]],
     *,
@@ -1788,6 +1877,11 @@ def main(argv: list[str] | None = None) -> int:
         "--json-out",
         type=Path,
         help="write the coverage report JSON to this path in addition to stdout",
+    )
+    coverage_parser.add_argument(
+        "--markdown-out",
+        type=Path,
+        help="write a human-readable coverage/debt board to this path",
     )
 
     evidence_parser = subparsers.add_parser("evidence", help="verify expected post-run artifacts")
@@ -1870,10 +1964,13 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "coverage":
             report = coverage_report(
                 manifest,
-                    workspace_root=workspace_root,
-                    artifacts_dir=artifacts_dir,
-                )
+                workspace_root=workspace_root,
+                artifacts_dir=artifacts_dir,
+            )
             _write_json_out(args.json_out, report)
+            if args.markdown_out is not None:
+                args.markdown_out.parent.mkdir(parents=True, exist_ok=True)
+                args.markdown_out.write_text(render_coverage_markdown(report), encoding="utf-8")
             if args.json:
                 print(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True))
             else:

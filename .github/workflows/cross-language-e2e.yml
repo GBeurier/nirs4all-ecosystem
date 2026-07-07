@@ -54,6 +54,11 @@ jobs:
         run: python3 scripts/n4a_e2e_scenarios.py validate
       - name: Run pytest validation
         run: python3 -m pytest -q tests/test_e2e_scenarios.py
+      - name: Write coverage debt board
+        run: >
+          python3 scripts/n4a_e2e_scenarios.py coverage
+          --json-out .n4a-e2e-artifacts/coverage/coverage-summary.json
+          --markdown-out .n4a-e2e-artifacts/coverage/coverage-debt.md
       - name: Plan all scenarios
         if: ${{ !github.event.inputs.scenario && github.event.inputs.execute != 'true' }}
         run: python3 scripts/n4a_e2e_scenarios.py plan
@@ -105,6 +110,13 @@ jobs:
           --scenario "$N4A_E2E_SCENARIO"
           --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
           --json-out .n4a-e2e-artifacts/evidence-summary.json
+      - name: Upload coverage debt board
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: n4a-e2e-coverage-debt-${{ github.run_id }}
+          path: nirs4all-ecosystem/.n4a-e2e-artifacts/coverage/**
+          if-no-files-found: warn
       - name: Upload ready scenario evidence
         if: ${{ always() && !github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
         uses: actions/upload-artifact@v4

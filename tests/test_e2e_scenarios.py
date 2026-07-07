@@ -1549,6 +1549,28 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
     assert report["debt_summary"]["strictness_gap_count"] == 12
 
 
+def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path: Path) -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+    report_path = tmp_path / "coverage-debt.md"
+
+    subprocess.run(
+        [sys.executable, str(script), "coverage", "--markdown-out", str(report_path)],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    )
+    report = report_path.read_text(encoding="utf-8")
+
+    assert "# NIRS4ALL Cross-language E2E Coverage" in report
+    assert "| strictness gaps | 12 |" in report
+    assert "| V1 gap phases | 31 |" in report
+    assert "e2e-core-ui-custom-app-host" in report
+    assert "repository_forced_best_refit" in report
+    assert "javascript_wasm" in report
+
+
 def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
 
@@ -1796,16 +1818,22 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert "allow_blocked:" in workflow
     assert "run-ready --execute" in workflow
     assert "Verify ready scenario artifacts" in workflow
+    assert "Write coverage debt board" in workflow
+    assert "Upload coverage debt board" in workflow
+    assert "--json-out .n4a-e2e-artifacts/coverage/coverage-summary.json" in workflow
+    assert "--markdown-out .n4a-e2e-artifacts/coverage/coverage-debt.md" in workflow
     assert "python3 scripts/n4a_e2e_scenarios.py evidence" in workflow
     assert "--ready-only" in workflow
     assert '--max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"' in workflow
     assert "--json-out .n4a-e2e-artifacts/evidence-summary.json" in workflow
     assert workflow.count("--json-out .n4a-e2e-artifacts/evidence-summary.json") == 2
     assert "actions/upload-artifact@v4" in workflow
+    assert "n4a-e2e-coverage-debt-${{ github.run_id }}" in workflow
     assert "n4a-e2e-ready-runtime-evidence-${{ github.run_id }}" in workflow
     assert "n4a-e2e-${{ github.event.inputs.scenario }}-runtime-evidence-${{ github.run_id }}" in workflow
+    assert workflow.count("path: nirs4all-ecosystem/.n4a-e2e-artifacts/coverage/**") == 1
     assert workflow.count("path: nirs4all-ecosystem/.n4a-e2e-artifacts/**") == 2
-    assert workflow.count("if-no-files-found: warn") == 2
+    assert workflow.count("if-no-files-found: warn") == 3
     assert "--allow-blocked" in workflow
     assert set(re.findall(r"--allowed-blocked-scenario ([a-z0-9-]+)", workflow)) == (
         ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS
