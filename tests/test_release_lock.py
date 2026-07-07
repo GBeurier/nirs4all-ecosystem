@@ -499,16 +499,16 @@ def test_central_manifest_declares_reproducible_methods_and_core_topology_source
         )
     )
     components = {component["key"]: component for component in manifest["components"]}
-    assert manifest["release_selection_policy"]["selected_branch_patterns"] == ["rc/v1-*"]
-    assert (
-        manifest["release_selection_policy"]["preferred_exact_tag"]
-        == "n4a-v1-rc12-2026.07-refactor"
-    )
+    assert manifest["release_selection_policy"]["workspace_root"] == "/home/delete/nirs4all"
+    assert manifest["release_selection_policy"]["selected_branch_patterns"] == ["main"]
+    assert manifest["release_selection_policy"]["preferred_exact_tag"] is None
     assert components["core"]["repo_path"] == "nirs4all-core"
     assert components["core"]["repo_url"] == "GBeurier/nirs4all-core"
-    assert components["core"]["selected_workspace_path"] == "RC-v1-nirs4all-core"
+    assert components["core"]["selected_workspace_path"] == "nirs4all-core"
+    assert components["core"]["preferred_exact_tag"] == "v0.2.13"
     assert components["core"]["target_repo_path"] == "nirs4all-core"
     assert "nirs4all-lite" in components["core"]["repo_aliases"]
+    assert components["formats"]["preferred_exact_tag"] == "v0.2.3"
     methods_sources = {
         source["key"]: source for source in components["methods"]["version_sources"]
     }
