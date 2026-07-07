@@ -110,6 +110,69 @@ def _write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, ensure_ascii=True, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _synthetic_evidence_payload(path: Path) -> dict:
+    key = "/".join(path.parts[-2:])
+    if key == "r-dataset-io-pipeline/roundtrip-checks.json":
+        return {
+            "status": "passed",
+            "workspace_reopened": True,
+            "pipeline_reopened": True,
+            "predictions_reopened": True,
+            "reproduced_split_targets_rmse_predictions": True,
+        }
+    if key == "r-dataset-io-pipeline/python-reopen-ledger.json":
+        return {
+            "status": "passed",
+            "tolerance": 1e-6,
+            "checks": {
+                "workspace_reopened": True,
+                "pipeline_reopened": True,
+                "python_rerun_executed": True,
+                "finite_predictions": True,
+                "dataset_hash_match": True,
+                "selected_prediction_max_abs_delta": 0,
+                "selected_rmse_delta": 0,
+                "r_prediction_artifact_max_abs_delta": 0,
+            },
+        }
+    if key == "python-paper-repository/reopened-result.json":
+        return {
+            "status": "passed",
+            "parity": {
+                "final_prediction_rows": 1,
+                "best_prediction_rows": 1,
+                "best_prediction_abs_max": 0,
+                "best_rmse_abs": 0,
+                "final_prediction_abs_max": 0,
+                "bundle_reopen_prediction_abs_max": 0,
+                "tolerance": 1e-6,
+            },
+        }
+    if key == "python-paper-repository/repository-best-pipeline.json":
+        return {
+            "scenario": "e2e-python-reopen-paper-repository-refit",
+            "refit": {
+                "status": "passed",
+                "executed": True,
+                "force_best_refit": True,
+                "prediction_count": 1,
+                "selected_pipeline_id": "synthetic",
+            },
+            "repository_handoff": {
+                "pipeline_id": "synthetic",
+                "catalog_index": "catalog/index.json",
+                "descriptor": {"id": "synthetic"},
+            },
+        }
+    return {
+        "status": "passed",
+        "ok": True,
+        "prediction_rows": 1,
+        "prediction_max_abs_delta": 0,
+        "prediction_tolerance": 1e-6,
+    }
+
+
 def _scenario_by_id(manifest: dict, scenario_id: str) -> dict:
     for scenario in manifest["scenarios"]:
         if scenario["id"] == scenario_id:
@@ -1159,6 +1222,112 @@ def test_cross_language_e2e_strict_check_requires_json_artifact_evidence(tmp_pat
 
     with pytest.raises(e2e.E2EScenarioError, match="strict parity_check artifacts must be JSON"):
         e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_strict_artifacts_have_scenario_field_requirements() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    for scenario in manifest["scenarios"]:
+        requirements = e2e.SCENARIO_ARTIFACT_REQUIREMENTS.get(scenario["id"], {})
+        strict_artifacts = {
+            artifact
+            for check in scenario["parity_checks"]
+            if check["evidence_level"] == "strict"
+            for artifact in check["artifacts"]
+        }
+        assert strict_artifacts, scenario["id"]
+        for artifact in strict_artifacts:
+            requirement_key = e2e._artifact_requirement_key(artifact)
+            assert requirement_key in requirements, f"{scenario['id']}: {artifact}"
+            assert requirements[requirement_key], f"{scenario['id']}: {artifact}"
+
+
+def test_cross_language_e2e_evidence_rejects_passed_artifact_missing_required_fields(
+    tmp_path: Path,
+) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "custom-app-host" / "custom-host-predictions.json"
+    artifact.parent.mkdir(parents=True)
+    _write_json(artifact, {"status": "passed", "ok": True})
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "e2e-core-ui-custom-app-host",
+                "artifacts": [str(artifact)],
+                "steps": [],
+                "parity_checks": [],
+            }
+        ]
+    )
+
+    assert report["failed_count"] == 1
+    failures = report["scenarios"]["e2e-core-ui-custom-app-host"]["failures"]
+    assert any("missing required evidence field prediction_rows" in failure for failure in failures)
+
+
+def test_cross_language_e2e_evidence_rejects_wrong_scenario_artifact_shape(
+    tmp_path: Path,
+) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "custom-app-host" / "custom-host-predictions.json"
+    artifact.parent.mkdir(parents=True)
+    _write_json(
+        artifact,
+        {
+            "status": "passed",
+            "prediction_rows": 12,
+            "max_abs_delta": 0.1,
+            "tolerance": 0.001,
+        },
+    )
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "e2e-core-ui-custom-app-host",
+                "artifacts": [str(artifact)],
+                "steps": [],
+                "parity_checks": [],
+            }
+        ]
+    )
+
+    assert report["failed_count"] == 1
+    failures = report["scenarios"]["e2e-core-ui-custom-app-host"]["failures"]
+    assert any("max_abs_delta" in failure and "exceeds tolerance" in failure for failure in failures)
+
+
+def test_cross_language_e2e_evidence_accepts_required_scenario_artifact_shape(
+    tmp_path: Path,
+) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "custom-app-host" / "custom-host-predictions.json"
+    artifact.parent.mkdir(parents=True)
+    _write_json(
+        artifact,
+        {
+            "status": "passed",
+            "prediction_rows": 12,
+            "max_abs_delta": 1e-12,
+            "tolerance": 1e-6,
+        },
+    )
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "e2e-core-ui-custom-app-host",
+                "artifacts": [str(artifact)],
+                "steps": [],
+                "parity_checks": [],
+            }
+        ]
+    )
+
+    assert report["verified_count"] == 1
+    assert report["failed_count"] == 0
 
 
 def test_cross_language_e2e_parity_check_artifacts_must_be_scenario_artifacts(tmp_path: Path) -> None:
@@ -2479,7 +2648,7 @@ def test_cross_language_e2e_cli_evidence_json_selected_scenario(tmp_path: Path) 
     for raw_path in scenario["artifacts"]:
         path = Path(raw_path.format(workspace_root=tmp_path, artifacts_dir=artifacts_dir))
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text('{"status": "passed", "ok": true}\n', encoding="utf-8")
+        _write_json(path, _synthetic_evidence_payload(path))
 
     verified = subprocess.run(
         [
@@ -2587,13 +2756,7 @@ def test_cross_language_e2e_cli_evidence_ready_only_skips_blocked_scenarios(tmp_
     for raw_path in ready_scenario["artifacts"]:
         artifact = Path(raw_path.format(workspace_root=workspace_root, artifacts_dir=artifacts_dir))
         artifact.parent.mkdir(parents=True, exist_ok=True)
-        payload = {
-            "status": "passed",
-            "ok": True,
-            "prediction_rows": 1,
-            "prediction_max_abs_delta": 0,
-            "prediction_tolerance": 1e-6,
-        }
+        payload = _synthetic_evidence_payload(artifact)
         if artifact.suffix == ".zip":
             with zipfile.ZipFile(artifact, "w") as archive:
                 archive.writestr("evidence.json", json.dumps(payload))
@@ -2708,11 +2871,15 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
     manifest = _read_manifest()
     scenario_id = manifest["scenarios"][0]["id"]
     manifest["scenarios"][0]["languages"] = ["python", "native"]
+    manifest["scenarios"][0]["tags"] = [
+        tag for tag in manifest["scenarios"][0]["tags"] if tag != "parity"
+    ]
     ok_artifact = tmp_path / "ok-cli-result.json"
     extra_artifact = tmp_path / "extra-cli-result.json"
     missing_artifact = tmp_path / "missing-cli-result.json"
     manifest["scenarios"][0]["artifacts"] = [str(ok_artifact), str(missing_artifact)]
     for check in manifest["scenarios"][0]["parity_checks"]:
+        check["evidence_level"] = "contract"
         check["artifacts"] = [str(ok_artifact)]
     for phase in manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id].values():
         phase["artifacts"] = []
@@ -2727,12 +2894,14 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
                 "command": [
                     sys.executable,
                     "-c",
-                    (
-                        "from pathlib import Path; "
-                        f"Path({str(ok_artifact)!r}).write_text('{{{{\"status\":\"passed\"}}}}\\n'); "
-                        f"Path({str(extra_artifact)!r}).write_text('{{{{\"status\":\"passed\"}}}}\\n')"
-                    ),
-                ],
+                        (
+                            "import json; "
+                            "from pathlib import Path; "
+                            "payload=json.dumps(dict(status='passed', ok=True))+'\\n'; "
+                            f"Path({str(ok_artifact)!r}).write_text(payload); "
+                            f"Path({str(extra_artifact)!r}).write_text(payload)"
+                        ),
+                    ],
                 "produces": [str(ok_artifact), str(extra_artifact)],
             },
         {

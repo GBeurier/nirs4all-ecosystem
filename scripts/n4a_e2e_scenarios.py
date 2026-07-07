@@ -254,6 +254,216 @@ DELTA_FIELD_FRAGMENTS = (
     "score_delta",
 )
 TOLERANCE_FIELD_FRAGMENTS = ("atol", "rtol", "tolerance")
+SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
+    "e2e-r-dataset-io-pipeline-save": {
+        "r-dataset-io-pipeline/roundtrip-checks.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "workspace_reopened", "equals": True},
+            {"path": "pipeline_reopened", "equals": True},
+            {"path": "predictions_reopened", "equals": True},
+            {"path": "reproduced_split_targets_rmse_predictions", "equals": True},
+        ],
+        "r-dataset-io-pipeline/python-reopen-ledger.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "checks.workspace_reopened", "equals": True},
+            {"path": "checks.pipeline_reopened", "equals": True},
+            {"path": "checks.python_rerun_executed", "equals": True},
+            {"path": "checks.finite_predictions", "equals": True},
+            {"path": "checks.dataset_hash_match", "equals": True},
+            {"path": "checks.selected_prediction_max_abs_delta", "lte_path": "tolerance"},
+            {"path": "checks.selected_rmse_delta", "lte_path": "tolerance"},
+            {"path": "checks.r_prediction_artifact_max_abs_delta", "lte_path": "tolerance"},
+        ],
+    },
+    "e2e-python-reopen-paper-repository-refit": {
+        "python-paper-repository/reopened-result.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "parity.final_prediction_rows", "gt": 0},
+            {"path": "parity.best_prediction_rows", "gt": 0},
+            {"path": "parity.best_prediction_abs_max", "lte_path": "parity.tolerance"},
+            {"path": "parity.best_rmse_abs", "lte_path": "parity.tolerance"},
+            {"path": "parity.final_prediction_abs_max", "lte_path": "parity.tolerance"},
+            {"path": "parity.bundle_reopen_prediction_abs_max", "lte_path": "parity.tolerance"},
+        ],
+        "python-paper-repository/repository-best-pipeline.json": [
+            {"path": "scenario", "equals": "e2e-python-reopen-paper-repository-refit"},
+            {"path": "refit.status", "equals": "passed"},
+            {"path": "refit.executed", "equals": True},
+            {"path": "refit.force_best_refit", "equals": True},
+            {"path": "refit.prediction_count", "gt": 0},
+            {"path": "refit.selected_pipeline_id", "non_empty": True},
+            {"path": "repository_handoff.pipeline_id", "non_empty": True},
+            {"path": "repository_handoff.catalog_index", "non_empty": True},
+            {"path": "repository_handoff.descriptor.id", "non_empty": True},
+        ],
+    },
+    "e2e-wasm-open-repo-pipeline-alt-dataset": {
+        "wasm-repo-alt-dataset/pipeline-repository-smoke.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "repository_descriptor_verified", "equals": True},
+            {"path": "repository_dataset_id_non_demo_sample", "equals": True},
+            {"path": "executed_imported_pipeline", "equals": True},
+            {"path": "console_error_count", "equals": 0},
+            {"path": "prediction_comparison.compared_rows", "gt": 0},
+            {"path": "prediction_comparison.max_abs_delta", "lte_path": "prediction_comparison.tolerance"},
+            {
+                "path": "python_oracle_comparison.max_abs_delta",
+                "lte_path": "python_oracle_comparison.predictions_tolerance",
+            },
+            {
+                "path": "imported_python_oracle_comparison.max_abs_delta",
+                "lte_path": "imported_python_oracle_comparison.predictions_tolerance",
+            },
+        ],
+        "wasm-repo-alt-dataset/predict-artifact-smoke.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "console_error_count", "equals": 0},
+            {"path": "prediction_chart_count", "gt": 0},
+            {"path": "prediction_comparison.compared_rows", "gt": 0},
+            {"path": "prediction_comparison.max_abs_delta", "lte_path": "prediction_comparison.tolerance"},
+            {"path": "imported_prediction_panel.numeric_values", "non_empty": True},
+        ],
+    },
+    "e2e-multimodal-python-r-wasm-roundtrip": {
+        "multimodal-roundtrip/core-roundtrip-evidence.json": [
+            {"path": "checks.dataset_sha256_match", "equals": True},
+            {"path": "checks.pipeline_sha256_match", "equals": True},
+            {"path": "multimodal_artifact_audit.available", "equals": True},
+            {"path": "multimodal_artifact_audit.source_count.matches", "equals": True},
+            {"path": "multimodal_artifact_audit.slice_alignment.covers_all_features", "equals": True},
+            {"path": "runtime_results", "non_empty": True},
+        ],
+        "multimodal-roundtrip/wasm-predictions.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "runtime", "equals": "javascript_wasm"},
+            {"path": "metadata_alignment.prediction_rows", "gt": 0},
+            {"path": "metadata_alignment.row_count_matches", "equals": True},
+            {"path": "comparison.status", "equals": "passed"},
+            {"path": "comparison.prediction_abs_max", "lte_path": "comparison.tolerance"},
+            {"path": "comparison.rmse_abs_max", "lte_path": "comparison.tolerance"},
+            {"path": "predict_roundtrip_abs_max", "lte_path": "comparison.tolerance"},
+        ],
+    },
+    "e2e-multisource-branching-stacking-replay": {
+        "multisource-stacking/oof-ledger.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "parity_ok", "equals": True},
+            {"path": "within_tolerance", "equals": True},
+            {"path": "best_rmse_delta", "lte_path": "score_tolerance"},
+            {"path": "cv_best_score_delta", "lte_path": "score_tolerance"},
+            {"path": "test.predictions", "non_empty": True},
+        ],
+        "multisource-stacking/native-replay.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "checks.native_engine", "equals": True},
+            {"path": "checks.native_num_predictions", "equals": True},
+            {"path": "score_set_parity.best_rmse_abs", "lte_path": "score_set_parity.tolerance"},
+            {"path": "score_set_parity.cv_best_score_abs", "lte_path": "score_set_parity.tolerance"},
+            {"path": "prediction_table.rows", "gt": 0},
+        ],
+    },
+    "e2e-converter-legacy-save-predictions-web": {
+        "legacy-converter/converted-workspace.n4a.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "converter.exit_code", "equals": 0},
+            {"path": "converter.verification_passed", "equals": True},
+            {"path": "parity.status", "equals": "passed"},
+            {"path": "parity.checks.runtime_array_preserved", "equals": True},
+            {"path": "workspace.row_counts.predictions", "gt": 0},
+        ],
+        "legacy-converter/predictions.rt_result.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "parity.status", "equals": "passed"},
+            {"path": "parity.within_tolerance", "equals": True},
+            {"path": "parity.prediction_rows", "gt": 0},
+            {"path": "predictions", "non_empty": True},
+        ],
+        "legacy-converter/web-results-panels.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "prediction_count", "gt": 0},
+            {"path": "total_prediction_rows", "gt": 0},
+            {"path": "console_errors", "empty": True},
+        ],
+    },
+    "e2e-dataset-provider-repository-roundtrip": {
+        "provider-repository-roundtrip/cross-language-consumption.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "python.status", "equals": "passed"},
+            {"path": "javascript_wasm.status", "equals": "passed"},
+            {"path": "parity.classes_match", "equals": True},
+            {"path": "parity.random_state_match", "equals": True},
+            {"path": "execution.dataset.rows", "gt": 0},
+            {"path": "execution.comparison.status", "equals": "passed"},
+            {"path": "execution.comparison.prediction_abs_max", "lte_path": "execution.comparison.tolerance"},
+            {"path": "execution.comparison.rmse_abs_max", "lte_path": "execution.comparison.tolerance"},
+        ],
+    },
+    "e2e-pipeline-generation-performance-compare": {
+        "performance-compare/python-vs-dagml.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "parity.prediction_rows", "gt": 0},
+            {"path": "parity.prediction_abs_max", "lte_path": "parity.tolerance"},
+            {"path": "parity.best_rmse_abs", "lte_path": "parity.tolerance"},
+            {"path": "performance.verdict", "equals": "dag_ml_faster"},
+            {"path": "performance.legacy_over_dag_ml_ratio", "gt": 1},
+        ],
+        "performance-compare/web-runtime.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "web.rendered_cv_scores", "equals": True},
+            {"path": "web.dag_ml.cv_predictions", "gt": 0},
+            {"path": "console_errors", "empty": True},
+        ],
+    },
+    "e2e-cluster-dag-rights-client-core": {
+        "cluster-dag-rights/local-vs-cluster-numeric.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "abs_diff", "lte_path": "tolerance_abs"},
+            {"path": "local_best_rmse", "gte": 0},
+            {"path": "cluster_best_rmse", "gte": 0},
+        ],
+        "cluster-dag-rights/local-vs-cluster-parity.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "checks.numeric_oracle_valid", "equals": True},
+            {"path": "checks.best_metric_match", "equals": True},
+            {"path": "checks.best_task_match", "equals": True},
+            {"path": "checks.all_succeeded", "equals": True},
+        ],
+    },
+    "e2e-formats-io-datasets-methods-language-bindings": {
+        "formats-io-methods/binding-parity.json": [
+            {"path": "status", "equals": "pass"},
+            {"path": "build.build_invoked", "equals": True},
+            {"path": "required_backends", "contains_all": ["cpp", "python_tier1", "r_tier1"]},
+            {"path": "parity_rows", "non_empty": True},
+            {"path": "wasm.metrics", "non_empty": True},
+        ],
+        "formats-io-methods/predictions-by-language.json": [
+            {"path": "status", "equals": "pass"},
+            {"path": "predictions", "non_empty": True},
+            {"path": "wasm.metrics", "non_empty": True},
+        ],
+    },
+    "e2e-core-ui-custom-app-host": {
+        "custom-app-host/custom-host-predictions.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "prediction_rows", "gt": 0},
+            {"path": "max_abs_delta", "lte_path": "tolerance"},
+        ],
+        "custom-app-host/custom-host-runtime-contracts.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "schema", "equals": "nirs4all-core.capabilities.v1"},
+            {"path": "serialized_model_predict_surfaces", "equals": ["javascript_wasm"]},
+            {"path": "wasm_predict_entrypoint", "equals": "predictPortablePipeline"},
+        ],
+        "custom-app-host/custom-host-ui.json": [
+            {"path": "status", "equals": "passed"},
+            {"path": "dataset_title", "non_empty": True},
+            {"path": "selected_pipeline_id", "non_empty": True},
+            {"path": "prediction_count", "gt": 0},
+            {"path": "engine_label", "non_empty": True},
+        ],
+    },
+}
 
 
 class E2EScenarioError(RuntimeError):
@@ -466,6 +676,120 @@ def _json_semantic_failures(value: Any, path: str = "$") -> list[str]:
         for index, item in enumerate(value):
             failures.extend(_json_semantic_failures(item, f"{path}[{index}]"))
     return failures
+
+
+def _json_path(value: Any, path: str) -> tuple[bool, Any]:
+    current = value
+    for part in path.split("."):
+        if isinstance(current, dict) and part in current:
+            current = current[part]
+            continue
+        return False, None
+    return True, current
+
+
+def _artifact_requirement_key(raw_path: str) -> str:
+    normalized = raw_path.replace("\\", "/")
+    marker = "/.n4a-e2e-artifacts/"
+    if marker in normalized:
+        return normalized.split(marker, 1)[1]
+    parts = [part for part in normalized.split("/") if part]
+    if len(parts) >= 2:
+        return "/".join(parts[-2:])
+    return normalized
+
+
+def _requirement_number(value: Any, path: str, raw_path: str) -> tuple[float | None, str | None]:
+    if not _is_number(value):
+        return None, f"{raw_path}: {path}={value!r} must be numeric"
+    numeric = float(value)
+    if not math.isfinite(numeric):
+        return None, f"{raw_path}: {path}={value!r} must be finite"
+    return numeric, None
+
+
+def _validate_artifact_requirement(
+    payload: dict[str, Any],
+    requirement: dict[str, Any],
+    raw_path: str,
+) -> list[str]:
+    path = requirement["path"]
+    exists, value = _json_path(payload, path)
+    if not exists:
+        return [f"{raw_path}: missing required evidence field {path}"]
+
+    failures: list[str] = []
+    if "equals" in requirement and value != requirement["equals"]:
+        failures.append(f"{raw_path}: {path}={value!r} != {requirement['equals']!r}")
+    if requirement.get("non_empty") and not value:
+        failures.append(f"{raw_path}: {path} must be non-empty")
+    if requirement.get("empty") and value:
+        failures.append(f"{raw_path}: {path} must be empty")
+    if "contains_all" in requirement:
+        if not isinstance(value, list):
+            failures.append(f"{raw_path}: {path} must be a list")
+        else:
+            missing = sorted(set(requirement["contains_all"]) - set(value))
+            if missing:
+                failures.append(f"{raw_path}: {path} missing required entries: {', '.join(missing)}")
+    for operator, compare in (("gt", lambda a, b: a > b), ("gte", lambda a, b: a >= b)):
+        if operator not in requirement:
+            continue
+        numeric, error = _requirement_number(value, path, raw_path)
+        if error:
+            failures.append(error)
+        elif numeric is not None and not compare(numeric, float(requirement[operator])):
+            failures.append(f"{raw_path}: {path}={value!r} must be {operator} {requirement[operator]!r}")
+    if "lte_path" in requirement:
+        numeric, error = _requirement_number(value, path, raw_path)
+        if error:
+            failures.append(error)
+        tolerance_path = requirement["lte_path"]
+        tolerance_exists, tolerance_value = _json_path(payload, tolerance_path)
+        if not tolerance_exists:
+            failures.append(f"{raw_path}: missing required tolerance field {tolerance_path}")
+        else:
+            tolerance, tolerance_error = _requirement_number(tolerance_value, tolerance_path, raw_path)
+            if tolerance_error:
+                failures.append(tolerance_error)
+            elif numeric is not None and tolerance is not None and abs(numeric) > tolerance:
+                failures.append(f"{raw_path}: {path}={value!r} exceeds {tolerance_path}={tolerance_value!r}")
+    return failures
+
+
+def _scenario_artifact_requirements(plan: dict[str, Any], raw_path: str) -> list[dict[str, Any]]:
+    return SCENARIO_ARTIFACT_REQUIREMENTS.get(plan["id"], {}).get(_artifact_requirement_key(raw_path), [])
+
+
+def _validate_scenario_artifact_contract(
+    plan: dict[str, Any],
+    raw_path: str,
+    payload: dict[str, Any],
+) -> list[str]:
+    failures: list[str] = []
+    for requirement in _scenario_artifact_requirements(plan, raw_path):
+        failures.extend(_validate_artifact_requirement(payload, requirement, raw_path))
+    return failures
+
+
+def _validate_strict_artifact_requirement_coverage(scenario_id: str, parity_checks: list[Any]) -> None:
+    requirements = SCENARIO_ARTIFACT_REQUIREMENTS.get(scenario_id, {})
+    strict_artifacts = {
+        artifact
+        for check in parity_checks
+        if check.get("evidence_level") == "strict"
+        for artifact in check.get("artifacts", [])
+    }
+    missing = sorted(
+        artifact
+        for artifact in strict_artifacts
+        if _artifact_requirement_key(artifact) not in requirements
+    )
+    if missing:
+        raise E2EScenarioError(
+            f"{scenario_id}: strict parity artifact(s) lack scenario evidence requirements: "
+            + ", ".join(missing)
+        )
 
 
 def _produced_snapshot(paths: list[str]) -> dict[str, int | None]:
@@ -1381,6 +1705,10 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
             tags=set(scenario["tags"]),
             phases=scenario["v1_refactor_contract"],
         )
+        _validate_strict_artifact_requirement_coverage(
+            scenario["id"],
+            scenario.get("parity_checks", []),
+        )
     _validate_suite_workflow_surfaces(scenarios)
     return manifest
 
@@ -1828,6 +2156,15 @@ def artifact_evidence_report(
                 max_age_seconds=max_age_seconds,
                 require_positive_evidence=raw_path in positive_artifacts,
             )
+            if not artifact_failures and Path(raw_path).suffix.lower() == ".json":
+                try:
+                    payload = json.loads(Path(raw_path).read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError) as exc:
+                    artifact_failures.append(f"{raw_path}: invalid JSON artifact: {exc}")
+                else:
+                    artifact_failures.extend(
+                        _validate_scenario_artifact_contract(plan, raw_path, payload)
+                    )
             if artifact_failures:
                 failures.extend(artifact_failures)
             else:

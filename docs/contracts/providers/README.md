@@ -84,7 +84,7 @@ A conformant per-language provider read client is small:
 | Surface | Provider read client | State | Gate |
 |---|---|---|---|
 | Python | `nirs4all-providers` (`DatasetProvider`, `PipelineProvider`) | **implemented** — conformant emitter of `provider_descriptor.v1`; soft-imports the Python siblings for the rich object surface | `nirs4all-providers` `pytest` + `scripts/validate_contracts.py` |
-| R | catalogue/index + card/manifest read client over these schemas | **TODO — `GATE-PROV-R`** | not yet created; R aggregate is covered by locked `lite` for *reads of bytes*, but there is **no provider-level catalogue/discovery client** in R |
+| R | catalogue/index + card/manifest read client over these schemas | **TODO — `GATE-PROV-R`** | not yet created; R aggregate is covered by locked `nirs4all-core` for *reads of bytes*, but there is **no provider-level catalogue/discovery client** in R |
 | JS/WASM | catalogue/index + card/manifest read client (client-side, no server) | **TODO — `GATE-PROV-WASM`** | the `datasets_scoped` WASM surface reads dataset *bytes/formats*; a provider-level **index/card discovery** client over these schemas is not yet created |
 | Rust / MATLAB | same neutral client | **TODO — `GATE-PROV-NATIVE`** | deferred |
 
@@ -95,7 +95,7 @@ contract and file the gate — **never** to add a Python shim or make another pa
 
 ## Boundaries (non-negotiable)
 
-- **Providers is not a dependency of `nirs4all-core`, `nirs4all-lite`, `dag-ml`, or `nirs4all-io`.** The
+- **Providers is not a dependency of `nirs4all-core`, `dag-ml`, or `nirs4all-io`.** The
   dependency arrow points the other way or not at all: consumers depend on the **contract** (these
   schemas / the served artifacts), and may optionally use the Python client. Core exposes provider
   clients as *separate optional surfaces*, never as controllers (`DEC-CTRL-001`).
