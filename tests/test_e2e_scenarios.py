@@ -739,10 +739,15 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "languages": {"python", "r", "javascript_wasm"},
                 "tags": {"multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"},
                 "tools": {"python3.11", "Rscript", "node"},
-                "produces": {"multimodal-pipeline.n4a.json", "r-predictions.parquet", "wasm-predictions.json"},
+                "produces": {
+                    "multimodal-pipeline.n4a.json",
+                    "python-open-ledger.json",
+                    "r-predictions.parquet",
+                    "wasm-predictions.json",
+                },
                 "commands": {"test_multimodal_roundtrip.py", "run_multimodal_roundtrip.py"},
                 "evidence": {"dense-fused multimodal", "Roundtrip manifest hash equality"},
-                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "contract"},
+                "phase_statuses": {"python_open_pipeline": "strict", "python_parity": "strict", "wasm_web_reuse": "contract"},
             },
         ),
         (
@@ -752,10 +757,19 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "languages": {"python", "native", "rust"},
                 "tags": {"multisource", "pipeline_generation", "pipeline", "workspace_save", "parity"},
                 "tools": {"python3", "python3.11", "cargo"},
-                "produces": {"stacking-replay.n4a.json", "oof-ledger.json", "native-replay.json"},
+                "produces": {
+                    "stacking-replay.n4a.json",
+                    "python-open-ledger.json",
+                    "oof-ledger.json",
+                    "native-replay.json",
+                },
                 "commands": {"test_multisource_stacking_replay.py", "run_multisource_stacking_replay.py"},
                 "evidence": {"OOF", "native prediction-table schema/array coverage"},
-                "phase_statuses": {"python_parity": "strict", "python_rerun_pipeline": "contract"},
+                "phase_statuses": {
+                    "python_open_pipeline": "strict",
+                    "python_parity": "strict",
+                    "python_rerun_pipeline": "contract",
+                },
             },
         ),
         (
@@ -791,10 +805,19 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "languages": {"python", "javascript_wasm", "web", "native"},
                 "tags": {"pipeline_generation", "pipeline", "parity", "predictions", "web_results"},
                 "tools": {"python3.11", "node", "npm", "google-chrome"},
-                "produces": {"pipeline-family.json", "python-vs-dagml.json", "web-runtime.json"},
+                "produces": {
+                    "pipeline-candidate.n4a.json",
+                    "pipeline-family.json",
+                    "python-vs-dagml.json",
+                    "web-runtime.json",
+                },
                 "commands": {"test_pipeline_generation_performance.py", "smoke:performance-compare"},
                 "evidence": {"generated candidates", "performance ratio ledger"},
-                "phase_statuses": {"python_rerun_pipeline": "strict", "wasm_web_reuse": "contract"},
+                "phase_statuses": {
+                    "python_open_pipeline": "strict",
+                    "python_rerun_pipeline": "strict",
+                    "wasm_web_reuse": "contract",
+                },
             },
         ),
         (
@@ -1788,7 +1811,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["v1_contract_phase_count"] == 10
-    assert report["debt_summary"]["v1_gap_phase_count"] == 4
+    assert report["debt_summary"]["v1_gap_phase_count"] == 1
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
         "strictness_gaps": 2,
@@ -1809,7 +1832,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-multimodal-python-r-wasm-roundtrip"] == {
         "strictness_gaps": 1,
         "contract_phases": ["python_rerun_pipeline", "wasm_web_reuse"],
-        "gap_phases": ["python_open_pipeline"],
+        "gap_phases": [],
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 0,
         "strict_parity_checks": 1,
@@ -1841,7 +1864,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "wasm_web_reuse",
     }
     expected_phase_counts = {
-        "python_open_pipeline": {"strict": 4, "contract": 2, "gap": 3, "not_applicable": 2},
+        "python_open_pipeline": {"strict": 7, "contract": 2, "gap": 0, "not_applicable": 2},
         "python_rerun_pipeline": {"strict": 6, "contract": 3, "gap": 1, "not_applicable": 1},
         "python_parity": {"strict": 11, "contract": 0, "gap": 0, "not_applicable": 0},
         "papers_export": {"strict": 1, "contract": 0, "gap": 0, "not_applicable": 10},
@@ -1892,7 +1915,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
 
     assert (
         "debt: strictness_gaps=12 v1_contract_phases=10 "
-        "v1_gap_phases=4 v1_not_applicable_phases=25"
+        "v1_gap_phases=1 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
@@ -1933,7 +1956,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
     assert "| strictness gaps | 12 |" in report
-    assert "| V1 gap phases | 4 |" in report
+    assert "| V1 gap phases | 1 |" in report
     assert "| V1 not applicable phases | 25 |" in report
     assert "e2e-core-ui-custom-app-host" in report
     assert "repository_forced_best_refit" in report
@@ -2063,12 +2086,22 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert any("dense fused-matrix multimodal proxy" in gap for gap in multimodal["strictness_gaps"])
     assert not any("proxy representation" in check["metric"] for check in multimodal["parity_checks"])
     assert any("dense-fused feature representation" in check["metric"] for check in multimodal["parity_checks"])
+    assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["python_open_pipeline"]["status"] == "strict"
+    assert "python-open-ledger.json" in json.dumps(
+        flow["e2e-multimodal-python-r-wasm-roundtrip"]["python_open_pipeline"],
+        sort_keys=True,
+    )
     assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["python_parity"]["status"] == "strict"
     assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["wasm_web_reuse"]["status"] == "contract"
 
     multisource = _scenario_by_id(manifest, "e2e-multisource-branching-stacking-replay")
     assert multisource["evidence_level"] == "hybrid"
     assert any("schema/array coverage" in gap for gap in multisource["strictness_gaps"])
+    assert flow["e2e-multisource-branching-stacking-replay"]["python_open_pipeline"]["status"] == "strict"
+    assert "branch/source/pipeline identity" in json.dumps(
+        flow["e2e-multisource-branching-stacking-replay"]["python_open_pipeline"],
+        sort_keys=True,
+    )
     assert (
         flow["e2e-multisource-branching-stacking-replay"]["repository_forced_best_refit"]["status"]
         == "not_applicable"
@@ -2089,6 +2122,15 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert (
         "descriptor consumption"
         in flow["e2e-dataset-provider-repository-roundtrip"]["repository_forced_best_refit"]["applicability"]
+    )
+
+    performance = _scenario_by_id(manifest, "e2e-pipeline-generation-performance-compare")
+    assert performance["evidence_level"] == "hybrid"
+    assert any("Studio is explicitly outside this Web-only gate" in gap for gap in performance["strictness_gaps"])
+    assert flow["e2e-pipeline-generation-performance-compare"]["python_open_pipeline"]["status"] == "strict"
+    assert "pipeline-candidate.n4a.json" in json.dumps(
+        flow["e2e-pipeline-generation-performance-compare"]["python_open_pipeline"],
+        sort_keys=True,
     )
 
     formats_bindings = _scenario_by_id(manifest, "e2e-formats-io-datasets-methods-language-bindings")

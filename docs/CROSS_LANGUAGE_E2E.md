@@ -82,11 +82,11 @@ that count and the tests assert the expected handoff for each workflow:
 | `e2e-r-dataset-io-pipeline-save` | R loads a catalog dataset, reshapes it through IO, runs/saves a pipeline, and records Python/native parity evidence. |
 | `e2e-python-reopen-paper-repository-refit` | Python reopens/reruns a saved pipeline, papers export preserves provenance, repository handoff is emitted, and Web/WASM imports it. |
 | `e2e-wasm-open-repo-pipeline-alt-dataset` | A Python oracle opens and reruns the repository descriptor, then a fresh Web/WASM session imports the same pipeline over an alternate dataset and compares predictions. |
-| `e2e-multimodal-python-r-wasm-roundtrip` | Python creates multimodal evidence and R/WASM consume the persisted dense-fused artifacts with strict numeric parity against the Python oracle. |
-| `e2e-multisource-branching-stacking-replay` | Python builds multisource stacking replay evidence and native/core replay verifies score parity. |
+| `e2e-multimodal-python-r-wasm-roundtrip` | Python persists and reopens the multimodal pipeline artifact, then R/WASM consume the dense-fused artifacts with strict numeric parity against the Python oracle. |
+| `e2e-multisource-branching-stacking-replay` | Python builds, persists and reopens multisource stacking replay evidence before native/core replay verifies score parity. |
 | `e2e-converter-legacy-save-predictions-web` | Python converts a legacy save and Web renders the lowered prediction result panels. |
 | `e2e-dataset-provider-repository-roundtrip` | Providers materialize data into a repository descriptor consumed by Python core and JavaScript/WASM. |
-| `e2e-pipeline-generation-performance-compare` | Python generates a pipeline family and Web/native runtimes compare prediction and performance evidence. |
+| `e2e-pipeline-generation-performance-compare` | Python persists and reopens one generated candidate, then Web/native runtimes compare prediction and performance evidence. |
 | `e2e-cluster-dag-rights-client-core` | Cluster DAG execution is compared with a local Python numeric oracle and core handoff checks. |
 | `e2e-formats-io-datasets-methods-language-bindings` | Formats/IO assemble reference datasets and methods bindings compare Python/R/WASM/native prediction evidence. |
 | `e2e-core-ui-custom-app-host` | A custom client host records the R binding surface, proves runtimeContracts expose serialized-model prediction only for JavaScript/WASM, runs nirs4all-core WASM predictions against a Python oracle, and renders reusable nirs4all-ui dataset-to-pipeline-to-predictions result components. |

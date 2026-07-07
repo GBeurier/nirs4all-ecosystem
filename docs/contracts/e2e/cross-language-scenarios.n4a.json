@@ -241,13 +241,16 @@
       },
       "e2e-multimodal-python-r-wasm-roundtrip": {
         "python_open_pipeline": {
-          "status": "gap",
+          "status": "strict",
           "evidence": [
-            "Python generates a multimodal pipeline artifact but does not reopen a persisted one in this scenario."
+            "Python persists multimodal-pipeline.n4a.json, reopens it in the same producer step, and records hash/source-count identity in python-open-ledger.json."
           ],
-          "gap": "The current proof starts from generation rather than a Python reopen of a saved multimodal pipeline.",
+          "artifacts": [
+            "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
+            "{artifacts_dir}/multimodal-roundtrip/python-open-ledger.json"
+          ],
           "acceptance": [
-            "Add a Python reopen of multimodal-pipeline.n4a.json before R/WASM execution and verify manifest hash equality."
+            "The reopened multimodal pipeline hash, name, declared source count, and dataset hash must match the generated artifact before R/WASM execution."
           ]
         },
         "python_rerun_pipeline": {
@@ -314,13 +317,16 @@
       },
       "e2e-multisource-branching-stacking-replay": {
         "python_open_pipeline": {
-          "status": "gap",
+          "status": "strict",
           "evidence": [
-            "Python builds a multisource stacking replay manifest but does not reopen a saved pipeline first."
+            "Python writes stacking-replay.n4a.json, reopens it, and records branch/source/pipeline identity in python-open-ledger.json before native replay."
           ],
-          "gap": "The scenario lacks a Python reopen step for the saved multisource artifact.",
+          "artifacts": [
+            "{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json",
+            "{artifacts_dir}/multisource-stacking/python-open-ledger.json"
+          ],
           "acceptance": [
-            "Add a Python open step for stacking-replay.n4a.json and assert branch/source identity before native replay."
+            "The reopened replay manifest must preserve pipeline hash, branch count, branch descriptors, source count, and scenario identity before native replay."
           ]
         },
         "python_rerun_pipeline": {
@@ -526,13 +532,16 @@
       },
       "e2e-pipeline-generation-performance-compare": {
         "python_open_pipeline": {
-          "status": "gap",
+          "status": "strict",
           "evidence": [
-            "Python generates a pipeline family but does not reopen a persisted pipeline artifact before comparison."
+            "Python persists pipeline-candidate.n4a.json, reopens it, and records candidate hash, variant count, selected-model, metric and prediction-row identity before runtime comparison."
           ],
-          "gap": "The scenario starts from generation and runtime comparison, not Python reopen.",
+          "artifacts": [
+            "{artifacts_dir}/performance-compare/pipeline-candidate.n4a.json",
+            "{artifacts_dir}/performance-compare/python-vs-dagml.json"
+          ],
           "acceptance": [
-            "Persist one generated candidate, reopen it in Python, and record pipeline identity before runtime comparison."
+            "The reopened generated candidate hash, variant count, selected model/metric, and prediction-row counts must match before Python-vs-dag-ml and Web performance ledgers are accepted."
           ]
         },
         "python_rerun_pipeline": {
@@ -1293,6 +1302,7 @@
       ],
       "artifacts": [
         "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
+        "{artifacts_dir}/multimodal-roundtrip/python-open-ledger.json",
         "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet",
         "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet",
         "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json",
@@ -1334,6 +1344,7 @@
           ],
           "produces": [
             "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
+            "{artifacts_dir}/multimodal-roundtrip/python-open-ledger.json",
             "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet"
           ]
         },
@@ -1392,6 +1403,7 @@
       ],
       "artifacts": [
         "{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json",
+        "{artifacts_dir}/multisource-stacking/python-open-ledger.json",
         "{artifacts_dir}/multisource-stacking/oof-ledger.json",
         "{artifacts_dir}/multisource-stacking/native-replay.json"
       ],
@@ -1441,6 +1453,7 @@
           ],
           "produces": [
             "{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json",
+            "{artifacts_dir}/multisource-stacking/python-open-ledger.json",
             "{artifacts_dir}/multisource-stacking/oof-ledger.json"
           ]
         },
@@ -1723,6 +1736,7 @@
         "web_results"
       ],
       "artifacts": [
+        "{artifacts_dir}/performance-compare/pipeline-candidate.n4a.json",
         "{artifacts_dir}/performance-compare/pipeline-family.json",
         "{artifacts_dir}/performance-compare/python-vs-dagml.json",
         "{artifacts_dir}/performance-compare/web-runtime.json"
@@ -1772,6 +1786,7 @@
             "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_pipeline_generation_performance.py::test_generate_family --artifacts-dir={artifacts_dir}/performance-compare"
           ],
           "produces": [
+            "{artifacts_dir}/performance-compare/pipeline-candidate.n4a.json",
             "{artifacts_dir}/performance-compare/pipeline-family.json"
           ]
         },
