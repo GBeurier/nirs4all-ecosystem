@@ -1530,6 +1530,25 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
 
 
+def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+    report_path = tmp_path / "coverage-summary.json"
+
+    covered = subprocess.run(
+        [sys.executable, str(script), "coverage", "--json-out", str(report_path)],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    )
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+
+    assert "11/11 scenarios" in covered.stdout
+    assert report["scenario_count"] == 11
+    assert report["debt_summary"]["strictness_gap_count"] == 12
+
+
 def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
 
@@ -1780,6 +1799,13 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert "python3 scripts/n4a_e2e_scenarios.py evidence" in workflow
     assert "--ready-only" in workflow
     assert '--max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"' in workflow
+    assert "--json-out .n4a-e2e-artifacts/evidence-summary.json" in workflow
+    assert workflow.count("--json-out .n4a-e2e-artifacts/evidence-summary.json") == 2
+    assert "actions/upload-artifact@v4" in workflow
+    assert "n4a-e2e-ready-runtime-evidence-${{ github.run_id }}" in workflow
+    assert "n4a-e2e-${{ github.event.inputs.scenario }}-runtime-evidence-${{ github.run_id }}" in workflow
+    assert workflow.count("path: nirs4all-ecosystem/.n4a-e2e-artifacts/**") == 2
+    assert workflow.count("if-no-files-found: warn") == 2
     assert "--allow-blocked" in workflow
     assert set(re.findall(r"--allowed-blocked-scenario ([a-z0-9-]+)", workflow)) == (
         ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS
@@ -2420,6 +2446,7 @@ def test_cross_language_e2e_cli_evidence_json_selected_scenario(tmp_path: Path) 
     manifest = e2e.validate_scenarios(MANIFEST)
     scenario = _scenario_by_id(manifest, "e2e-r-dataset-io-pipeline-save")
     artifacts_dir = tmp_path / "artifacts"
+    report_path = tmp_path / "evidence-summary.json"
 
     for raw_path in scenario["artifacts"]:
         path = Path(raw_path.format(workspace_root=tmp_path, artifacts_dir=artifacts_dir))
@@ -2438,6 +2465,8 @@ def test_cross_language_e2e_cli_evidence_json_selected_scenario(tmp_path: Path) 
             "--scenario",
             scenario["id"],
             "--json",
+            "--json-out",
+            str(report_path),
         ],
         cwd=ROOT,
         text=True,
@@ -2450,6 +2479,7 @@ def test_cross_language_e2e_cli_evidence_json_selected_scenario(tmp_path: Path) 
     assert report["verified_count"] == 1
     assert report["failed_count"] == 0
     assert report["scenarios"][scenario["id"]]["artifact_count"] == len(scenario["artifacts"])
+    assert json.loads(report_path.read_text(encoding="utf-8")) == report
 
     archived_artifact = Path(
         scenario["artifacts"][0].format(workspace_root=tmp_path, artifacts_dir=artifacts_dir)

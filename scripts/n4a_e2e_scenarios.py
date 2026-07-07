@@ -493,6 +493,16 @@ def _append_step_summary(lines: list[str]) -> None:
         return
 
 
+def _write_json_out(path: Path | None, payload: dict[str, Any]) -> None:
+    if path is None:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
 def _parse_allowed_blocked_requirements(values: list[str]) -> dict[str, set[str]]:
     allowed: dict[str, set[str]] = {}
     for value in values:
@@ -1774,6 +1784,11 @@ def main(argv: list[str] | None = None) -> int:
 
     coverage_parser = subparsers.add_parser("coverage", help="summarize scenario coverage/readiness")
     coverage_parser.add_argument("--json", action="store_true")
+    coverage_parser.add_argument(
+        "--json-out",
+        type=Path,
+        help="write the coverage report JSON to this path in addition to stdout",
+    )
 
     evidence_parser = subparsers.add_parser("evidence", help="verify expected post-run artifacts")
     evidence_parser.add_argument("--scenario")
@@ -1783,6 +1798,11 @@ def main(argv: list[str] | None = None) -> int:
         help="verify artifacts only for scenarios whose requirements are currently ready",
     )
     evidence_parser.add_argument("--json", action="store_true")
+    evidence_parser.add_argument(
+        "--json-out",
+        type=Path,
+        help="write the evidence report JSON to this path in addition to stdout",
+    )
     evidence_parser.add_argument(
         "--max-age-seconds",
         type=int,
@@ -1850,9 +1870,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "coverage":
             report = coverage_report(
                 manifest,
-                workspace_root=workspace_root,
-                artifacts_dir=artifacts_dir,
-            )
+                    workspace_root=workspace_root,
+                    artifacts_dir=artifacts_dir,
+                )
+            _write_json_out(args.json_out, report)
             if args.json:
                 print(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True))
             else:
@@ -1900,6 +1921,7 @@ def main(argv: list[str] | None = None) -> int:
                 if not plans:
                     raise E2EScenarioError("--ready-only matched no ready scenarios")
             report = artifact_evidence_report(plans, max_age_seconds=args.max_age_seconds)
+            _write_json_out(args.json_out, report)
             if args.json:
                 print(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True))
             else:

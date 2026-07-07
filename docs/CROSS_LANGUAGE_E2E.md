@@ -16,10 +16,17 @@ The suite deliberately separates planning from execution:
   language/tag coverage, and V1 strict/contract/gap phase counts.
 - `python3 scripts/n4a_e2e_scenarios.py evidence` verifies an existing artifact
   archive; add `--max-age-seconds <N>` when the gate must prove a fresh run.
+- `python3 scripts/n4a_e2e_scenarios.py evidence --json-out <path>` writes the
+  same verification report to disk for CI artifact upload.
 
 The runner reports missing toolchains as `blocked`; it does not xfail or silently
 skip. Full parity scenarios are meant to run after large integration batches or
 on selected release heads, not on every small commit.
+
+GitHub Actions validates and plans on push/PR. Runtime execution is explicit:
+dispatch `Cross-language E2E scenarios` with `execute=true`, optionally selecting
+one scenario. Those manual runs upload `.n4a-e2e-artifacts`, including
+`evidence-summary.json`, so fresh runtime proof can be audited after the job.
 
 Coverage output also includes an explicit `debt_summary`. Keep this visible in
 boards and CI logs: it names scenarios without strict parity checks, counts
