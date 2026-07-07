@@ -183,6 +183,16 @@ DISALLOWED_ARTIFACT_STATUS_TOKENS = {
 DISALLOWED_ARTIFACT_STATUS_SUBSTRINGS = {
     "not_executed",
 }
+PASSING_ARTIFACT_STATUSES = {
+    "ok",
+    "pass",
+    "passed",
+    "success",
+    "succeeded",
+    "valid",
+    "validated",
+    "verified",
+}
 BOOLEAN_EVIDENCE_FIELDS = {
     "browser_runtime_executed",
     "client_side_only",
@@ -392,6 +402,46 @@ def _delta_tolerance_failures(values: dict[str, Any], path: str) -> list[str]:
     return failures
 
 
+def _has_passing_delta_evidence(values: dict[str, Any]) -> bool:
+    for key, item in values.items():
+        key_name = str(key).lower()
+        if not _is_number(item) or not any(fragment in key_name for fragment in DELTA_FIELD_FRAGMENTS):
+            continue
+        tolerance_key = _tolerance_key_for_delta(key_name, values)
+        if tolerance_key is None:
+            continue
+        tolerance_value = values[tolerance_key]
+        if not _is_number(tolerance_value):
+            continue
+        delta = float(item)
+        tolerance = float(tolerance_value)
+        if math.isfinite(delta) and math.isfinite(tolerance) and tolerance >= 0 and abs(delta) <= tolerance:
+            return True
+    return False
+
+
+def _json_has_positive_evidence(value: Any) -> bool:
+    if isinstance(value, dict):
+        if _has_passing_delta_evidence(value):
+            return True
+        for key, item in value.items():
+            key_name = str(key).lower()
+            if key_name in STATUS_FIELD_NAMES and isinstance(item, str):
+                if _normal_status(item) in PASSING_ARTIFACT_STATUSES:
+                    return True
+            if key_name in BOOLEAN_EVIDENCE_FIELDS and item is True:
+                return True
+            if key_name in POSITIVE_EVIDENCE_FIELDS and _is_number(item):
+                item_value = float(item)
+                if math.isfinite(item_value) and item_value > 0:
+                    return True
+            if _json_has_positive_evidence(item):
+                return True
+    elif isinstance(value, list):
+        return any(_json_has_positive_evidence(item) for item in value)
+    return False
+
+
 def _json_semantic_failures(value: Any, path: str = "$") -> list[str]:
     failures: list[str] = []
     if isinstance(value, dict):
@@ -455,11 +505,31 @@ def _parse_allowed_blocked_requirements(values: list[str]) -> dict[str, set[str]
     return allowed
 
 
-def _validate_produced_artifacts(step: dict[str, Any], before: dict[str, int | None]) -> list[str]:
+def _parity_check_artifact_paths(plan: dict[str, Any]) -> set[str]:
+    paths: set[str] = set()
+    for check in plan.get("parity_checks", []):
+        if not isinstance(check, dict):
+            continue
+        for raw_path in check.get("artifacts", []):
+            if isinstance(raw_path, str):
+                paths.add(raw_path)
+    return paths
+
+
+def _validate_produced_artifacts(
+    step: dict[str, Any],
+    before: dict[str, int | None],
+    *,
+    require_positive_artifacts: set[str] | None = None,
+) -> list[str]:
     failures: list[str] = []
+    positive_artifacts = require_positive_artifacts or set()
     for raw_path in step.get("produces", []):
         path = Path(raw_path)
-        structural_failures = _validate_existing_artifact(raw_path)
+        structural_failures = _validate_existing_artifact(
+            raw_path,
+            require_positive_evidence=raw_path in positive_artifacts,
+        )
         if structural_failures:
             failures.extend(structural_failures)
             continue
@@ -555,7 +625,12 @@ def _validate_non_json_artifact(path: Path) -> list[str]:
     return []
 
 
-def _validate_existing_artifact(raw_path: str, *, max_age_seconds: int | None = None) -> list[str]:
+def _validate_existing_artifact(
+    raw_path: str,
+    *,
+    max_age_seconds: int | None = None,
+    require_positive_evidence: bool = False,
+) -> list[str]:
     path = Path(raw_path)
     if not path.exists():
         return [f"{raw_path}: missing"]
@@ -583,6 +658,8 @@ def _validate_existing_artifact(raw_path: str, *, max_age_seconds: int | None = 
     semantic_failures = _json_semantic_failures(payload)
     if semantic_failures:
         return [f"{raw_path}: non-passing evidence: {', '.join(semantic_failures)}"]
+    if require_positive_evidence and not _json_has_positive_evidence(payload):
+        return [f"{raw_path}: non-passing evidence: no positive passing signal"]
     return []
 
 
@@ -1246,7 +1323,7 @@ def plan_scenario(
         "strictness_gaps": scenario.get("strictness_gaps", []),
         "v1_refactor_contract": scenario.get("v1_refactor_contract", {}),
         "v1_refactor_summary": _v1_refactor_summary(scenario.get("v1_refactor_contract", {})),
-        "parity_checks": scenario.get("parity_checks", []),
+        "parity_checks": _format_value(scenario.get("parity_checks", []), workspace_root, artifacts_dir),
         "steps": planned_steps,
         "evidence": scenario["evidence"],
         "artifacts": _format_value(scenario["artifacts"], workspace_root, artifacts_dir),
@@ -1255,6 +1332,7 @@ def plan_scenario(
 
 def execute_plan(plan: dict[str, Any], *, stop_on_blocked: bool = True) -> int:
     blocked_seen = False
+    positive_artifacts = _parity_check_artifact_paths(plan)
     if stop_on_blocked and plan["status"] == "blocked":
         blocked = [step for step in plan["steps"] if step["status"] == "blocked"]
         for step in blocked:
@@ -1270,7 +1348,11 @@ def execute_plan(plan: dict[str, Any], *, stop_on_blocked: bool = True) -> int:
         if proc.returncode != 0:
             print(f"FAILED {plan['id']}.{step['id']}: exit {proc.returncode}", file=sys.stderr)
             return proc.returncode
-        artifact_failures = _validate_produced_artifacts(step, produced_before)
+        artifact_failures = _validate_produced_artifacts(
+            step,
+            produced_before,
+            require_positive_artifacts=positive_artifacts,
+        )
         if artifact_failures:
             print(
                 f"FAILED {plan['id']}.{step['id']}: invalid produced artifact(s): "
@@ -1503,10 +1585,12 @@ def artifact_evidence_report(
                 artifact_sources.setdefault(raw_path, set()).add(step["id"])
         failures: list[str] = []
         verified_artifacts: list[str] = []
+        positive_artifacts = _parity_check_artifact_paths(plan)
         for raw_path in sorted(artifact_sources):
             artifact_failures = _validate_existing_artifact(
                 raw_path,
                 max_age_seconds=max_age_seconds,
+                require_positive_evidence=raw_path in positive_artifacts,
             )
             if artifact_failures:
                 failures.extend(artifact_failures)

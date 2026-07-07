@@ -1870,7 +1870,7 @@ def test_cross_language_e2e_run_ready_requires_complete_blocker_allowlist(tmp_pa
                 "command": [
                     sys.executable,
                     "-c",
-                    f"from pathlib import Path; Path({str(artifact)!r}).write_text('{{}}\\n')",
+                    f"from pathlib import Path; Path({str(artifact)!r}).write_text('{{\"status\":\"passed\"}}\\n')",
                 ],
                 "produces": [str(artifact)],
             }
@@ -2016,9 +2016,14 @@ def test_cross_language_e2e_successful_step_must_refresh_existing_artifacts(tmp_
         {"studio_runtime": {"status": "not_executed_prod_hold"}},
         {"repository_runtime": {"result": "not_executed_in_this_gate"}},
         {"legacy_python_replay": False},
+        {},
+        [],
+        None,
+        {"note": "command exited zero"},
+        [{"note": "nested list without evidence"}],
     ],
 )
-def test_cross_language_e2e_rejects_non_passing_json_artifacts(tmp_path: Path, payload: dict) -> None:
+def test_cross_language_e2e_rejects_non_passing_json_artifacts(tmp_path: Path, payload: object) -> None:
     e2e = _load_e2e_module()
     artifact = tmp_path / "non-passing-result.json"
 
@@ -2026,6 +2031,7 @@ def test_cross_language_e2e_rejects_non_passing_json_artifacts(tmp_path: Path, p
         {
             "id": "synthetic",
             "status": "ready",
+            "parity_checks": [{"artifacts": [str(artifact)]}],
             "steps": [
                 {
                     "id": "non-passing-step",
@@ -2046,6 +2052,46 @@ def test_cross_language_e2e_rejects_non_passing_json_artifacts(tmp_path: Path, p
     )
 
     assert returncode == 1
+
+
+def test_cross_language_e2e_allows_structural_json_without_positive_signal(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "pipeline.n4a.json"
+    artifact.write_text('{"nodes": [], "edges": []}\n', encoding="utf-8")
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "synthetic",
+                "artifacts": [str(artifact)],
+                "steps": [{"id": "write-structure", "produces": [str(artifact)]}],
+            }
+        ]
+    )
+
+    assert report["verified_count"] == 1
+    assert report["failed_count"] == 0
+
+
+def test_cross_language_e2e_parity_artifacts_require_positive_signal(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "parity-ledger.json"
+    artifact.write_text('{"note": "command exited zero"}\n', encoding="utf-8")
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "synthetic",
+                "artifacts": [str(artifact)],
+                "parity_checks": [{"artifacts": [str(artifact)]}],
+                "steps": [{"id": "write-evidence", "produces": [str(artifact)]}],
+            }
+        ]
+    )
+
+    assert report["verified_count"] == 0
+    assert report["failed_count"] == 1
+    assert "no positive passing signal" in "\n".join(report["scenarios"]["synthetic"]["failures"])
 
 
 @pytest.mark.parametrize(
