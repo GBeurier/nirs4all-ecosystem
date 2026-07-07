@@ -218,7 +218,7 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
         "e2e-multimodal-python-r-wasm-roundtrip": {
             "languages": {"python", "r", "javascript_wasm"},
             "repos": {"nirs4all", "nirs4all-core"},
-            "tags": {"multimodal", "pipeline", "predictions"},
+            "tags": {"multimodal", "pipeline", "predictions", "parity"},
         },
         "e2e-multisource-branching-stacking-replay": {
             "languages": {"python", "native"},
@@ -404,9 +404,6 @@ def test_cross_language_e2e_strict_parity_checks_assert_real_oracle_comparisons(
         strict_checks = [
             check for check in scenario["parity_checks"] if check["evidence_level"] == "strict"
         ]
-        if scenario["id"] == "e2e-multimodal-python-r-wasm-roundtrip":
-            assert not strict_checks, scenario["id"]
-            continue
         assert strict_checks, scenario["id"]
         for check in strict_checks:
             metric = check["metric"].lower()
@@ -613,12 +610,12 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
             {
                 "steps": ["python-generate-multimodal", "r-wasm-roundtrip"],
                 "languages": {"python", "r", "javascript_wasm"},
-                "tags": {"multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save"},
+                "tags": {"multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"},
                 "tools": {"python3.11", "Rscript", "node"},
                 "produces": {"multimodal-pipeline.n4a.json", "r-predictions.parquet", "wasm-predictions.json"},
                 "commands": {"test_multimodal_roundtrip.py", "run_multimodal_roundtrip.py"},
                 "evidence": {"dense-fused multimodal", "Roundtrip manifest hash equality"},
-                "phase_statuses": {"python_parity": "contract", "wasm_web_reuse": "contract"},
+                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "contract"},
             },
         ),
         (
@@ -1410,7 +1407,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "multimodal": 1,
         "multisource": 1,
         "papers": 1,
-        "parity": 10,
+        "parity": 11,
         "pipeline": 11,
         "pipeline_generation": 2,
         "predictions": 6,
@@ -1420,13 +1417,11 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert report["debt_summary"]["strictness_gap_count"] == 12
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
-        "contract": 8,
-        "strict": 16,
+        "contract": 7,
+        "strict": 17,
     }
-    assert report["debt_summary"]["scenarios_without_strict_parity_check"] == [
-        "e2e-multimodal-python-r-wasm-roundtrip"
-    ]
-    assert report["debt_summary"]["v1_contract_phase_count"] == 11
+    assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
+    assert report["debt_summary"]["v1_contract_phase_count"] == 10
     assert report["debt_summary"]["v1_gap_phase_count"] == 31
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
         "strictness_gaps": 2,
@@ -1437,10 +1432,10 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-multimodal-python-r-wasm-roundtrip"] == {
         "strictness_gaps": 1,
-        "contract_phases": ["python_rerun_pipeline", "python_parity", "wasm_web_reuse"],
+        "contract_phases": ["python_rerun_pipeline", "wasm_web_reuse"],
         "gap_phases": ["python_open_pipeline", "papers_export", "repository_forced_best_refit"],
-        "contract_parity_checks": 1,
-        "strict_parity_checks": 0,
+        "contract_parity_checks": 0,
+        "strict_parity_checks": 1,
     }
     assert report["repos"] == {
         "dag-ml": 4,
@@ -1471,7 +1466,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     expected_phase_counts = {
         "python_open_pipeline": {"strict": 3, "contract": 2, "gap": 6},
         "python_rerun_pipeline": {"strict": 5, "contract": 3, "gap": 3},
-        "python_parity": {"strict": 10, "contract": 1, "gap": 0},
+        "python_parity": {"strict": 11, "contract": 0, "gap": 0},
         "papers_export": {"strict": 1, "contract": 0, "gap": 10},
         "repository_forced_best_refit": {"strict": 1, "contract": 1, "gap": 9},
         "wasm_web_reuse": {"strict": 4, "contract": 4, "gap": 3},
@@ -1501,10 +1496,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     for scenario_id, summary in report["scenario_summaries"].items():
         assert summary["steps"] >= 2
         assert summary["artifacts"] >= 2
-        if scenario_id == "e2e-multimodal-python-r-wasm-roundtrip":
-            assert summary["strict_parity_checks"] == 0
-        else:
-            assert summary["strict_parity_checks"] >= 1
+        assert summary["strict_parity_checks"] >= 1
         assert summary["v1_refactor_summary"]["non_gap"] >= 1
 
 
@@ -1520,8 +1512,9 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
         check=True,
     )
 
-    assert "debt: strictness_gaps=12 v1_contract_phases=11 v1_gap_phases=31" in covered.stdout
-    assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" in covered.stdout
+    assert "debt: strictness_gaps=12 v1_contract_phases=10 v1_gap_phases=31" in covered.stdout
+    assert "without_strict_parity=" in covered.stdout
+    assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
 
 
 def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_path: Path) -> None:
@@ -1643,6 +1636,7 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert any("dense fused-matrix multimodal proxy" in gap for gap in multimodal["strictness_gaps"])
     assert not any("proxy representation" in check["metric"] for check in multimodal["parity_checks"])
     assert any("dense-fused feature representation" in check["metric"] for check in multimodal["parity_checks"])
+    assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["python_parity"]["status"] == "strict"
     assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["wasm_web_reuse"]["status"] == "contract"
 
     multisource = _scenario_by_id(manifest, "e2e-multisource-branching-stacking-replay")

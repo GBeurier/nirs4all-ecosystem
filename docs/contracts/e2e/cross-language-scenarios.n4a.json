@@ -148,11 +148,10 @@
           "acceptance": ["Promote to strict after Python reruns the saved multimodal artifact and emits a reopen ledger."]
         },
         "python_parity": {
-          "status": "contract",
-          "evidence": ["Python dense-fused multimodal proxy predictions are compared with R and WASM proxy predictions."],
+          "status": "strict",
+          "evidence": ["Python dense-fused multimodal predictions are compared numerically with R and WASM dense-fused predictions."],
           "artifacts": ["{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"],
-          "gap": "Dense fused proxy parity is not full multimodal runtime parity across native source-aware execution.",
-          "acceptance": ["Keep proxy prediction absolute max deltas within tolerance, but promote to strict only after source-aware multimodal runtime predictions are compared with the same dataset hashes."]
+          "acceptance": ["Dense-fused Python/R/WASM prediction vectors, RMSE, targets, split indices, and selected component counts must match the Python oracle within the recorded tolerance."]
         },
         "papers_export": {
           "status": "gap",
@@ -747,7 +746,7 @@
       ],
       "languages": ["python", "r", "javascript_wasm"],
       "repos": ["nirs4all", "nirs4all-core"],
-      "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save"],
+      "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"],
       "artifacts": [
         "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
         "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet",
@@ -765,7 +764,7 @@
           "oracle": "python dense-fused multimodal feature matrix predictions",
           "candidate": "R and WASM dense-fused multimodal feature matrix predictions",
           "metric": "per-output prediction_abs_max <= 1e-8 within the dense-fused feature representation",
-          "evidence_level": "contract",
+          "evidence_level": "strict",
           "artifacts": ["{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"]
         }
       ],
