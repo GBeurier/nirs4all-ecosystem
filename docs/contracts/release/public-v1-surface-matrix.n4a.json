@@ -42,7 +42,9 @@
     "docs/agent_reports/WAVE_4AT_FULL_PARITY_REFRESH.md",
     "docs/agent_reports/WAVE_4AU_CUTOVER_LANGUAGE_GATE_REFRESH.md",
     "docs/agent_reports/WAVE_7H_RELEASE_HEAD_AUDIT_2026-07-06.md",
-    "docs/agent_reports/WAVE_8R_UI_CUSTOM_HOST_ASSET_BOUNDARY.md"
+    "docs/agent_reports/WAVE_8R_UI_CUSTOM_HOST_ASSET_BOUNDARY.md",
+    "docs/agent_reports/WAVE_8S_STUDIO_WINDOWS_RC_PREP.md",
+    "docs/agent_reports/WAVE_8T_ORG_COCKPIT_RELEASE_SYNC.md"
   ],
   "aggregation_lock": {
     "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
