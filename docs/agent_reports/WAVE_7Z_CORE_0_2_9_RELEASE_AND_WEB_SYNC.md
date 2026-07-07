@@ -47,11 +47,28 @@ In `nirs4all-web/studio-lite`:
 
 ## Publication status
 
-- `nirs4all-core` tag `v0.2.9` was pushed. Release workflows are expected to
-  publish/attach non-Python artifacts where registry credentials are valid.
-- Known risk: the Python `nirs4all-core` PyPI workflow may still require PyPI
-  Trusted Publisher configuration; previous `v0.2.8` had failed there.
-- `nirs4all-web` Pages deployment is triggered by the web push.
+- `nirs4all-core` tag `v0.2.9` was pushed.
+- GitHub Actions passed for:
+  - core `CI` on `main` and tag `v0.2.9`;
+  - `release-crates`;
+  - `release-source`;
+  - `release-npm`;
+  - `release-r`;
+  - `release-matlab`.
+- Registry/release verification:
+  - crates.io reports `nirs4all = 0.2.9`;
+  - npm reports `nirs4all@0.2.9`;
+  - GitHub Release `v0.2.9` contains source archives, CycloneDX SBOM,
+    `SHA256SUMS`, `nirs4all_0.2.9.tar.gz`, and
+    `nirs4all-matlab-octave-0.2.9.zip`.
+- `nirs4all-web` `version-guard`, `web-ci`, and GitHub Pages deployment passed
+  for the synced `9b6b944` head.
+- PyPI is blocked externally: `release-python` failed with
+  `invalid-publisher` for claims
+  `repo:GBeurier/nirs4all-core:environment:pypi`,
+  `workflow_ref=GBeurier/nirs4all-core/.github/workflows/release-python.yml@refs/tags/v0.2.9`.
+  `https://pypi.org/pypi/nirs4all-core/json` returns 404 until the Trusted
+  Publisher is configured or a PyPI token path is provided.
 
 ## Risks
 
