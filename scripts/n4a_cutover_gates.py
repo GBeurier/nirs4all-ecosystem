@@ -481,7 +481,7 @@ def check_post_w2j_state(workspace_root: Path) -> dict[str, Any]:
             workspace_root / "_worktrees" / "RC-v1-providers",
             "rc/v1-full-refactor",
             {
-                "src/nirs4all_providers/repository.py": ["get_pipeline_list", "list_pipelines", "get_pipeline"],
+                "src/nirs4all_providers/repository.py": ["get_pipeline_list", "get_pipeline"],
                 "src/nirs4all_providers/benchmarks.py": ["get_pipeline_list", "get_pipeline", "queue_pipeline_test"],
             },
         ),

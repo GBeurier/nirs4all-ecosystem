@@ -27,7 +27,7 @@ client* over the same bytes.
 | `provider_descriptor.v1.schema.json` | Language-neutral `{provider_id, version, health, capabilities}` a client emits | — (emitted by the client) | `provider_id` · `version()` · `health()` · `capabilities()` |
 | `dataset_card.v2.schema.json` | Dataset identity/metadata card (discovery surface) | `nirs4all-datasets` `datasets/<id>/card.json` (schema 2.0) | `DatasetProvider.card` · `list_datasets` |
 | `dataset_manifest.v2.schema.json` | Per-file SHA-256 **fetch** manifest (the fetcher contract) | `nirs4all-datasets` `datasets/<id>/manifest.json` (schema 2.0) | `DatasetProvider.get_dataset` / `retrieve_dataset` (byte acquisition) |
-| `repository_index.v1.schema.json` | Pipeline catalogue index (discovery + fetch) | `nirs4all-repository` `catalog/index.json` (schema 1) | `PipelineProvider.get_pipeline_list` · `list_pipelines` |
+| `repository_index.v1.schema.json` | Pipeline catalogue index (discovery + fetch) | `nirs4all-repository` `catalog/index.json` (schema 1) | `PipelineProvider.get_pipeline_list` |
 | `pipeline_descriptor.v1.schema.json` | Pipeline descriptor/card (served config) | `nirs4all-repository` `pipelines/<id>/descriptor.yaml` (schema 1) | `PipelineProvider.card` |
 
 These schemas use a small, portable subset of JSON Schema 2020-12 (`type`, `enum`, `required`,
@@ -76,7 +76,7 @@ A conformant per-language provider read client is small:
 3. **Fetch:** GET each artifact by URL/DOI, `sha256`-verify, cache locally.
 4. **Emit** a `provider_descriptor.v1` for health/capabilities so the surface is uniform across languages.
 5. Bridging a recipe or dataset to a runnable/loadable object is delegated to that language's existing
-   stack (e.g. the `nirs4all-formats`/`nirs4all-io` WASM readers, the lite aggregate), **not** to a
+   stack (e.g. the `nirs4all-formats`/`nirs4all-io` WASM readers, the core aggregate), **not** to a
    provider-owned parser.
 
 ### Current coverage and gates
