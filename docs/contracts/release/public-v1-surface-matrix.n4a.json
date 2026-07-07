@@ -150,10 +150,10 @@
     },
     {
       "id": "nirs4all.javascript_wasm.methods_scoped",
-      "display_name": "@nirs4all/methods-wasm scoped JavaScript/WASM package",
+      "display_name": "@nirs4all/methods scoped JavaScript/WASM package",
       "ecosystem": "javascript_wasm",
-      "distribution": "@nirs4all/methods-wasm",
-      "namespace": "@nirs4all/methods-wasm",
+      "distribution": "@nirs4all/methods",
+      "namespace": "@nirs4all/methods",
       "repo_path": "nirs4all-methods",
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "methods",

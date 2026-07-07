@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:04038bea3b2bfb777af4469dd13d8265bce2471ce041421a47efb59838f290dd",
+  "manifest_digest": "sha256:192f78ef15f972add12203a8f64b1b69a383d6870d83b8de36abd3bff4c5eddf",
   "members": {
     "dag_ml": {
       "availability": {
@@ -607,7 +607,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:e35dfb5ca07e76e4964020c739cdadf80840301540d3dd66a33ab2fd00566869",
+          "canonical_json_sha256": "sha256:e06378ed8d777a82ab788ef8c0766c9dfa630b2462092d15d095c561396ea0e3",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -913,7 +913,7 @@
                 }
               ],
               "license": {
-                "expression": "CeCILL-2.1 OR AGPL-3.0-or-later",
+                "expression": "CECILL-2.1 OR AGPL-3.0-or-later",
                 "files": [
                   "LICENSE",
                   "bindings/python/LICENSE",
@@ -1094,10 +1094,11 @@
                     }
                   ],
                   "matlab": [
+                    "+n4m",
                     "+pls4all"
                   ],
                   "npm": [
-                    "@nirs4all/methods-wasm"
+                    "@nirs4all/methods"
                   ],
                   "r": [
                     "n4m",
@@ -1188,7 +1189,7 @@
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_lite/_topology.py",
-          "raw_sha256": "sha256:8277603d662cd8f6d8765a2a0d0d121caa416c660c196ff2c09154c6b856c554",
+          "raw_sha256": "sha256:d170b42a55a5c21d5e8b7568052f4b78f17bf3d89df5e2332b9e48350fc43311",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -1242,14 +1243,15 @@
       ],
       "role": "Portable aggregate bindings, renamed nirs4all-core on the RC V1 head (Python distribution nirs4all-core; nirs4all-lite remains a legacy/current artifact alias during cutover)",
       "selected_branch_patterns": [
+        "main",
         "rc/v1-*"
       ],
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "state": {
-        "branch": "rc/v1-full-refactor",
-        "commit": "1708ab0305a80de5294763549596aa2191e26bc2",
+        "branch": "main",
+        "commit": "54fcdc5ee2afedf87d94a611725d38fe455fe4bc",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc11-2026.07-refactor"
+        "exact_tag": "v0.2.8"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -1258,25 +1260,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.2.7"
+          "value": "0.2.8"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.2.7"
+          "value": "0.2.8"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.2.7"
+          "value": "0.2.8"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.2.7"
+          "value": "0.2.8"
         }
       }
     },
@@ -1293,7 +1295,7 @@
           "id": "n4m_version_header",
           "kind": "text",
           "path": "cpp/include/n4m/n4m_version.h",
-          "raw_sha256": "sha256:b89665c16982eab5383a20929f46e787e862b0b316b6ca06d324300a95ab93fe"
+          "raw_sha256": "sha256:fffa4d70c0880356e15942aaa545a0fc676f96cff84ebf589f91a85ce4d47490"
         }
       ],
       "default_inclusion": "aggregate-extra",
@@ -1314,7 +1316,7 @@
         },
         "npm": {
           "packages": [
-            "@nirs4all/methods-wasm"
+            "@nirs4all/methods"
           ]
         },
         "python": {
@@ -1344,14 +1346,15 @@
       ],
       "role": "Portable methods kernels and C ABI",
       "selected_branch_patterns": [
+        "main",
         "rc/v1-*"
       ],
       "selected_workspace_path": "RC-v1-methods",
       "state": {
-        "branch": "rc/v1-full-refactor",
-        "commit": "115077ae455176c71af527a5541ffc21080f07de",
+        "branch": "main",
+        "commit": "90ccd89a8533018edcd34f5f08b0e2f74f75d419",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc11-2026.07-refactor"
+        "exact_tag": "v1.0.6"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1363,10 +1366,10 @@
           "value": {
             "abi_version": "2.0.0",
             "abi_version_int": null,
-            "project_version": "1.0.1",
+            "project_version": "1.0.6",
             "serialization_format_version": 1,
             "serialization_magic": "N4MM",
-            "source_sha256": "sha256:b89665c16982eab5383a20929f46e787e862b0b316b6ca06d324300a95ab93fe"
+            "source_sha256": "sha256:fffa4d70c0880356e15942aaa545a0fc676f96cff84ebf589f91a85ce4d47490"
           }
         },
         "python_nirs4all_methods": {
@@ -1378,7 +1381,7 @@
           "module": "n4m",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "1.0.1"
+          "value": "1.0.6"
         },
         "python_pls4all": {
           "distribution": "pls4all",
@@ -1389,13 +1392,13 @@
           "module": "pls4all",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "1.0.1"
+          "value": "1.0.6"
         },
         "r_n4m": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/n4m/DESCRIPTION",
-          "value": "1.0.1"
+          "value": "1.0.6"
         }
       }
     }

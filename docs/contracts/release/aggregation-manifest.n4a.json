@@ -234,6 +234,7 @@
       "repo_path": "nirs4all-methods",
       "selected_workspace_path": "RC-v1-methods",
       "selected_branch_patterns": [
+        "main",
         "rc/v1-*"
       ],
       "repo_url": "GBeurier/nirs4all-methods",
@@ -260,7 +261,7 @@
         },
         "npm": {
           "packages": [
-            "@nirs4all/methods-wasm"
+            "@nirs4all/methods"
           ]
         },
         "c_abi": {
@@ -478,6 +479,7 @@
       "repo_path": "nirs4all-core",
       "selected_workspace_path": "RC-v1-nirs4all-core",
       "selected_branch_patterns": [
+        "main",
         "rc/v1-*"
       ],
       "repo_aliases": [
