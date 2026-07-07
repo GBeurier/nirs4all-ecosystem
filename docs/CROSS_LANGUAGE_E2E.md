@@ -50,6 +50,12 @@ continue to include:
 - multimodal and multisource workflows;
 - formats/IO/datasets/methods language-binding parity.
 
+Every `parity_checks` entry must point to produced scenario artifacts. Strict
+parity checks must use JSON evidence artifacts so the runner can reject skipped,
+xfail, false boolean, non-finite, or out-of-tolerance ledgers during `evidence`
+verification. Non-JSON outputs such as screenshots or paper ZIPs can still be
+scenario or phase artifacts, but they cannot be the sole strict parity proof.
+
 ## Orchestrated scenario set
 
 The manifest intentionally stays at eleven complex scenarios. The validator enforces

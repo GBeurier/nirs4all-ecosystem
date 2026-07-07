@@ -395,6 +395,12 @@ def test_cross_language_e2e_strict_parity_checks_assert_real_oracle_comparisons(
     manifest = e2e.validate_scenarios(MANIFEST)
 
     for scenario in manifest["scenarios"]:
+        scenario_artifacts = set(scenario["artifacts"])
+        produced_artifacts = {
+            artifact
+            for step in scenario["steps"]
+            for artifact in step.get("produces", [])
+        }
         strict_checks = [
             check for check in scenario["parity_checks"] if check["evidence_level"] == "strict"
         ]
@@ -409,6 +415,29 @@ def test_cross_language_e2e_strict_parity_checks_assert_real_oracle_comparisons(
             )
             assert "schema/array coverage" not in metric, scenario["id"]
             assert "smoke-only" not in metric, scenario["id"]
+            artifacts = set(check["artifacts"])
+            assert artifacts, scenario["id"]
+            assert artifacts <= scenario_artifacts, scenario["id"]
+            assert artifacts <= produced_artifacts, scenario["id"]
+            assert all(Path(artifact).suffix == ".json" for artifact in artifacts), scenario["id"]
+
+
+def test_cross_language_e2e_all_parity_checks_link_declared_artifacts() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+
+    for scenario in manifest["scenarios"]:
+        scenario_artifacts = set(scenario["artifacts"])
+        produced_artifacts = {
+            artifact
+            for step in scenario["steps"]
+            for artifact in step.get("produces", [])
+        }
+        for index, check in enumerate(scenario["parity_checks"]):
+            artifacts = set(check["artifacts"])
+            assert artifacts, f"{scenario['id']}.parity_checks[{index}]"
+            assert artifacts <= scenario_artifacts, f"{scenario['id']}.parity_checks[{index}]"
+            assert artifacts <= produced_artifacts, f"{scenario['id']}.parity_checks[{index}]"
 
 
 def test_cross_language_e2e_non_gap_v1_phases_are_artifact_backed() -> None:
@@ -1033,6 +1062,45 @@ def test_cross_language_e2e_strict_check_rejects_proxy_representation_metric(tmp
         e2e.validate_scenarios(manifest_path)
 
 
+def test_cross_language_e2e_strict_check_requires_json_artifact_evidence(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-python-reopen-paper-repository-refit")
+
+    scenario["parity_checks"][0]["artifacts"] = []
+    manifest_path = tmp_path / "strict-check-without-artifacts.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="strict parity_check requires artifact evidence"):
+        e2e.validate_scenarios(manifest_path)
+
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-python-reopen-paper-repository-refit")
+    scenario["parity_checks"][0]["artifacts"] = [
+        "{artifacts_dir}/python-paper-repository/paper-export.zip"
+    ]
+    manifest_path = tmp_path / "strict-check-with-zip-artifact.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="strict parity_check artifacts must be JSON"):
+        e2e.validate_scenarios(manifest_path)
+
+
+def test_cross_language_e2e_parity_check_artifacts_must_be_scenario_artifacts(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-dataset-provider-repository-roundtrip")
+    scenario["steps"][0]["produces"].append("{artifacts_dir}/provider-repository-roundtrip/outside-check.json")
+    scenario["parity_checks"][1]["artifacts"].append(
+        "{artifacts_dir}/provider-repository-roundtrip/outside-check.json"
+    )
+    manifest_path = tmp_path / "parity-check-outside-scenario-artifacts.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="artifact\\(s\\) are not scenario artifacts"):
+        e2e.validate_scenarios(manifest_path)
+
+
 def test_cross_language_e2e_manifest_requires_artifacts_to_be_produced(tmp_path: Path) -> None:
     e2e = _load_e2e_module()
     manifest = _read_manifest()
@@ -1421,6 +1489,8 @@ def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_pat
     scenario["artifacts"] = [path.replace("repository", "repo") for path in scenario["artifacts"]]
     for phase in manifest["v1_refactor_contract"]["scenario_coverage"][scenario["id"]].values():
         phase["artifacts"] = [path.replace("repository", "repo") for path in phase.get("artifacts", [])]
+    for check in scenario["parity_checks"]:
+        check["artifacts"] = [path.replace("repository", "repo") for path in check.get("artifacts", [])]
     manifest_path = tmp_path / "repository-without-artifact.json"
     _write_json(manifest_path, manifest)
 
@@ -2466,6 +2536,8 @@ def test_cross_language_e2e_cli_fails_when_declared_artifact_is_missing(tmp_path
     extra_artifact = tmp_path / "extra-cli-result.json"
     missing_artifact = tmp_path / "missing-cli-result.json"
     manifest["scenarios"][0]["artifacts"] = [str(ok_artifact), str(missing_artifact)]
+    for check in manifest["scenarios"][0]["parity_checks"]:
+        check["artifacts"] = [str(ok_artifact)]
     for phase in manifest["v1_refactor_contract"]["scenario_coverage"][scenario_id].values():
         phase["artifacts"] = []
     manifest["scenarios"][0]["steps"] = [

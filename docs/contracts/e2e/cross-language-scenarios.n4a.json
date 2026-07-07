@@ -486,13 +486,15 @@
           "oracle": "python nirs4all reference fixture",
           "candidate": "R nirs4all aggregate through nirs4all-methods portable fixtures",
           "metric": "make test-r-parity fixture gate passes",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"]
         },
         {
           "oracle": "catalog dataset IO materialization",
           "candidate": "R/native real dataset pipeline run",
           "metric": "real dataset IO run preserves selected values, Python aggregate rerun matches R/native targets, RMSE, split, selected predictions, and variant predictions within tolerance",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json", "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"]
         }
       ],
       "steps": [
@@ -576,19 +578,22 @@
           "oracle": "python nirs4all legacy reference",
           "candidate": "dag-ml backend refit",
           "metric": "scores and predictions exactly match scenario tolerance ledger",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/python-paper-repository/reopened-result.json"]
         },
         {
           "oracle": "paper export manifest",
           "candidate": "repository best-refit descriptor",
           "metric": "handoff descriptor is written with source hashes, repository-owned force_best_refit intent, selected_pipeline_id, descriptor/manifest/catalog fingerprints, repository_validation.ok=true, repository reopen/validate evidence, and Python-backed refit.executed=true metric evidence",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"]
         },
         {
           "oracle": "repository-best-pipeline.json plus Python smoke oracle over the browser-emitted folds",
           "candidate": "client-only Web/WASM import of the handoff wrapper",
           "metric": "Web/WASM imports the SNV+PLS handoff wrapper, executes it with dag-ml-wasm + libn4m over an alternative uploadable dataset, and records prediction parity to the smoke oracle without backend API calls",
-          "evidence_level": "contract"
+          "evidence_level": "contract",
+          "artifacts": ["{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json"]
         }
       ],
       "steps": [
@@ -667,25 +672,29 @@
           "oracle": "exported client-side pipeline artifact",
           "candidate": "fresh browser session imported pipeline execution",
           "metric": "repository pipeline fixture imports over a non-demo uploaded dataset, executes, renders, and records zero console errors plus non-empty screenshot/evidence artifacts",
-          "evidence_level": "contract"
+          "evidence_level": "contract",
+          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"]
         },
         {
           "oracle": "Python nirs4all/sklearn oracle over browser-emitted dag-ml folds",
           "candidate": "Web/WASM repository pipeline execution",
           "metric": "predictions, residuals, and CV metrics match with max_abs_delta <= 1e-5",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"]
         },
         {
           "oracle": "source Web/WASM run before export",
           "candidate": "fresh Web/WASM run after pipeline JSON import",
           "metric": "CV/refit prediction rows and finite metrics match with max_abs_delta <= 1e-8",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json", "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"]
         },
         {
           "oracle": "pre-export .n4a prediction panel",
           "candidate": "post-import .n4a prediction panel",
           "metric": "displayed prediction values match with max_abs_delta <= 5e-4",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"]
         }
       ],
       "steps": [
@@ -756,7 +765,8 @@
           "oracle": "python dense-fused multimodal feature matrix predictions",
           "candidate": "R and WASM dense-fused multimodal feature matrix predictions",
           "metric": "per-output prediction_abs_max <= 1e-8 within the dense-fused feature representation",
-          "evidence_level": "contract"
+          "evidence_level": "contract",
+          "artifacts": ["{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"]
         }
       ],
       "steps": [
@@ -809,13 +819,15 @@
           "oracle": "python nirs4all stacking replay",
           "candidate": "dag-ml/native replay",
           "metric": "score_set cv/test RMSE deltas stay within tolerance",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/multisource-stacking/oof-ledger.json", "{artifacts_dir}/multisource-stacking/native-replay.json"]
         },
         {
           "oracle": "python nirs4all stacking replay prediction table",
           "candidate": "native replay prediction table",
           "metric": "schema, row count, partitions, folds, and current array coverage are audited explicitly pending full vector parity",
-          "evidence_level": "contract"
+          "evidence_level": "contract",
+          "artifacts": ["{artifacts_dir}/multisource-stacking/native-replay.json"]
         }
       ],
       "steps": [
@@ -870,7 +882,8 @@
           "oracle": "legacy fixture values and converter checksum manifest",
           "candidate": "converted V1 workspace and lowered runtime result contract",
           "metric": "fixture prediction vectors, scores, row counts, checksums, and Web result panels match expected contract",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/legacy-converter/converted-workspace.n4a.json", "{artifacts_dir}/legacy-converter/predictions.rt_result.json", "{artifacts_dir}/legacy-converter/web-results-panels.json"]
         }
       ],
       "steps": [
@@ -928,13 +941,15 @@
           "oracle": "nirs4all-core Python repository pipeline loader",
           "candidate": "nirs4all-core JavaScript/WASM repository pipeline loader",
           "metric": "portable class sequence, random_state, and normalized pipeline metadata match",
-          "evidence_level": "contract"
+          "evidence_level": "contract",
+          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"]
         },
         {
           "oracle": "nirs4all-core Python portable pipeline execution",
           "candidate": "nirs4all-core JavaScript/WASM portable pipeline execution",
           "metric": "split, preprocessing, targets, RMSE, predictions, and predictPortablePipeline roundtrip match within 1e-10 on deterministic synthetic NIRS data",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"]
         }
       ],
       "steps": [
@@ -998,13 +1013,15 @@
           "oracle": "python nirs4all reference",
           "candidate": "dag-ml/native runtime",
           "metric": "prediction parity plus performance ratio ledger",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/performance-compare/python-vs-dagml.json"]
         },
         {
           "oracle": "Web dag-ml/WASM runtime ledger",
           "candidate": "client-side browser runtime",
           "metric": "web runtime executes generated family and records timing verdict",
-          "evidence_level": "contract"
+          "evidence_level": "contract",
+          "artifacts": ["{artifacts_dir}/performance-compare/web-runtime.json"]
         }
       ],
       "steps": [
@@ -1059,13 +1076,15 @@
           "oracle": "local recompute from cluster task results",
           "candidate": "cluster scheduled execution",
           "metric": "num_tasks, best_task_id, and best_metric parity",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"]
         },
         {
           "oracle": "local Python nirs4all reference",
           "candidate": "cluster worker nirs4all.run",
           "metric": "best_rmse abs_diff <= 1e-6",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json"]
         }
       ],
       "steps": [
@@ -1123,13 +1142,15 @@
           "oracle": "native nirs4all-methods ABI",
           "candidate": "Python/R bindings",
           "metric": "method outputs and predictions match tolerance ledger",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/formats-io-methods/binding-parity.json", "{artifacts_dir}/formats-io-methods/predictions-by-language.json"]
         },
         {
           "oracle": "native nirs4all-methods ABI",
           "candidate": "WASM fixture and archived Rust binding status",
           "metric": "WASM fixture output is checked and archived Rust status is recorded as non-release-target evidence",
-          "evidence_level": "contract"
+          "evidence_level": "contract",
+          "artifacts": ["{artifacts_dir}/formats-io-methods/predictions-by-language.json"]
         }
       ],
       "steps": [
@@ -1188,19 +1209,22 @@
           "oracle": "portable Python oracle prediction fixture",
           "candidate": "custom app host nirs4all-core WASM prediction",
           "metric": "prediction vector max_abs_delta is within the Python oracle tolerance ledger",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-predictions.json"]
         },
         {
           "oracle": "nirs4all-ui published component contract",
           "candidate": "custom app host React element composition",
           "metric": "web result panel component tags and engine label render from shared UI components",
-          "evidence_level": "contract"
+          "evidence_level": "contract",
+          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-ui.json"]
         },
         {
           "oracle": "nirs4all-core capability manifest runtimeContracts",
           "candidate": "custom app host runtime contract artifact",
           "metric": "prediction contract parity: serialized_model_predict_surfaces is exactly ['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline",
-          "evidence_level": "strict"
+          "evidence_level": "strict",
+          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json"]
         }
       ],
       "steps": [

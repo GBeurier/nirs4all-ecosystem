@@ -692,6 +692,25 @@ def _validate_evidence_contract(
         metric = check.get("metric", "")
         if check_level == "strict":
             strict_check_seen = True
+            artifacts = _strings(
+                check.get("artifacts", []),
+                f"{scenario_id}.parity_checks[{index}].artifacts",
+                allow_empty=True,
+            )
+            if not artifacts:
+                raise E2EScenarioError(
+                    f"{scenario_id}.parity_checks[{index}]: "
+                    "strict parity_check requires artifact evidence"
+                )
+            non_json_artifacts = [
+                artifact for artifact in artifacts if Path(artifact).suffix.lower() != ".json"
+            ]
+            if non_json_artifacts:
+                raise E2EScenarioError(
+                    f"{scenario_id}.parity_checks[{index}]: "
+                    "strict parity_check artifacts must be JSON evidence artifacts: "
+                    + ", ".join(non_json_artifacts)
+                )
             check_text = _contract_blob(
                 check.get("oracle", ""),
                 check.get("candidate", ""),
@@ -708,6 +727,40 @@ def _validate_evidence_contract(
                     )
     if "parity" in tags and not strict_check_seen:
         raise E2EScenarioError(f"{scenario_id}: parity tag requires at least one strict parity_check")
+
+
+def _validate_parity_check_artifacts(
+    scenario_id: str,
+    parity_checks: list[Any],
+    *,
+    scenario_artifacts: set[str],
+    produced_artifacts: set[str],
+) -> None:
+    for index, check in enumerate(parity_checks):
+        artifacts = _strings(
+            check.get("artifacts", []),
+            f"{scenario_id}.parity_checks[{index}].artifacts",
+            allow_empty=True,
+        )
+        if not artifacts:
+            raise E2EScenarioError(
+                f"{scenario_id}.parity_checks[{index}]: "
+                "parity_check requires artifact evidence"
+            )
+        unknown_artifacts = sorted(set(artifacts) - scenario_artifacts)
+        if unknown_artifacts:
+            raise E2EScenarioError(
+                f"{scenario_id}.parity_checks[{index}]: "
+                "artifact(s) are not scenario artifacts: "
+                + ", ".join(unknown_artifacts)
+            )
+        unproduced_artifacts = sorted(set(artifacts) - produced_artifacts)
+        if unproduced_artifacts:
+            raise E2EScenarioError(
+                f"{scenario_id}.parity_checks[{index}]: "
+                "artifact(s) are not produced by any step: "
+                + ", ".join(unproduced_artifacts)
+            )
 
 
 def _validate_v1_refactor_contract(
@@ -1038,6 +1091,11 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
             for field in ("oracle", "candidate", "metric"):
                 if not isinstance(check.get(field), str) or not check[field]:
                     raise E2EScenarioError(f"{scenario_id}.parity_checks[{index}].{field} must be non-empty")
+            _strings(
+                check.get("artifacts", []),
+                f"{scenario_id}.parity_checks[{index}].artifacts",
+                allow_empty=True,
+            )
         _validate_evidence_contract(scenario_id, scenario, tags, parity_checks)
         scenario_evidence_levels[scenario_id] = scenario["evidence_level"]
         steps = scenario.get("steps")
@@ -1070,6 +1128,12 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
                 f"{scenario_id}: scenario artifact(s) are not produced by any step: "
                 + ", ".join(missing_artifacts)
             )
+        _validate_parity_check_artifacts(
+            scenario_id,
+            parity_checks,
+            scenario_artifacts=artifacts,
+            produced_artifacts=produced_artifacts,
+        )
 
     _unique(scenario_ids, "scenario ids")
     missing_tags = REQUIRED_TAGS - covered_tags
