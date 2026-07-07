@@ -11,7 +11,7 @@ The bounded, machine-readable W2P public V1 surface matrix is:
 The latest head-selection and publication-state audit for this matrix and the
 aggregation lock is:
 
-`docs/agent_reports/WAVE_8O_COCKPIT_RC14_FINAL_REFRESH_AND_UI_QUALITY_BOUNDARY.md`
+`docs/agent_reports/WAVE_8P_TOOLS_FALLBACK_ASSETS_AND_RUNIVERSE_TRIGGER.md`
 
 When live RC worktrees diverge from the selected release members, the
 aggregation lock validated from an isolated `checkout-members` workspace is the
