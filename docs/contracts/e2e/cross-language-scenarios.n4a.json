@@ -20,429 +20,783 @@
       "e2e-r-dataset-io-pipeline-save": {
         "python_open_pipeline": {
           "status": "strict",
-          "evidence": ["Python reopens the R-saved workspace/pipeline artifacts and verifies dataset hash, pipeline identity, finite outputs, and prediction deltas in python-reopen-ledger.json."],
-          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"],
-          "acceptance": ["python-reopen-ledger.json must report status=passed, dataset_hash_match=true, pipeline_reopened=true, and row/column counts for the provider-backed R workspace."]
+          "evidence": [
+            "Python reopens the R-saved workspace/pipeline artifacts and verifies dataset hash, pipeline identity, finite outputs, and prediction deltas in python-reopen-ledger.json."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"
+          ],
+          "acceptance": [
+            "python-reopen-ledger.json must report status=passed, dataset_hash_match=true, pipeline_reopened=true, and row/column counts for the provider-backed R workspace."
+          ]
         },
         "python_rerun_pipeline": {
           "status": "strict",
-          "evidence": ["The Python aggregate reruns the R-produced pipeline over the same reshaped dataset and compares targets, split, RMSE, variants, selected predictions, and R prediction artifact values."],
-          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json", "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json", "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"],
-          "acceptance": ["python-reopen-ledger.json must report python_rerun_executed=true, finite_targets=true, finite_predictions=true, and max_abs_delta fields within tolerance."]
+          "evidence": [
+            "The Python aggregate reruns the R-produced pipeline over the same reshaped dataset and compares targets, split, RMSE, variants, selected predictions, and R prediction artifact values."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"
+          ],
+          "acceptance": [
+            "python-reopen-ledger.json must report python_rerun_executed=true, finite_targets=true, finite_predictions=true, and max_abs_delta fields within tolerance."
+          ]
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["The portable fixture gate runs make test-r-parity and records native method parity."],
-          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"],
-          "acceptance": ["Keep the strict portable fixture parity gate green and add same-dataset parity before removing the hybrid gap."]
+          "evidence": [
+            "The portable fixture gate runs make test-r-parity and records native method parity."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"
+          ],
+          "acceptance": [
+            "Keep the strict portable fixture parity gate green and add same-dataset parity before removing the hybrid gap."
+          ]
         },
         "papers_export": {
-          "status": "gap",
-          "evidence": ["This dataset/IO R scenario does not invoke the papers publisher."],
-          "gap": "No paper export is contractualized for this R dataset lane.",
-          "acceptance": ["If this lane becomes a paper fixture, add a paper manifest artifact that includes the R workspace, Python oracle hash, and dataset provenance."]
+          "status": "not_applicable",
+          "evidence": [
+            "This dataset/IO R scenario does not invoke the papers publisher."
+          ],
+          "acceptance": [
+            "If this lane becomes a paper fixture, add a paper manifest artifact that includes the R workspace, Python oracle hash, and dataset provenance."
+          ],
+          "applicability": "This R/dataset/IO lane is scoped to catalog load, IO reshape, pipeline save, and Python/native parity; paper publication is covered by e2e-python-reopen-paper-repository-refit."
         },
         "repository_forced_best_refit": {
-          "status": "gap",
-          "evidence": ["No repository best-refit descriptor is produced by the R dataset lane."],
-          "gap": "The scenario stops at saved workspace/pipeline evidence and native/R parity.",
-          "acceptance": ["Add a repository handoff descriptor with force_best_refit=true only after a repository recipe is defined for the reshaped dataset."]
+          "status": "not_applicable",
+          "evidence": [
+            "No repository best-refit descriptor is produced by the R dataset lane."
+          ],
+          "acceptance": [
+            "Add a repository handoff descriptor with force_best_refit=true only after a repository recipe is defined for the reshaped dataset."
+          ],
+          "applicability": "This R/dataset/IO lane stops at saved workspace and parity evidence; artificial best-refit repository publication is covered by the repository/papers lane."
         },
         "wasm_web_reuse": {
-          "status": "gap",
-          "evidence": ["No WASM/Web consumer imports the saved R pipeline in this scenario."],
-          "gap": "The R aggregate saved workspace format is not yet imported by the Web runtime in this gate.",
-          "acceptance": ["Add a WASM/Web import of the saved pipeline and compare rendered predictions against the R/Python parity ledger."]
+          "status": "not_applicable",
+          "evidence": [
+            "No WASM/Web consumer imports the saved R pipeline in this scenario."
+          ],
+          "acceptance": [
+            "Add a WASM/Web import of the saved pipeline and compare rendered predictions against the R/Python parity ledger."
+          ],
+          "applicability": "This scenario has no Web or JavaScript/WASM runtime surface; Web reuse is covered by the WASM/Web and custom-host lanes."
         }
       },
       "e2e-python-reopen-paper-repository-refit": {
         "python_open_pipeline": {
           "status": "strict",
-          "evidence": ["Full Python opens a saved pipeline/workspace before rerun."],
-          "artifacts": ["{artifacts_dir}/python-paper-repository/reopened-result.json"],
-          "acceptance": ["The reopened-result ledger must include the saved source hashes and opened pipeline identity."]
+          "evidence": [
+            "Full Python opens a saved pipeline/workspace before rerun."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/python-paper-repository/reopened-result.json"
+          ],
+          "acceptance": [
+            "The reopened-result ledger must include the saved source hashes and opened pipeline identity."
+          ]
         },
         "python_rerun_pipeline": {
           "status": "strict",
-          "evidence": ["The Python e2e reruns the reopened pipeline through the dag-ml backend."],
-          "artifacts": ["{artifacts_dir}/python-paper-repository/reopened-result.json"],
-          "acceptance": ["The rerun ledger must report finite scores and prediction rows for the reopened artifact."]
+          "evidence": [
+            "The Python e2e reruns the reopened pipeline through the dag-ml backend."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/python-paper-repository/reopened-result.json"
+          ],
+          "acceptance": [
+            "The rerun ledger must report finite scores and prediction rows for the reopened artifact."
+          ]
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["Python legacy reference and dag-ml backend predictions are compared in the reopened-result ledger."],
-          "artifacts": ["{artifacts_dir}/python-paper-repository/reopened-result.json"],
-          "acceptance": ["Best-score and prediction-vector deltas must remain within the scenario tolerance ledger."]
+          "evidence": [
+            "Python legacy reference and dag-ml backend predictions are compared in the reopened-result ledger."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/python-paper-repository/reopened-result.json"
+          ],
+          "acceptance": [
+            "Best-score and prediction-vector deltas must remain within the scenario tolerance ledger."
+          ]
         },
         "papers_export": {
           "status": "strict",
-          "evidence": ["nirs4all-papers exports a reproducible bundle from the Python reopen ledger."],
-          "artifacts": ["{artifacts_dir}/python-paper-repository/paper-export.zip"],
-          "acceptance": ["The paper export must include source hashes and Python reopen provenance."]
+          "evidence": [
+            "nirs4all-papers exports a reproducible bundle from the Python reopen ledger."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/python-paper-repository/paper-export.zip"
+          ],
+          "acceptance": [
+            "The paper export must include source hashes and Python reopen provenance."
+          ]
         },
         "repository_forced_best_refit": {
           "status": "strict",
-          "evidence": ["The papers/repository step writes repository-best-pipeline.json from the Python ledger, delegates to nirs4all-repository in a subprocess, runs build_catalog, validate_pipeline, get_pipeline, to_nirs4all, and get_pipeline_list, and carries repository-owned forced_best_refit_contract, repository_reopen, repository_validation.ok=true, and provenance fingerprints alongside the Python-executed refit hashes."],
-          "artifacts": ["{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"],
-          "acceptance": ["repository-best-pipeline.json must declare force_best_refit=true, the selected artificial best pipeline id, descriptor/manifest/catalog fingerprints, repository_reopen_validated=true from a repository validate/open pass, repository_validation.ok=true, no repository validation errors/security findings, and refit.executed=true from the paired Python ledger."]
+          "evidence": [
+            "The papers/repository step writes repository-best-pipeline.json from the Python ledger, delegates to nirs4all-repository in a subprocess, runs build_catalog, validate_pipeline, get_pipeline, to_nirs4all, and get_pipeline_list, and carries repository-owned forced_best_refit_contract, repository_reopen, repository_validation.ok=true, and provenance fingerprints alongside the Python-executed refit hashes."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"
+          ],
+          "acceptance": [
+            "repository-best-pipeline.json must declare force_best_refit=true, the selected artificial best pipeline id, descriptor/manifest/catalog fingerprints, repository_reopen_validated=true from a repository validate/open pass, repository_validation.ok=true, no repository validation errors/security findings, and refit.executed=true from the paired Python ledger."
+          ]
         },
         "wasm_web_reuse": {
           "status": "contract",
-          "evidence": ["The Web/WASM smoke imports repository-best-pipeline.json, lowers the supported SNV+PLS handoff into PipelineDSL, executes it client-side, and records runtime/screenshot/oracle evidence over an alternative non-demo dataset fixture."],
-          "artifacts": ["{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json"],
+          "evidence": [
+            "The Web/WASM smoke imports repository-best-pipeline.json, lowers the supported SNV+PLS handoff into PipelineDSL, executes it client-side, and records runtime/screenshot/oracle evidence over an alternative non-demo dataset fixture."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json"
+          ],
           "gap": "The Web/WASM contract consumes the handoff wrapper and proves the runtime path on an alternative uploadable dataset fixture; it does not yet rerun the original Python 130x2151 dataset because that scenario dataset is not published as a web-uploadable artifact.",
-          "acceptance": ["web-repository-best-pipeline.json must prove repository-best-pipeline.json was imported, force_best_refit=true was preserved, dag-ml-wasm + libn4m executed without backend API calls, and the Web predictions match the smoke's Python oracle for the alternative dataset until the original Python dataset is exported for browser reuse."]
+          "acceptance": [
+            "web-repository-best-pipeline.json must prove repository-best-pipeline.json was imported, force_best_refit=true was preserved, dag-ml-wasm + libn4m executed without backend API calls, and the Web predictions match the smoke's Python oracle for the alternative dataset until the original Python dataset is exported for browser reuse."
+          ]
         }
       },
       "e2e-wasm-open-repo-pipeline-alt-dataset": {
         "python_open_pipeline": {
           "status": "gap",
-          "evidence": ["The current gate opens the repository pipeline in WASM/Web, not in Python."],
+          "evidence": [
+            "The current gate opens the repository pipeline in WASM/Web, not in Python."
+          ],
           "gap": "No Python opener validates the same repository descriptor before the browser import.",
-          "acceptance": ["Add a Python repository descriptor load over the same manifest and record descriptor hash parity before Web execution."]
+          "acceptance": [
+            "Add a Python repository descriptor load over the same manifest and record descriptor hash parity before Web execution."
+          ]
         },
         "python_rerun_pipeline": {
           "status": "gap",
-          "evidence": ["The scenario reruns inside a fresh browser session only."],
+          "evidence": [
+            "The scenario reruns inside a fresh browser session only."
+          ],
           "gap": "No Python rerun over the non-demo uploaded fixture dataset is asserted.",
-          "acceptance": ["Add Python rerun evidence with RMSE and prediction rows for the same pipeline/dataset hashes."]
+          "acceptance": [
+            "Add Python rerun evidence with RMSE and prediction rows for the same pipeline/dataset hashes."
+          ]
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["The Web smoke computes a Python nirs4all/sklearn oracle over the browser-emitted dag-ml folds and compares Web/WASM predictions and metrics."],
-          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"],
-          "acceptance": ["Python-vs-WASM predictions, residuals, metrics, provider fingerprints, fold assignments, and descriptor hashes must match within the declared tolerance ledger."]
+          "evidence": [
+            "The Web smoke computes a Python nirs4all/sklearn oracle over the browser-emitted dag-ml folds and compares Web/WASM predictions and metrics."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
+          ],
+          "acceptance": [
+            "Python-vs-WASM predictions, residuals, metrics, provider fingerprints, fold assignments, and descriptor hashes must match within the declared tolerance ledger."
+          ]
         },
         "papers_export": {
-          "status": "gap",
-          "evidence": ["This Web reuse lane does not export a paper bundle."],
-          "gap": "No papers publisher is part of the Web pipeline import smoke.",
-          "acceptance": ["If a paper companion is needed, export the repository pipeline, dataset fixture hash, browser evidence, and Python oracle ledger."]
+          "status": "not_applicable",
+          "evidence": [
+            "This Web reuse lane does not export a paper bundle."
+          ],
+          "acceptance": [
+            "If a paper companion is needed, export the repository pipeline, dataset fixture hash, browser evidence, and Python oracle ledger."
+          ],
+          "applicability": "This Web/WASM repository-import lane is scoped to browser execution and Python oracle comparison; reproducible paper export is covered by the Python/papers/repository lane."
         },
         "repository_forced_best_refit": {
           "status": "contract",
-          "evidence": ["The Web smoke imports a deterministic repository pipeline fixture and records its descriptor hash."],
-          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"],
+          "evidence": [
+            "The Web smoke imports a deterministic repository pipeline fixture and records its descriptor hash."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
+          ],
           "gap": "The fixture is not a forced best-refit descriptor emitted by nirs4all-repository.",
-          "acceptance": ["Replace or pair the fixture with a repository descriptor carrying force_best_refit=true once the repository handoff format is published."]
+          "acceptance": [
+            "Replace or pair the fixture with a repository descriptor carrying force_best_refit=true once the repository handoff format is published."
+          ]
         },
         "wasm_web_reuse": {
           "status": "strict",
-          "evidence": ["A fresh Web/WASM session imports the pipeline artifact, executes it, renders predictions, and compares source vs imported outputs."],
-          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json", "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json", "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"],
-          "acceptance": ["CV/refit prediction rows, finite metrics, displayed prediction values, screenshot, and zero console-error evidence must pass."]
+          "evidence": [
+            "A fresh Web/WASM session imports the pipeline artifact, executes it, renders predictions, and compares source vs imported outputs."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json",
+            "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",
+            "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"
+          ],
+          "acceptance": [
+            "CV/refit prediction rows, finite metrics, displayed prediction values, screenshot, and zero console-error evidence must pass."
+          ]
         }
       },
       "e2e-multimodal-python-r-wasm-roundtrip": {
         "python_open_pipeline": {
           "status": "gap",
-          "evidence": ["Python generates a multimodal pipeline artifact but does not reopen a persisted one in this scenario."],
+          "evidence": [
+            "Python generates a multimodal pipeline artifact but does not reopen a persisted one in this scenario."
+          ],
           "gap": "The current proof starts from generation rather than a Python reopen of a saved multimodal pipeline.",
-          "acceptance": ["Add a Python reopen of multimodal-pipeline.n4a.json before R/WASM execution and verify manifest hash equality."]
+          "acceptance": [
+            "Add a Python reopen of multimodal-pipeline.n4a.json before R/WASM execution and verify manifest hash equality."
+          ]
         },
         "python_rerun_pipeline": {
           "status": "contract",
-          "evidence": ["R and WASM execute the Python-generated multimodal pipeline artifact."],
-          "artifacts": ["{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"],
+          "evidence": [
+            "R and WASM execute the Python-generated multimodal pipeline artifact."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
+            "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"
+          ],
           "gap": "The Python side does not reopen and rerun the saved multimodal artifact after persistence.",
-          "acceptance": ["Promote to strict after Python reruns the saved multimodal artifact and emits a reopen ledger."]
+          "acceptance": [
+            "Promote to strict after Python reruns the saved multimodal artifact and emits a reopen ledger."
+          ]
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["Python dense-fused multimodal predictions are compared numerically with R and WASM dense-fused predictions."],
-          "artifacts": ["{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"],
-          "acceptance": ["Dense-fused Python/R/WASM prediction vectors, RMSE, targets, split indices, and selected component counts must match the Python oracle within the recorded tolerance."]
+          "evidence": [
+            "Python dense-fused multimodal predictions are compared numerically with R and WASM dense-fused predictions."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet",
+            "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet",
+            "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"
+          ],
+          "acceptance": [
+            "Dense-fused Python/R/WASM prediction vectors, RMSE, targets, split indices, and selected component counts must match the Python oracle within the recorded tolerance."
+          ]
         },
         "papers_export": {
-          "status": "gap",
-          "evidence": ["No paper export consumes the multimodal roundtrip evidence."],
-          "gap": "Multimodal paper publication is not part of this E2E lane.",
-          "acceptance": ["Add a papers export only after native multimodal provenance and Web/Studio roundtrip evidence exist."]
+          "status": "not_applicable",
+          "evidence": [
+            "No paper export consumes the multimodal roundtrip evidence."
+          ],
+          "acceptance": [
+            "Add a papers export only after native multimodal provenance and Web/Studio roundtrip evidence exist."
+          ],
+          "applicability": "This multimodal lane is scoped to Python/R/WASM dense-fused parity; paper export is outside the scenario until multimodal paper provenance is promoted into nirs4all-papers."
         },
         "repository_forced_best_refit": {
-          "status": "gap",
-          "evidence": ["No repository best-refit descriptor is emitted for the multimodal proxy pipeline."],
-          "gap": "The repository recipe format for multimodal sources is not contractualized in this lane.",
-          "acceptance": ["Define a multimodal repository descriptor with force_best_refit=true before claiming repository refit coverage."]
+          "status": "not_applicable",
+          "evidence": [
+            "No repository best-refit descriptor is emitted for the multimodal proxy pipeline."
+          ],
+          "acceptance": [
+            "Define a multimodal repository descriptor with force_best_refit=true before claiming repository refit coverage."
+          ],
+          "applicability": "This multimodal lane does not claim repository publication; repository forced-refit coverage remains in the Python/papers/repository scenario."
         },
         "wasm_web_reuse": {
           "status": "contract",
-          "evidence": ["The WASM binding consumes the generated dense-fused proxy pipeline, but no Web UI roundtrip is present."],
-          "artifacts": ["{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"],
+          "evidence": [
+            "The WASM binding consumes the generated dense-fused proxy pipeline, but no Web UI roundtrip is present."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"
+          ],
           "gap": "Web/Studio runtime reuse for multimodal source structure is still pending.",
-          "acceptance": ["Add a Web/WASM import/render step over the same multimodal pipeline and dataset hashes."]
+          "acceptance": [
+            "Add a Web/WASM import/render step over the same multimodal pipeline and dataset hashes."
+          ]
         }
       },
       "e2e-multisource-branching-stacking-replay": {
         "python_open_pipeline": {
           "status": "gap",
-          "evidence": ["Python builds a multisource stacking replay manifest but does not reopen a saved pipeline first."],
+          "evidence": [
+            "Python builds a multisource stacking replay manifest but does not reopen a saved pipeline first."
+          ],
           "gap": "The scenario lacks a Python reopen step for the saved multisource artifact.",
-          "acceptance": ["Add a Python open step for stacking-replay.n4a.json and assert branch/source identity before native replay."]
+          "acceptance": [
+            "Add a Python open step for stacking-replay.n4a.json and assert branch/source identity before native replay."
+          ]
         },
         "python_rerun_pipeline": {
           "status": "contract",
-          "evidence": ["The Python replay manifest is consumed by native/core replay."],
-          "artifacts": ["{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json", "{artifacts_dir}/multisource-stacking/native-replay.json"],
+          "evidence": [
+            "The Python replay manifest is consumed by native/core replay."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json",
+            "{artifacts_dir}/multisource-stacking/native-replay.json"
+          ],
           "gap": "Python does not rerun a reopened saved multisource pipeline artifact in this lane.",
-          "acceptance": ["Promote to strict when Python reopens and reruns stacking-replay.n4a.json before native replay."]
+          "acceptance": [
+            "Promote to strict when Python reopens and reruns stacking-replay.n4a.json before native replay."
+          ]
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["Python stacking replay and dag-ml/native replay compare score-set metrics and prediction table coverage."],
-          "artifacts": ["{artifacts_dir}/multisource-stacking/oof-ledger.json", "{artifacts_dir}/multisource-stacking/native-replay.json"],
-          "acceptance": ["Score deltas must stay within tolerance and native prediction-table schema/array coverage must be audited explicitly."]
+          "evidence": [
+            "Python stacking replay and dag-ml/native replay compare score-set metrics and prediction table coverage."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/multisource-stacking/oof-ledger.json",
+            "{artifacts_dir}/multisource-stacking/native-replay.json"
+          ],
+          "acceptance": [
+            "Score deltas must stay within tolerance and native prediction-table schema/array coverage must be audited explicitly."
+          ]
         },
         "papers_export": {
-          "status": "gap",
-          "evidence": ["No paper bundle is exported for multisource stacking replay."],
-          "gap": "The multisource replay evidence is not published through nirs4all-papers yet.",
-          "acceptance": ["Add paper export after vector-level native predictions are persisted and compared."]
+          "status": "not_applicable",
+          "evidence": [
+            "No paper bundle is exported for multisource stacking replay."
+          ],
+          "acceptance": [
+            "Add paper export after vector-level native predictions are persisted and compared."
+          ],
+          "applicability": "This multisource lane is scoped to stacking replay and native/core parity; paper export is outside the scenario."
         },
         "repository_forced_best_refit": {
-          "status": "gap",
-          "evidence": ["No repository recipe or forced best-refit descriptor is produced for this stacking replay."],
-          "gap": "Repository stacking recipe publication is not contractualized in the current scenario.",
-          "acceptance": ["Add a repository forced-refit descriptor only after multisource branch and OOF semantics are representable in the repository contract."]
+          "status": "not_applicable",
+          "evidence": [
+            "No repository recipe or forced best-refit descriptor is produced for this stacking replay."
+          ],
+          "acceptance": [
+            "Add a repository forced-refit descriptor only after multisource branch and OOF semantics are representable in the repository contract."
+          ],
+          "applicability": "This multisource replay lane does not publish a repository recipe; repository forced-refit coverage remains in the repository/papers lane."
         },
         "wasm_web_reuse": {
-          "status": "gap",
-          "evidence": ["No WASM/Web runtime consumes the multisource stacking replay artifact."],
-          "gap": "Client-side multisource stacking replay is not available in this E2E lane.",
-          "acceptance": ["Add a Web/WASM import when the runtime supports multisource stacking replay without Python-only shims."]
+          "status": "not_applicable",
+          "evidence": [
+            "No WASM/Web runtime consumes the multisource stacking replay artifact."
+          ],
+          "acceptance": [
+            "Add a Web/WASM import when the runtime supports multisource stacking replay without Python-only shims."
+          ],
+          "applicability": "This scenario has no Web or JavaScript/WASM runtime surface; client-side reuse is covered by the Web/WASM lanes."
         }
       },
       "e2e-converter-legacy-save-predictions-web": {
         "python_open_pipeline": {
           "status": "contract",
-          "evidence": ["Python converter opens a legacy save/workspace fixture and emits a V1 workspace plus lowered prediction artifact."],
-          "artifacts": ["{artifacts_dir}/legacy-converter/converted-workspace.n4a.json", "{artifacts_dir}/legacy-converter/predictions.rt_result.json"],
+          "evidence": [
+            "Python converter opens a legacy save/workspace fixture and emits a V1 workspace plus lowered prediction artifact."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
+            "{artifacts_dir}/legacy-converter/predictions.rt_result.json"
+          ],
           "gap": "The converter opens a legacy save rather than a repository best-refit pipeline descriptor.",
-          "acceptance": ["Keep converter fixture values and checksums strict; add repository descriptor open coverage in the repository lane."]
+          "acceptance": [
+            "Keep converter fixture values and checksums strict; add repository descriptor open coverage in the repository lane."
+          ]
         },
         "python_rerun_pipeline": {
           "status": "gap",
-          "evidence": ["The converter lowers existing predictions; it does not rerun the converted pipeline in Python."],
+          "evidence": [
+            "The converter lowers existing predictions; it does not rerun the converted pipeline in Python."
+          ],
           "gap": "No Python rerun occurs after conversion in this scenario.",
-          "acceptance": ["Add a Python rerun of converted-workspace.n4a.json before claiming pipeline rerun coverage."]
+          "acceptance": [
+            "Add a Python rerun of converted-workspace.n4a.json before claiming pipeline rerun coverage."
+          ]
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["Converted V1 workspace and lowered runtime result are checked against legacy fixture values and checksums."],
-          "artifacts": ["{artifacts_dir}/legacy-converter/converted-workspace.n4a.json", "{artifacts_dir}/legacy-converter/predictions.rt_result.json"],
-          "acceptance": ["Fixture prediction vectors, scores, row counts, checksums, and result contract validation must match expected values."]
+          "evidence": [
+            "Converted V1 workspace and lowered runtime result are checked against legacy fixture values and checksums."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
+            "{artifacts_dir}/legacy-converter/predictions.rt_result.json"
+          ],
+          "acceptance": [
+            "Fixture prediction vectors, scores, row counts, checksums, and result contract validation must match expected values."
+          ]
         },
         "papers_export": {
-          "status": "gap",
-          "evidence": ["The legacy converter does not publish a paper export."],
-          "gap": "No paper companion path is defined for this migration fixture.",
-          "acceptance": ["Add a paper export only if the converted fixture becomes a deposited reproducibility artifact."]
+          "status": "not_applicable",
+          "evidence": [
+            "The legacy converter does not publish a paper export."
+          ],
+          "acceptance": [
+            "Add a paper export only if the converted fixture becomes a deposited reproducibility artifact."
+          ],
+          "applicability": "This migration lane is scoped to converting legacy saves and rendering predictions in Web; paper export is outside the scenario."
         },
         "repository_forced_best_refit": {
-          "status": "gap",
-          "evidence": ["The converted workspace is not published as a repository forced-refit pipeline."],
-          "gap": "Repository best-refit handoff is outside the converter lane.",
-          "acceptance": ["Add a repository descriptor with force_best_refit=true if converted saves become repository recipes."]
+          "status": "not_applicable",
+          "evidence": [
+            "The converted workspace is not published as a repository forced-refit pipeline."
+          ],
+          "acceptance": [
+            "Add a repository descriptor with force_best_refit=true if converted saves become repository recipes."
+          ],
+          "applicability": "This converter lane does not publish converted saves as repository best-refit recipes; repository forced-refit coverage remains in the repository/papers lane."
         },
         "wasm_web_reuse": {
           "status": "strict",
-          "evidence": ["Web opens converted predictions and verifies every result panel renders."],
-          "artifacts": ["{artifacts_dir}/legacy-converter/web-results-panels.json", "{artifacts_dir}/legacy-converter/web-results.png"],
-          "acceptance": ["The served Web app must render all result panels over the converted prediction artifact and produce screenshot/index evidence."]
+          "evidence": [
+            "Web opens converted predictions and verifies every result panel renders."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/legacy-converter/web-results-panels.json",
+            "{artifacts_dir}/legacy-converter/web-results.png"
+          ],
+          "acceptance": [
+            "The served Web app must render all result panels over the converted prediction artifact and produce screenshot/index evidence."
+          ]
         }
       },
       "e2e-dataset-provider-repository-roundtrip": {
         "python_open_pipeline": {
           "status": "strict",
-          "evidence": ["nirs4all-core Python consumes the repository pipeline descriptor generated from provider materialization."],
-          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/repository-pipeline.n4a.json", "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"],
-          "acceptance": ["Python loader metadata, class sequence, random_state, and descriptor hashes must match the repository descriptor."]
+          "evidence": [
+            "nirs4all-core Python consumes the repository pipeline descriptor generated from provider materialization."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/provider-repository-roundtrip/repository-pipeline.n4a.json",
+            "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
+          ],
+          "acceptance": [
+            "Python loader metadata, class sequence, random_state, and descriptor hashes must match the repository descriptor."
+          ]
         },
         "python_rerun_pipeline": {
           "status": "strict",
-          "evidence": ["The Python portable pipeline executes over deterministic synthetic NIRS data for the repository descriptor."],
-          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"],
-          "acceptance": ["Python execution must record split, preprocessing, targets, RMSE, and finite predictions."]
+          "evidence": [
+            "The Python portable pipeline executes over deterministic synthetic NIRS data for the repository descriptor."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
+          ],
+          "acceptance": [
+            "Python execution must record split, preprocessing, targets, RMSE, and finite predictions."
+          ]
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["Python and JavaScript/WASM portable pipeline execution compare numeric outputs within tolerance."],
-          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"],
-          "acceptance": ["Python/WASM RMSE and prediction vectors must match within 1e-10 on deterministic synthetic NIRS data."]
+          "evidence": [
+            "Python and JavaScript/WASM portable pipeline execution compare numeric outputs within tolerance."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
+          ],
+          "acceptance": [
+            "Python/WASM RMSE and prediction vectors must match within 1e-10 on deterministic synthetic NIRS data."
+          ]
         },
         "papers_export": {
-          "status": "gap",
-          "evidence": ["Provider/repository roundtrip does not publish through nirs4all-papers."],
-          "gap": "No paper bundle is produced from the provider materialization evidence.",
-          "acceptance": ["Add a papers export if a provider-backed repository recipe is selected as a deposited reproducibility artifact."]
+          "status": "not_applicable",
+          "evidence": [
+            "Provider/repository roundtrip does not publish through nirs4all-papers."
+          ],
+          "acceptance": [
+            "Add a papers export if a provider-backed repository recipe is selected as a deposited reproducibility artifact."
+          ],
+          "applicability": "This provider/repository lane is scoped to dataset materialization and cross-language descriptor consumption; paper export is outside the scenario."
         },
         "repository_forced_best_refit": {
-          "status": "gap",
-          "evidence": ["The scenario publishes a repository descriptor but not a forced best-refit descriptor."],
-          "gap": "The provider repository descriptor is a consumption roundtrip, not an artificial best-pipeline refit handoff.",
-          "acceptance": ["Add force_best_refit=true, selected best-pipeline metadata, and explicit executed status before claiming forced-refit coverage."]
+          "status": "not_applicable",
+          "evidence": [
+            "The scenario publishes a repository descriptor but not a forced best-refit descriptor."
+          ],
+          "acceptance": [
+            "Add force_best_refit=true, selected best-pipeline metadata, and explicit executed status before claiming forced-refit coverage."
+          ],
+          "applicability": "This provider/repository lane validates descriptor consumption, not artificial best-refit selection; forced-refit coverage remains in e2e-python-reopen-paper-repository-refit."
         },
         "wasm_web_reuse": {
           "status": "strict",
-          "evidence": ["JavaScript/WASM consumes and executes the same repository descriptor as Python."],
-          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"],
-          "acceptance": ["WASM descriptor consumption and numeric execution must match the Python portable pipeline ledger."]
+          "evidence": [
+            "JavaScript/WASM consumes and executes the same repository descriptor as Python."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
+          ],
+          "acceptance": [
+            "WASM descriptor consumption and numeric execution must match the Python portable pipeline ledger."
+          ]
         }
       },
       "e2e-pipeline-generation-performance-compare": {
         "python_open_pipeline": {
           "status": "gap",
-          "evidence": ["Python generates a pipeline family but does not reopen a persisted pipeline artifact before comparison."],
+          "evidence": [
+            "Python generates a pipeline family but does not reopen a persisted pipeline artifact before comparison."
+          ],
           "gap": "The scenario starts from generation and runtime comparison, not Python reopen.",
-          "acceptance": ["Persist one generated candidate, reopen it in Python, and record pipeline identity before runtime comparison."]
+          "acceptance": [
+            "Persist one generated candidate, reopen it in Python, and record pipeline identity before runtime comparison."
+          ]
         },
         "python_rerun_pipeline": {
           "status": "strict",
-          "evidence": ["Python reference and dag-ml/native backends run generated candidates and record performance/parity evidence."],
-          "artifacts": ["{artifacts_dir}/performance-compare/pipeline-family.json", "{artifacts_dir}/performance-compare/python-vs-dagml.json"],
-          "acceptance": ["Python-vs-dag-ml prediction parity and performance ratio ledger must pass the regression budget."]
+          "evidence": [
+            "Python reference and dag-ml/native backends run generated candidates and record performance/parity evidence."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/performance-compare/pipeline-family.json",
+            "{artifacts_dir}/performance-compare/python-vs-dagml.json"
+          ],
+          "acceptance": [
+            "Python-vs-dag-ml prediction parity and performance ratio ledger must pass the regression budget."
+          ]
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["Python reference outputs are compared to dag-ml/native runtime outputs."],
-          "artifacts": ["{artifacts_dir}/performance-compare/python-vs-dagml.json"],
-          "acceptance": ["Prediction parity and score deltas must satisfy the generated-family tolerance ledger."]
+          "evidence": [
+            "Python reference outputs are compared to dag-ml/native runtime outputs."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/performance-compare/python-vs-dagml.json"
+          ],
+          "acceptance": [
+            "Prediction parity and score deltas must satisfy the generated-family tolerance ledger."
+          ]
         },
         "papers_export": {
-          "status": "gap",
-          "evidence": ["Performance comparison does not export a paper package."],
-          "gap": "No reproducible paper publisher is wired to this generated-family benchmark.",
-          "acceptance": ["Add papers export only after generated-family seeds, runtime hashes, and selected candidate provenance are stable."]
+          "status": "not_applicable",
+          "evidence": [
+            "Performance comparison does not export a paper package."
+          ],
+          "acceptance": [
+            "Add papers export only after generated-family seeds, runtime hashes, and selected candidate provenance are stable."
+          ],
+          "applicability": "This generation/performance lane is scoped to candidate generation and runtime comparison; paper export is outside the scenario."
         },
         "repository_forced_best_refit": {
-          "status": "gap",
-          "evidence": ["Generated candidates are not published as a repository forced-refit recipe."],
-          "gap": "Repository best-refit handoff is outside this performance lane.",
-          "acceptance": ["Publish the selected generated candidate with force_best_refit=true before claiming repository refit coverage."]
+          "status": "not_applicable",
+          "evidence": [
+            "Generated candidates are not published as a repository forced-refit recipe."
+          ],
+          "acceptance": [
+            "Publish the selected generated candidate with force_best_refit=true before claiming repository refit coverage."
+          ],
+          "applicability": "This generation/performance lane compares generated candidates directly and does not publish a repository best-refit descriptor."
         },
         "wasm_web_reuse": {
           "status": "contract",
-          "evidence": ["Web runtime executes the generated family and records timing verdicts."],
-          "artifacts": ["{artifacts_dir}/performance-compare/web-runtime.json"],
+          "evidence": [
+            "Web runtime executes the generated family and records timing verdicts."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/performance-compare/web-runtime.json"
+          ],
           "gap": "The Web path records runtime/performance evidence but not Python-vs-WASM numeric oracle parity for each candidate.",
-          "acceptance": ["Promote to strict when Web/WASM imports the selected candidate artifact and compares predictions against Python for that candidate."]
+          "acceptance": [
+            "Promote to strict when Web/WASM imports the selected candidate artifact and compares predictions against Python for that candidate."
+          ]
         }
       },
       "e2e-cluster-dag-rights-client-core": {
         "python_open_pipeline": {
-          "status": "gap",
-          "evidence": ["Cluster loads a YAML DAG pipeline and runs a local Python oracle, but Python does not reopen a persisted pipeline artifact first."],
-          "gap": "No saved pipeline/workspace reopen is part of the cluster rights lane.",
-          "acceptance": ["Persist the cluster-submitted pipeline, reopen it in Python, and compare identity before scheduler submission."]
+          "status": "not_applicable",
+          "evidence": [
+            "Cluster loads a YAML DAG pipeline and runs a local Python oracle, but Python does not reopen a persisted pipeline artifact first."
+          ],
+          "acceptance": [
+            "Persist the cluster-submitted pipeline, reopen it in Python, and compare identity before scheduler submission."
+          ],
+          "applicability": "This cluster lane compares local Python execution with scheduled DAG execution; it is not a persisted pipeline reopen scenario."
         },
         "python_rerun_pipeline": {
           "status": "strict",
-          "evidence": ["Local Python nirs4all.run is compared with the cluster worker execution."],
-          "artifacts": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json", "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"],
-          "acceptance": ["Local-vs-cluster best RMSE and scheduler aggregate recompute must stay within the strict tolerance ledger."]
+          "evidence": [
+            "Local Python nirs4all.run is compared with the cluster worker execution."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json",
+            "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"
+          ],
+          "acceptance": [
+            "Local-vs-cluster best RMSE and scheduler aggregate recompute must stay within the strict tolerance ledger."
+          ]
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["The scenario requires a real local Python nirs4all numeric oracle against cluster nirs4all.run."],
-          "artifacts": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json", "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"],
-          "acceptance": ["best_rmse abs_diff must be <= 1e-6 and task aggregate parity must hold."]
+          "evidence": [
+            "The scenario requires a real local Python nirs4all numeric oracle against cluster nirs4all.run."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json",
+            "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"
+          ],
+          "acceptance": [
+            "best_rmse abs_diff must be <= 1e-6 and task aggregate parity must hold."
+          ]
         },
         "papers_export": {
-          "status": "gap",
-          "evidence": ["Cluster scheduler evidence is not exported through nirs4all-papers."],
-          "gap": "No papers publication path exists for cluster rights evidence.",
-          "acceptance": ["Add a paper export only after scheduler traces and rights logs are intended for deposited reproduction."]
+          "status": "not_applicable",
+          "evidence": [
+            "Cluster scheduler evidence is not exported through nirs4all-papers."
+          ],
+          "acceptance": [
+            "Add a paper export only after scheduler traces and rights logs are intended for deposited reproduction."
+          ],
+          "applicability": "This cluster rights lane is scoped to scheduler/client/core execution; paper export is outside the scenario."
         },
         "repository_forced_best_refit": {
-          "status": "gap",
-          "evidence": ["The cluster lane uses an example YAML pipeline, not a repository forced best-refit descriptor."],
-          "gap": "Repository best-refit handoff is not part of the cluster scheduler contract.",
-          "acceptance": ["Add repository descriptor import with force_best_refit=true before claiming repository-refit cluster coverage."]
+          "status": "not_applicable",
+          "evidence": [
+            "The cluster lane uses an example YAML pipeline, not a repository forced best-refit descriptor."
+          ],
+          "acceptance": [
+            "Add repository descriptor import with force_best_refit=true before claiming repository-refit cluster coverage."
+          ],
+          "applicability": "This cluster rights lane does not publish a repository best-refit descriptor."
         },
         "wasm_web_reuse": {
-          "status": "gap",
-          "evidence": ["No WASM/Web runtime consumes cluster-produced artifacts."],
-          "gap": "Cluster artifact reuse is validated through core client handoff, not Web/WASM.",
-          "acceptance": ["Add Web artifact rendering only after cluster result contracts are lowered into Web-readable runtime results."]
+          "status": "not_applicable",
+          "evidence": [
+            "No WASM/Web runtime consumes cluster-produced artifacts."
+          ],
+          "acceptance": [
+            "Add Web artifact rendering only after cluster result contracts are lowered into Web-readable runtime results."
+          ],
+          "applicability": "This cluster rights lane has no Web or JavaScript/WASM runtime surface; client-side reuse is covered by Web/WASM lanes."
         }
       },
       "e2e-formats-io-datasets-methods-language-bindings": {
         "python_open_pipeline": {
-          "status": "gap",
-          "evidence": ["The lane assembles datasets and invokes methods bindings; it does not open a persisted pipeline."],
-          "gap": "No Python pipeline/workspace opener is part of the formats/IO/methods binding audit.",
-          "acceptance": ["Add a pipeline descriptor using assembled datasets before claiming Python open coverage."]
+          "status": "not_applicable",
+          "evidence": [
+            "The lane assembles datasets and invokes methods bindings; it does not open a persisted pipeline."
+          ],
+          "acceptance": [
+            "Add a pipeline descriptor using assembled datasets before claiming Python open coverage."
+          ],
+          "applicability": "This formats/IO/methods lane is a low-level binding parity audit, not a persisted pipeline reopen scenario."
         },
         "python_rerun_pipeline": {
-          "status": "gap",
-          "evidence": ["The gate validates binding predictions, not a rerun of an opened Python pipeline."],
-          "gap": "Pipeline rerun semantics are outside this low-level binding parity lane.",
-          "acceptance": ["Add a Python rerun over an assembled dataset if this lane is promoted to pipeline-level coverage."]
+          "status": "not_applicable",
+          "evidence": [
+            "The gate validates binding predictions, not a rerun of an opened Python pipeline."
+          ],
+          "acceptance": [
+            "Add a Python rerun over an assembled dataset if this lane is promoted to pipeline-level coverage."
+          ],
+          "applicability": "This formats/IO/methods lane validates dataset assembly and method binding outputs rather than full pipeline rerun semantics."
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["Native methods ABI outputs are compared with Python/R bindings and WASM fixture evidence is recorded."],
-          "artifacts": ["{artifacts_dir}/formats-io-methods/binding-parity.json", "{artifacts_dir}/formats-io-methods/predictions-by-language.json"],
-          "acceptance": ["Native/Python/R method outputs and predictions must match the tolerance ledger; WASM remains fixture-scoped until release-target parity exists."]
+          "evidence": [
+            "Native methods ABI outputs are compared with Python/R bindings and WASM fixture evidence is recorded."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/formats-io-methods/binding-parity.json",
+            "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
+          ],
+          "acceptance": [
+            "Native/Python/R method outputs and predictions must match the tolerance ledger; WASM remains fixture-scoped until release-target parity exists."
+          ]
         },
         "papers_export": {
-          "status": "gap",
-          "evidence": ["No paper export is produced for the binding parity audit."],
-          "gap": "Binding parity evidence is not currently published as a paper bundle.",
-          "acceptance": ["Add papers export only when the binding parity audit becomes a deposited reproducibility kit."]
+          "status": "not_applicable",
+          "evidence": [
+            "No paper export is produced for the binding parity audit."
+          ],
+          "acceptance": [
+            "Add papers export only when the binding parity audit becomes a deposited reproducibility kit."
+          ],
+          "applicability": "This low-level binding parity lane does not publish a paper bundle."
         },
         "repository_forced_best_refit": {
-          "status": "gap",
-          "evidence": ["No repository pipeline descriptor or best-refit recipe is generated from the binding audit."],
-          "gap": "Repository refit semantics are outside the formats/IO/methods parity lane.",
-          "acceptance": ["Add a repository recipe after assembled dataset and methods binding choices map to a portable pipeline descriptor."]
+          "status": "not_applicable",
+          "evidence": [
+            "No repository pipeline descriptor or best-refit recipe is generated from the binding audit."
+          ],
+          "acceptance": [
+            "Add a repository recipe after assembled dataset and methods binding choices map to a portable pipeline descriptor."
+          ],
+          "applicability": "Repository refit semantics are outside this formats/IO/methods parity lane."
         },
         "wasm_web_reuse": {
           "status": "contract",
-          "evidence": ["WASM fixture output is checked and archived Rust status is recorded as non-release-target evidence."],
-          "artifacts": ["{artifacts_dir}/formats-io-methods/predictions-by-language.json"],
+          "evidence": [
+            "WASM fixture output is checked and archived Rust status is recorded as non-release-target evidence."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
+          ],
           "gap": "This is fixture-level WASM binding evidence, not a Web UI import/rerun of a repository pipeline.",
-          "acceptance": ["Promote to strict only after WASM release-target binding parity and Web pipeline import share the same assembled dataset ledger."]
+          "acceptance": [
+            "Promote to strict only after WASM release-target binding parity and Web pipeline import share the same assembled dataset ledger."
+          ]
         }
       },
       "e2e-core-ui-custom-app-host": {
         "python_open_pipeline": {
           "status": "contract",
-          "evidence": ["The custom host opens the portable Python oracle fixture, records the R binding surface, and lowers the supported pipeline into the Web host DSL."],
-          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-r-surface.json", "{artifacts_dir}/custom-app-host/custom-host-run.json"],
+          "evidence": [
+            "The custom host opens the portable Python oracle fixture, records the R binding surface, and lowers the supported pipeline into the Web host DSL."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+            "{artifacts_dir}/custom-app-host/custom-host-run.json"
+          ],
           "gap": "The Python oracle fixture is opened by the Web host test, not by a standalone Python process in this scenario.",
-          "acceptance": ["custom-host-r-surface.json and custom-host-run.json must record the R surface probe, opened oracle fixture, selected portable pipeline, engine id, and finite variant count."]
+          "acceptance": [
+            "custom-host-r-surface.json and custom-host-run.json must record the R surface probe, opened oracle fixture, selected portable pipeline, engine id, and finite variant count."
+          ]
         },
         "python_rerun_pipeline": {
           "status": "contract",
-          "evidence": ["The browser host reruns the opened Python-oracle pipeline through nirs4all-core WASM."],
-          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-run.json"],
+          "evidence": [
+            "The browser host reruns the opened Python-oracle pipeline through nirs4all-core WASM."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-run.json"
+          ],
           "gap": "The rerun happens in the custom Web host with the Python oracle as reference evidence, not in the full Python app runtime.",
-          "acceptance": ["custom-host-run.json must record nirs4all-core-wasm as the execution engine and a selected PLS component count from the rerun."]
+          "acceptance": [
+            "custom-host-run.json must record nirs4all-core-wasm as the execution engine and a selected PLS component count from the rerun."
+          ]
         },
         "python_parity": {
           "status": "strict",
-          "evidence": ["nirs4all-core WASM predictions are compared with the portable Python oracle prediction vector."],
-          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-predictions.json"],
-          "acceptance": ["custom-host-predictions.json must record prediction row count, max_abs_delta, and the Python oracle tolerance with status=passed."]
+          "evidence": [
+            "nirs4all-core WASM predictions are compared with the portable Python oracle prediction vector."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-predictions.json"
+          ],
+          "acceptance": [
+            "custom-host-predictions.json must record prediction row count, max_abs_delta, and the Python oracle tolerance with status=passed."
+          ]
         },
         "papers_export": {
-          "status": "gap",
-          "evidence": ["The custom app host scenario does not publish a papers bundle."],
-          "gap": "This lane proves reusable app composition, not reproducible paper export.",
-          "acceptance": ["Add papers export only after a custom host artifact is part of a reproducibility kit."]
+          "status": "not_applicable",
+          "evidence": [
+            "The custom app host scenario does not publish a papers bundle."
+          ],
+          "acceptance": [
+            "Add papers export only after a custom host artifact is part of a reproducibility kit."
+          ],
+          "applicability": "This custom app host lane proves reusable core+UI+Web composition, not reproducible paper export."
         },
         "repository_forced_best_refit": {
-          "status": "gap",
-          "evidence": ["The custom app host uses the portable oracle fixture directly and does not force a repository best-refit descriptor."],
-          "gap": "Repository best-refit is covered by the repository/papers lane, not this app-host composition lane.",
-          "acceptance": ["Add repository descriptor import only after custom apps consume repository-hosted pipeline bundles directly."]
+          "status": "not_applicable",
+          "evidence": [
+            "The custom app host uses the portable oracle fixture directly and does not force a repository best-refit descriptor."
+          ],
+          "acceptance": [
+            "Add repository descriptor import only after custom apps consume repository-hosted pipeline bundles directly."
+          ],
+          "applicability": "Repository forced-refit is covered by the repository/papers lane, not this app-host composition lane."
         },
         "wasm_web_reuse": {
           "status": "strict",
-          "evidence": ["The same Web host imports nirs4all-core runtime outputs and renders nirs4all-ui dataset, pipeline, prediction result panel, engine, and metric components."],
-          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-ui.json"],
-          "acceptance": ["custom-host-ui.json must record rendered nirs4all-ui component tags, dataset title, selected pipeline id, prediction result panel/count, and the nirs4all-core engine label with status=passed."]
+          "evidence": [
+            "The same Web host imports nirs4all-core runtime outputs and renders nirs4all-ui dataset, pipeline, prediction result panel, engine, and metric components."
+          ],
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-ui.json"
+          ],
+          "acceptance": [
+            "custom-host-ui.json must record rendered nirs4all-ui component tags, dataset title, selected pipeline id, prediction result panel/count, and the nirs4all-core engine label with status=passed."
+          ]
         }
       }
     }
@@ -456,9 +810,26 @@
       "strictness_gaps": [
         "The portable R parity fixture is strict, but the real catalog dataset path currently proves IO preservation and finite R/native predictions rather than numeric R-vs-Python parity on that dataset."
       ],
-      "languages": ["r", "python", "native"],
-      "repos": ["nirs4all-core", "nirs4all-providers", "nirs4all-datasets", "nirs4all-io", "nirs4all-methods", "dag-ml-data"],
-      "tags": ["datasets", "io", "pipeline", "workspace_save", "parity"],
+      "languages": [
+        "r",
+        "python",
+        "native"
+      ],
+      "repos": [
+        "nirs4all-core",
+        "nirs4all-providers",
+        "nirs4all-datasets",
+        "nirs4all-io",
+        "nirs4all-methods",
+        "dag-ml-data"
+      ],
+      "tags": [
+        "datasets",
+        "io",
+        "pipeline",
+        "workspace_save",
+        "parity"
+      ],
       "artifacts": [
         "{artifacts_dir}/r-dataset-io-pipeline/dataset-card.json",
         "{artifacts_dir}/r-dataset-io-pipeline/io-spec.n4a.json",
@@ -486,14 +857,19 @@
           "candidate": "R nirs4all aggregate through nirs4all-methods portable fixtures",
           "metric": "make test-r-parity fixture gate passes",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"]
+          "artifacts": [
+            "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"
+          ]
         },
         {
           "oracle": "catalog dataset IO materialization",
           "candidate": "R/native real dataset pipeline run",
           "metric": "real dataset IO run preserves selected values, Python aggregate rerun matches R/native targets, RMSE, split, selected predictions, and variant predictions within tolerance",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json", "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"]
+          "artifacts": [
+            "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"
+          ]
         }
       ],
       "steps": [
@@ -502,7 +878,9 @@
           "title": "Load reference dataset and reshape spectra/metadata through IO",
           "kind": "prepare",
           "repo": "nirs4all-core",
-          "requires_tools": ["Rscript"],
+          "requires_tools": [
+            "Rscript"
+          ],
           "requires_paths": [
             "{workspace_root}/nirs4all-core/bindings/r/tests/e2e_dataset_io_pipeline.R",
             "{workspace_root}/nirs4all-core/scripts/e2e/prepare_r_dataset_io_pipeline.py",
@@ -511,7 +889,11 @@
             "{workspace_root}/nirs4all-io/src/nirs4all_io/__init__.py",
             "{workspace_root}/nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json"
           ],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH PYTHONPATH={workspace_root}/nirs4all-providers/src:{workspace_root}/nirs4all-datasets/src:{workspace_root}/nirs4all-io/src:${{PYTHONPATH:-}} Rscript bindings/r/tests/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH PYTHONPATH={workspace_root}/nirs4all-providers/src:{workspace_root}/nirs4all-datasets/src:{workspace_root}/nirs4all-io/src:${{PYTHONPATH:-}} Rscript bindings/r/tests/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"
+          ],
           "produces": [
             "{artifacts_dir}/r-dataset-io-pipeline/dataset-card.json",
             "{artifacts_dir}/r-dataset-io-pipeline/io-spec.n4a.json",
@@ -525,25 +907,46 @@
           "title": "Run complex R pipeline and save workspace/predictions",
           "kind": "execute",
           "repo": "nirs4all-core",
-          "requires_tools": ["Rscript"],
-          "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/e2e_run_save_pipeline.R"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH make test-r-parity && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"],
-          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json", "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"]
+          "requires_tools": [
+            "Rscript"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-core/bindings/r/tests/e2e_run_save_pipeline.R"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH make test-r-parity && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"
+          ],
+          "produces": [
+            "{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"
+          ]
         },
         {
           "id": "python-reopen-r-workspace",
           "title": "Reopen the R-saved workspace and rerun the pipeline in Python",
           "kind": "execute",
           "repo": "nirs4all-core",
-          "requires_tools": ["python3.11"],
+          "requires_tools": [
+            "python3.11"
+          ],
           "requires_paths": [
             "{workspace_root}/nirs4all-core/scripts/e2e/reopen_r_dataset_io_pipeline.py",
             "{workspace_root}/nirs4all-core/bindings/python/src/nirs4all_core/_execution.py",
             "{workspace_root}/nirs4all-methods/bindings/python/src/n4m",
             "{workspace_root}/nirs4all-methods/bindings/python/src/pls4all"
           ],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PYTHONPATH=bindings/python/src:{workspace_root}/nirs4all-methods/bindings/python/src:${{PYTHONPATH:-}} python3.11 scripts/e2e/reopen_r_dataset_io_pipeline.py --in {artifacts_dir}/r-dataset-io-pipeline --out {artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json --workspace-root {workspace_root}"],
-          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"]
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-core && PYTHONPATH=bindings/python/src:{workspace_root}/nirs4all-methods/bindings/python/src:${{PYTHONPATH:-}} python3.11 scripts/e2e/reopen_r_dataset_io_pipeline.py --in {artifacts_dir}/r-dataset-io-pipeline --out {artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json --workspace-root {workspace_root}"
+          ],
+          "produces": [
+            "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"
+          ]
         }
       ]
     },
@@ -555,9 +958,28 @@
       "strictness_gaps": [
         "Web/WASM consumes the paper-exported repository-best-pipeline wrapper on an alternative uploadable dataset fixture; the original Python 130x2151 dataset is not yet exported as a browser-uploadable artifact, so this reuse is contract-level rather than strict."
       ],
-      "languages": ["python", "native", "javascript_wasm", "web"],
-      "repos": ["nirs4all", "nirs4all-repository", "nirs4all-papers", "nirs4all-web", "dag-ml", "nirs4all-methods"],
-      "tags": ["pipeline", "repository", "papers", "workspace_save", "parity", "web_results"],
+      "languages": [
+        "python",
+        "native",
+        "javascript_wasm",
+        "web"
+      ],
+      "repos": [
+        "nirs4all",
+        "nirs4all-repository",
+        "nirs4all-papers",
+        "nirs4all-web",
+        "dag-ml",
+        "nirs4all-methods"
+      ],
+      "tags": [
+        "pipeline",
+        "repository",
+        "papers",
+        "workspace_save",
+        "parity",
+        "web_results"
+      ],
       "artifacts": [
         "{artifacts_dir}/python-paper-repository/reopened-result.json",
         "{artifacts_dir}/python-paper-repository/paper-export.zip",
@@ -578,21 +1000,27 @@
           "candidate": "dag-ml backend refit",
           "metric": "scores and predictions exactly match scenario tolerance ledger",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/python-paper-repository/reopened-result.json"]
+          "artifacts": [
+            "{artifacts_dir}/python-paper-repository/reopened-result.json"
+          ]
         },
         {
           "oracle": "paper export manifest",
           "candidate": "repository best-refit descriptor",
           "metric": "handoff descriptor is written with source hashes, repository-owned force_best_refit intent, selected_pipeline_id, descriptor/manifest/catalog fingerprints, repository_validation.ok=true, repository reopen/validate evidence, and Python-backed refit.executed=true metric evidence",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"]
+          "artifacts": [
+            "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"
+          ]
         },
         {
           "oracle": "repository-best-pipeline.json plus Python smoke oracle over the browser-emitted folds",
           "candidate": "client-only Web/WASM import of the handoff wrapper",
           "metric": "Web/WASM imports the SNV+PLS handoff wrapper, executes it with dag-ml-wasm + libn4m over an alternative uploadable dataset, and records prediction parity to the smoke oracle without backend API calls",
           "evidence_level": "contract",
-          "artifacts": ["{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json"]
+          "artifacts": [
+            "{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json"
+          ]
         }
       ],
       "steps": [
@@ -601,44 +1029,88 @@
           "title": "Open, rerun, and compare a saved pipeline",
           "kind": "execute",
           "repo": "nirs4all",
-          "requires_tools": ["python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_pipeline_reopen_paper_repository.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_pipeline_reopen_paper_repository.py::test_reopen_rerun_parity --artifacts-dir={artifacts_dir}/python-paper-repository"],
-          "produces": ["{artifacts_dir}/python-paper-repository/reopened-result.json"]
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all/tests/e2e/test_pipeline_reopen_paper_repository.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_pipeline_reopen_paper_repository.py::test_reopen_rerun_parity --artifacts-dir={artifacts_dir}/python-paper-repository"
+          ],
+          "produces": [
+            "{artifacts_dir}/python-paper-repository/reopened-result.json"
+          ]
         },
         {
           "id": "papers-export-repository-refit",
           "title": "Export reproducible paper and write best-refit repository handoff",
           "kind": "export",
           "repo": "nirs4all-papers",
-          "delegates_to_repos": ["nirs4all-repository"],
+          "delegates_to_repos": [
+            "nirs4all-repository"
+          ],
           "delegated_invocations": [
             {
               "repo": "nirs4all-repository",
               "mode": "subprocess",
-              "calls": ["build_catalog", "validate_pipeline", "get_pipeline", "to_nirs4all", "get_pipeline_list"],
-              "evidence": ["test_repository_refit_export.py runs a Python subprocess from nirs4all-repository with PYTHONPATH=src, writes forced_best_refit_contract, and records repository_validation.ok=true plus repository_reopen_validated=true in repository-best-pipeline.json."],
-              "artifacts": ["{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"]
+              "calls": [
+                "build_catalog",
+                "validate_pipeline",
+                "get_pipeline",
+                "to_nirs4all",
+                "get_pipeline_list"
+              ],
+              "evidence": [
+                "test_repository_refit_export.py runs a Python subprocess from nirs4all-repository with PYTHONPATH=src, writes forced_best_refit_contract, and records repository_validation.ok=true plus repository_reopen_validated=true in repository-best-pipeline.json."
+              ],
+              "artifacts": [
+                "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"
+              ]
             }
           ],
-          "requires_tools": ["python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all-papers/tests/e2e/test_repository_refit_export.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-papers && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_repository_refit_export.py --artifacts-dir={artifacts_dir}/python-paper-repository"],
-          "produces": ["{artifacts_dir}/python-paper-repository/paper-export.zip", "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"]
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-papers/tests/e2e/test_repository_refit_export.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-papers && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_repository_refit_export.py --artifacts-dir={artifacts_dir}/python-paper-repository"
+          ],
+          "produces": [
+            "{artifacts_dir}/python-paper-repository/paper-export.zip",
+            "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"
+          ]
         },
         {
           "id": "web-import-repository-best-pipeline",
           "title": "Import the paper-exported repository best-pipeline handoff in Web/WASM",
           "kind": "execute",
           "repo": "nirs4all-web",
-          "requires_tools": ["node", "npm", "python3.11"],
+          "requires_tools": [
+            "node",
+            "npm",
+            "python3.11"
+          ],
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/tests/repository-best-pipeline-smoke.mjs",
             "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/repository_X_train.csv",
             "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/repository_y_train.csv"
           ],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_EVIDENCE={artifacts_dir}/python-paper-repository/repository-best-pipeline.json ARTIFACTS_DIR={artifacts_dir}/python-paper-repository npm run smoke:repository-best-pipeline"],
-          "produces": ["{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json", "{artifacts_dir}/python-paper-repository/repository-best-pipeline-web-results.png"]
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_EVIDENCE={artifacts_dir}/python-paper-repository/repository-best-pipeline.json ARTIFACTS_DIR={artifacts_dir}/python-paper-repository npm run smoke:repository-best-pipeline"
+          ],
+          "produces": [
+            "{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json",
+            "{artifacts_dir}/python-paper-repository/repository-best-pipeline-web-results.png"
+          ]
         }
       ]
     },
@@ -650,9 +1122,26 @@
       "strictness_gaps": [
         "The current Playwright path uses a deterministic non-demo uploaded fixture dataset materialized through dag-ml-data; it still does not execute an external provider/catalog dataset."
       ],
-      "languages": ["javascript_wasm", "web", "python"],
-      "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-repository", "nirs4all-datasets", "nirs4all-ui"],
-      "tags": ["datasets", "pipeline", "repository", "predictions", "web_results", "parity"],
+      "languages": [
+        "javascript_wasm",
+        "web",
+        "python"
+      ],
+      "repos": [
+        "nirs4all-web",
+        "nirs4all-core",
+        "nirs4all-repository",
+        "nirs4all-datasets",
+        "nirs4all-ui"
+      ],
+      "tags": [
+        "datasets",
+        "pipeline",
+        "repository",
+        "predictions",
+        "web_results",
+        "parity"
+      ],
       "artifacts": [
         "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json",
         "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",
@@ -672,28 +1161,37 @@
           "candidate": "fresh browser session imported pipeline execution",
           "metric": "repository pipeline fixture imports over a non-demo uploaded dataset, executes, renders, and records zero console errors plus non-empty screenshot/evidence artifacts",
           "evidence_level": "contract",
-          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"]
+          "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
+          ]
         },
         {
           "oracle": "Python nirs4all/sklearn oracle over browser-emitted dag-ml folds",
           "candidate": "Web/WASM repository pipeline execution",
           "metric": "predictions, residuals, and CV metrics match with max_abs_delta <= 1e-5",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"]
+          "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
+          ]
         },
         {
           "oracle": "source Web/WASM run before export",
           "candidate": "fresh Web/WASM run after pipeline JSON import",
           "metric": "CV/refit prediction rows and finite metrics match with max_abs_delta <= 1e-8",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json", "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"]
+          "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",
+            "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"
+          ]
         },
         {
           "oracle": "pre-export .n4a prediction panel",
           "candidate": "post-import .n4a prediction panel",
           "metric": "displayed prediction values match with max_abs_delta <= 5e-4",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"]
+          "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"
+          ]
         }
       ],
       "steps": [
@@ -702,37 +1200,63 @@
           "title": "Open repository pipeline and rerun in local WASM",
           "kind": "execute",
           "repo": "nirs4all-web",
-          "delegates_to_repos": ["nirs4all-repository"],
+          "delegates_to_repos": [
+            "nirs4all-repository"
+          ],
           "delegated_invocations": [
             {
               "repo": "nirs4all-repository",
               "mode": "fixture-provenance",
-              "calls": ["repository fixture manifest import", "repository descriptor_sha256 verification"],
-              "evidence": ["pipeline-repository-smoke.mjs verifies the checked-in repository fixture manifest and descriptor SHA256 before Web/WASM import, then records repository_pipeline_id, descriptor hash, and source-vs-imported execution evidence in pipeline-repository-smoke.json."],
-              "artifacts": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"]
+              "calls": [
+                "repository fixture manifest import",
+                "repository descriptor_sha256 verification"
+              ],
+              "evidence": [
+                "pipeline-repository-smoke.mjs verifies the checked-in repository fixture manifest and descriptor SHA256 before Web/WASM import, then records repository_pipeline_id, descriptor hash, and source-vs-imported execution evidence in pipeline-repository-smoke.json."
+              ],
+              "artifacts": [
+                "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
+              ]
             }
           ],
-          "requires_tools": ["npm"],
+          "requires_tools": [
+            "npm"
+          ],
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
             "{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs",
             "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/manifest.json"
           ],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"],
-          "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json", "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"]
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
+          ],
+          "produces": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",
+            "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"
+          ]
         },
         {
           "id": "web-render-results",
           "title": "Open predictions in web UI and capture result rendering",
           "kind": "ui",
           "repo": "nirs4all-web",
-          "requires_tools": ["npm"],
+          "requires_tools": [
+            "npm"
+          ],
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
             "{workspace_root}/nirs4all-web/studio-lite/tests/n4a-roundtrip-smoke.mjs"
           ],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"],
-          "produces": ["{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"]
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"
+          ],
+          "produces": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"
+          ]
         }
       ]
     },
@@ -744,9 +1268,24 @@
       "strictness_gaps": [
         "Current execution proves a dense fused-matrix multimodal proxy; native multimodal runtime and Web/Studio roundtrip steps are still pending."
       ],
-      "languages": ["python", "r", "javascript_wasm"],
-      "repos": ["nirs4all", "nirs4all-core"],
-      "tags": ["multimodal", "datasets", "io", "pipeline", "predictions", "workspace_save", "parity"],
+      "languages": [
+        "python",
+        "r",
+        "javascript_wasm"
+      ],
+      "repos": [
+        "nirs4all",
+        "nirs4all-core"
+      ],
+      "tags": [
+        "multimodal",
+        "datasets",
+        "io",
+        "pipeline",
+        "predictions",
+        "workspace_save",
+        "parity"
+      ],
       "artifacts": [
         "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
         "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet",
@@ -765,7 +1304,10 @@
           "candidate": "R and WASM dense-fused multimodal feature matrix predictions",
           "metric": "per-output prediction_abs_max <= 1e-8 within the dense-fused feature representation",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"]
+          "artifacts": [
+            "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json",
+            "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"
+          ]
         }
       ],
       "steps": [
@@ -774,20 +1316,45 @@
           "title": "Generate multimodal pipeline and oracle predictions",
           "kind": "prepare",
           "repo": "nirs4all",
-          "requires_tools": ["python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_multimodal_roundtrip.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_multimodal_roundtrip.py::test_generate_oracle --artifacts-dir={artifacts_dir}/multimodal-roundtrip"],
-          "produces": ["{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json", "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet"]
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all/tests/e2e/test_multimodal_roundtrip.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_multimodal_roundtrip.py::test_generate_oracle --artifacts-dir={artifacts_dir}/multimodal-roundtrip"
+          ],
+          "produces": [
+            "{artifacts_dir}/multimodal-roundtrip/multimodal-pipeline.n4a.json",
+            "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet"
+          ]
         },
         {
           "id": "r-wasm-roundtrip",
           "title": "Execute the same multimodal pipeline in R and WASM",
           "kind": "execute",
           "repo": "nirs4all-core",
-          "requires_tools": ["python3.11", "Rscript", "node"],
-          "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/run_multimodal_roundtrip.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH Rscript --version >/dev/null && LD_LIBRARY_PATH={workspace_root}/nirs4all-methods/build/dev-release/cpp/src:$LD_LIBRARY_PATH PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_multimodal_roundtrip.py --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}/multimodal-roundtrip"],
-          "produces": ["{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet", "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json", "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json"]
+          "requires_tools": [
+            "python3.11",
+            "Rscript",
+            "node"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-core/scripts/e2e/run_multimodal_roundtrip.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH Rscript --version >/dev/null && LD_LIBRARY_PATH={workspace_root}/nirs4all-methods/build/dev-release/cpp/src:$LD_LIBRARY_PATH PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_multimodal_roundtrip.py --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}/multimodal-roundtrip"
+          ],
+          "produces": [
+            "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet",
+            "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json",
+            "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json"
+          ]
         }
       ]
     },
@@ -799,9 +1366,25 @@
       "strictness_gaps": [
         "Native score-set replay is strict, but vector-level native predictions are currently audited for schema/array coverage rather than enforced as full prediction-vector parity."
       ],
-      "languages": ["python", "native", "rust"],
-      "repos": ["nirs4all", "dag-ml", "dag-ml-data", "nirs4all-core", "nirs4all-methods"],
-      "tags": ["multisource", "pipeline_generation", "pipeline", "workspace_save", "parity"],
+      "languages": [
+        "python",
+        "native",
+        "rust"
+      ],
+      "repos": [
+        "nirs4all",
+        "dag-ml",
+        "dag-ml-data",
+        "nirs4all-core",
+        "nirs4all-methods"
+      ],
+      "tags": [
+        "multisource",
+        "pipeline_generation",
+        "pipeline",
+        "workspace_save",
+        "parity"
+      ],
       "artifacts": [
         "{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json",
         "{artifacts_dir}/multisource-stacking/oof-ledger.json",
@@ -819,14 +1402,19 @@
           "candidate": "dag-ml/native replay",
           "metric": "score_set cv/test RMSE deltas stay within tolerance",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/multisource-stacking/oof-ledger.json", "{artifacts_dir}/multisource-stacking/native-replay.json"]
+          "artifacts": [
+            "{artifacts_dir}/multisource-stacking/oof-ledger.json",
+            "{artifacts_dir}/multisource-stacking/native-replay.json"
+          ]
         },
         {
           "oracle": "python nirs4all stacking replay prediction table",
           "candidate": "native replay prediction table",
           "metric": "schema, row count, partitions, folds, and current array coverage are audited explicitly pending full vector parity",
           "evidence_level": "contract",
-          "artifacts": ["{artifacts_dir}/multisource-stacking/native-replay.json"]
+          "artifacts": [
+            "{artifacts_dir}/multisource-stacking/native-replay.json"
+          ]
         }
       ],
       "steps": [
@@ -835,20 +1423,42 @@
           "title": "Build multisource stacking pipeline and replay manifest",
           "kind": "execute",
           "repo": "nirs4all",
-          "requires_tools": ["python3"],
-          "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_multisource_stacking_replay.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_multisource_stacking_replay.py --artifacts-dir={artifacts_dir}/multisource-stacking"],
-          "produces": ["{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json", "{artifacts_dir}/multisource-stacking/oof-ledger.json"]
+          "requires_tools": [
+            "python3"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all/tests/e2e/test_multisource_stacking_replay.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_multisource_stacking_replay.py --artifacts-dir={artifacts_dir}/multisource-stacking"
+          ],
+          "produces": [
+            "{artifacts_dir}/multisource-stacking/stacking-replay.n4a.json",
+            "{artifacts_dir}/multisource-stacking/oof-ledger.json"
+          ]
         },
         {
           "id": "native-replay",
           "title": "Replay multisource stacking manifest through native/core bindings",
           "kind": "verify",
           "repo": "nirs4all-core",
-          "requires_tools": ["cargo", "python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/run_multisource_stacking_replay.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_multisource_stacking_replay.py --artifacts-dir {artifacts_dir}/multisource-stacking"],
-          "produces": ["{artifacts_dir}/multisource-stacking/native-replay.json"]
+          "requires_tools": [
+            "cargo",
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-core/scripts/e2e/run_multisource_stacking_replay.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-core && PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_multisource_stacking_replay.py --artifacts-dir {artifacts_dir}/multisource-stacking"
+          ],
+          "produces": [
+            "{artifacts_dir}/multisource-stacking/native-replay.json"
+          ]
         }
       ]
     },
@@ -860,9 +1470,24 @@
       "strictness_gaps": [
         "The converter/save/render slice is executable, but Python rerun, papers export, and repository best-refit phases are outside this scenario."
       ],
-      "languages": ["python", "javascript_wasm", "web"],
-      "repos": ["nirs4all-tools", "nirs4all", "nirs4all-web", "nirs4all-ui"],
-      "tags": ["workspace_save", "predictions", "web_results", "pipeline", "parity"],
+      "languages": [
+        "python",
+        "javascript_wasm",
+        "web"
+      ],
+      "repos": [
+        "nirs4all-tools",
+        "nirs4all",
+        "nirs4all-web",
+        "nirs4all-ui"
+      ],
+      "tags": [
+        "workspace_save",
+        "predictions",
+        "web_results",
+        "pipeline",
+        "parity"
+      ],
       "artifacts": [
         "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
         "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
@@ -882,7 +1507,11 @@
           "candidate": "converted V1 workspace and lowered runtime result contract",
           "metric": "fixture prediction vectors, scores, row counts, checksums, and Web result panels match expected contract",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/legacy-converter/converted-workspace.n4a.json", "{artifacts_dir}/legacy-converter/predictions.rt_result.json", "{artifacts_dir}/legacy-converter/web-results-panels.json"]
+          "artifacts": [
+            "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
+            "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
+            "{artifacts_dir}/legacy-converter/web-results-panels.json"
+          ]
         }
       ],
       "steps": [
@@ -891,23 +1520,43 @@
           "title": "Convert legacy workspace and lower predictions",
           "kind": "export",
           "repo": "nirs4all-tools",
-          "requires_tools": ["python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all-tools/tests/e2e/test_legacy_save_predictions_web.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-tools && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_legacy_save_predictions_web.py::test_convert_legacy_save --artifacts-dir={artifacts_dir}/legacy-converter"],
-          "produces": ["{artifacts_dir}/legacy-converter/converted-workspace.n4a.json", "{artifacts_dir}/legacy-converter/predictions.rt_result.json"]
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-tools/tests/e2e/test_legacy_save_predictions_web.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-tools && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_legacy_save_predictions_web.py::test_convert_legacy_save --artifacts-dir={artifacts_dir}/legacy-converter"
+          ],
+          "produces": [
+            "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
+            "{artifacts_dir}/legacy-converter/predictions.rt_result.json"
+          ]
         },
         {
           "id": "web-open-predictions",
           "title": "Render converted predictions in Web result panels",
           "kind": "ui",
           "repo": "nirs4all-web",
-          "requires_tools": ["npm"],
+          "requires_tools": [
+            "npm"
+          ],
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
             "{workspace_root}/nirs4all-web/studio-lite/tests/converted-predictions-render-smoke.mjs"
           ],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"],
-          "produces": ["{artifacts_dir}/legacy-converter/web-results-panels.json", "{artifacts_dir}/legacy-converter/web-results.png"]
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"
+          ],
+          "produces": [
+            "{artifacts_dir}/legacy-converter/web-results-panels.json",
+            "{artifacts_dir}/legacy-converter/web-results.png"
+          ]
         }
       ]
     },
@@ -919,9 +1568,24 @@
       "strictness_gaps": [
         "Repository descriptor execution is strict for a deterministic Python/WASM portable pipeline proof, but it still does not execute R or run the provider materialized dataset through the same prediction parity gate."
       ],
-      "languages": ["python", "javascript_wasm"],
-      "repos": ["nirs4all-providers", "nirs4all-datasets", "nirs4all-io", "nirs4all-repository", "nirs4all-core"],
-      "tags": ["datasets", "io", "repository", "pipeline", "parity"],
+      "languages": [
+        "python",
+        "javascript_wasm"
+      ],
+      "repos": [
+        "nirs4all-providers",
+        "nirs4all-datasets",
+        "nirs4all-io",
+        "nirs4all-repository",
+        "nirs4all-core"
+      ],
+      "tags": [
+        "datasets",
+        "io",
+        "repository",
+        "pipeline",
+        "parity"
+      ],
       "artifacts": [
         "{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json",
         "{artifacts_dir}/provider-repository-roundtrip/repository-index.json",
@@ -941,14 +1605,18 @@
           "candidate": "nirs4all-core JavaScript/WASM repository pipeline loader",
           "metric": "portable class sequence, random_state, and normalized pipeline metadata match",
           "evidence_level": "contract",
-          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"]
+          "artifacts": [
+            "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
+          ]
         },
         {
           "oracle": "nirs4all-core Python portable pipeline execution",
           "candidate": "nirs4all-core JavaScript/WASM portable pipeline execution",
           "metric": "split, preprocessing, targets, RMSE, predictions, and predictPortablePipeline roundtrip match within 1e-10 on deterministic synthetic NIRS data",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"]
+          "artifacts": [
+            "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
+          ]
         }
       ],
       "steps": [
@@ -957,30 +1625,68 @@
           "title": "Resolve provider descriptor and materialize dataset",
           "kind": "prepare",
           "repo": "nirs4all-providers",
-          "delegates_to_repos": ["nirs4all-repository"],
+          "delegates_to_repos": [
+            "nirs4all-repository"
+          ],
           "delegated_invocations": [
             {
               "repo": "nirs4all-repository",
               "mode": "provider-api",
-              "calls": ["PipelineProvider.get_pipeline_list", "PipelineProvider.card", "PipelineProvider.get_pipeline", "PipelineProvider.verify", "PipelineProvider.recipe", "PipelineProvider.get_bundle"],
-              "evidence": ["test_dataset_provider_repository_roundtrip.py adds nirs4all-repository/src to sys.path, resolves PipelineProvider(root=nirs4all-repository), verifies the selected pipeline, and emits provider-resolution.json plus repository-index.json and repository-pipeline.n4a.json."],
-              "artifacts": ["{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json", "{artifacts_dir}/provider-repository-roundtrip/repository-index.json", "{artifacts_dir}/provider-repository-roundtrip/repository-pipeline.n4a.json"]
+              "calls": [
+                "PipelineProvider.get_pipeline_list",
+                "PipelineProvider.card",
+                "PipelineProvider.get_pipeline",
+                "PipelineProvider.verify",
+                "PipelineProvider.recipe",
+                "PipelineProvider.get_bundle"
+              ],
+              "evidence": [
+                "test_dataset_provider_repository_roundtrip.py adds nirs4all-repository/src to sys.path, resolves PipelineProvider(root=nirs4all-repository), verifies the selected pipeline, and emits provider-resolution.json plus repository-index.json and repository-pipeline.n4a.json."
+              ],
+              "artifacts": [
+                "{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json",
+                "{artifacts_dir}/provider-repository-roundtrip/repository-index.json",
+                "{artifacts_dir}/provider-repository-roundtrip/repository-pipeline.n4a.json"
+              ]
             }
           ],
-          "requires_tools": ["python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all-providers/tests/e2e/test_dataset_provider_repository_roundtrip.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-providers && python3.11 -m pytest tests/e2e/test_dataset_provider_repository_roundtrip.py --artifacts-dir={artifacts_dir}/provider-repository-roundtrip"],
-          "produces": ["{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json", "{artifacts_dir}/provider-repository-roundtrip/repository-index.json", "{artifacts_dir}/provider-repository-roundtrip/repository-pipeline.n4a.json"]
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-providers/tests/e2e/test_dataset_provider_repository_roundtrip.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-providers && python3.11 -m pytest tests/e2e/test_dataset_provider_repository_roundtrip.py --artifacts-dir={artifacts_dir}/provider-repository-roundtrip"
+          ],
+          "produces": [
+            "{artifacts_dir}/provider-repository-roundtrip/provider-resolution.json",
+            "{artifacts_dir}/provider-repository-roundtrip/repository-index.json",
+            "{artifacts_dir}/provider-repository-roundtrip/repository-pipeline.n4a.json"
+          ]
         },
         {
           "id": "core-consume-repository",
           "title": "Consume the repository descriptor from Python and JavaScript/WASM",
           "kind": "verify",
           "repo": "nirs4all-core",
-          "requires_tools": ["python3.11", "npm"],
-          "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/consume_repository_descriptor.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && npm --prefix bindings/wasm ci --ignore-scripts --no-audit --no-fund && python3.11 scripts/e2e/consume_repository_descriptor.py --artifacts-dir {artifacts_dir}/provider-repository-roundtrip"],
-          "produces": ["{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"]
+          "requires_tools": [
+            "python3.11",
+            "npm"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-core/scripts/e2e/consume_repository_descriptor.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-core && npm --prefix bindings/wasm ci --ignore-scripts --no-audit --no-fund && python3.11 scripts/e2e/consume_repository_descriptor.py --artifacts-dir {artifacts_dir}/provider-repository-roundtrip"
+          ],
+          "produces": [
+            "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
+          ]
         }
       ]
     },
@@ -992,9 +1698,25 @@
       "strictness_gaps": [
         "Python-vs-dag-ml prediction parity is strict, but Web timing remains a runtime/performance contract and Studio is explicitly outside this Web-only gate."
       ],
-      "languages": ["python", "javascript_wasm", "web", "native"],
-      "repos": ["nirs4all", "dag-ml", "nirs4all-core", "nirs4all-web"],
-      "tags": ["pipeline_generation", "pipeline", "parity", "predictions", "web_results"],
+      "languages": [
+        "python",
+        "javascript_wasm",
+        "web",
+        "native"
+      ],
+      "repos": [
+        "nirs4all",
+        "dag-ml",
+        "nirs4all-core",
+        "nirs4all-web"
+      ],
+      "tags": [
+        "pipeline_generation",
+        "pipeline",
+        "parity",
+        "predictions",
+        "web_results"
+      ],
       "artifacts": [
         "{artifacts_dir}/performance-compare/pipeline-family.json",
         "{artifacts_dir}/performance-compare/python-vs-dagml.json",
@@ -1013,14 +1735,18 @@
           "candidate": "dag-ml/native runtime",
           "metric": "prediction parity plus performance ratio ledger",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/performance-compare/python-vs-dagml.json"]
+          "artifacts": [
+            "{artifacts_dir}/performance-compare/python-vs-dagml.json"
+          ]
         },
         {
           "oracle": "Web dag-ml/WASM runtime ledger",
           "candidate": "client-side browser runtime",
           "metric": "web runtime executes generated family and records timing verdict",
           "evidence_level": "contract",
-          "artifacts": ["{artifacts_dir}/performance-compare/web-runtime.json"]
+          "artifacts": [
+            "{artifacts_dir}/performance-compare/web-runtime.json"
+          ]
         }
       ],
       "steps": [
@@ -1029,20 +1755,43 @@
           "title": "Generate candidate pipeline family and Python oracle outputs",
           "kind": "execute",
           "repo": "nirs4all",
-          "requires_tools": ["python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all/tests/e2e/test_pipeline_generation_performance.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_pipeline_generation_performance.py::test_generate_family --artifacts-dir={artifacts_dir}/performance-compare"],
-          "produces": ["{artifacts_dir}/performance-compare/pipeline-family.json"]
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all/tests/e2e/test_pipeline_generation_performance.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_pipeline_generation_performance.py::test_generate_family --artifacts-dir={artifacts_dir}/performance-compare"
+          ],
+          "produces": [
+            "{artifacts_dir}/performance-compare/pipeline-family.json"
+          ]
         },
         {
           "id": "compare-runtimes",
           "title": "Compare Python, dag-ml/native, and Web runtimes",
           "kind": "verify",
           "repo": "nirs4all-web",
-          "requires_tools": ["node", "npm", "google-chrome"],
-          "requires_paths": ["{workspace_root}/nirs4all-web/studio-lite/tests/performance-compare-smoke.mjs"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && NODE_BIN=${{N4A_NODE_BIN:-$HOME/.nvm/versions/node/v22.21.1/bin}} && if [ -d \"$NODE_BIN\" ]; then export PATH=\"$NODE_BIN:$PATH\"; fi && npm run build && ARTIFACTS_DIR={artifacts_dir}/performance-compare npm run smoke:performance-compare"],
-          "produces": ["{artifacts_dir}/performance-compare/python-vs-dagml.json", "{artifacts_dir}/performance-compare/web-runtime.json"]
+          "requires_tools": [
+            "node",
+            "npm",
+            "google-chrome"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-web/studio-lite/tests/performance-compare-smoke.mjs"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-web/studio-lite && NODE_BIN=${{N4A_NODE_BIN:-$HOME/.nvm/versions/node/v22.21.1/bin}} && if [ -d \"$NODE_BIN\" ]; then export PATH=\"$NODE_BIN:$PATH\"; fi && npm run build && ARTIFACTS_DIR={artifacts_dir}/performance-compare npm run smoke:performance-compare"
+          ],
+          "produces": [
+            "{artifacts_dir}/performance-compare/python-vs-dagml.json",
+            "{artifacts_dir}/performance-compare/web-runtime.json"
+          ]
         }
       ]
     },
@@ -1054,9 +1803,22 @@
       "strictness_gaps": [
         "The cluster numeric oracle is strict in a full local workspace, but the public checkout remains data-blocked and papers/repository/Web reuse phases are outside this scenario."
       ],
-      "languages": ["python", "native"],
-      "repos": ["nirs4all-cluster", "nirs4all-core", "dag-ml", "nirs4all-methods", "nirs4all"],
-      "tags": ["pipeline", "workspace_save", "parity"],
+      "languages": [
+        "python",
+        "native"
+      ],
+      "repos": [
+        "nirs4all-cluster",
+        "nirs4all-core",
+        "dag-ml",
+        "nirs4all-methods",
+        "nirs4all"
+      ],
+      "tags": [
+        "pipeline",
+        "workspace_save",
+        "parity"
+      ],
       "artifacts": [
         "{artifacts_dir}/cluster-dag-rights/scheduler-run.json",
         "{artifacts_dir}/cluster-dag-rights/core-client-result.json",
@@ -1076,14 +1838,18 @@
           "candidate": "cluster scheduled execution",
           "metric": "num_tasks, best_task_id, and best_metric parity",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"]
+          "artifacts": [
+            "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"
+          ]
         },
         {
           "oracle": "local Python nirs4all reference",
           "candidate": "cluster worker nirs4all.run",
           "metric": "best_rmse abs_diff <= 1e-6",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json"]
+          "artifacts": [
+            "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json"
+          ]
         }
       ],
       "steps": [
@@ -1092,25 +1858,45 @@
           "title": "Run DAG pipeline through cluster with rights checks",
           "kind": "execute",
           "repo": "nirs4all-cluster",
-          "requires_tools": ["python3.11"],
+          "requires_tools": [
+            "python3.11"
+          ],
           "requires_paths": [
             "{workspace_root}/nirs4all-cluster/tests/e2e/test_cluster_dag_rights_core_client.py",
             "{workspace_root}/nirs4all/nirs4all/__init__.py",
             "{workspace_root}/nirs4all-cluster/examples/pipelines/pls.yaml",
             "{workspace_root}/nirs4all-data/regression/GRAPEVINE_LeafTraits/PSI_spxyG70_30_byCultivar_MicroNIR_NeoSpectra"
           ],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-cluster && N4A_CLUSTER_NUMERIC_ORACLE=1 PYTHONPATH={workspace_root}/nirs4all-cluster:{workspace_root}/nirs4all:${{PYTHONPATH:-}} python3.11 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"],
-          "produces": ["{artifacts_dir}/cluster-dag-rights/scheduler-run.json", "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json"]
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-cluster && N4A_CLUSTER_NUMERIC_ORACLE=1 PYTHONPATH={workspace_root}/nirs4all-cluster:{workspace_root}/nirs4all:${{PYTHONPATH:-}} python3.11 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"
+          ],
+          "produces": [
+            "{artifacts_dir}/cluster-dag-rights/scheduler-run.json",
+            "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-numeric.json"
+          ]
         },
         {
           "id": "core-client-handoff",
           "title": "Verify core client artifact handoff and parity",
           "kind": "verify",
           "repo": "nirs4all-core",
-          "requires_tools": ["python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all-core/scripts/e2e/verify_cluster_handoff.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && python3.11 scripts/e2e/verify_cluster_handoff.py --artifacts-dir {artifacts_dir}/cluster-dag-rights"],
-          "produces": ["{artifacts_dir}/cluster-dag-rights/core-client-result.json", "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"]
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-core/scripts/e2e/verify_cluster_handoff.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-core && python3.11 scripts/e2e/verify_cluster_handoff.py --artifacts-dir {artifacts_dir}/cluster-dag-rights"
+          ],
+          "produces": [
+            "{artifacts_dir}/cluster-dag-rights/core-client-result.json",
+            "{artifacts_dir}/cluster-dag-rights/local-vs-cluster-parity.json"
+          ]
         }
       ]
     },
@@ -1122,9 +1908,27 @@
       "strictness_gaps": [
         "Native/Python/R method parity is strict, but WASM remains fixture-scoped and Rust is archived as non-release-target evidence."
       ],
-      "languages": ["python", "r", "javascript_wasm", "rust_archive", "native"],
-      "repos": ["nirs4all-formats", "nirs4all-io", "nirs4all-datasets", "nirs4all-methods", "nirs4all-core"],
-      "tags": ["datasets", "io", "predictions", "parity", "pipeline"],
+      "languages": [
+        "python",
+        "r",
+        "javascript_wasm",
+        "rust_archive",
+        "native"
+      ],
+      "repos": [
+        "nirs4all-formats",
+        "nirs4all-io",
+        "nirs4all-datasets",
+        "nirs4all-methods",
+        "nirs4all-core"
+      ],
+      "tags": [
+        "datasets",
+        "io",
+        "predictions",
+        "parity",
+        "pipeline"
+      ],
       "artifacts": [
         "{artifacts_dir}/formats-io-methods/assembled-datasets.json",
         "{artifacts_dir}/formats-io-methods/binding-parity.json",
@@ -1142,14 +1946,19 @@
           "candidate": "Python/R bindings",
           "metric": "method outputs and predictions match tolerance ledger",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/formats-io-methods/binding-parity.json", "{artifacts_dir}/formats-io-methods/predictions-by-language.json"]
+          "artifacts": [
+            "{artifacts_dir}/formats-io-methods/binding-parity.json",
+            "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
+          ]
         },
         {
           "oracle": "native nirs4all-methods ABI",
           "candidate": "WASM fixture and archived Rust binding status",
           "metric": "WASM fixture output is checked and archived Rust status is recorded as non-release-target evidence",
           "evidence_level": "contract",
-          "artifacts": ["{artifacts_dir}/formats-io-methods/predictions-by-language.json"]
+          "artifacts": [
+            "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
+          ]
         }
       ],
       "steps": [
@@ -1158,20 +1967,44 @@
           "title": "Read heterogeneous formats and assemble datasets",
           "kind": "prepare",
           "repo": "nirs4all-io",
-          "requires_tools": ["python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all-io/tests/e2e/test_formats_io_datasets_methods.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-io && PYTHONPATH=src python3.11 -m pytest tests/e2e/test_formats_io_datasets_methods.py::test_assemble_reference_datasets --artifacts-dir={artifacts_dir}/formats-io-methods"],
-          "produces": ["{artifacts_dir}/formats-io-methods/assembled-datasets.json"]
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-io/tests/e2e/test_formats_io_datasets_methods.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-io && PYTHONPATH=src python3.11 -m pytest tests/e2e/test_formats_io_datasets_methods.py::test_assemble_reference_datasets --artifacts-dir={artifacts_dir}/formats-io-methods"
+          ],
+          "produces": [
+            "{artifacts_dir}/formats-io-methods/assembled-datasets.json"
+          ]
         },
         {
           "id": "cross-binding-methods-parity",
           "title": "Invoke methods through native/Python/R/WASM and audit archived Rust",
           "kind": "verify",
           "repo": "nirs4all-methods",
-          "requires_tools": ["python3.11", "Rscript", "cmake", "ninja"],
-          "requires_paths": ["{workspace_root}/nirs4all-methods/scripts/e2e/cross_binding_methods_parity.py"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-methods && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH Rscript --version >/dev/null && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"],
-          "produces": ["{artifacts_dir}/formats-io-methods/binding-parity.json", "{artifacts_dir}/formats-io-methods/predictions-by-language.json"]
+          "requires_tools": [
+            "python3.11",
+            "Rscript",
+            "cmake",
+            "ninja"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-methods/scripts/e2e/cross_binding_methods_parity.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-methods && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH Rscript --version >/dev/null && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"
+          ],
+          "produces": [
+            "{artifacts_dir}/formats-io-methods/binding-parity.json",
+            "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
+          ]
         }
       ]
     },
@@ -1184,9 +2017,23 @@
         "The custom host is a Vitest/React contract in nirs4all-web, not a packaged standalone downstream application yet.",
         "The R portion is a structural binding-surface artifact in the same handoff directory, not a full R numeric rerun."
       ],
-      "languages": ["python", "r", "javascript_wasm", "web"],
-      "repos": ["nirs4all-web", "nirs4all-core", "nirs4all-ui"],
-      "tags": ["pipeline", "predictions", "parity", "web_results"],
+      "languages": [
+        "python",
+        "r",
+        "javascript_wasm",
+        "web"
+      ],
+      "repos": [
+        "nirs4all-web",
+        "nirs4all-core",
+        "nirs4all-ui"
+      ],
+      "tags": [
+        "pipeline",
+        "predictions",
+        "parity",
+        "web_results"
+      ],
       "artifacts": [
         "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
         "{artifacts_dir}/custom-app-host/custom-host-run.json",
@@ -1209,21 +2056,27 @@
           "candidate": "custom app host nirs4all-core WASM prediction",
           "metric": "prediction vector max_abs_delta is within the Python oracle tolerance ledger",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-predictions.json"]
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-predictions.json"
+          ]
         },
         {
           "oracle": "nirs4all-ui published component contract",
           "candidate": "custom app host React element composition",
           "metric": "nirs4all-ui web result panel component tags, dataset title, selected pipeline id, prediction count, and engine label render from shared UI components",
           "evidence_level": "contract",
-          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-ui.json"]
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-ui.json"
+          ]
         },
         {
           "oracle": "nirs4all-core capability manifest runtimeContracts",
           "candidate": "custom app host runtime contract artifact",
           "metric": "prediction contract parity: serialized_model_predict_surfaces is exactly ['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline",
           "evidence_level": "strict",
-          "artifacts": ["{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json"]
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json"
+          ]
         }
       ],
       "steps": [
@@ -1232,23 +2085,40 @@
           "title": "Record R binding surface for the custom host handoff",
           "kind": "prepare",
           "repo": "nirs4all-core",
-          "requires_tools": ["Rscript", "python3.11"],
-          "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/surface.R"],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH python3.11 -c \"import hashlib,json,pathlib,subprocess; out=pathlib.Path('{artifacts_dir}/custom-app-host'); out.mkdir(parents=True, exist_ok=True); entrypoint=pathlib.Path('bindings/r/tests/surface.R'); probe=subprocess.run(['Rscript','--version'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False).stdout.splitlines()[:1]; payload=dict(ok=True, artifact_kind='custom-host-r-surface', language='r', surface='nirs4all-core bindings/r', entrypoint=str(entrypoint), sha256=hashlib.sha256(entrypoint.read_bytes()).hexdigest(), rscript=probe, validation='R surface participates in Python/R/WASM/Web custom app host handoff'); (out/'custom-host-r-surface.json').write_text(json.dumps(payload, indent=2, sort_keys=True)+'\\n', encoding='utf-8')\""],
-          "produces": ["{artifacts_dir}/custom-app-host/custom-host-r-surface.json"]
+          "requires_tools": [
+            "Rscript",
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-core/bindings/r/tests/surface.R"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH python3.11 -c \"import hashlib,json,pathlib,subprocess; out=pathlib.Path('{artifacts_dir}/custom-app-host'); out.mkdir(parents=True, exist_ok=True); entrypoint=pathlib.Path('bindings/r/tests/surface.R'); probe=subprocess.run(['Rscript','--version'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False).stdout.splitlines()[:1]; payload=dict(ok=True, artifact_kind='custom-host-r-surface', language='r', surface='nirs4all-core bindings/r', entrypoint=str(entrypoint), sha256=hashlib.sha256(entrypoint.read_bytes()).hexdigest(), rscript=probe, validation='R surface participates in Python/R/WASM/Web custom app host handoff'); (out/'custom-host-r-surface.json').write_text(json.dumps(payload, indent=2, sort_keys=True)+'\\n', encoding='utf-8')\""
+          ],
+          "produces": [
+            "{artifacts_dir}/custom-app-host/custom-host-r-surface.json"
+          ]
         },
         {
           "id": "core-ui-runtime-host",
           "title": "Execute portable core runtime and prediction from a custom host",
           "kind": "execute",
           "repo": "nirs4all-web",
-          "requires_tools": ["npm"],
+          "requires_tools": [
+            "npm"
+          ],
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/src/app/custom-app-host.contract.test.ts",
             "{workspace_root}/nirs4all-core/tests/parity/expected/portable_python_oracle.json",
             "{workspace_root}/nirs4all-web/studio-lite/vendor/nirs4all-ui/dist/components/index.js"
           ],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
+          ],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-run.json",
             "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
@@ -1260,14 +2130,22 @@
           "title": "Render shared UI result components from the same custom host",
           "kind": "ui",
           "repo": "nirs4all-web",
-          "requires_tools": ["npm"],
+          "requires_tools": [
+            "npm"
+          ],
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/src/app/custom-app-host.contract.test.ts",
             "{workspace_root}/nirs4all-web/studio-lite/package.json",
             "{workspace_root}/nirs4all-ui/src/components/index.ts"
           ],
-          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"],
-          "produces": ["{artifacts_dir}/custom-app-host/custom-host-ui.json"]
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
+          ],
+          "produces": [
+            "{artifacts_dir}/custom-app-host/custom-host-ui.json"
+          ]
         }
       ]
     }

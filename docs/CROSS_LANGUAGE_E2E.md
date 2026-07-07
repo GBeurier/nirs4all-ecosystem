@@ -13,7 +13,7 @@ The suite deliberately separates planning from execution:
 - `python3 scripts/n4a_e2e_scenarios.py run <scenario-id> --execute` runs the
   commands and fails with exit code 2 if required tools or env vars are missing.
 - `python3 scripts/n4a_e2e_scenarios.py coverage --json` reports readiness,
-  language/tag coverage, and V1 strict/contract/gap phase counts.
+  language/tag coverage, and V1 strict/contract/gap/not-applicable phase counts.
 - `python3 scripts/n4a_e2e_scenarios.py coverage --markdown-out <path>`
   writes the same readiness/debt board as a human-readable Markdown artifact.
 - `python3 scripts/n4a_e2e_scenarios.py evidence` verifies an existing artifact
@@ -35,10 +35,14 @@ scenario. Those manual runs additionally upload `.n4a-e2e-artifacts`, including
 
 Coverage output also includes an explicit `debt_summary`. Keep this visible in
 boards and CI logs: it names scenarios without strict parity checks, counts
-strictness gaps, and totals V1 phases that remain `contract` or `gap`. A green
-coverage command therefore means the contracts are coherent and executable; it
-does not mean all V1 phases are strict until the debt summary reaches zero for
-the relevant cutover gates.
+strictness gaps, and totals V1 phases that remain `contract`, true `gap`, or
+`not_applicable`. Use `gap` only for missing evidence that belongs to the
+scenario objective. Use `not_applicable` when a phase is deliberately outside
+that lane, with an `applicability` explanation; this keeps the debt board from
+counting unrelated paper/repository/Web phases as missing implementation. A
+green coverage command therefore means the contracts are coherent and
+executable; it does not mean all relevant V1 phases are strict until the
+contract/gap counts reach zero for the relevant cutover gates.
 
 Current coverage is intentionally hybrid: every parity-tagged scenario has at
 least one strict parity check, including the multimodal dense-fused

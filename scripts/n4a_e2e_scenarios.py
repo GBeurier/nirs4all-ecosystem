@@ -135,6 +135,7 @@ ALLOWED_V1_REFACTOR_STATUSES = {
     "strict",
     "contract",
     "gap",
+    "not_applicable",
 }
 TOOL_FALLBACKS = {
     "R": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/R")],
@@ -1234,6 +1235,7 @@ def _validate_v1_refactor_contract(
         validated[scenario_id] = scenario_coverage
         scenario_gap_phases: set[str] = set()
         scenario_non_gap_phases: set[str] = set()
+        scenario_applicability_phases: set[str] = set()
         scenario_strict_phases: set[str] = set()
         for phase, phase_contract in scenario_coverage.items():
             if not isinstance(phase_contract, dict):
@@ -1271,10 +1273,29 @@ def _validate_v1_refactor_contract(
                     + ", ".join(unknown_artifacts)
                 )
             gap = phase_contract.get("gap")
+            applicability = phase_contract.get("applicability")
             if status == "gap":
                 scenario_gap_phases.add(phase)
                 if not isinstance(gap, str) or not gap:
                     raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}.gap must explain the missing runtime/contract")
+                if applicability is not None:
+                    raise E2EScenarioError(
+                        f"{scenario_id}.v1_refactor_contract.{phase}: gap phases must not declare applicability"
+                    )
+            elif status == "not_applicable":
+                scenario_applicability_phases.add(phase)
+                if artifacts:
+                    raise E2EScenarioError(
+                        f"{scenario_id}.v1_refactor_contract.{phase}: not_applicable phases must not declare artifacts"
+                    )
+                if gap is not None:
+                    raise E2EScenarioError(
+                        f"{scenario_id}.v1_refactor_contract.{phase}: not_applicable phases must not declare a gap"
+                    )
+                if not isinstance(applicability, str) or not applicability:
+                    raise E2EScenarioError(
+                        f"{scenario_id}.v1_refactor_contract.{phase}.applicability must explain why the phase is outside this scenario"
+                    )
             else:
                 non_gap_phases.add(phase)
                 scenario_non_gap_phases.add(phase)
@@ -1284,6 +1305,10 @@ def _validate_v1_refactor_contract(
                     scenario_strict_phases.add(phase)
                 if gap is not None and (not isinstance(gap, str) or not gap):
                     raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase}.gap must be a non-empty string when present")
+                if applicability is not None:
+                    raise E2EScenarioError(
+                        f"{scenario_id}.v1_refactor_contract.{phase}: applicable phases must not declare applicability"
+                    )
             if not evidence or not acceptance:
                 raise E2EScenarioError(f"{scenario_id}.v1_refactor_contract.{phase} must declare evidence and acceptance")
         if not scenario_non_gap_phases:
@@ -1511,14 +1536,14 @@ def _validate_scenario_semantics(
             raise E2EScenarioError(f"{scenario_id}: web coverage requires nirs4all-web repo")
         if not any(step.get("repo") == "nirs4all-web" for step in steps):
             raise E2EScenarioError(f"{scenario_id}: web coverage requires a nirs4all-web step")
-        if phases["wasm_web_reuse"]["status"] == "gap":
-            raise E2EScenarioError(f"{scenario_id}: web coverage requires non-gap wasm_web_reuse")
+        if phases["wasm_web_reuse"]["status"] not in {"strict", "contract"}:
+            raise E2EScenarioError(f"{scenario_id}: web coverage requires applicable wasm_web_reuse")
 
     if "papers" in tags:
         if "nirs4all-papers" not in repos:
             raise E2EScenarioError(f"{scenario_id}: papers tag requires nirs4all-papers repo")
-        if phases["papers_export"]["status"] == "gap":
-            raise E2EScenarioError(f"{scenario_id}: papers tag requires non-gap papers_export")
+        if phases["papers_export"]["status"] not in {"strict", "contract"}:
+            raise E2EScenarioError(f"{scenario_id}: papers tag requires applicable papers_export")
 
     if "repository" in tags:
         if REPOSITORY_REPO not in repos:
@@ -1739,11 +1764,12 @@ def _step_status(step: dict[str, Any], workspace_root: Path, artifacts_dir: Path
 
 
 def _v1_refactor_summary(phases: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    by_status = {status: 0 for status in ("strict", "contract", "gap")}
+    by_status = {status: 0 for status in ("strict", "contract", "gap", "not_applicable")}
     phase_lists = {
         "strict_phases": [],
         "contract_phases": [],
         "gap_phases": [],
+        "not_applicable_phases": [],
     }
     for phase in V1_REFACTOR_PHASE_ORDER:
         status = phases[phase]["status"]
@@ -1754,6 +1780,7 @@ def _v1_refactor_summary(phases: dict[str, dict[str, Any]]) -> dict[str, Any]:
         "strict": by_status["strict"],
         "contract": by_status["contract"],
         "gap": by_status["gap"],
+        "not_applicable": by_status["not_applicable"],
         "non_gap": by_status["strict"] + by_status["contract"],
         **phase_lists,
     }
@@ -1927,11 +1954,11 @@ def coverage_report(
     plans = _all_plans(manifest, workspace_root, artifacts_dir)
     scenarios = manifest["scenarios"]
     phase_status_counts = {
-        phase: {status: 0 for status in ("strict", "contract", "gap")}
+        phase: {status: 0 for status in ("strict", "contract", "gap", "not_applicable")}
         for phase in V1_REFACTOR_PHASE_ORDER
     }
     phase_status_scenario_ids = {
-        phase: {status: [] for status in ("strict", "contract", "gap")}
+        phase: {status: [] for status in ("strict", "contract", "gap", "not_applicable")}
         for phase in V1_REFACTOR_PHASE_ORDER
     }
     scenario_summaries: dict[str, dict[str, Any]] = {}
@@ -1977,6 +2004,7 @@ def coverage_report(
             "strictness_gaps": scenario_strictness_gaps,
             "contract_phases": v1_summary["contract_phases"],
             "gap_phases": v1_summary["gap_phases"],
+            "not_applicable_phases": v1_summary["not_applicable_phases"],
             "contract_parity_checks": contract_parity_checks,
             "strict_parity_checks": strict_parity_checks,
         }
@@ -2031,6 +2059,9 @@ def coverage_report(
             "v1_gap_phase_count": sum(
                 counts["gap"] for counts in phase_status_counts.values()
             ),
+            "v1_not_applicable_phase_count": sum(
+                counts["not_applicable"] for counts in phase_status_counts.values()
+            ),
             "scenario_phase_debt": scenario_phase_debt,
         },
         "v1_refactor_phase_status_counts": phase_status_counts,
@@ -2069,19 +2100,21 @@ def render_coverage_markdown(report: dict[str, Any]) -> str:
                 ["strictness gaps", str(debt["strictness_gap_count"])],
                 ["V1 contract phases", str(debt["v1_contract_phase_count"])],
                 ["V1 gap phases", str(debt["v1_gap_phase_count"])],
+                ["V1 not applicable phases", str(debt["v1_not_applicable_phase_count"])],
             ],
         ),
         "",
         "## V1 Phase Strictness",
         "",
         *_markdown_table(
-            ["phase", "strict", "contract", "gap"],
+            ["phase", "strict", "contract", "gap", "n/a"],
             [
                 [
                     phase,
                     str(counts["strict"]),
                     str(counts["contract"]),
                     str(counts["gap"]),
+                    str(counts["not_applicable"]),
                 ]
                 for phase, counts in report["v1_refactor_phase_status_counts"].items()
             ],
@@ -2090,7 +2123,7 @@ def render_coverage_markdown(report: dict[str, Any]) -> str:
         "## Scenario Debt",
         "",
         *_markdown_table(
-            ["scenario", "strict checks", "contract checks", "strictness gaps", "contract phases", "gap phases"],
+            ["scenario", "strict checks", "contract checks", "strictness gaps", "contract phases", "gap phases", "n/a phases"],
             [
                 [
                     scenario_id,
@@ -2099,6 +2132,7 @@ def render_coverage_markdown(report: dict[str, Any]) -> str:
                     str(debt_item["strictness_gaps"]),
                     ", ".join(debt_item["contract_phases"]) or "-",
                     ", ".join(debt_item["gap_phases"]) or "-",
+                    ", ".join(debt_item["not_applicable_phases"]) or "-",
                 ]
                 for scenario_id, debt_item in debt["scenario_phase_debt"].items()
             ],
@@ -2321,6 +2355,7 @@ def main(argv: list[str] | None = None) -> int:
                     f"strictness_gaps={debt['strictness_gap_count']} "
                     f"v1_contract_phases={debt['v1_contract_phase_count']} "
                     f"v1_gap_phases={debt['v1_gap_phase_count']} "
+                    f"v1_not_applicable_phases={debt['v1_not_applicable_phase_count']} "
                     "without_strict_parity="
                     + ",".join(debt["scenarios_without_strict_parity_check"])
                 )
@@ -2339,7 +2374,8 @@ def main(argv: list[str] | None = None) -> int:
                 for phase, counts in report["v1_refactor_phase_status_counts"].items():
                     print(
                         f"{phase}: strict={counts['strict']} "
-                        f"contract={counts['contract']} gap={counts['gap']}"
+                        f"contract={counts['contract']} gap={counts['gap']} "
+                        f"not_applicable={counts['not_applicable']}"
                     )
             return 0
         if args.command == "evidence":
