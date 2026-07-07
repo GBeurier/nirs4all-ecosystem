@@ -5,8 +5,9 @@ Date: 2026-07-06
 ## Scope
 
 Aligned `nirs4all-cockpit` and `nirs4all-org` copy with the V1 RC topology:
-`nirs4all-core` as canonical aggregate, `nirs4all-lite` as compatibility alias,
-`nirs4all-ui` as reusable components/assets package, and
+`nirs4all-core` as canonical aggregate, `nirs4all-lite` as a retired historical
+name rather than a release alias, `nirs4all-ui` as reusable components/assets
+package, and
 `nirs4all-providers` as read-side provider clients.
 
 ## Files modified

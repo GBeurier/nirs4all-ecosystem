@@ -7,9 +7,9 @@ Lane: release-lock / topology / core naming
 ## Scope
 
 Normalize the active release-lock vocabulary from `lite` to `core` now that
-`nirs4all-core` is the canonical aggregate repo. The legacy `nirs4all-lite`
-name remains only as an explicit compatibility alias and historical import
-surface.
+`nirs4all-core` is the canonical aggregate repo. This wave still recorded the
+then-open compatibility-alias question; later waves 7AV/7AW superseded that
+decision and removed any public `nirs4all-lite` alias from the V1 RC target.
 
 No files in `nirs4all-ui` or `nirs4all-quality` were modified.
 
@@ -32,8 +32,11 @@ No files in `nirs4all-ui` or `nirs4all-quality` were modified.
   `core_v1_surfaces`.
 - Renamed the readiness blocker from `LITE-V1-SURFACE-001` to
   `CORE-V1-SURFACE-001`.
-- Kept `nirs4all-lite` in `repo_aliases`, `legacy_distribution`, and topology
-  evidence because the compatibility alias is still part of the cutover story.
+- At the time of this wave, `nirs4all-lite` was still present in
+  `repo_aliases`, `legacy_distribution`, and topology evidence while the
+  cutover policy was being decided. This was superseded by the no-legacy-alias
+  lock: the current V1 RC topology does not keep a public `nirs4all-lite`
+  release alias.
 - Did not regenerate the whole lock from dirty/current local worktrees; only the
   manifest digest, member key, and derived gate names were changed.
 

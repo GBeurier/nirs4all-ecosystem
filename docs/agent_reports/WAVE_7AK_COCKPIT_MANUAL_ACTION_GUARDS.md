@@ -14,7 +14,9 @@ Changes:
 
 Review:
 - Read-only cockpit agent found a false-positive manual action: `cran-submit-nirs4alldatasets` could be marked resolved while CRAN was stale at `0.2.0` against current datasets.
-- Read-only core/providers agent confirmed the remaining blockers are mostly external publication setup: PyPI `nirs4all-core`, `nirs4all-providers`, and final `nirs4all-lite` alias publication.
+- Read-only core/providers agent initially listed a final retired-name publish
+  among possible blockers. Later no-legacy-alias decisions removed that blocker:
+  the current V1 RC target keeps no public `nirs4all-lite` release alias.
 
 Tests run:
 - `python -m compileall -q cockpit` -> OK.
@@ -29,4 +31,3 @@ Known risks / debt:
 - `nirs4all-cockpit/data/current.json` remains a complete snapshot from `2026-07-07T04:38:58Z`, not a refreshed snapshot after the latest ecosystem E2E hardening commit.
 - Cockpit still lacks dependency/upstream cascade rollups for `nirs4all-core` and `nirs4all-web`.
 - `nirs4all-ecosystem` still has internal `lite` / `lite_*` release-lock vocabulary for the core member; this remains a next non-UI cleanup candidate.
-

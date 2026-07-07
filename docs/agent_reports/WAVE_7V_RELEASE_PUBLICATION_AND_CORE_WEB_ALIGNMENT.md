@@ -67,7 +67,8 @@ Date: 2026-07-07
 - Canonical JS/WASM methods package is `@nirs4all/methods`; no compatibility alias is kept in the V1 surface matrix.
 - Providers V1 surface is limited to datasets and repository. Benchmarks and papers remain in their owning repos/plugins.
 - Core remains the canonical aggregate project. Python distribution is `nirs4all-core`; non-Python aggregate publications continue under `nirs4all` where there is no Python namespace conflict.
-- `nirs4all-lite` remains only a legacy alias/old checkout during cutover.
+- `nirs4all-lite` is only a retired old checkout / historical name during
+  cutover; no public compatibility alias is kept in the V1 surface matrix.
 
 ## Risks and remaining decisions
 

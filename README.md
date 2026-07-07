@@ -39,8 +39,8 @@
 
 ## Release topology notes
 
-- The RC V1 aggregate release target is **`nirs4all-core`**. No public
-  `nirs4all-lite` alias is maintained in the V1 release topology.
+- The RC V1 aggregate release target is **`nirs4all-core`**. The V1 release
+  topology has no public release path under `nirs4all-lite`.
 - The **aggregation lock is intentionally narrower than the full product matrix**. It pins the reproducible aggregate core/runtime member set; it does **not** claim to cover every product, plugin, site, or publication repo.
 - For RC V1, submodule gitlinks in this parent repository are **not** the release authority. Use `docs/contracts/release/aggregation-lock.n4a.lock.json` plus each manifest `selected_workspace_path` for aggregate members, and the surface matrix / agent reports for product surfaces outside the lock.
 - `nirs4all-web` is the **client-side-only** browser/WASM product surface. Its release surface must not imply a Python server or Python parity proof by itself.
