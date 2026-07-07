@@ -19,18 +19,16 @@
     "scenario_coverage": {
       "e2e-r-dataset-io-pipeline-save": {
         "python_open_pipeline": {
-          "status": "contract",
-          "evidence": ["R saves workspace/pipeline artifacts and the gate consults the Python portable oracle fixture when present."],
-          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json"],
-          "gap": "No Python reopen currently consumes the provider-backed R workspace produced by this scenario.",
-          "acceptance": ["Add a Python reopen step over workspace.n4a.json and pipeline.n4a.json and compare dataset hash, pipeline hash, RMSE, and prediction vectors."]
+          "status": "strict",
+          "evidence": ["Python reopens the R-saved workspace/pipeline artifacts and verifies dataset hash, pipeline identity, finite outputs, and prediction deltas in python-reopen-ledger.json."],
+          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"],
+          "acceptance": ["python-reopen-ledger.json must report status=passed, dataset_hash_match=true, pipeline_reopened=true, and row/column counts for the provider-backed R workspace."]
         },
         "python_rerun_pipeline": {
-          "status": "contract",
-          "evidence": ["The R roundtrip step reopens and reruns saved artifacts, with Python fixture comparison recorded separately."],
-          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json", "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"],
-          "gap": "The same provider-backed dataset is not rerun through full Python in this scenario yet.",
-          "acceptance": ["Promote to strict only after Python reruns the R-produced pipeline on the same reshaped dataset artifact."]
+          "status": "strict",
+          "evidence": ["The Python aggregate reruns the R-produced pipeline over the same reshaped dataset and compares targets, split, RMSE, variants, selected predictions, and R prediction artifact values."],
+          "artifacts": ["{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json", "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json", "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"],
+          "acceptance": ["python-reopen-ledger.json must report python_rerun_executed=true, finite_targets=true, finite_predictions=true, and max_abs_delta fields within tolerance."]
         },
         "python_parity": {
           "status": "strict",
@@ -471,13 +469,15 @@
         "{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json",
         "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json",
         "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json",
-        "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"
+        "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json",
+        "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"
       ],
       "evidence": [
         "R session info and package versions",
         "Dataset card id, provider contract, IO spec, package summary, and IO reshape diff",
         "Saved pipeline/workspace SHA256",
         "Reopened workspace/pipeline/prediction artifact roundtrip checks",
+        "Python reopen/rerun ledger over the R-produced workspace and pipeline",
         "Python portable oracle comparison when the fixture oracle is present",
         "Native methods parity summary"
       ],
@@ -491,8 +491,8 @@
         {
           "oracle": "catalog dataset IO materialization",
           "candidate": "R/native real dataset pipeline run",
-          "metric": "real dataset IO run preserves selected values, reopens saved workspace/pipeline/predictions, reproduces RMSE and prediction vectors, and compares the portable Python oracle fixture when present",
-          "evidence_level": "contract"
+          "metric": "real dataset IO run preserves selected values, Python aggregate rerun matches R/native targets, RMSE, split, selected predictions, and variant predictions within tolerance",
+          "evidence_level": "strict"
         }
       ],
       "steps": [
@@ -528,6 +528,21 @@
           "requires_paths": ["{workspace_root}/nirs4all-core/bindings/r/tests/e2e_run_save_pipeline.R"],
           "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH make test-r-parity && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"],
           "produces": ["{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json", "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json", "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"]
+        },
+        {
+          "id": "python-reopen-r-workspace",
+          "title": "Reopen the R-saved workspace and rerun the pipeline in Python",
+          "kind": "execute",
+          "repo": "nirs4all-core",
+          "requires_tools": ["python3.11"],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-core/scripts/e2e/reopen_r_dataset_io_pipeline.py",
+            "{workspace_root}/nirs4all-core/bindings/python/src/nirs4all_lite/_execution.py",
+            "{workspace_root}/nirs4all-methods/bindings/python/src/n4m",
+            "{workspace_root}/nirs4all-methods/bindings/python/src/pls4all"
+          ],
+          "command": ["bash", "-lc", "cd {workspace_root}/nirs4all-core && PYTHONPATH=bindings/python/src:{workspace_root}/nirs4all-methods/bindings/python/src:${{PYTHONPATH:-}} python3.11 scripts/e2e/reopen_r_dataset_io_pipeline.py --in {artifacts_dir}/r-dataset-io-pipeline --out {artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json --workspace-root {workspace_root}"],
+          "produces": ["{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"]
         }
       ]
     },

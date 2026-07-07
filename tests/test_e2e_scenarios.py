@@ -497,14 +497,24 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
         (
             "e2e-r-dataset-io-pipeline-save",
             {
-                "steps": ["r-load-reshape", "r-run-save"],
+                "steps": ["r-load-reshape", "r-run-save", "python-reopen-r-workspace"],
                 "languages": {"r", "python", "native"},
                 "tags": {"datasets", "io", "pipeline", "workspace_save", "parity"},
-                "tools": {"Rscript"},
-                "produces": {"dataset-card.json", "workspace.n4a.json", "roundtrip-checks.json"},
-                "commands": {"e2e_dataset_io_pipeline.R", "make test-r-parity"},
-                "evidence": {"Python portable oracle", "Native methods parity"},
-                "phase_statuses": {"python_parity": "strict", "papers_export": "gap"},
+                "tools": {"Rscript", "python3.11"},
+                "produces": {
+                    "dataset-card.json",
+                    "workspace.n4a.json",
+                    "roundtrip-checks.json",
+                    "python-reopen-ledger.json",
+                },
+                "commands": {"e2e_dataset_io_pipeline.R", "make test-r-parity", "reopen_r_dataset_io_pipeline.py"},
+                "evidence": {"Python reopen/rerun ledger", "Python portable oracle", "Native methods parity"},
+                "phase_statuses": {
+                    "python_open_pipeline": "strict",
+                    "python_rerun_pipeline": "strict",
+                    "python_parity": "strict",
+                    "papers_export": "gap",
+                },
             },
         ),
         (
@@ -739,8 +749,12 @@ def test_cross_language_e2e_manifest_rejects_flat_runtime_claims(tmp_path: Path)
         "{artifacts_dir}/flat/a.json",
         "{artifacts_dir}/flat/b.json",
     ]
+    for step in scenario["steps"]:
+        step["produces"] = []
     scenario["steps"][0]["produces"] = [scenario["artifacts"][0]]
     scenario["steps"][1]["produces"] = [scenario["artifacts"][1]]
+    for phase in manifest["v1_refactor_contract"]["scenario_coverage"][scenario["id"]].values():
+        phase["artifacts"] = [scenario["artifacts"][0]]
     manifest_path = tmp_path / "too-few-produced-artifacts.json"
     _write_json(manifest_path, manifest)
 
@@ -1273,13 +1287,13 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert report["debt_summary"]["strictness_gap_count"] == 12
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
-        "contract": 9,
-        "strict": 15,
+        "contract": 8,
+        "strict": 16,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == [
         "e2e-multimodal-python-r-wasm-roundtrip"
     ]
-    assert report["debt_summary"]["v1_contract_phase_count"] == 13
+    assert report["debt_summary"]["v1_contract_phase_count"] == 11
     assert report["debt_summary"]["v1_gap_phase_count"] == 31
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
         "strictness_gaps": 2,
@@ -1322,8 +1336,8 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "wasm_web_reuse",
     }
     expected_phase_counts = {
-        "python_open_pipeline": {"strict": 2, "contract": 3, "gap": 6},
-        "python_rerun_pipeline": {"strict": 4, "contract": 4, "gap": 3},
+        "python_open_pipeline": {"strict": 3, "contract": 2, "gap": 6},
+        "python_rerun_pipeline": {"strict": 5, "contract": 3, "gap": 3},
         "python_parity": {"strict": 10, "contract": 1, "gap": 0},
         "papers_export": {"strict": 1, "contract": 0, "gap": 10},
         "repository_forced_best_refit": {"strict": 1, "contract": 1, "gap": 9},
@@ -1373,7 +1387,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
         check=True,
     )
 
-    assert "debt: strictness_gaps=12 v1_contract_phases=13 v1_gap_phases=31" in covered.stdout
+    assert "debt: strictness_gaps=12 v1_contract_phases=11 v1_gap_phases=31" in covered.stdout
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" in covered.stdout
 
 
