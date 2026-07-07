@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 import time
+import zipfile
 from pathlib import Path
 from typing import Any
 
@@ -338,6 +339,85 @@ def _validate_produced_artifacts(step: dict[str, Any], before: dict[str, int | N
     return failures
 
 
+def _validate_png_artifact(path: Path) -> list[str]:
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        return [f"{path}: cannot read PNG artifact: {exc}"]
+    if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return [f"{path}: invalid PNG signature"]
+    offset = 8
+    seen_ihdr = False
+    seen_idat = False
+    while offset + 12 <= len(data):
+        length = int.from_bytes(data[offset:offset + 4], "big")
+        chunk_type = data[offset + 4:offset + 8]
+        chunk_start = offset + 8
+        chunk_end = chunk_start + length
+        crc_end = chunk_end + 4
+        if crc_end > len(data):
+            return [f"{path}: truncated PNG chunk {chunk_type.decode('ascii', errors='replace')}"]
+        if chunk_type == b"IHDR":
+            if seen_ihdr or length != 13:
+                return [f"{path}: invalid PNG IHDR chunk"]
+            width = int.from_bytes(data[chunk_start:chunk_start + 4], "big")
+            height = int.from_bytes(data[chunk_start + 4:chunk_start + 8], "big")
+            if width <= 0 or height <= 0:
+                return [f"{path}: invalid PNG dimensions {width}x{height}"]
+            seen_ihdr = True
+        elif chunk_type == b"IDAT":
+            seen_idat = True
+        elif chunk_type == b"IEND":
+            if not seen_ihdr:
+                return [f"{path}: PNG IEND before IHDR"]
+            if not seen_idat:
+                return [f"{path}: PNG missing IDAT chunk"]
+            return []
+        offset = crc_end
+    if not seen_ihdr:
+        return [f"{path}: missing PNG IHDR chunk"]
+    if not seen_idat:
+        return [f"{path}: PNG missing IDAT chunk"]
+    return [f"{path}: missing PNG IEND chunk"]
+
+
+def _validate_zip_artifact(path: Path) -> list[str]:
+    if not zipfile.is_zipfile(path):
+        return [f"{path}: invalid ZIP archive"]
+    try:
+        with zipfile.ZipFile(path) as archive:
+            names = archive.namelist()
+            if not names:
+                return [f"{path}: empty ZIP archive"]
+            corrupt = archive.testzip()
+    except zipfile.BadZipFile as exc:
+        return [f"{path}: invalid ZIP archive: {exc}"]
+    if corrupt:
+        return [f"{path}: corrupt ZIP member {corrupt}"]
+    return []
+
+
+def _validate_parquet_artifact(path: Path) -> list[str]:
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        return [f"{path}: cannot read Parquet artifact: {exc}"]
+    if len(data) < 8 or not (data.startswith(b"PAR1") and data.endswith(b"PAR1")):
+        return [f"{path}: invalid Parquet magic bytes"]
+    return []
+
+
+def _validate_non_json_artifact(path: Path) -> list[str]:
+    suffix = path.suffix.lower()
+    if suffix == ".png":
+        return _validate_png_artifact(path)
+    if suffix == ".zip":
+        return _validate_zip_artifact(path)
+    if suffix == ".parquet":
+        return _validate_parquet_artifact(path)
+    return []
+
+
 def _validate_existing_artifact(raw_path: str, *, max_age_seconds: int | None = None) -> list[str]:
     path = Path(raw_path)
     if not path.exists():
@@ -355,6 +435,9 @@ def _validate_existing_artifact(raw_path: str, *, max_age_seconds: int | None = 
         if age_seconds > max_age_seconds:
             return [f"{raw_path}: stale artifact age={age_seconds:.1f}s > {max_age_seconds}s"]
     if path.suffix.lower() != ".json":
+        artifact_failures = _validate_non_json_artifact(path)
+        if artifact_failures:
+            return [failure.replace(str(path), raw_path, 1) for failure in artifact_failures]
         return []
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
@@ -1098,6 +1181,10 @@ def coverage_report(
     languages: dict[str, int] = {}
     repos: dict[str, int] = {}
     evidence_levels: dict[str, int] = {}
+    parity_check_evidence_levels: dict[str, int] = {}
+    strictness_gap_count = 0
+    scenarios_without_strict_parity_check: list[str] = []
+    scenario_phase_debt: dict[str, dict[str, Any]] = {}
 
     for scenario in scenarios:
         scenario_id = scenario["id"]
@@ -1115,6 +1202,26 @@ def coverage_report(
             phase_status = scenario["v1_refactor_contract"][phase]["status"]
             phase_status_counts[phase][phase_status] += 1
             phase_status_scenario_ids[phase][phase_status].append(scenario_id)
+        strict_parity_checks = 0
+        contract_parity_checks = 0
+        for check in scenario.get("parity_checks", []):
+            level = check.get("evidence_level")
+            parity_check_evidence_levels[level] = parity_check_evidence_levels.get(level, 0) + 1
+            if level == "strict":
+                strict_parity_checks += 1
+            elif level == "contract":
+                contract_parity_checks += 1
+        if strict_parity_checks == 0:
+            scenarios_without_strict_parity_check.append(scenario_id)
+        scenario_strictness_gaps = len(scenario.get("strictness_gaps", []))
+        strictness_gap_count += scenario_strictness_gaps
+        scenario_phase_debt[scenario_id] = {
+            "strictness_gaps": scenario_strictness_gaps,
+            "contract_phases": v1_summary["contract_phases"],
+            "gap_phases": v1_summary["gap_phases"],
+            "contract_parity_checks": contract_parity_checks,
+            "strict_parity_checks": strict_parity_checks,
+        }
         scenario_summaries[scenario_id] = {
             "evidence_level": evidence_level,
             "languages": scenario["languages"],
@@ -1122,12 +1229,8 @@ def coverage_report(
             "tags": scenario["tags"],
             "steps": len(scenario["steps"]),
             "artifacts": len(scenario["artifacts"]),
-            "strict_parity_checks": sum(
-                1
-                for check in scenario.get("parity_checks", [])
-                if check.get("evidence_level") == "strict"
-            ),
-            "strictness_gaps": len(scenario.get("strictness_gaps", [])),
+            "strict_parity_checks": strict_parity_checks,
+            "strictness_gaps": scenario_strictness_gaps,
             "v1_refactor_summary": v1_summary,
         }
 
@@ -1159,6 +1262,18 @@ def coverage_report(
         "required_languages": {
             language: languages.get(language, 0)
             for language in ("python", "r", "javascript_wasm", "web")
+        },
+        "debt_summary": {
+            "strictness_gap_count": strictness_gap_count,
+            "parity_check_evidence_levels": dict(sorted(parity_check_evidence_levels.items())),
+            "scenarios_without_strict_parity_check": scenarios_without_strict_parity_check,
+            "v1_contract_phase_count": sum(
+                counts["contract"] for counts in phase_status_counts.values()
+            ),
+            "v1_gap_phase_count": sum(
+                counts["gap"] for counts in phase_status_counts.values()
+            ),
+            "scenario_phase_debt": scenario_phase_debt,
         },
         "v1_refactor_phase_status_counts": phase_status_counts,
         "v1_refactor_phase_scenario_ids": phase_status_scenario_ids,
@@ -1314,9 +1429,18 @@ def main(argv: list[str] | None = None) -> int:
             if args.json:
                 print(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True))
             else:
+                debt = report["debt_summary"]
                 print(
                     f"{report['scenario_count']}/{report['expected_scenario_count']} scenarios; "
                     f"ready={report['ready_count']} blocked={report['blocked_count']}"
+                )
+                print(
+                    "debt: "
+                    f"strictness_gaps={debt['strictness_gap_count']} "
+                    f"v1_contract_phases={debt['v1_contract_phase_count']} "
+                    f"v1_gap_phases={debt['v1_gap_phase_count']} "
+                    "without_strict_parity="
+                    + ",".join(debt["scenarios_without_strict_parity_check"])
                 )
                 print(
                     "required languages: "

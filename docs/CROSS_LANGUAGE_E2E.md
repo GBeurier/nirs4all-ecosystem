@@ -21,6 +21,13 @@ The runner reports missing toolchains as `blocked`; it does not xfail or silentl
 skip. Full parity scenarios are meant to run after large integration batches or
 on selected release heads, not on every small commit.
 
+Coverage output also includes an explicit `debt_summary`. Keep this visible in
+boards and CI logs: it names scenarios without strict parity checks, counts
+strictness gaps, and totals V1 phases that remain `contract` or `gap`. A green
+coverage command therefore means the contracts are coherent and executable; it
+does not mean all V1 phases are strict until the debt summary reaches zero for
+the relevant cutover gates.
+
 Current coverage is intentionally hybrid: every parity-tagged scenario has at
 least one strict parity check, while the multimodal proxy scenario records
 contract-level roundtrip evidence without claiming strict numeric parity. The

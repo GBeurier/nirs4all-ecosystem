@@ -7,6 +7,7 @@ import os
 import re
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -1269,6 +1270,30 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web_results": 5,
         "workspace_save": 6,
     }
+    assert report["debt_summary"]["strictness_gap_count"] == 12
+    assert report["debt_summary"]["parity_check_evidence_levels"] == {
+        "contract": 9,
+        "strict": 14,
+    }
+    assert report["debt_summary"]["scenarios_without_strict_parity_check"] == [
+        "e2e-multimodal-python-r-wasm-roundtrip"
+    ]
+    assert report["debt_summary"]["v1_contract_phase_count"] == 13
+    assert report["debt_summary"]["v1_gap_phase_count"] == 31
+    assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
+        "strictness_gaps": 2,
+        "contract_phases": ["python_open_pipeline", "python_rerun_pipeline"],
+        "gap_phases": ["papers_export", "repository_forced_best_refit"],
+        "contract_parity_checks": 1,
+        "strict_parity_checks": 1,
+    }
+    assert report["debt_summary"]["scenario_phase_debt"]["e2e-multimodal-python-r-wasm-roundtrip"] == {
+        "strictness_gaps": 1,
+        "contract_phases": ["python_rerun_pipeline", "python_parity", "wasm_web_reuse"],
+        "gap_phases": ["python_open_pipeline", "papers_export", "repository_forced_best_refit"],
+        "contract_parity_checks": 1,
+        "strict_parity_checks": 0,
+    }
     assert report["repos"] == {
         "dag-ml": 4,
         "dag-ml-data": 2,
@@ -1333,6 +1358,22 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         else:
             assert summary["strict_parity_checks"] >= 1
         assert summary["v1_refactor_summary"]["non_gap"] >= 1
+
+
+def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+
+    covered = subprocess.run(
+        [sys.executable, str(script), "coverage"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    )
+
+    assert "debt: strictness_gaps=12 v1_contract_phases=13 v1_gap_phases=31" in covered.stdout
+    assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" in covered.stdout
 
 
 def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_path: Path) -> None:
@@ -1919,18 +1960,38 @@ def test_cross_language_e2e_artifact_evidence_report_verifies_existing_artifacts
     e2e = _load_e2e_module()
     json_artifact = tmp_path / "passing-result.json"
     png_artifact = tmp_path / "web-results.png"
+    zip_artifact = tmp_path / "paper-export.zip"
+    parquet_artifact = tmp_path / "predictions.parquet"
     json_artifact.write_text('{"status": "passed", "ok": true}\n', encoding="utf-8")
-    png_artifact.write_bytes(b"\x89PNG\r\n\x1a\n")
+    png_artifact.write_bytes(
+        b"\x89PNG\r\n\x1a\n"
+        b"\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde"
+        b"\x00\x00\x00\x0cIDAT\x08\xd7c\xf8\xff\xff?\x00\x05\xfe\x02\xfeA\xe2A\xb5"
+        b"\x00\x00\x00\x00IEND\xaeB`\x82"
+    )
+    with zipfile.ZipFile(zip_artifact, "w") as archive:
+        archive.writestr("manifest.json", '{"status": "passed"}\n')
+    parquet_artifact.write_bytes(b"PAR1minimal-footerPAR1")
 
     report = e2e.artifact_evidence_report(
         [
             {
                 "id": "synthetic",
-                "artifacts": [str(json_artifact), str(png_artifact)],
+                "artifacts": [
+                    str(json_artifact),
+                    str(png_artifact),
+                    str(zip_artifact),
+                    str(parquet_artifact),
+                ],
                 "steps": [
                     {
                         "id": "write-evidence",
-                        "produces": [str(json_artifact), str(png_artifact)],
+                        "produces": [
+                            str(json_artifact),
+                            str(png_artifact),
+                            str(zip_artifact),
+                            str(parquet_artifact),
+                        ],
                     }
                 ],
             }
@@ -1939,7 +2000,7 @@ def test_cross_language_e2e_artifact_evidence_report_verifies_existing_artifacts
 
     assert report["verified_count"] == 1
     assert report["failed_count"] == 0
-    assert report["artifact_count"] == 2
+    assert report["artifact_count"] == 4
     assert report["scenarios"]["synthetic"]["status"] == "verified"
 
 
@@ -1972,6 +2033,44 @@ def test_cross_language_e2e_artifact_evidence_report_rejects_missing_and_nonpass
     failures = "\n".join(report["scenarios"]["synthetic"]["failures"])
     assert "missing" in failures
     assert "non-passing evidence" in failures
+
+
+@pytest.mark.parametrize(
+    ("filename", "payload", "expected"),
+    [
+        ("web-results.png", b"\x89PNG\r\n\x1a\n", "missing PNG IHDR chunk"),
+        ("paper-export.zip", b"not a zip", "invalid ZIP archive"),
+        ("predictions.parquet", b"not parquet", "invalid Parquet magic bytes"),
+    ],
+)
+def test_cross_language_e2e_artifact_evidence_report_rejects_invalid_typed_artifacts(
+    tmp_path: Path,
+    filename: str,
+    payload: bytes,
+    expected: str,
+) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / filename
+    artifact.write_bytes(payload)
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "synthetic",
+                "artifacts": [str(artifact)],
+                "steps": [
+                    {
+                        "id": "write-evidence",
+                        "produces": [str(artifact)],
+                    }
+                ],
+            }
+        ]
+    )
+
+    assert report["verified_count"] == 0
+    assert report["failed_count"] == 1
+    assert expected in "\n".join(report["scenarios"]["synthetic"]["failures"])
 
 
 def test_cross_language_e2e_cli_evidence_json_selected_scenario(tmp_path: Path) -> None:
