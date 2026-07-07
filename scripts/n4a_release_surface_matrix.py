@@ -236,6 +236,77 @@ def _validate_public_surfaces(matrix: dict[str, Any], lock: dict[str, Any]) -> N
         )
 
 
+def _validate_release_batch_semantics(matrix: dict[str, Any]) -> None:
+    semantics = matrix.get("release_batch_semantics")
+    _require(
+        isinstance(semantics, dict),
+        "matrix.release_batch_semantics must be an object",
+    )
+    surfaces = {
+        surface["id"]: surface
+        for surface in matrix.get("public_v1_surfaces", [])
+        if isinstance(surface, dict) and isinstance(surface.get("id"), str)
+    }
+    for field in ("held_surface_ids", "custom_app_host_surface_ids"):
+        values = semantics.get(field)
+        _require(
+            isinstance(values, list) and values,
+            f"release_batch_semantics.{field} must be a non-empty list",
+        )
+        missing = sorted(surface_id for surface_id in values if surface_id not in surfaces)
+        _require(
+            not missing,
+            f"release_batch_semantics.{field} references unknown surfaces: {missing}",
+        )
+
+    for surface_id, role in (
+        ("nirs4all.python.oracle", "required_parity_oracle_held"),
+        ("nirs4all.studio.product", "production_held"),
+    ):
+        surface = surfaces.get(surface_id)
+        _require(surface is not None, f"release batch semantics require {surface_id}")
+        _require(
+            surface_id in semantics["held_surface_ids"],
+            f"{surface_id}: held production surface must be listed in release_batch_semantics.held_surface_ids",
+        )
+        _require(
+            surface.get("release_batch_role") == role,
+            f"{surface_id}: release_batch_role must be {role!r}",
+        )
+        _require(
+            surface.get("lock_relation") == "outside_aggregation_lock",
+            f"{surface_id}: held production surface must stay outside the aggregation lock",
+        )
+
+    oracle = surfaces["nirs4all.python.oracle"]
+    _require(
+        oracle.get("required_for_nirs4all_v1") is True,
+        "nirs4all.python.oracle must remain required as a parity/accounting gate",
+    )
+    studio = surfaces["nirs4all.studio.product"]
+    _require(
+        studio.get("required_for_nirs4all_v1") is False,
+        "nirs4all.studio.product must stay outside the required final V1 RC batch",
+    )
+    for surface_id in (
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.ui.package",
+        "nirs4all.web.product",
+    ):
+        _require(
+            surface_id in semantics["custom_app_host_surface_ids"],
+            f"{surface_id}: custom app host surface missing from release_batch_semantics",
+        )
+    policy = semantics.get("python_name_policy")
+    _require(
+        isinstance(policy, str)
+        and "nirs4all-core" in policy
+        and "bare Python/PyPI nirs4all" in policy
+        and "R, Rust, JavaScript/WASM" in policy,
+        "release_batch_semantics.python_name_policy must explain Python/core and non-Python nirs4all naming",
+    )
+
+
 def validate_surface_matrix(matrix_path: Path, manifest_path: Path, lock_path: Path) -> dict[str, Any]:
     matrix = load_json(matrix_path)
     manifest = load_json(manifest_path)
@@ -261,6 +332,7 @@ def validate_surface_matrix(matrix_path: Path, manifest_path: Path, lock_path: P
 
     _validate_lock_member_list(matrix, manifest, lock)
     _validate_public_surfaces(matrix, lock)
+    _validate_release_batch_semantics(matrix)
     return {"matrix": matrix, "manifest": manifest, "lock": lock}
 
 
@@ -280,9 +352,10 @@ def render_report(matrix: dict[str, Any], lock: dict[str, Any]) -> str:
     for surface in matrix["public_v1_surfaces"]:
         required = "required nirs4all V1" if surface.get("required_for_nirs4all_v1") else "public/accounting"
         member = surface.get("lock_member_key") or "none"
+        role = surface.get("release_batch_role") or "unspecified"
         lines.append(
             f"- {surface['id']}: {surface['ecosystem']} {surface['distribution']} "
-            f"[{surface['lock_relation']}; member={member}; {required}]"
+            f"[{surface['lock_relation']}; member={member}; {required}; role={role}]"
         )
     return "\n".join(lines)
 

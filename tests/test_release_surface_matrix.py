@@ -145,3 +145,56 @@ def test_public_surface_matrix_accounts_for_web_providers_and_sites() -> None:
     assert org["distribution"] == "nirs4all-org"
     assert org["repo_path"] == "nirs4all-org"
     assert org["lock_relation"] == "outside_aggregation_lock"
+
+
+def test_release_batch_semantics_keep_oracle_and_shipped_surfaces_distinct() -> None:
+    matrix = _read_matrix()
+    semantics = matrix["release_batch_semantics"]
+    by_id = {surface["id"]: surface for surface in matrix["public_v1_surfaces"]}
+
+    oracle = by_id["nirs4all.python.oracle"]
+    assert oracle["required_for_nirs4all_v1"] is True
+    assert oracle["release_batch_role"] == "required_parity_oracle_held"
+    assert oracle["lock_relation"] == "outside_aggregation_lock"
+    assert "nirs4all.python.oracle" in semantics["held_surface_ids"]
+
+    studio = by_id["nirs4all.studio.product"]
+    assert studio["required_for_nirs4all_v1"] is False
+    assert studio["release_batch_role"] == "production_held"
+    assert "nirs4all.studio.product" in semantics["held_surface_ids"]
+
+    assert semantics["custom_app_host_surface_ids"] == [
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.ui.package",
+        "nirs4all.web.product",
+    ]
+    assert (
+        by_id["nirs4all.javascript_wasm.aggregate"]["release_batch_role"]
+        == "custom_app_host_runtime"
+    )
+    assert by_id["nirs4all.ui.package"]["release_batch_role"] == "custom_app_host_ui"
+    assert by_id["nirs4all.web.product"]["release_batch_role"] == "custom_app_host_product"
+    assert "bare Python/PyPI nirs4all" in semantics["python_name_policy"]
+    assert "nirs4all-core" in semantics["python_name_policy"]
+
+
+def test_release_batch_semantics_reject_oracle_as_shipped_product(tmp_path: Path) -> None:
+    surface_matrix = _load_surface_matrix()
+    matrix = _read_matrix()
+    _surface(matrix, "nirs4all.python.oracle")["release_batch_role"] = "portable_aggregate_python"
+    matrix_path = tmp_path / "matrix.json"
+    _write_json(matrix_path, matrix)
+
+    with pytest.raises(surface_matrix.SurfaceMatrixError, match="required_parity_oracle_held"):
+        surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)
+
+
+def test_release_batch_semantics_require_custom_host_path(tmp_path: Path) -> None:
+    surface_matrix = _load_surface_matrix()
+    matrix = _read_matrix()
+    matrix["release_batch_semantics"]["custom_app_host_surface_ids"].remove("nirs4all.ui.package")
+    matrix_path = tmp_path / "matrix.json"
+    _write_json(matrix_path, matrix)
+
+    with pytest.raises(surface_matrix.SurfaceMatrixError, match="custom app host surface missing"):
+        surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)

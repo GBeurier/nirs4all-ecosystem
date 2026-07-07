@@ -3,6 +3,19 @@
   "release_train": "2026.07-refactor",
   "status": "candidate",
   "purpose": "Bound V1 release accounting without expanding the aggregation lock. The aggregation lock pins reproducible aggregate members; it is not the complete public V1 product matrix.",
+  "release_batch_semantics": {
+    "required_for_nirs4all_v1": "A surface required for V1 accounting, proof, or compatibility gating. This does not necessarily mean the surface is shipped in the final V1 RC product batch.",
+    "held_surface_ids": [
+      "nirs4all.python.oracle",
+      "nirs4all.studio.product"
+    ],
+    "custom_app_host_surface_ids": [
+      "nirs4all.javascript_wasm.aggregate",
+      "nirs4all.ui.package",
+      "nirs4all.web.product"
+    ],
+    "python_name_policy": "The bare Python/PyPI nirs4all name remains owned by the full Python oracle production line until an intentional cutover. The portable Python aggregate ships as nirs4all-core; the R, Rust, JavaScript/WASM, and MATLAB/Octave aggregate surfaces emitted by nirs4all-core use the public nirs4all namespace."
+  },
   "source_documents": [
     "docs/PARALLEL_REFACTORING_ROADMAP.md",
     "docs/RELEASE_DISTRIBUTION_MATRIX.md",
@@ -28,7 +41,8 @@
     "docs/agent_reports/WAVE_4W_STRICT_DAGML_WASM_STUDIO_DATASETS.md",
     "docs/agent_reports/WAVE_4AT_FULL_PARITY_REFRESH.md",
     "docs/agent_reports/WAVE_4AU_CUTOVER_LANGUAGE_GATE_REFRESH.md",
-    "docs/agent_reports/WAVE_7H_RELEASE_HEAD_AUDIT_2026-07-06.md"
+    "docs/agent_reports/WAVE_7H_RELEASE_HEAD_AUDIT_2026-07-06.md",
+    "docs/agent_reports/WAVE_8R_UI_CUSTOM_HOST_ASSET_BOUNDARY.md"
   ],
   "aggregation_lock": {
     "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
@@ -106,6 +120,7 @@
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": true,
+      "release_batch_role": "required_parity_oracle_held",
       "proof_boundary": "Tier-1 behavioral oracle and compatibility API; full pyref parity remains a separate gate, not implied by the aggregation lock.",
       "local_gate_policy": "pyref_oracle_full passed on selected RC heads in Wave 4AT; rerun on any later final selected heads."
     },
@@ -119,6 +134,7 @@
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "core",
       "required_for_nirs4all_v1": true,
+      "release_batch_role": "portable_aggregate_python",
       "proof_boundary": "Python aggregate target distribution is covered by the selected RC-v1-nirs4all-core member; the historical nirs4all oracle remains a separate outside-lock surface.",
       "local_gate_policy": "core Python topology tests plus pyref_oracle_full on final selected heads."
     },
@@ -132,6 +148,7 @@
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "core",
       "required_for_nirs4all_v1": true,
+      "release_batch_role": "portable_aggregate_language_binding",
       "proof_boundary": "Package topology is covered by the locked core member; V1 release proof requires the strict R runtime parity gate, not an if-available local smoke.",
       "local_gate_policy": "test-r-parity passed in Wave 4AU for the selected RC core/methods heads; rerun on any later aggregate or methods movement. test-r-if-available is developer convenience only and a missing R runtime is not a green release proof."
     },
@@ -145,6 +162,7 @@
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "core",
       "required_for_nirs4all_v1": true,
+      "release_batch_role": "custom_app_host_runtime",
       "proof_boundary": "Package topology is covered by the locked core member; browser/runtime parity and product e2e remain separate gates.",
       "local_gate_policy": "test-wasm and browser smoke where the touched surface requires it."
     },
@@ -158,6 +176,7 @@
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "methods",
       "required_for_nirs4all_v1": true,
+      "release_batch_role": "portable_methods_wasm_binding",
       "proof_boundary": "Scoped package declaration is covered by the locked methods member; methods/native binding parity remains a methods gate.",
       "local_gate_policy": "methods WASM build/smoke plus methods parity evidence when the exposed capability changes."
     },
@@ -171,6 +190,7 @@
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "datasets",
       "required_for_nirs4all_v1": true,
+      "release_batch_role": "portable_datasets_wasm_binding",
       "proof_boundary": "Scoped package declaration is covered by the locked optional/external datasets member; catalog checksums remain the release gate.",
       "local_gate_policy": "datasets_catalog_checksums plus browser/WASM smoke when the package surface changes."
     },
@@ -184,6 +204,7 @@
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "core",
       "required_for_nirs4all_v1": true,
+      "release_batch_role": "portable_aggregate_language_binding",
       "proof_boundary": "Rust aggregate crate is covered by the selected RC-v1-nirs4all-core member; crate publication/fetchability remains a separate release gate.",
       "local_gate_policy": "core Rust package tests and release topology checks on selected heads."
     },
@@ -197,6 +218,7 @@
       "lock_relation": "covered_by_locked_member",
       "lock_member_key": "core",
       "required_for_nirs4all_v1": true,
+      "release_batch_role": "portable_aggregate_language_binding",
       "proof_boundary": "MATLAB/Octave namespace archive is covered by the selected RC-v1-nirs4all-core member; V1 release proof requires the strict MATLAB/Octave runtime parity gate, not an if-available smoke.",
       "local_gate_policy": "test-matlab-parity passed under Octave in Wave 4AU for the selected RC core/methods heads; rerun on any later aggregate or methods movement. Licensed MATLAB host proof remains an explicit release risk, not a skipped green proof."
     },
@@ -210,6 +232,7 @@
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": false,
+      "release_batch_role": "production_held",
       "proof_boundary": "Public product release surface; not a member of the aggregation lock. Playwright/runtime e2e remains an environment gate.",
       "local_gate_policy": "npm run lint:parallel, npm run test:parallel, and Playwright/screenshot gates when product UI/runtime surfaces change."
     },
@@ -223,6 +246,7 @@
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": false,
+      "release_batch_role": "custom_app_host_ui",
       "proof_boundary": "Shared React UI components and pure TypeScript view-model helpers for Studio/Web consumers; not a member of the aggregation lock and not a backend, parser, persistence, ML, or parity-proof surface.",
       "local_gate_policy": "npm run typecheck, npm test, npm run build, plus component/visual baseline checks when React UI surfaces change."
     },
@@ -236,6 +260,7 @@
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": false,
+      "release_batch_role": "custom_app_host_product",
       "proof_boundary": "Public client-side-only browser/WASM product surface; not a member of the aggregation lock, implies no Python server, and must not overclaim Python parity.",
       "local_gate_policy": "typecheck/build/Vitest/client-side browser smoke according to touched Web surface."
     },
@@ -249,6 +274,7 @@
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": false,
+      "release_batch_role": "optional_provider_contracts",
       "proof_boundary": "Published Python provider client surface; the canonical release contract remains the neutral schemas in docs/contracts/providers and must stay consumable by R/WASM/native clients without a Python dependency.",
       "local_gate_policy": "providers_local_sibling_release plus canonical schema byte-identity and fixture validation in the providers repo."
     },
@@ -262,6 +288,7 @@
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": false,
+      "release_batch_role": "publication_dashboard",
       "proof_boundary": "Published operational cockpit/site surface; outside the aggregation lock and separate from the client-side nirs4all-web product.",
       "local_gate_policy": "site build/deploy smoke according to the touched cockpit publication surface."
     },
@@ -275,6 +302,7 @@
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": false,
+      "release_batch_role": "publication_site",
       "proof_boundary": "Published public site surface; outside the aggregation lock and distinct from the aggregate runtime/package topology.",
       "local_gate_policy": "static-site validation/build smoke when org publication content or release claims change."
     },
@@ -288,6 +316,7 @@
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": false,
+      "release_batch_role": "migration_tooling",
       "proof_boundary": "Public support/migration surface; not a runtime dependency of the aggregation lock.",
       "local_gate_policy": "legacy migration converter fixtures, dry-run/verify-only, and golden preservation tests."
     },
@@ -301,6 +330,7 @@
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
       "required_for_nirs4all_v1": false,
+      "release_batch_role": "cluster_runtime_candidate",
       "proof_boundary": "Public/distribution candidate for cluster execution; not an aggregation-lock member and not a substitute for runtime parity.",
       "local_gate_policy": "targeted RBAC/client/core-adapter tests plus e2e when the cluster release claim changes."
     }

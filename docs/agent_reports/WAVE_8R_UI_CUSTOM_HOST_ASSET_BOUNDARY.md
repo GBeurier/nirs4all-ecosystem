@@ -11,6 +11,11 @@ Date: 2026-07-07
   created GitHub Release `v0.1.5`, and confirmed the Pages deploy.
 - Hardened `nirs4all-cockpit` with a machine-readable
   `release_bundles.v1-custom-app-host` grouping.
+- Published `nirs4all-org v1.0.3` so the public site fallback metadata now
+  matches `nirs4all-ui@0.1.7` and `nirs4all-web@0.1.5`.
+- Clarified the public release-surface matrix: Python `nirs4all` is a required
+  parity oracle/accounting surface, but remains explicitly held out of the
+  shipped V1 RC product batch with Studio production.
 
 ## Boundary
 
@@ -57,6 +62,30 @@ Date: 2026-07-07
 - Added a versioned GitHub Release target for `nirs4all-web`, alongside Pages.
 - Refreshed `data/current.json` for core/ui/web using a clean UI worktree
   overlay so the dirty quality checkout does not pollute the public snapshot.
+- Refreshed `data/current.json` for `nirs4all-org v1.0.3`; the org row is green
+  at commit `477439d314344e3790dbe1424de96900fa0262aa`, with latest release
+  `v1.0.3` and zero commits ahead of the production tag.
+
+### nirs4all-org
+
+- Bumped site metadata to `1.0.3`.
+- Updated the JSON-LD and visible fallback versions for:
+  `nirs4all-ui` `0.1.7` and `nirs4all-web` `0.1.5`.
+- Created GitHub Release `v1.0.3`; Pages deployment and version guard passed on
+  `477439d314344e3790dbe1424de96900fa0262aa`.
+
+### nirs4all-ecosystem
+
+- Added `release_batch_semantics` and per-surface `release_batch_role` fields
+  to `public-v1-surface-matrix.n4a.json`.
+- The matrix now distinguishes:
+  `required_for_nirs4all_v1` = proof/accounting requirement, versus held or
+  shipped surface role.
+- The custom app host path is now explicitly pinned as:
+  `nirs4all.javascript_wasm.aggregate`, `nirs4all.ui.package`,
+  `nirs4all.web.product`.
+- The held surfaces are now explicitly:
+  `nirs4all.python.oracle`, `nirs4all.studio.product`.
 
 ## Validation
 
@@ -112,17 +141,28 @@ Date: 2026-07-07
 - Snapshot after targeted refresh:
   `nirs4all-ui` green at GitHub Release/npm/Pages `0.1.7`;
   `nirs4all-web` green at GitHub Release/Pages `0.1.5`;
+  `nirs4all-org` green at GitHub Release/Pages `1.0.3`;
   `nirs4all-core` remains missing only on the known PyPI Trusted Publisher
   target and pending on CRAN.
+- Additional cockpit refresh checks for the org update:
+  `python3.11 -m cockpit.cli validate-targets ops/targets.yaml`;
+  `python3.11 -m pytest -q` -> 120 tests passed;
+  `python3.11 -m ruff check .`;
+  `python3.11 scripts/smoke_dashboard_dom.py`.
 
 ### nirs4all-ecosystem
 
-- Latest ecosystem Actions before this pin update on `a1dc7ad`:
+- Latest ecosystem Actions before this pin update on `adf0f95`:
   `version-guard` and `Cross-language E2E scenarios` passed.
 - Submodule pins advanced to:
   `nirs4all-ui` `4ab3eabb36604ffbede2b8f9bb6d2721164e3190`,
   `nirs4all-web` `ba6678282c71f8239da28e57128d34fba3b39db8`,
-  `nirs4all-cockpit` `0434d21665a20d257c2c681c955f38cff0f2f47a`.
+  `nirs4all-cockpit` `a9cd94ccb532815ff8ed6d20892aac2f22493a4c`,
+  `nirs4all-org` `477439d314344e3790dbe1424de96900fa0262aa`.
+- `python3.11 scripts/n4a_release_surface_matrix.py validate`
+- `python3.11 scripts/n4a_release_surface_matrix.py report`
+- `python3.11 -m pytest -q tests/test_release_surface_matrix.py`
+  -> 9 tests passed.
 
 ## Decisions
 
@@ -133,6 +173,8 @@ Date: 2026-07-07
 - The final V1 custom-app-host boundary is now machine-readable in cockpit:
   core/ui/web are in; Python oracle and production Studio are still tracked but
   held out of the final V1 RC batch.
+- The release-surface matrix uses the same distinction: Python `nirs4all` can be
+  mandatory for parity proof without being a product surface switched to prod.
 - `nirs4all-web` is now auditable as both a deployed Pages app and a versioned
   GitHub Release, without turning it into a package-registry aggregate.
 
