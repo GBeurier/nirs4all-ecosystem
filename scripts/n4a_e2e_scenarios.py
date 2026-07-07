@@ -430,6 +430,18 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "parity.prediction_rows", "gt": 0},
             {"path": "predictions", "non_empty": True},
         ],
+        "legacy-converter/python-rerun-pipeline.json": [
+            {"path": "schema_version", "equals": "n4a.e2e.python_rerun_pipeline.v1"},
+            {"path": "scenario_id", "equals": "e2e-converter-legacy-save-predictions-web"},
+            {"path": "status", "equals": "passed"},
+            {"path": "converted_workspace_reopened", "equals": True},
+            {"path": "pipeline_reopened", "equals": True},
+            {"path": "python_rerun_executed", "equals": True},
+            {"path": "finite_predictions", "equals": True},
+            {"path": "prediction_rows", "gt": 0},
+            {"path": "prediction_max_abs_delta", "lte_path": "prediction_tolerance"},
+            {"path": "rmse_delta", "lte_path": "rmse_tolerance"},
+        ],
         "legacy-converter/web-results-panels.json": [
             {"path": "status", "equals": "passed"},
             {"path": "prediction_count", "gt": 0},

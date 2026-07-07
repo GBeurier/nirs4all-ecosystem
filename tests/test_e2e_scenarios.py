@@ -216,6 +216,21 @@ def _synthetic_evidence_payload(path: Path) -> dict:
                 "predictions_tolerance": 1e-6,
             },
         }
+    if key == "legacy-converter/python-rerun-pipeline.json":
+        return {
+            "schema_version": "n4a.e2e.python_rerun_pipeline.v1",
+            "scenario_id": "e2e-converter-legacy-save-predictions-web",
+            "status": "passed",
+            "converted_workspace_reopened": True,
+            "pipeline_reopened": True,
+            "python_rerun_executed": True,
+            "finite_predictions": True,
+            "prediction_rows": 3,
+            "prediction_max_abs_delta": 0,
+            "prediction_tolerance": 1e-6,
+            "rmse_delta": 0,
+            "rmse_tolerance": 1e-6,
+        }
     return {
         "status": "passed",
         "ok": True,
@@ -775,14 +790,27 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
         (
             "e2e-converter-legacy-save-predictions-web",
             {
-                "steps": ["convert-legacy-save", "web-open-predictions"],
+                "steps": ["convert-legacy-save", "python-rerun-converted-pipeline", "web-open-predictions"],
                 "languages": {"python", "javascript_wasm", "web"},
                 "tags": {"workspace_save", "predictions", "web_results", "pipeline", "parity"},
                 "tools": {"python3.11", "npm"},
-                "produces": {"converted-workspace.n4a.json", "predictions.rt_result.json", "web-results-panels.json"},
-                "commands": {"test_legacy_save_predictions_web.py", "smoke:converted-predictions"},
-                "evidence": {"legacy fixture values", "Web opens converted predictions"},
-                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "strict"},
+                "produces": {
+                    "converted-workspace.n4a.json",
+                    "predictions.rt_result.json",
+                    "python-rerun-pipeline.json",
+                    "web-results-panels.json",
+                },
+                "commands": {
+                    "test_legacy_save_predictions_web.py",
+                    "test_python_rerun_converted_pipeline",
+                    "smoke:converted-predictions",
+                },
+                "evidence": {"legacy fixture values", "Python rerun converted workspace", "Web opens converted predictions"},
+                "phase_statuses": {
+                    "python_rerun_pipeline": "strict",
+                    "python_parity": "strict",
+                    "wasm_web_reuse": "strict",
+                },
             },
         ),
         (
@@ -1811,7 +1839,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["v1_contract_phase_count"] == 10
-    assert report["debt_summary"]["v1_gap_phase_count"] == 1
+    assert report["debt_summary"]["v1_gap_phase_count"] == 0
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
         "strictness_gaps": 2,
@@ -1865,7 +1893,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     expected_phase_counts = {
         "python_open_pipeline": {"strict": 7, "contract": 2, "gap": 0, "not_applicable": 2},
-        "python_rerun_pipeline": {"strict": 6, "contract": 3, "gap": 1, "not_applicable": 1},
+        "python_rerun_pipeline": {"strict": 7, "contract": 3, "gap": 0, "not_applicable": 1},
         "python_parity": {"strict": 11, "contract": 0, "gap": 0, "not_applicable": 0},
         "papers_export": {"strict": 1, "contract": 0, "gap": 0, "not_applicable": 10},
         "repository_forced_best_refit": {"strict": 1, "contract": 1, "gap": 0, "not_applicable": 9},
@@ -1915,7 +1943,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
 
     assert (
         "debt: strictness_gaps=12 v1_contract_phases=10 "
-        "v1_gap_phases=1 v1_not_applicable_phases=25"
+        "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
@@ -1956,7 +1984,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
     assert "| strictness gaps | 12 |" in report
-    assert "| V1 gap phases | 1 |" in report
+    assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
     assert "e2e-core-ui-custom-app-host" in report
     assert "repository_forced_best_refit" in report

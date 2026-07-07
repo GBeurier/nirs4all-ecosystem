@@ -403,26 +403,29 @@
           ]
         },
         "python_rerun_pipeline": {
-          "status": "gap",
+          "status": "strict",
           "evidence": [
-            "The converter lowers existing predictions; it does not rerun the converted pipeline in Python."
+            "Python reopens the converted workspace metadata, reruns the converted legacy PLS pipeline through the Python nirs4all oracle, records finite predictions, and compares the rerun output against the lowered legacy prediction artifact."
           ],
-          "gap": "No Python rerun occurs after conversion in this scenario.",
+          "artifacts": [
+            "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json"
+          ],
           "acceptance": [
-            "Add a Python rerun of converted-workspace.n4a.json before claiming pipeline rerun coverage."
+            "python-rerun-pipeline.json must report status=passed, converted_workspace_reopened=true, pipeline_reopened=true, python_rerun_executed=true, finite_predictions=true, prediction_rows>0, and prediction/RMSE deltas within tolerance."
           ]
         },
         "python_parity": {
           "status": "strict",
           "evidence": [
-            "Converted V1 workspace and lowered runtime result are checked against legacy fixture values and checksums."
+            "Converted V1 workspace, lowered runtime result, and Python rerun evidence are checked against legacy fixture values and checksums."
           ],
           "artifacts": [
             "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
-            "{artifacts_dir}/legacy-converter/predictions.rt_result.json"
+            "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
+            "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json"
           ],
           "acceptance": [
-            "Fixture prediction vectors, scores, row counts, checksums, and result contract validation must match expected values."
+            "Fixture prediction vectors, scores, row counts, checksums, rerun deltas, and result contract validation must match expected values."
           ]
         },
         "papers_export": {
@@ -1486,7 +1489,7 @@
       "objective": "Convert a legacy workspace/save fixture, lower predictions into the V1 result contract, prove deterministic converter preservation against fixture values and checksums, open the output in Web, and verify every result panel renders.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
-        "The converter/save/render slice is executable, but Python rerun, papers export, and repository best-refit phases are outside this scenario."
+        "The converter/save/render slice is executable, but papers export and repository best-refit phases are outside this scenario."
       ],
       "languages": [
         "python",
@@ -1509,12 +1512,14 @@
       "artifacts": [
         "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
         "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
+        "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json",
         "{artifacts_dir}/legacy-converter/web-results-panels.json",
         "{artifacts_dir}/legacy-converter/web-results.png"
       ],
       "evidence": [
         "Legacy input fixture hash and converter checksum manifest",
         "Converter migration report",
+        "Python rerun converted workspace pipeline",
         "Prediction result contract validation",
         "Web panel coverage screenshot/index",
         "Client-only served-app React ResultsList/ResultsVisualization rendering"
@@ -1523,11 +1528,12 @@
         {
           "oracle": "legacy fixture values and converter checksum manifest",
           "candidate": "converted V1 workspace and lowered runtime result contract",
-          "metric": "fixture prediction vectors, scores, row counts, checksums, and Web result panels match expected contract",
+          "metric": "fixture prediction vectors, scores, row counts, checksums, Python rerun deltas, and Web result panels match expected contract",
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
             "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
+            "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json",
             "{artifacts_dir}/legacy-converter/web-results-panels.json"
           ]
         }
@@ -1552,6 +1558,27 @@
           "produces": [
             "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
             "{artifacts_dir}/legacy-converter/predictions.rt_result.json"
+          ]
+        },
+        {
+          "id": "python-rerun-converted-pipeline",
+          "title": "Rerun converted workspace pipeline in Python",
+          "kind": "execute",
+          "repo": "nirs4all-tools",
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-tools/tests/e2e/test_legacy_save_predictions_web.py",
+            "{workspace_root}/nirs4all/nirs4all/__init__.py"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-tools && PYTHONPATH={workspace_root}/nirs4all:$PYTHONPATH PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_legacy_save_predictions_web.py::test_python_rerun_converted_pipeline --artifacts-dir={artifacts_dir}/legacy-converter"
+          ],
+          "produces": [
+            "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json"
           ]
         },
         {
