@@ -538,7 +538,7 @@
           "requires_tools": ["python3.11"],
           "requires_paths": [
             "{workspace_root}/nirs4all-core/scripts/e2e/reopen_r_dataset_io_pipeline.py",
-            "{workspace_root}/nirs4all-core/bindings/python/src/nirs4all_lite/_execution.py",
+            "{workspace_root}/nirs4all-core/bindings/python/src/nirs4all_core/_execution.py",
             "{workspace_root}/nirs4all-methods/bindings/python/src/n4m",
             "{workspace_root}/nirs4all-methods/bindings/python/src/pls4all"
           ],

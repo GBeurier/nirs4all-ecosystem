@@ -86,7 +86,7 @@
     {
       "key": "core",
       "repo_path": "nirs4all-core",
-      "release_role": "Portable aggregate bindings, selected from RC-v1-nirs4all-core. nirs4all-core is the canonical RC repository/package target; nirs4all-lite remains a legacy/current artifact alias during cutover."
+      "release_role": "Portable aggregate bindings, selected from the canonical nirs4all-core repository. Python ships as nirs4all-core while non-Python aggregate surfaces use the public nirs4all namespace where available."
     },
     {
       "key": "datasets",

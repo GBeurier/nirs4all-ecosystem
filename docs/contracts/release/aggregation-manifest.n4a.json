@@ -1,7 +1,6 @@
 {
   "schema_version": "n4a.aggregation-manifest/v1",
   "aggregate_id": "nirs4all-core",
-  "legacy_aggregate_id": "nirs4all-lite",
   "release_train": "2026.07-refactor",
   "status": "candidate",
   "compatibility_policy": {
@@ -485,12 +484,9 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.2.13",
-      "repo_aliases": [
-        "nirs4all-lite"
-      ],
+      "preferred_exact_tag": "v0.3.0",
       "repo_url": "GBeurier/nirs4all-core",
-      "role": "Portable aggregate bindings, renamed nirs4all-core on the RC V1 head (Python distribution nirs4all-core; nirs4all-lite remains a legacy/current artifact alias during cutover)",
+      "role": "Canonical portable aggregate bindings (Python distribution nirs4all-core; Rust, npm/WASM, R, and MATLAB/Octave publish/import as nirs4all where the bare name is available)",
       "owner_boundary": "aggregate",
       "default_inclusion": "base",
       "optional": false,
@@ -500,9 +496,9 @@
         "python": {
           "distribution": "nirs4all-core",
           "imports": [
-            "nirs4all_lite"
-          ],
-          "legacy_distribution": "nirs4all-lite"
+            "nirs4all_core",
+            "n4a"
+          ]
         },
         "rust": {
           "crates": [
@@ -569,7 +565,7 @@
         {
           "id": "release_topology_manifest",
           "kind": "python_function_json",
-          "path": "bindings/python/src/nirs4all_lite/_topology.py",
+          "path": "bindings/python/src/nirs4all_core/_topology.py",
           "function": "release_topology_manifest",
           "read_from": "git_head",
           "allowed_imports": [
