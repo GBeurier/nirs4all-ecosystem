@@ -974,6 +974,130 @@ def _validate_v1_refactor_contract(
     return validated
 
 
+def _validate_custom_app_host_contract(
+    scenario_id: str,
+    scenario: dict[str, Any],
+    *,
+    phases: dict[str, dict[str, Any]],
+) -> None:
+    if scenario_id != "e2e-core-ui-custom-app-host":
+        return
+
+    required_artifacts = {
+        "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+        "{artifacts_dir}/custom-app-host/custom-host-run.json",
+        "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
+        "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",
+        "{artifacts_dir}/custom-app-host/custom-host-ui.json",
+    }
+    missing_artifacts = sorted(required_artifacts - set(scenario["artifacts"]))
+    if missing_artifacts:
+        raise E2EScenarioError(
+            f"{scenario_id}: custom app host requires declared artifacts: "
+            + ", ".join(missing_artifacts)
+        )
+
+    expected_step_artifacts = {
+        "core-r-surface-probe": {
+            "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+        },
+        "core-ui-runtime-host": {
+            "{artifacts_dir}/custom-app-host/custom-host-run.json",
+            "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
+            "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",
+        },
+        "shared-ui-host-render": {
+            "{artifacts_dir}/custom-app-host/custom-host-ui.json",
+        },
+    }
+    steps_by_id = {step["id"]: step for step in scenario["steps"]}
+    missing_steps = sorted(set(expected_step_artifacts) - set(steps_by_id))
+    if missing_steps:
+        raise E2EScenarioError(
+            f"{scenario_id}: custom app host requires steps: " + ", ".join(missing_steps)
+        )
+    for step_id, required_step_artifacts in expected_step_artifacts.items():
+        produced = set(steps_by_id[step_id].get("produces", []))
+        missing_step_artifacts = sorted(required_step_artifacts - produced)
+        if missing_step_artifacts:
+            raise E2EScenarioError(
+                f"{scenario_id}.{step_id}: custom app host step must produce "
+                + ", ".join(missing_step_artifacts)
+            )
+
+    expected_phase_statuses = {
+        "python_open_pipeline": "contract",
+        "python_rerun_pipeline": "contract",
+        "python_parity": "strict",
+        "wasm_web_reuse": "strict",
+    }
+    for phase_name, expected_status in expected_phase_statuses.items():
+        actual_status = phases[phase_name]["status"]
+        if actual_status != expected_status:
+            raise E2EScenarioError(
+                f"{scenario_id}: {phase_name} must stay {expected_status} for the custom app host lane"
+            )
+
+    def _check_for_artifact(artifact: str) -> dict[str, Any] | None:
+        for check in scenario["parity_checks"]:
+            if artifact in set(check.get("artifacts", [])):
+                return check
+        return None
+
+    predictions_check = _check_for_artifact(
+        "{artifacts_dir}/custom-app-host/custom-host-predictions.json"
+    )
+    if predictions_check is None or predictions_check.get("evidence_level") != "strict":
+        raise E2EScenarioError(
+            f"{scenario_id}: custom app host requires strict prediction parity evidence"
+        )
+    predictions_text = _contract_blob(
+        predictions_check.get("oracle", ""),
+        predictions_check.get("candidate", ""),
+        predictions_check.get("metric", ""),
+    )
+    if "max_abs_delta" not in predictions_text:
+        raise E2EScenarioError(
+            f"{scenario_id}: custom app host prediction parity must record max_abs_delta evidence"
+        )
+
+    runtime_contracts_check = _check_for_artifact(
+        "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json"
+    )
+    if runtime_contracts_check is None or runtime_contracts_check.get("evidence_level") != "strict":
+        raise E2EScenarioError(
+            f"{scenario_id}: custom app host requires strict runtime contract artifact evidence"
+        )
+    runtime_contracts_text = _contract_blob(
+        runtime_contracts_check.get("oracle", ""),
+        runtime_contracts_check.get("candidate", ""),
+        runtime_contracts_check.get("metric", ""),
+    )
+    for fragment in ("serialized_model_predict_surfaces", "predictportablepipeline", "javascript_wasm"):
+        if fragment not in runtime_contracts_text:
+            raise E2EScenarioError(
+                f"{scenario_id}: custom app host runtime contract evidence must mention {fragment}"
+            )
+
+    shared_ui_check = _check_for_artifact(
+        "{artifacts_dir}/custom-app-host/custom-host-ui.json"
+    )
+    if shared_ui_check is None:
+        raise E2EScenarioError(
+            f"{scenario_id}: custom app host requires shared UI render artifact evidence"
+        )
+    shared_ui_text = _contract_blob(
+        shared_ui_check.get("oracle", ""),
+        shared_ui_check.get("candidate", ""),
+        shared_ui_check.get("metric", ""),
+    )
+    for fragment in ("component", "engine label"):
+        if fragment not in shared_ui_text:
+            raise E2EScenarioError(
+                f"{scenario_id}: custom app host shared UI evidence must mention {fragment}"
+            )
+
+
 def _validate_scenario_semantics(
     scenario_id: str,
     scenario: dict[str, Any],
@@ -1092,6 +1216,12 @@ def _validate_scenario_semantics(
                     "artifact(s) are not produced by the scenario: "
                     + ", ".join(unknown_artifacts)
                 )
+
+    _validate_custom_app_host_contract(
+        scenario_id,
+        scenario,
+        phases=phases,
+    )
 
 
 def _scenario_matches_workflow_surface(scenario: dict[str, Any], surface: dict[str, set[str]]) -> bool:

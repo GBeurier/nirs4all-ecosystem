@@ -835,12 +835,77 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
         "custom-host-r-surface.json",
         "custom-host-run.json",
         "custom-host-predictions.json",
+        "custom-host-runtime-contracts.json",
         "custom-host-ui.json",
         "r binding surface",
         "nirs4all-core wasm",
+        "serialized_model_predict_surfaces",
+        "predictportablepipeline",
         "nirs4all-ui",
     ):
         assert fragment in text
+
+    checks_by_artifact = {
+        tuple(check["artifacts"]): check
+        for check in scenario["parity_checks"]
+    }
+    runtime_check = checks_by_artifact[
+        ("{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",)
+    ]
+    assert runtime_check["evidence_level"] == "strict"
+    assert "serialized_model_predict_surfaces" in runtime_check["metric"]
+    assert "predictPortablePipeline" in runtime_check["metric"]
+
+
+@pytest.mark.parametrize(
+    ("mutation", "match"),
+    [
+        (
+            "drop-runtime-contract-check",
+            "custom app host requires strict runtime contract artifact evidence",
+        ),
+        (
+            "drop-shared-ui-check",
+            "custom app host requires shared UI render artifact evidence",
+        ),
+        (
+            "weaken-python-parity-phase",
+            "python_parity must stay strict",
+        ),
+    ],
+)
+def test_cross_language_e2e_manifest_enforces_custom_app_host_contract(
+    tmp_path: Path,
+    mutation: str,
+    match: str,
+) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-core-ui-custom-app-host")
+
+    if mutation == "drop-runtime-contract-check":
+        scenario["parity_checks"] = [
+            check
+            for check in scenario["parity_checks"]
+            if "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json"
+            not in check["artifacts"]
+        ]
+    elif mutation == "drop-shared-ui-check":
+        scenario["parity_checks"] = [
+            check
+            for check in scenario["parity_checks"]
+            if "{artifacts_dir}/custom-app-host/custom-host-ui.json" not in check["artifacts"]
+        ]
+    elif mutation == "weaken-python-parity-phase":
+        manifest["v1_refactor_contract"]["scenario_coverage"][scenario["id"]]["python_parity"]["status"] = "contract"
+    else:
+        raise AssertionError(mutation)
+
+    manifest_path = tmp_path / f"{mutation}.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match=match):
+        e2e.validate_scenarios(manifest_path)
 
 
 def test_cross_language_e2e_current_workspace_plans_all_complex_workflows_ready(tmp_path: Path) -> None:
