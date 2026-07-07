@@ -8,9 +8,10 @@ The bounded, machine-readable W2P public V1 surface matrix is:
 
 `docs/contracts/release/public-v1-surface-matrix.n4a.json`
 
-The latest head-selection audit for this matrix and the aggregation lock is:
+The latest head-selection and publication-state audit for this matrix and the
+aggregation lock is:
 
-`docs/agent_reports/WAVE_7H_RELEASE_HEAD_AUDIT_2026-07-06.md`
+`docs/agent_reports/WAVE_8H_COCKPIT_RELEASE_STATUS.md`
 
 When live RC worktrees diverge from the selected release members, the
 aggregation lock validated from an isolated `checkout-members` workspace is the
