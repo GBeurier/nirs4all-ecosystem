@@ -10,11 +10,14 @@ canonical `nirs4all-methods` `+n4m` namespace.
 ## Files Modified
 
 - `nirs4all-core` submodule pointer
-- Upstream commit: `536c15a fix(matlab): use n4m methods namespace`
+- Upstream commits:
+  - `536c15a fix(matlab): use n4m methods namespace`
+  - `e7e045f fix(ci): pin methods with n4m matlab namespace`
 
 ## Decisions
 
 - Removed live `+pls4all` usage from `nirs4all-core` MATLAB runtime, parity gate, and topology metadata.
+- Repinned the core `methods` upstream checkout to a `nirs4all-methods` head that exposes the `+n4m` MATLAB namespace.
 - Kept Python `pls4all.sklearn` as a known methods-backed dependency until `nirs4all-methods` exposes a canonical `n4m` estimator replacement with parity.
 - Did not touch `nirs4all-ui`; concurrent quality work remains isolated.
 
