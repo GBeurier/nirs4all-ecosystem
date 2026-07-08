@@ -364,6 +364,26 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "dataset": {"rows": 40, "cols": 28},
             "cases": [{"name": "portable_methods_pipeline", "prediction_rows": 12}],
         }
+    if key == "custom-app-host/published-custom-host.json":
+        return {
+            "schema_version": "n4a.e2e.published_custom_host.v1",
+            "scenario_id": "e2e-core-ui-custom-app-host",
+            "status": "passed",
+            "published_package_install": True,
+            "bundled_downstream_app": True,
+            "public_imports_only": True,
+            "nirs4all_version": "0.3.3",
+            "nirs4all_ui_version": "0.1.7",
+            "controller_count": 5,
+            "predict_surface": "javascript_wasm",
+            "dataset_title": "Published custom host dataset",
+            "engine_label": "Nirs4all Core Wasm",
+            "run_entrypoint": "function",
+            "predict_entrypoint": "function",
+            "dist_index_exists": True,
+            "dist_asset_count": 10,
+            "dist_files": ["index.html", "assets/index.js"],
+        }
     if key == "multimodal-roundtrip/python-rerun-ledger.json":
         return {
             "schema_version": "n4a.e2e.python_rerun_pipeline.v1",
@@ -953,6 +973,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "core-python-open-rerun",
                     "core-ui-runtime-host",
                     "shared-ui-host-render",
+                    "published-package-custom-host",
                 ],
                 "languages": {"python", "r", "javascript_wasm", "web"},
                 "tags": {"pipeline", "predictions", "parity", "web_results"},
@@ -965,8 +986,15 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "custom-host-predictions.json",
                     "custom-host-runtime-contracts.json",
                     "custom-host-ui.json",
+                    "published-custom-host.json",
                 },
-                "commands": {"run_custom_app_host.py", "smoke:custom-app-host", "check:ui-shim", "Rscript"},
+                "commands": {
+                    "run_custom_app_host.py",
+                    "smoke:custom-app-host",
+                    "smoke:published-custom-host",
+                    "check:ui-shim",
+                    "Rscript",
+                },
                 "evidence": {
                     "R binding numeric parity",
                     "Standalone nirs4all-core Python oracle fixture open ledger",
@@ -974,6 +1002,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "nirs4all-core WASM",
                     "runtimeContracts",
                     "nirs4all-ui",
+                    "Published nirs4all",
                 },
                 "phase_statuses": {
                     "python_open_pipeline": "strict",
@@ -1249,9 +1278,12 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
         "core-python-open-rerun",
         "core-ui-runtime-host",
         "shared-ui-host-render",
+        "published-package-custom-host",
     ]
     assert {step["repo"] for step in scenario["steps"][:2]} == {"nirs4all-core"}
     assert {step["repo"] for step in scenario["steps"][2:]} == {"nirs4all-web"}
+    assert scenario["evidence_level"] == "strict"
+    assert scenario["strictness_gaps"] == []
     assert phases["python_open_pipeline"]["status"] == "strict"
     assert phases["python_rerun_pipeline"]["status"] == "strict"
     assert phases["python_parity"]["status"] == "strict"
@@ -1266,6 +1298,7 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
         "custom-host-predictions.json",
         "custom-host-runtime-contracts.json",
         "custom-host-ui.json",
+        "published-custom-host.json",
         "r binding numeric parity",
         "prediction_max_abs_delta",
         "rmse_delta",
@@ -1279,6 +1312,9 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
         "selected pipeline",
         "prediction count",
         "result panel",
+        "published package install",
+        "public imports only",
+        "vite dist asset",
     ):
         assert fragment in text
 
@@ -1292,6 +1328,12 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
     assert runtime_check["evidence_level"] == "strict"
     assert "serialized_model_predict_surfaces" in runtime_check["metric"]
     assert "predictPortablePipeline" in runtime_check["metric"]
+    published_check = checks_by_artifact[
+        ("{artifacts_dir}/custom-app-host/published-custom-host.json",)
+    ]
+    assert published_check["evidence_level"] == "strict"
+    assert "published package install" in published_check["metric"]
+    assert "public imports only" in published_check["metric"]
 
 
 @pytest.mark.parametrize(
@@ -1303,7 +1345,11 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
         ),
         (
             "drop-shared-ui-check",
-            "custom app host requires shared UI render artifact evidence",
+            "custom app host requires strict shared UI render artifact evidence",
+        ),
+        (
+            "drop-published-host-check",
+            "custom app host requires strict published package host artifact evidence",
         ),
         (
             "weaken-shared-ui-flow",
@@ -1336,6 +1382,12 @@ def test_cross_language_e2e_manifest_enforces_custom_app_host_contract(
             check
             for check in scenario["parity_checks"]
             if "{artifacts_dir}/custom-app-host/custom-host-ui.json" not in check["artifacts"]
+        ]
+    elif mutation == "drop-published-host-check":
+        scenario["parity_checks"] = [
+            check
+            for check in scenario["parity_checks"]
+            if "{artifacts_dir}/custom-app-host/published-custom-host.json" not in check["artifacts"]
         ]
     elif mutation == "weaken-shared-ui-flow":
         for check in scenario["parity_checks"]:
@@ -2091,7 +2143,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
 
     assert report["scenario_count"] == 11
     assert report["expected_scenario_count"] == 11
-    assert report["evidence_levels"] == {"hybrid": 11}
+    assert report["evidence_levels"] == {"hybrid": 10, "strict": 1}
     assert report["required_languages"] == {
         "javascript_wasm": 8,
         "python": 11,
@@ -2121,10 +2173,10 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web_results": 5,
         "workspace_save": 6,
     }
-    assert report["debt_summary"]["strictness_gap_count"] == 11
+    assert report["debt_summary"]["strictness_gap_count"] == 10
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
-        "contract": 6,
-        "strict": 20,
+        "contract": 5,
+        "strict": 22,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
@@ -2143,12 +2195,12 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
-        "strictness_gaps": 1,
+        "strictness_gaps": 0,
         "contract_phases": [],
         "gap_phases": [],
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
-        "contract_parity_checks": 1,
-        "strict_parity_checks": 4,
+        "contract_parity_checks": 0,
+        "strict_parity_checks": 6,
         "strict_non_numeric_checks": 1,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-wasm-open-repo-pipeline-alt-dataset"] == {
@@ -2282,7 +2334,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=11 strict_non_numeric_checks=4 v1_contract_phases=5 "
+        "debt: strictness_gaps=10 strict_non_numeric_checks=4 v1_contract_phases=5 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2305,7 +2357,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
-    assert report["debt_summary"]["strictness_gap_count"] == 11
+    assert report["debt_summary"]["strictness_gap_count"] == 10
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
     assert report["scenario_details"][0]["strictness_gaps"]
 
@@ -2325,7 +2377,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     report = report_path.read_text(encoding="utf-8")
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
-    assert "| strictness gaps | 11 |" in report
+    assert "| strictness gaps | 10 |" in report
     assert "| strict non-numeric checks | 4 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report

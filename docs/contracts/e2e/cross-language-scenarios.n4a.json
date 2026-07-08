@@ -805,13 +805,16 @@
         "wasm_web_reuse": {
           "status": "strict",
           "evidence": [
-            "The same Web host imports nirs4all-core runtime outputs and renders nirs4all-ui dataset, pipeline, prediction result panel, engine, and metric components."
+            "The same Web host imports nirs4all-core runtime outputs and renders nirs4all-ui dataset, pipeline, prediction result panel, engine, and metric components.",
+            "A standalone downstream Vite/React host installs the published nirs4all and nirs4all-ui packages and bundles public imports only."
           ],
           "artifacts": [
-            "{artifacts_dir}/custom-app-host/custom-host-ui.json"
+            "{artifacts_dir}/custom-app-host/custom-host-ui.json",
+            "{artifacts_dir}/custom-app-host/published-custom-host.json"
           ],
           "acceptance": [
-            "custom-host-ui.json must record rendered nirs4all-ui component tags, dataset title, selected pipeline id, prediction result panel/count, and the nirs4all-core engine label with status=passed."
+            "custom-host-ui.json must record rendered nirs4all-ui component tags, dataset title, selected pipeline id, prediction result panel/count, and the nirs4all-core engine label with status=passed.",
+            "published-custom-host.json must record package install success, public_imports_only=true, controller count, javascript_wasm predict surface, portable run/predict entrypoints, and a non-empty Vite dist asset build."
           ]
         }
       }
@@ -2071,10 +2074,8 @@
       "id": "e2e-core-ui-custom-app-host",
       "title": "Custom Web host composes nirs4all-core runtime with reusable nirs4all-ui components",
       "objective": "Build the minimal custom-app path: run the R binding against the portable Python oracle pipeline fixture, open the same fixture in nirs4all-core Python, execute it through nirs4all-core WASM, prove that standalone serialized-model prediction is a WASM-only runtime contract today, predict through the fitted model, and render dataset/runtime/metric state through nirs4all-ui without relying on Studio or Web-specific backend APIs.",
-      "evidence_level": "hybrid",
-      "strictness_gaps": [
-        "The custom host is a Vitest/React contract in nirs4all-web, not a packaged standalone downstream application yet."
-      ],
+      "evidence_level": "strict",
+      "strictness_gaps": [],
       "languages": [
         "python",
         "r",
@@ -2100,7 +2101,8 @@
         "{artifacts_dir}/custom-app-host/custom-host-run.json",
         "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
         "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",
-        "{artifacts_dir}/custom-app-host/custom-host-ui.json"
+        "{artifacts_dir}/custom-app-host/custom-host-ui.json",
+        "{artifacts_dir}/custom-app-host/published-custom-host.json"
       ],
       "evidence": [
         "R binding numeric parity ledger against the portable Python oracle",
@@ -2111,6 +2113,7 @@
         "nirs4all-core WASM pipeline execution and fitted model prediction",
         "Prediction max_abs_delta versus Python oracle tolerance",
         "nirs4all-ui DatasetPreviewCard, RuntimeEngineBadge, and MetricValueBadge React elements rendered in the same host",
+        "Published nirs4all and nirs4all-ui packages install into a standalone downstream Vite/React custom host and bundle using public imports only",
         "Client-side-only custom app host path with no Studio backend or Web API calls"
       ],
       "parity_checks": [
@@ -2146,7 +2149,7 @@
           "oracle": "nirs4all-ui published component contract",
           "candidate": "custom app host React element composition",
           "metric": "nirs4all-ui web result panel component tags, dataset title, selected pipeline id, prediction count, and engine label render from shared UI components",
-          "evidence_level": "contract",
+          "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/custom-app-host/custom-host-ui.json"
           ]
@@ -2158,6 +2161,15 @@
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json"
+          ]
+        },
+        {
+          "oracle": "published nirs4all and nirs4all-ui package surfaces",
+          "candidate": "standalone downstream Vite/React custom host build",
+          "metric": "package composition parity: published package install, public imports only, controller count, javascript_wasm predict surface, portable run/predict entrypoints, and Vite dist asset build are verified",
+          "evidence_level": "strict",
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/published-custom-host.json"
           ]
         }
       ],
@@ -2253,6 +2265,26 @@
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-ui.json"
+          ]
+        },
+        {
+          "id": "published-package-custom-host",
+          "title": "Build a downstream custom host from published core and UI packages",
+          "kind": "ui",
+          "repo": "nirs4all-web",
+          "requires_tools": [
+            "npm"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-web/studio-lite/scripts/smoke-published-custom-host.mjs"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.3 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.7 npm run smoke:published-custom-host"
+          ],
+          "produces": [
+            "{artifacts_dir}/custom-app-host/published-custom-host.json"
           ]
         }
       ]

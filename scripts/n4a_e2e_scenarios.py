@@ -706,6 +706,25 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "prediction_count", "gt": 0},
             {"path": "engine_label", "non_empty": True},
         ],
+        "custom-app-host/published-custom-host.json": [
+            {"path": "schema_version", "equals": "n4a.e2e.published_custom_host.v1"},
+            {"path": "scenario_id", "equals": "e2e-core-ui-custom-app-host"},
+            {"path": "status", "equals": "passed"},
+            {"path": "published_package_install", "equals": True},
+            {"path": "bundled_downstream_app", "equals": True},
+            {"path": "public_imports_only", "equals": True},
+            {"path": "nirs4all_version", "equals": "0.3.3"},
+            {"path": "nirs4all_ui_version", "equals": "0.1.7"},
+            {"path": "controller_count", "gt": 0},
+            {"path": "predict_surface", "equals": "javascript_wasm"},
+            {"path": "dataset_title", "equals": "Published custom host dataset"},
+            {"path": "engine_label", "equals": "Nirs4all Core Wasm"},
+            {"path": "run_entrypoint", "equals": "function"},
+            {"path": "predict_entrypoint", "equals": "function"},
+            {"path": "dist_index_exists", "equals": True},
+            {"path": "dist_asset_count", "gt": 0},
+            {"path": "dist_files", "non_empty": True},
+        ],
     },
 }
 
@@ -1635,6 +1654,7 @@ def _validate_custom_app_host_contract(
         "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
         "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",
         "{artifacts_dir}/custom-app-host/custom-host-ui.json",
+        "{artifacts_dir}/custom-app-host/published-custom-host.json",
     }
     missing_artifacts = sorted(required_artifacts - set(scenario["artifacts"]))
     if missing_artifacts:
@@ -1658,6 +1678,9 @@ def _validate_custom_app_host_contract(
         },
         "shared-ui-host-render": {
             "{artifacts_dir}/custom-app-host/custom-host-ui.json",
+        },
+        "published-package-custom-host": {
+            "{artifacts_dir}/custom-app-host/published-custom-host.json",
         },
     }
     steps_by_id = {step["id"]: step for step in scenario["steps"]}
@@ -1750,9 +1773,9 @@ def _validate_custom_app_host_contract(
     shared_ui_check = _check_for_artifact(
         "{artifacts_dir}/custom-app-host/custom-host-ui.json"
     )
-    if shared_ui_check is None:
+    if shared_ui_check is None or shared_ui_check.get("evidence_level") != "strict":
         raise E2EScenarioError(
-            f"{scenario_id}: custom app host requires shared UI render artifact evidence"
+            f"{scenario_id}: custom app host requires strict shared UI render artifact evidence"
         )
     shared_ui_text = _contract_blob(
         shared_ui_check.get("oracle", ""),
@@ -1770,6 +1793,32 @@ def _validate_custom_app_host_contract(
         if fragment not in shared_ui_text:
             raise E2EScenarioError(
                 f"{scenario_id}: custom app host shared UI evidence must mention {fragment}"
+            )
+
+    published_host_check = _check_for_artifact(
+        "{artifacts_dir}/custom-app-host/published-custom-host.json"
+    )
+    if published_host_check is None or published_host_check.get("evidence_level") != "strict":
+        raise E2EScenarioError(
+            f"{scenario_id}: custom app host requires strict published package host artifact evidence"
+        )
+    published_host_text = _contract_blob(
+        published_host_check.get("oracle", ""),
+        published_host_check.get("candidate", ""),
+        published_host_check.get("metric", ""),
+    )
+    for fragment in (
+        "published",
+        "public imports",
+        "controller count",
+        "javascript_wasm",
+        "run/predict",
+        "vite",
+        "dist asset",
+    ):
+        if fragment not in published_host_text:
+            raise E2EScenarioError(
+                f"{scenario_id}: published custom host evidence must mention {fragment}"
             )
 
 

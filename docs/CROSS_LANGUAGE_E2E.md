@@ -100,7 +100,7 @@ that count and the tests assert the expected handoff for each workflow:
 | `e2e-pipeline-generation-performance-compare` | Python persists and reopens one generated candidate, then Web/native runtimes compare prediction and performance evidence. |
 | `e2e-cluster-dag-rights-client-core` | Cluster DAG execution is compared with a local Python numeric oracle and core handoff checks. |
 | `e2e-formats-io-datasets-methods-language-bindings` | Formats/IO assemble reference datasets and methods bindings compare Python/R/WASM/native prediction evidence. |
-| `e2e-core-ui-custom-app-host` | A custom client host runs R parity against the Python oracle, proves runtimeContracts expose serialized-model prediction only for JavaScript/WASM, runs nirs4all-core WASM predictions against the same oracle, and renders reusable nirs4all-ui dataset-to-pipeline-to-predictions result components. |
+| `e2e-core-ui-custom-app-host` | A custom client host runs R parity against the Python oracle, proves runtimeContracts expose serialized-model prediction only for JavaScript/WASM, runs nirs4all-core WASM predictions against the same oracle, renders reusable nirs4all-ui result components, and bundles a downstream Vite/React app from the published nirs4all and nirs4all-ui packages. |
 
 Every step must declare at least one explicit dependency gate through
 `requires_tools`, `requires_env`, or `requires_paths`. Missing dependencies may
