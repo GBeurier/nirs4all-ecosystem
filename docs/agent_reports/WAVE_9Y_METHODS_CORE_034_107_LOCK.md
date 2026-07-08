@@ -16,6 +16,8 @@ Finalize the no-legacy MATLAB/Octave namespace release chain for
 - `nirs4all-ecosystem`: updated `nirs4all-core` and `nirs4all-methods`
   submodule pointers; updated `aggregation-manifest.n4a.json`; regenerated
   `aggregation-lock.n4a.lock.json`.
+- `nirs4all-cockpit`: refreshed status tracking for `nirs4all-core@v0.3.4`
+  and `nirs4all-methods@v1.0.7`, then advanced the ecosystem submodule pointer.
 
 ## Tests And Gates
 
@@ -29,6 +31,9 @@ Finalize the no-legacy MATLAB/Octave namespace release chain for
   release bump.
 - `nirs4all-ecosystem`: release lock generated and validated from clean temporary
   clones; fetchability audit checked out `7/7` member commits.
+- `nirs4all-cockpit`: `python3.11 -m pytest -q`; dashboard DOM smoke; targets
+  validation. The manual blockers section remains below all dashboard sections
+  and above the footer.
 
 ## Decisions
 
