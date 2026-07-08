@@ -36,7 +36,7 @@ The architecture has five product layers:
    lineage. Together they are the language-neutral ML spine.
 
 2. **`nirs4all-core` is the low-level aggregate.**
-   The current `nirs4all-lite` concept becomes `nirs4all-core`: a thin aggregate
+   The former `nirs4all-lite` concept is now `nirs4all-core`: a thin aggregate
    of `dag-ml`, `dag-ml-data`, `nirs4all-methods`, `nirs4all-io`,
    `nirs4all-formats`, and optionally peripheral clients such as datasets,
    repository, benchmarks, cluster and papers. It must expose and package the
@@ -212,7 +212,7 @@ if they are explicitly tagged as Python-only.
 | `nirs4all-formats` | Low-level Rust readers for spectroscopy/scientific files and provenance. | Dataset roles, joins, preprocessing, modelling, UI. | Strong NIRS/spectroscopy base, useful for HSI and scientific readers. |
 | `nirs4all-io` | Dataset assembly and multimodal package creation. Emits `dag-ml-data`. | Random CV policies, ML orchestration, vendor parser duplication, numerical methods. | NIRS/tabular path mature; multimodal v2 package is the next workstream. |
 | `nirs4all-methods` | Portable numerical NIRS/chemometrics core (`libn4m`) with C ABI and bindings. | Dataset loading, DAG scheduling, Studio logic, arbitrary Python/DL. | Rich and credible, but release/ABI/platform hardening remains critical. |
-| `nirs4all-core` | Final aggregate low-level product: bindings, compatibility matrix, conformance pack, release glue. | Become a second `nirs4all`; patch upstream logic; hide unsupported capabilities. | Conceptually implemented today mostly as `nirs4all-lite`; the local `nirs4all-core` checkout is a temporary Python integration clone for the ongoing `dag-ml`/`dag-ml-data` cutover. |
+| `nirs4all-core` | Final aggregate low-level product: bindings, compatibility matrix, conformance pack, release glue. | Become a second `nirs4all`; patch upstream logic; hide unsupported capabilities. | Canonical public name for the low-level aggregate formerly discussed as `nirs4all-lite`; the local checkout is the active integration home for the ongoing `dag-ml`/`dag-ml-data` cutover. |
 | `nirs4all` | Full Python library, historical API, Python ML/DL/explainability/prototyping layer. | Keep duplicating low-level parsing/orchestration long term. | Product-rich; migration to core must preserve public contracts. |
 | `nirs4all-<language>` | Language-specific full library above core when the language has real extra controllers/tools. | Reimplement core logic in each language. | Future pattern; today most surfaces are bindings or aggregate packages. |
 | `nirs4all-runtime-<target>` | API/runtime surface consumed by apps or tools for one target. | Become a separate scientific stack. | Concept to formalize; Python and WASM are first candidates. |
@@ -231,10 +231,11 @@ if they are explicitly tagged as Python-only.
 
 ## 4. Naming decisions
 
-### 4.1 `nirs4all-lite` -> `nirs4all-core`
+### 4.1 Historical `nirs4all-lite` -> `nirs4all-core`
 
-The concept formerly called `nirs4all-lite` should be renamed in product and
-architecture discussions to `nirs4all-core`.
+The concept formerly called `nirs4all-lite` is renamed in product and
+architecture discussions to `nirs4all-core`. The old name is historical only;
+there is no public compatibility alias to maintain.
 
 Reason:
 
@@ -242,16 +243,12 @@ Reason:
 - it is the foundation used by full language products;
 - "lite" suggests a reduced user product, while the target is a canonical core.
 
-Migration rule:
+Naming rule:
 
-1. keep treating the current local `nirs4all-core` as a temporary integration
-   checkout for the Python backend convergence;
+1. `nirs4all-core` is the canonical aggregate name;
 2. do not create two competing aggregate repositories;
-3. after the integration clone has been merged or retired, choose the final
-   aggregate lineage by ADR (`nirs4all-lite` rename, new repo, or another
-   explicit path);
-4. publish transitional aliases only as packaging compatibility, not as a second
-   implementation.
+3. do not publish or preserve a public `nirs4all-lite` alias;
+4. keep historical references only where they explain pre-rename decisions.
 
 ### 4.2 `nirs4all` repository name
 
@@ -375,8 +372,9 @@ What is already credible:
   catalogue needed by the target design.
 - `nirs4all-io` has an explicit multimodal backlog and is the next planned
   workstream for dataset package production.
-- `nirs4all-lite` already acts like an aggregate of the low-level stack and is
-  therefore the practical starting point for `nirs4all-core`.
+- the former `nirs4all-lite` workstream already acted like an aggregate of the
+  low-level stack and is therefore the historical starting point for
+  `nirs4all-core`.
 - `nirs4all-methods` has a serious portable C++/C ABI foundation and multiple
   bindings.
 - `nirs4all-formats` and `nirs4all-io` already enforce the parser/assembly
@@ -456,10 +454,10 @@ claims aligned with real runtime support.
 
 - Record that the current local `nirs4all-core` is a temporary integration clone
   of Python `nirs4all`, not the final aggregate repository.
-- Write an ADR for the final `nirs4all-lite` -> `nirs4all-core` product
-  transition.
-- Decide the final aggregate lineage only after the temporary integration clone
-  has landed or been retired.
+- Record the completed `nirs4all-lite` -> `nirs4all-core` naming decision,
+  including the no-legacy-alias rule.
+- Keep the final aggregate lineage documented in the source-of-truth table as
+  the integration clone is hardened.
 - Define public naming: repositories, packages, imports, runtimes.
 - Define the capability vocabulary and unsupported diagnostics.
 - Freeze cross-repo compatibility matrix: `dag-ml`, `dag-ml-data`, `io`,
@@ -499,7 +497,7 @@ not by hand-updated README instructions.
 
 ### P3 - Core aggregate release
 
-- Rename or alias `nirs4all-lite` to `nirs4all-core`.
+- Rename `nirs4all-lite` to `nirs4all-core` without keeping a public legacy alias.
 - Publish aggregate bindings for the first priority targets.
 - Generate SBOM/provenance and release artifacts.
 - Publish compatibility matrix and support window.
@@ -570,7 +568,7 @@ Exit: the architecture is not only built; it is scientifically defensible.
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Naming confusion between `nirs4all`, `nirs4all-core`, `nirs4all-lite`, `nirs4all-web` | Users and packages cannot understand what to install. | ADR, compatibility aliases, one source-of-truth table, public deprecation timeline. |
+| Naming confusion between `nirs4all`, `nirs4all-core`, historical `nirs4all-lite`, `nirs4all-web` | Users and packages cannot understand what to install. | ADR, one source-of-truth table, historical note only for `nirs4all-lite`, no public legacy alias. |
 | Confusion between the temporary local `nirs4all-core` integration clone and the final aggregate product | Wrong repository lineage or premature public naming. | Document the temporary status; merge or retire it before freezing the final aggregate repository. |
 | `nirs4all-core` becomes a second implementation | Maintenance collapse and divergent results. | Core may aggregate and expose; all fixes go upstream. |
 | Aggregate rebuilds and version bumps remain manual | Broken releases, ABI skew and unreproducible Studio/Web/Core bundles. | Add manifests, lockfiles, dry-run release checks and rebuild commands, likely first in `nirs4all-ecosystem`; Cockpit monitors the result. |

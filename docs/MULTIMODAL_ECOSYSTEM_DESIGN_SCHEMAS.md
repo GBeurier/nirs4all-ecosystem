@@ -87,10 +87,10 @@ Eviter autant que possible des noms publics du type `nirs4all-core-python`,
 
 Recommendation:
 
-- `nirs4all-core`: nom conceptuel de l'aggregate final, probablement issu de
-  `nirs4all-lite`.
+- `nirs4all-core`: nom canonique de l'aggregate final, issu du chantier
+  anciennement nomme `nirs4all-lite`.
 - Packages idiomatiques par langage pour l'aggregate:
-  - Python: `nirs4all-core` ou `nirs4all-lite` pendant transition;
+  - Python: `nirs4all-core`;
   - Rust crate: `nirs4all`;
   - npm/WASM: `@nirs4all/core` ou `nirs4all` selon politique;
   - R: `nirs4all`;
@@ -102,8 +102,8 @@ Recommendation:
   - plus tard `nirs4all-runtime-r` seulement si R execute vraiment au-dela du
     binding aggregate.
 
-Point a trancher: garder `nirs4all-lite` comme nom public ou le deprecier vers
-`nirs4all-core`. Le design ci-dessous marche dans les deux cas.
+Arbitrage: `nirs4all-core` est le nom public canonique. `nirs4all-lite` reste
+une reference historique pre-rename, sans alias public a maintenir.
 
 ## 1bis. Oracle de parite Python actuelle
 
@@ -228,7 +228,7 @@ flowchart TB
   end
 
   subgraph CORE["Core aggregate"]
-    COREPKG["nirs4all-core / nirs4all-lite\nportable aggregate + plugin clients"]
+    COREPKG["nirs4all-core\nportable aggregate + plugin clients"]
     CAP["capability registry\nportable levels + unsupported"]
     PLUGAPI["provider/plugin APIs\nDatasetProvider, PipelineProvider,\nBenchmarkProvider, PaperExporter,\nClusterClient"]
   end
@@ -347,8 +347,8 @@ Cette table distingue trois choses souvent melangees:
 | `nirs4all-io` | assembly dataset multimodal | crate/package/CLI/bindings | `DatasetSpec v2`, `DatasetPackage`, profils ingestion |
 | `nirs4all-methods` | kernels numeriques portables | native libs, bindings, catalog, parity reports | C ABI stable, models portables quand possible |
 | `nirs4all-datasets` | provider de datasets de reference | package, site/catalog, dataset cards, Croissant, `list/get/card` | nourrit `nirs4all-io` via core; les bytes restent aux origines/cache |
-| `nirs4all-lite` | aggregate portable actuel | packages Rust/Python/npm/R/MATLAB | candidat pour devenir `nirs4all-core` |
-| `nirs4all-core` | clone local temporaire actuel | aucun livrable final tant que non tranche | ne pas confondre avec futur aggregate |
+| historique `nirs4all-lite` | ancien nom du chantier aggregate portable | aucun alias public a maintenir | remplace par `nirs4all-core` |
+| `nirs4all-core` | aggregate portable canonique | packages Rust/Python/npm/R/MATLAB | nom public unique du core |
 | `nirs4all` | librairie Python riche | Python wheel/sdist, docs, examples | API historique, Python controllers, DL/SHAP/Optuna |
 | `nirs4all-runtime-python` | nouveau concept/package possible | Python package ou sous-package initial | facade runtime pour Studio/CLI/Python apps |
 | `nirs4all-runtime-wasm` | nouveau concept/package possible | npm/WASM package ou module web initial | browser subset, unsupported diagnostics |
@@ -608,7 +608,7 @@ classDiagram
 | Orchestration ML | `dag-ml` | Python runtime, WASM runtime, CLI | NIRS-specific kernels |
 | Portable numerical kernels | `nirs4all-methods` | `dag-ml`, core, runtimes | file parsing, graph scheduling |
 | Rich Python API | `nirs4all` | runtime-python, Studio, users | aggregate-only portability claims |
-| Aggregate bindings | `nirs4all-core` / `nirs4all-lite` | runtimes, language users, Web | host lifecycle |
+| Aggregate bindings | `nirs4all-core` | runtimes, language users, Web | host lifecycle |
 | Execution host | `nirs4all-runtime-*` | Studio, Web, CLI | new schemas, parsers |
 | Shared UI components | `nirs4all-ui` | Studio, Web | backend calls, storage, ML |
 | Reference dataset provider | `nirs4all-datasets` | core, IO, benchmarks, Studio/Web | benchmark task definition, parser logic |
@@ -636,7 +636,7 @@ flowchart TB
     S4["nirs4all-io"]
     S5["nirs4all-methods"]
     S6["nirs4all-datasets"]
-    S7["nirs4all-lite / future core"]
+    S7["nirs4all-core"]
     S8["nirs4all"]
     S9["nirs4all-runtime-python"]
     S10["nirs4all-runtime-wasm"]
@@ -738,7 +738,7 @@ flowchart TB
 | Family | Examples | What users install | Role |
 |---|---|---|---|
 | Low-level crates/libs | `dag-ml`, `dag-ml-data`, `nirs4all-methods` | mostly devs/bindings | contracts and kernels |
-| Aggregate core | `nirs4all-core` / `nirs4all-lite` | language users wanting portable stack | one entry point for portable primitives |
+| Aggregate core | `nirs4all-core` | language users wanting portable stack | one entry point for portable primitives |
 | Full language library | `nirs4all` Python | Python scientists and Studio backend | rich API and controllers |
 | Runtime packages | `nirs4all-runtime-python`, `nirs4all-runtime-wasm`, `nirs4all-runtime-cli` | apps/products | execution host contract |
 | Provider/plugin clients | datasets, repository, benchmarks, papers, cluster client | optional extras or core plugins | fetch/list/export/submit surfaces around the core |
@@ -2211,7 +2211,7 @@ operational arbitration queue, with options and recommended defaults, is in
 
 | ID | Question | Recommended default | Why |
 |---|---|---|---|
-| `DQ-001` | Publicly rename `nirs4all-lite` to `nirs4all-core` ? | yes, after temporary clone resolved | matches final concept, but timing matters |
+| `DQ-001` | Publicly rename `nirs4all-lite` to `nirs4all-core` ? | done, no legacy alias | matches final concept and keeps one public aggregate name |
 | `DQ-002` | Runtime packages as independent repos or subpackages first ? | subpackages/spec first, split later | avoid repo explosion before contracts stabilize |
 | `DQ-003` | Should `runtime-python` live inside `nirs4all` initially ? | yes initially | preserves API and lowers migration risk |
 | `DQ-004` | Should `runtime-wasm` live inside `nirs4all-web` initially ? | yes initially, with extracted spec | browser constraints will stabilize through product use |
