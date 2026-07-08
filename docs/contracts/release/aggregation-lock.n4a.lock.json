@@ -1355,9 +1355,9 @@
       "selected_workspace_path": "nirs4all-methods",
       "state": {
         "branch": "main",
-        "commit": "990077e4b9f9902ba547592d81f0b1a70c7ea8a1",
+        "commit": "164613565e4c1ce61d7274839f44350ab7782dcd",
         "dirty": false,
-        "exact_tag": "v1.0.7"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
