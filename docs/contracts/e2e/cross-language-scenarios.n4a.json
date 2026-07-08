@@ -748,7 +748,6 @@
             "A standalone nirs4all-core Python process opens the portable Python oracle fixture and portable pipeline descriptor before the Web custom host handoff."
           ],
           "artifacts": [
-            "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
             "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
             "{artifacts_dir}/custom-app-host/custom-host-run.json"
           ],
@@ -772,12 +771,14 @@
         "python_parity": {
           "status": "strict",
           "evidence": [
-            "nirs4all-core WASM predictions are compared with the portable Python oracle prediction vector."
+            "nirs4all-core R and WASM predictions are compared with the portable Python oracle prediction vector."
           ],
           "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-r-parity.json",
             "{artifacts_dir}/custom-app-host/custom-host-predictions.json"
           ],
           "acceptance": [
+            "custom-host-r-parity.json must report status=passed, r_rerun_executed=true, finite_predictions=true, prediction_rows>0, and target/prediction/RMSE deltas within tolerance.",
             "custom-host-predictions.json must record prediction row count, max_abs_delta, and the Python oracle tolerance with status=passed."
           ]
         },
@@ -2069,11 +2070,10 @@
     {
       "id": "e2e-core-ui-custom-app-host",
       "title": "Custom Web host composes nirs4all-core runtime with reusable nirs4all-ui components",
-      "objective": "Build the minimal custom-app path: record the R binding surface, open a portable Python oracle pipeline fixture, execute it through nirs4all-core WASM, prove that standalone serialized-model prediction is a WASM-only runtime contract today, predict through the fitted model, and render dataset/runtime/metric state through nirs4all-ui without relying on Studio or Web-specific backend APIs.",
+      "objective": "Build the minimal custom-app path: run the R binding against the portable Python oracle pipeline fixture, open the same fixture in nirs4all-core Python, execute it through nirs4all-core WASM, prove that standalone serialized-model prediction is a WASM-only runtime contract today, predict through the fitted model, and render dataset/runtime/metric state through nirs4all-ui without relying on Studio or Web-specific backend APIs.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
-        "The custom host is a Vitest/React contract in nirs4all-web, not a packaged standalone downstream application yet.",
-        "The R portion is a structural binding-surface artifact in the same handoff directory, not a full R numeric rerun."
+        "The custom host is a Vitest/React contract in nirs4all-web, not a packaged standalone downstream application yet."
       ],
       "languages": [
         "python",
@@ -2094,7 +2094,7 @@
         "web_results"
       ],
       "artifacts": [
-        "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+        "{artifacts_dir}/custom-app-host/custom-host-r-parity.json",
         "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
         "{artifacts_dir}/custom-app-host/custom-host-python-rerun.json",
         "{artifacts_dir}/custom-app-host/custom-host-run.json",
@@ -2103,7 +2103,7 @@
         "{artifacts_dir}/custom-app-host/custom-host-ui.json"
       ],
       "evidence": [
-        "R binding surface artifact recorded in the same custom app host handoff",
+        "R binding numeric parity ledger against the portable Python oracle",
         "Portable Python oracle fixture opened by the custom host",
         "Standalone nirs4all-core Python rerun parity ledger",
         "Standalone nirs4all-core Python oracle fixture open ledger",
@@ -2122,6 +2122,15 @@
           "artifacts": [
             "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
             "{artifacts_dir}/custom-app-host/custom-host-python-rerun.json"
+          ]
+        },
+        {
+          "oracle": "portable Python oracle pipeline fixture",
+          "candidate": "nirs4all-core R binding parity ledger",
+          "metric": "R rerun records prediction_max_abs_delta, rmse_delta, target_max_abs_delta, variant RMSE deltas, and variant prediction deltas within Python oracle tolerances",
+          "evidence_level": "strict",
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-r-parity.json"
           ]
         },
         {
@@ -2154,24 +2163,26 @@
       ],
       "steps": [
         {
-          "id": "core-r-surface-probe",
-          "title": "Record R binding surface for the custom host handoff",
-          "kind": "prepare",
+          "id": "core-r-parity",
+          "title": "Run R binding parity for the custom host handoff",
+          "kind": "execute",
           "repo": "nirs4all-core",
           "requires_tools": [
             "Rscript",
             "python3.11"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-core/bindings/r/tests/surface.R"
+            "{workspace_root}/nirs4all-core/bindings/r/tests/parity.R",
+            "{workspace_root}/nirs4all-core/tests/parity/expected/portable_python_oracle.json",
+            "{workspace_root}/nirs4all-methods/bindings/r/n4m"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH python3.11 -c \"import hashlib,json,pathlib,subprocess; out=pathlib.Path('{artifacts_dir}/custom-app-host'); out.mkdir(parents=True, exist_ok=True); entrypoint=pathlib.Path('bindings/r/tests/surface.R'); probe=subprocess.run(['Rscript','--version'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False).stdout.splitlines()[:1]; payload=dict(ok=True, artifact_kind='custom-host-r-surface', language='r', surface='nirs4all-core bindings/r', entrypoint=str(entrypoint), sha256=hashlib.sha256(entrypoint.read_bytes()).hexdigest(), rscript=probe, validation='R surface participates in Python/R/WASM/Web custom app host handoff'); (out/'custom-host-r-surface.json').write_text(json.dumps(payload, indent=2, sort_keys=True)+'\\n', encoding='utf-8')\""
+            "cd {workspace_root}/nirs4all-core && export PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH && Rscript --version >/dev/null && NIRS4ALL_CORE_R_PARITY_LEDGER={artifacts_dir}/custom-app-host/custom-host-r-parity.json NIRS4ALL_CORE_R_PARITY_SCENARIO_ID=e2e-core-ui-custom-app-host make test-r-parity PYTHON=python3.11"
           ],
           "produces": [
-            "{artifacts_dir}/custom-app-host/custom-host-r-surface.json"
+            "{artifacts_dir}/custom-app-host/custom-host-r-parity.json"
           ]
         },
         {

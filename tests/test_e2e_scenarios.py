@@ -341,6 +341,29 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "variant_rmse_max_abs_delta": 0,
             "variant_prediction_max_abs_delta": 0,
         }
+    if key == "custom-app-host/custom-host-r-parity.json":
+        return {
+            "schema_version": "n4a.e2e.r_parity_ledger.v1",
+            "scenario_id": "e2e-core-ui-custom-app-host",
+            "status": "passed",
+            "language": "r",
+            "oracle_reopened": True,
+            "pipeline_reopened": True,
+            "r_rerun_executed": True,
+            "finite_predictions": True,
+            "case_count": 4,
+            "prediction_rows": 104,
+            "target_max_abs_delta": 0,
+            "target_tolerance": 1e-12,
+            "prediction_max_abs_delta": 0,
+            "prediction_tolerance": 1e-5,
+            "rmse_delta": 0,
+            "rmse_tolerance": 1e-6,
+            "variant_rmse_max_abs_delta": 0,
+            "variant_prediction_max_abs_delta": 0,
+            "dataset": {"rows": 40, "cols": 28},
+            "cases": [{"name": "portable_methods_pipeline", "prediction_rows": 12}],
+        }
     if key == "multimodal-roundtrip/python-rerun-ledger.json":
         return {
             "schema_version": "n4a.e2e.python_rerun_pipeline.v1",
@@ -926,7 +949,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
             "e2e-core-ui-custom-app-host",
             {
                 "steps": [
-                    "core-r-surface-probe",
+                    "core-r-parity",
                     "core-python-open-rerun",
                     "core-ui-runtime-host",
                     "shared-ui-host-render",
@@ -935,7 +958,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "tags": {"pipeline", "predictions", "parity", "web_results"},
                 "tools": {"python3.11", "Rscript", "npm"},
                 "produces": {
-                    "custom-host-r-surface.json",
+                    "custom-host-r-parity.json",
                     "custom-host-python-open.json",
                     "custom-host-python-rerun.json",
                     "custom-host-run.json",
@@ -945,7 +968,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 },
                 "commands": {"run_custom_app_host.py", "smoke:custom-app-host", "check:ui-shim", "Rscript"},
                 "evidence": {
-                    "R binding surface",
+                    "R binding numeric parity",
                     "Standalone nirs4all-core Python oracle fixture open ledger",
                     "Standalone nirs4all-core Python rerun parity ledger",
                     "nirs4all-core WASM",
@@ -1222,7 +1245,7 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
     assert {"python", "r", "javascript_wasm", "web"}.issubset(set(scenario["languages"]))
     assert {"nirs4all-core", "nirs4all-ui", "nirs4all-web"}.issubset(set(scenario["repos"]))
     assert [step["id"] for step in scenario["steps"]] == [
-        "core-r-surface-probe",
+        "core-r-parity",
         "core-python-open-rerun",
         "core-ui-runtime-host",
         "shared-ui-host-render",
@@ -1236,14 +1259,16 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
 
     text = _contract_text(scenario, phases)
     for fragment in (
-        "custom-host-r-surface.json",
+        "custom-host-r-parity.json",
         "custom-host-python-open.json",
         "custom-host-python-rerun.json",
         "custom-host-run.json",
         "custom-host-predictions.json",
         "custom-host-runtime-contracts.json",
         "custom-host-ui.json",
-        "r binding surface",
+        "r binding numeric parity",
+        "prediction_max_abs_delta",
+        "rmse_delta",
         "python_open_pipeline",
         "python_rerun_pipeline",
         "nirs4all-core wasm",
@@ -2096,10 +2121,10 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web_results": 5,
         "workspace_save": 6,
     }
-    assert report["debt_summary"]["strictness_gap_count"] == 12
+    assert report["debt_summary"]["strictness_gap_count"] == 11
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 6,
-        "strict": 19,
+        "strict": 20,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
@@ -2118,12 +2143,12 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
-        "strictness_gaps": 2,
+        "strictness_gaps": 1,
         "contract_phases": [],
         "gap_phases": [],
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 1,
-        "strict_parity_checks": 3,
+        "strict_parity_checks": 4,
         "strict_non_numeric_checks": 1,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-wasm-open-repo-pipeline-alt-dataset"] == {
@@ -2257,7 +2282,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=12 strict_non_numeric_checks=4 v1_contract_phases=5 "
+        "debt: strictness_gaps=11 strict_non_numeric_checks=4 v1_contract_phases=5 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2280,7 +2305,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
-    assert report["debt_summary"]["strictness_gap_count"] == 12
+    assert report["debt_summary"]["strictness_gap_count"] == 11
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
     assert report["scenario_details"][0]["strictness_gaps"]
 
@@ -2300,7 +2325,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     report = report_path.read_text(encoding="utf-8")
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
-    assert "| strictness gaps | 12 |" in report
+    assert "| strictness gaps | 11 |" in report
     assert "| strict non-numeric checks | 4 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
@@ -2388,13 +2413,15 @@ def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_pat
 
     manifest = _read_manifest()
     scenario = _scenario_by_id(manifest, "e2e-core-ui-custom-app-host")
-    scenario["strictness_gaps"] = [
-        gap for gap in scenario["strictness_gaps"] if "full R numeric rerun" not in gap
+    scenario["parity_checks"] = [
+        check
+        for check in scenario["parity_checks"]
+        if "{artifacts_dir}/custom-app-host/custom-host-r-parity.json" not in check.get("artifacts", [])
     ]
-    manifest_path = tmp_path / "structural-r-without-gap.json"
+    manifest_path = tmp_path / "custom-host-without-r-parity.json"
     _write_json(manifest_path, manifest)
 
-    with pytest.raises(e2e.E2EScenarioError, match="without numeric R evidence"):
+    with pytest.raises(e2e.E2EScenarioError, match="strict R numeric parity evidence"):
         e2e.validate_scenarios(manifest_path)
 
 

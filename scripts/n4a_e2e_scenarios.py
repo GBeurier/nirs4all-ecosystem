@@ -632,6 +632,26 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
         ],
     },
     "e2e-core-ui-custom-app-host": {
+        "custom-app-host/custom-host-r-parity.json": [
+            {"path": "schema_version", "equals": "n4a.e2e.r_parity_ledger.v1"},
+            {"path": "scenario_id", "equals": "e2e-core-ui-custom-app-host"},
+            {"path": "status", "equals": "passed"},
+            {"path": "language", "equals": "r"},
+            {"path": "oracle_reopened", "equals": True},
+            {"path": "pipeline_reopened", "equals": True},
+            {"path": "r_rerun_executed", "equals": True},
+            {"path": "finite_predictions", "equals": True},
+            {"path": "case_count", "gt": 0},
+            {"path": "prediction_rows", "gt": 0},
+            {"path": "dataset.rows", "gt": 0},
+            {"path": "dataset.cols", "gt": 0},
+            {"path": "target_max_abs_delta", "lte_path": "target_tolerance"},
+            {"path": "prediction_max_abs_delta", "lte_path": "prediction_tolerance"},
+            {"path": "rmse_delta", "lte_path": "rmse_tolerance"},
+            {"path": "variant_rmse_max_abs_delta", "lte_path": "rmse_tolerance"},
+            {"path": "variant_prediction_max_abs_delta", "lte_path": "prediction_tolerance"},
+            {"path": "cases", "non_empty": True},
+        ],
         "custom-app-host/custom-host-python-open.json": [
             {"path": "schema_version", "equals": "n4a.e2e.python_open_pipeline.v1"},
             {"path": "scenario_id", "equals": "e2e-core-ui-custom-app-host"},
@@ -1608,7 +1628,7 @@ def _validate_custom_app_host_contract(
         return
 
     required_artifacts = {
-        "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+        "{artifacts_dir}/custom-app-host/custom-host-r-parity.json",
         "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
         "{artifacts_dir}/custom-app-host/custom-host-python-rerun.json",
         "{artifacts_dir}/custom-app-host/custom-host-run.json",
@@ -1624,8 +1644,8 @@ def _validate_custom_app_host_contract(
         )
 
     expected_step_artifacts = {
-        "core-r-surface-probe": {
-            "{artifacts_dir}/custom-app-host/custom-host-r-surface.json",
+        "core-r-parity": {
+            "{artifacts_dir}/custom-app-host/custom-host-r-parity.json",
         },
         "core-python-open-rerun": {
             "{artifacts_dir}/custom-app-host/custom-host-python-open.json",
@@ -1690,6 +1710,24 @@ def _validate_custom_app_host_contract(
         raise E2EScenarioError(
             f"{scenario_id}: custom app host prediction parity must record max_abs_delta evidence"
         )
+
+    r_parity_check = _check_for_artifact(
+        "{artifacts_dir}/custom-app-host/custom-host-r-parity.json"
+    )
+    if r_parity_check is None or r_parity_check.get("evidence_level") != "strict":
+        raise E2EScenarioError(
+            f"{scenario_id}: custom app host requires strict R numeric parity evidence"
+        )
+    r_parity_text = _contract_blob(
+        r_parity_check.get("oracle", ""),
+        r_parity_check.get("candidate", ""),
+        r_parity_check.get("metric", ""),
+    )
+    for fragment in ("r", "python oracle", "prediction_max_abs_delta", "rmse_delta"):
+        if fragment not in r_parity_text:
+            raise E2EScenarioError(
+                f"{scenario_id}: custom app host R parity evidence must mention {fragment}"
+            )
 
     runtime_contracts_check = _check_for_artifact(
         "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json"
