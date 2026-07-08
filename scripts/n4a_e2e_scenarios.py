@@ -256,11 +256,7 @@ DELTA_FIELD_FRAGMENTS = (
 )
 TOLERANCE_FIELD_FRAGMENTS = ("atol", "rtol", "tolerance")
 STRICT_NUMERIC_REQUIREMENT_OPERATORS = ("lte_path", "gt", "gte")
-STRICT_NUMERIC_PROOF_EXEMPTIONS: dict[str, tuple[str, ...]] = {
-    "e2e-r-dataset-io-pipeline-save": (
-        "make test-r-parity fixture gate passes",
-    ),
-}
+STRICT_NUMERIC_PROOF_EXEMPTIONS: dict[str, tuple[str, ...]] = {}
 SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
     "e2e-r-dataset-io-pipeline-save": {
         "r-dataset-io-pipeline/roundtrip-checks.json": [
@@ -269,6 +265,72 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "pipeline_reopened", "equals": True},
             {"path": "predictions_reopened", "equals": True},
             {"path": "reproduced_split_targets_rmse_predictions", "equals": True},
+            {"path": "numeric_roundtrip.workspace.target_max_abs_delta", "lte_path": "numeric_roundtrip.tolerance"},
+            {
+                "path": "numeric_roundtrip.workspace.selected_prediction_max_abs_delta",
+                "lte_path": "numeric_roundtrip.tolerance",
+            },
+            {"path": "numeric_roundtrip.workspace.selected_rmse_delta", "lte_path": "numeric_roundtrip.tolerance"},
+            {
+                "path": "numeric_roundtrip.workspace.variant_prediction_max_abs_delta",
+                "lte_path": "numeric_roundtrip.tolerance",
+            },
+            {
+                "path": "numeric_roundtrip.workspace.variant_rmse_max_abs_delta",
+                "lte_path": "numeric_roundtrip.tolerance",
+            },
+            {
+                "path": "numeric_roundtrip.pipeline_rerun.target_max_abs_delta",
+                "lte_path": "numeric_roundtrip.tolerance",
+            },
+            {
+                "path": "numeric_roundtrip.pipeline_rerun.selected_prediction_max_abs_delta",
+                "lte_path": "numeric_roundtrip.tolerance",
+            },
+            {
+                "path": "numeric_roundtrip.pipeline_rerun.selected_rmse_delta",
+                "lte_path": "numeric_roundtrip.tolerance",
+            },
+            {
+                "path": "numeric_roundtrip.pipeline_rerun.variant_prediction_max_abs_delta",
+                "lte_path": "numeric_roundtrip.tolerance",
+            },
+            {
+                "path": "numeric_roundtrip.pipeline_rerun.variant_rmse_max_abs_delta",
+                "lte_path": "numeric_roundtrip.tolerance",
+            },
+            {
+                "path": "numeric_roundtrip.predictions_artifact.target_max_abs_delta",
+                "lte_path": "numeric_roundtrip.tolerance",
+            },
+            {
+                "path": "numeric_roundtrip.predictions_artifact.selected_prediction_max_abs_delta",
+                "lte_path": "numeric_roundtrip.tolerance",
+            },
+            {
+                "path": "numeric_roundtrip.predictions_artifact.selected_n_components_absolute_delta",
+                "lte_path": "numeric_roundtrip.count_tolerance",
+            },
+        ],
+        "r-dataset-io-pipeline/r-parity-ledger.json": [
+            {"path": "schema_version", "equals": "n4a.e2e.r_parity_ledger.v1"},
+            {"path": "scenario_id", "equals": "e2e-r-dataset-io-pipeline-save"},
+            {"path": "status", "equals": "passed"},
+            {"path": "language", "equals": "r"},
+            {"path": "oracle_reopened", "equals": True},
+            {"path": "pipeline_reopened", "equals": True},
+            {"path": "r_rerun_executed", "equals": True},
+            {"path": "case_count", "gt": 0},
+            {"path": "finite_predictions", "equals": True},
+            {"path": "prediction_rows", "gt": 0},
+            {"path": "target_max_abs_delta", "lte_path": "target_tolerance"},
+            {"path": "prediction_max_abs_delta", "lte_path": "prediction_tolerance"},
+            {"path": "rmse_delta", "lte_path": "rmse_tolerance"},
+            {"path": "variant_rmse_max_abs_delta", "lte_path": "rmse_tolerance"},
+            {"path": "variant_prediction_max_abs_delta", "lte_path": "prediction_tolerance"},
+            {"path": "dataset.rows", "gt": 0},
+            {"path": "dataset.cols", "gt": 0},
+            {"path": "cases", "non_empty": True},
         ],
         "r-dataset-io-pipeline/python-reopen-ledger.json": [
             {"path": "status", "equals": "passed"},

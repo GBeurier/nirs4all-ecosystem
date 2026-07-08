@@ -857,6 +857,7 @@
         "{artifacts_dir}/r-dataset-io-pipeline/dataset-package-summary.json",
         "{artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json",
         "{artifacts_dir}/r-dataset-io-pipeline/r-session-info.json",
+        "{artifacts_dir}/r-dataset-io-pipeline/r-parity-ledger.json",
         "{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json",
         "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json",
         "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json",
@@ -879,7 +880,7 @@
           "metric": "make test-r-parity fixture gate passes",
           "evidence_level": "strict",
           "artifacts": [
-            "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"
+            "{artifacts_dir}/r-dataset-io-pipeline/r-parity-ledger.json"
           ]
         },
         {
@@ -937,9 +938,10 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH make test-r-parity && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"
+            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH NIRS4ALL_CORE_R_PARITY_LEDGER={artifacts_dir}/r-dataset-io-pipeline/r-parity-ledger.json NIRS4ALL_CORE_R_PARITY_SCENARIO_ID=e2e-r-dataset-io-pipeline-save make test-r-parity && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"
           ],
           "produces": [
+            "{artifacts_dir}/r-dataset-io-pipeline/r-parity-ledger.json",
             "{artifacts_dir}/r-dataset-io-pipeline/workspace.n4a.json",
             "{artifacts_dir}/r-dataset-io-pipeline/pipeline.n4a.json",
             "{artifacts_dir}/r-dataset-io-pipeline/r-predictions.json",

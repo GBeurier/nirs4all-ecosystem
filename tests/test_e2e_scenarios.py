@@ -119,6 +119,61 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "pipeline_reopened": True,
             "predictions_reopened": True,
             "reproduced_split_targets_rmse_predictions": True,
+            "numeric_roundtrip": {
+                "tolerance": 1e-10,
+                "count_tolerance": 0,
+                "workspace": {
+                    "target_max_abs_delta": 0,
+                    "selected_prediction_max_abs_delta": 0,
+                    "selected_rmse_delta": 0,
+                    "variant_prediction_max_abs_delta": 0,
+                    "variant_rmse_max_abs_delta": 0,
+                },
+                "pipeline_rerun": {
+                    "target_max_abs_delta": 0,
+                    "selected_prediction_max_abs_delta": 0,
+                    "selected_rmse_delta": 0,
+                    "variant_prediction_max_abs_delta": 0,
+                    "variant_rmse_max_abs_delta": 0,
+                },
+                "predictions_artifact": {
+                    "target_max_abs_delta": 0,
+                    "selected_prediction_max_abs_delta": 0,
+                    "selected_n_components_absolute_delta": 0,
+                },
+            },
+        }
+    if key == "r-dataset-io-pipeline/r-parity-ledger.json":
+        return {
+            "schema_version": "n4a.e2e.r_parity_ledger.v1",
+            "scenario_id": "e2e-r-dataset-io-pipeline-save",
+            "status": "passed",
+            "language": "r",
+            "oracle_reopened": True,
+            "pipeline_reopened": True,
+            "r_rerun_executed": True,
+            "case_count": 4,
+            "finite_predictions": True,
+            "prediction_rows": 100,
+            "target_max_abs_delta": 0,
+            "target_tolerance": 1e-12,
+            "prediction_max_abs_delta": 0,
+            "prediction_tolerance": 1e-5,
+            "rmse_delta": 0,
+            "rmse_tolerance": 1e-6,
+            "variant_rmse_max_abs_delta": 0,
+            "variant_prediction_max_abs_delta": 0,
+            "dataset": {
+                "rows": 50,
+                "cols": 20,
+            },
+            "cases": [
+                {
+                    "name": "portable-fixture",
+                    "prediction_rows": 25,
+                    "finite_predictions": True,
+                }
+            ],
         }
     if key == "r-dataset-io-pipeline/python-reopen-ledger.json":
         return {
@@ -1918,9 +1973,7 @@ def test_cross_language_e2e_strict_artifacts_have_scenario_field_requirements() 
         if non_numeric:
             non_numeric_by_scenario[scenario["id"]] = non_numeric
 
-    assert non_numeric_by_scenario == {
-        "e2e-r-dataset-io-pipeline-save": ["make test-r-parity fixture gate passes"],
-    }
+    assert non_numeric_by_scenario == {}
 
 
 def test_cross_language_e2e_new_strict_check_requires_numeric_requirement(tmp_path: Path) -> None:
@@ -1928,6 +1981,12 @@ def test_cross_language_e2e_new_strict_check_requires_numeric_requirement(tmp_pa
     manifest = _read_manifest()
     scenario = _scenario_by_id(manifest, "e2e-r-dataset-io-pipeline-save")
     scenario["parity_checks"][0]["metric"] = "new fixture gate promoted without numeric evidence"
+    artifact_key = scenario["parity_checks"][0]["artifacts"][0].replace("{artifacts_dir}/", "")
+    e2e.SCENARIO_ARTIFACT_REQUIREMENTS[scenario["id"]][artifact_key] = [
+        requirement
+        for requirement in e2e.SCENARIO_ARTIFACT_REQUIREMENTS[scenario["id"]][artifact_key]
+        if "lte_path" not in requirement and "gt" not in requirement and "gte" not in requirement
+    ]
     manifest_path = tmp_path / "strict-check-without-numeric-requirement.json"
     _write_json(manifest_path, manifest)
 
@@ -2442,10 +2501,8 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "strict": 24,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
-    assert report["debt_summary"]["strict_non_numeric_check_count"] == 1
-    assert report["debt_summary"]["strict_non_numeric_checks"] == {
-        "e2e-r-dataset-io-pipeline-save": ["make test-r-parity fixture gate passes"],
-    }
+    assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
+    assert report["debt_summary"]["strict_non_numeric_checks"] == {}
     assert report["debt_summary"]["v1_contract_phase_count"] == 2
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
@@ -2456,7 +2513,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit", "wasm_web_reuse"],
         "contract_parity_checks": 0,
         "strict_parity_checks": 2,
-        "strict_non_numeric_checks": 1,
+        "strict_non_numeric_checks": 0,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
         "strictness_gaps": 0,
@@ -2608,7 +2665,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=6 strict_non_numeric_checks=1 v1_contract_phases=2 "
+        "debt: strictness_gaps=6 strict_non_numeric_checks=0 v1_contract_phases=2 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2632,7 +2689,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
     assert report["debt_summary"]["strictness_gap_count"] == 6
-    assert report["debt_summary"]["strict_non_numeric_check_count"] == 1
+    assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
     assert any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
 
@@ -2652,7 +2709,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
     assert "| strictness gaps | 6 |" in report
-    assert "| strict non-numeric checks | 1 |" in report
+    assert "| strict non-numeric checks | 0 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
     assert "## Strict Numeric Proof Exceptions" in report
