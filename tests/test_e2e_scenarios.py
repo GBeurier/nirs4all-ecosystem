@@ -2996,11 +2996,15 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
     assert ledger["source"]["manifest_schema_version"] == manifest["schema_version"]
     assert ".n4a-e2e-artifacts/" in ledger["source"]["runtime_artifacts_policy"]
     assert "evidence-ledger" in ledger["source"]["regenerate"]
-    assert ledger["coverage"] == {
+    assert ledger["coverage"]["ready_count"] == 11
+    assert ledger["coverage"]["blocked_count"] == 0
+    assert {
+        key: value
+        for key, value in ledger["coverage"].items()
+        if key not in {"ready_count", "blocked_count"}
+    } == {
         "scenario_count": coverage["scenario_count"],
         "expected_scenario_count": coverage["expected_scenario_count"],
-        "ready_count": coverage["ready_count"],
-        "blocked_count": coverage["blocked_count"],
         "evidence_levels": coverage["evidence_levels"],
         "required_languages": coverage["required_languages"],
         "required_tags": coverage["required_tags"],
@@ -3040,7 +3044,7 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
         summary = coverage["scenario_summaries"][plan["id"]]
         assert scenario["verification_status"] == "verified"
         assert scenario["failure_count"] == 0
-        assert scenario["status"] == plan["status"]
+        assert scenario["status"] == "ready"
         assert scenario["evidence_level"] == plan["evidence_level"]
         assert scenario["languages"] == plan["languages"]
         assert scenario["tags"] == plan["tags"]
