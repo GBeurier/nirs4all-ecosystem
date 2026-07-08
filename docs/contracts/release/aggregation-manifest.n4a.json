@@ -484,7 +484,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.3.1",
+      "preferred_exact_tag": "v0.3.2",
       "repo_url": "GBeurier/nirs4all-core",
       "role": "Canonical portable aggregate bindings (Python distribution nirs4all-core; Rust, npm/WASM, R, and MATLAB/Octave publish/import as nirs4all where the bare name is available)",
       "owner_boundary": "aggregate",
