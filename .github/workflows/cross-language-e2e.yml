@@ -52,8 +52,12 @@ jobs:
         working-directory: ${{ github.workspace }}
       - uses: r-lib/actions/setup-r@v2
       - uses: dtolnay/rust-toolchain@stable
+      - uses: mymindstorm/setup-emsdk@v14
+        if: ${{ github.event.inputs.execute == 'true' }}
+        with:
+          version: 3.1.74
       - name: Install system E2E tool shims
-        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build
+        run: sudo apt-get update && sudo apt-get install -y gcc-12 g++-12 cmake ninja-build
         working-directory: ${{ github.workspace }}
       - name: Install test dependencies
         run: python3 -m pip install pytest
@@ -72,6 +76,21 @@ jobs:
             -e "nirs4all-cluster[dev]" \
             -e "nirs4all-core/bindings/python"
           npm --prefix nirs4all-web/studio-lite ci --no-audit --no-fund
+      - name: Build strict methods runtime artifacts
+        if: ${{ github.event.inputs.execute == 'true' }}
+        run: |
+          cd nirs4all-methods
+          cmake --preset ci-linux-gcc12-release
+          cmake --build --preset ci-linux-gcc12-release --target n4m_c --parallel
+          ln -sfn ci-linux-gcc12-release build/dev-release
+          cmake --preset emscripten
+          cmake --build --preset emscripten --target n4m_wasm --parallel
+          npm --prefix bindings/js install --no-audit --no-fund
+          npm --prefix bindings/js run build
+          npm --prefix bindings/js run stage:wasm
+      - name: Install strict R runtime dependencies
+        if: ${{ github.event.inputs.execute == 'true' }}
+        run: Rscript -e 'install.packages(c("jsonlite", "yaml"), repos = "https://cloud.r-project.org")'
       - name: Validate scenario contract
         run: python3 scripts/n4a_e2e_scenarios.py validate
       - name: Run pytest validation
@@ -150,6 +169,7 @@ jobs:
         with:
           name: n4a-e2e-ready-runtime-evidence-${{ github.run_id }}
           path: nirs4all-ecosystem/.n4a-e2e-artifacts/**
+          include-hidden-files: true
           if-no-files-found: warn
       - name: Upload selected scenario evidence
         if: ${{ always() && github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
@@ -157,4 +177,5 @@ jobs:
         with:
           name: n4a-e2e-${{ github.event.inputs.scenario }}-runtime-evidence-${{ github.run_id }}
           path: nirs4all-ecosystem/.n4a-e2e-artifacts/**
+          include-hidden-files: true
           if-no-files-found: warn
