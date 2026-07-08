@@ -589,6 +589,65 @@ def _synthetic_evidence_payload(path: Path) -> dict:
                 "rows": 8,
             },
         }
+    if key == "formats-io-methods/assembled-datasets.json":
+        return {
+            "scenario": "e2e-formats-io-datasets-methods-language-bindings",
+            "datasets": [
+                {
+                    "dataset_id": "io_multi_source",
+                    "sources": ["X1", "X2"],
+                    "payload_ids": ["train/x0", "train/x1", "train/y"],
+                    "target_headers": ["Moisture"],
+                }
+            ],
+        }
+    if key == "formats-io-methods/binding-parity.json":
+        return {
+            "schema": "n4a.methods.cross_binding_parity.v1",
+            "status": "pass",
+            "build": {"build_invoked": True},
+            "tolerances": {
+                "binding_parity_max_diff": 1e-12,
+                "reference_parity_rmse_rel": 1e-12,
+                "wasm_rmse_rel": 1e-12,
+            },
+            "required_backends": ["cpp", "python_tier1", "r_tier1", "ref_python_scikit_learn"],
+            "parity_rows": [{"backend": "cpp"}],
+            "binding_summary": {
+                "all_required_backends_present": True,
+                "binding_backend_count": 3,
+                "binding_parity_all_ok": True,
+                "binding_parity_max_diff": 0,
+                "reference_parity_all_ok": True,
+                "reference_parity_rmse_rel_max": 0,
+            },
+            "wasm": {
+                "ok": True,
+                "metrics": {"predictions_rmse_rel": 0},
+                "metrics_max_rmse_rel": 0,
+            },
+            "rust_archive": {
+                "release_target": False,
+                "legacy_symbol_present": False,
+            },
+        }
+    if key == "formats-io-methods/predictions-by-language.json":
+        return {
+            "schema": "n4a.methods.predictions_by_language.v1",
+            "status": "pass",
+            "tolerances": {"wasm_rmse_rel": 1e-12},
+            "predictions": [{"backend": "cpp", "shape": [20], "sha256": "a" * 64}],
+            "prediction_summary": {
+                "backend_count": 4,
+                "prediction_rows_min": 20,
+                "shared_cpp_python_r_sha256": True,
+            },
+            "wasm": {
+                "metrics": {"predictions_rmse_rel": 0},
+                "metrics_max_rmse_rel": 0,
+            },
+            "rust_archive": {"release_target": False},
+        }
     return {
         "status": "passed",
         "ok": True,
@@ -1818,9 +1877,6 @@ def test_cross_language_e2e_strict_artifacts_have_scenario_field_requirements() 
     assert non_numeric_by_scenario == {
         "e2e-r-dataset-io-pipeline-save": ["make test-r-parity fixture gate passes"],
         "e2e-cluster-dag-rights-client-core": ["num_tasks, best_task_id, and best_metric parity"],
-        "e2e-formats-io-datasets-methods-language-bindings": [
-            "method outputs and predictions match tolerance ledger"
-        ],
         "e2e-core-ui-custom-app-host": [
             "prediction contract parity: serialized_model_predict_surfaces is exactly "
             "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline"
@@ -1925,6 +1981,41 @@ def test_cross_language_e2e_evidence_accepts_required_scenario_artifact_shape(
 
     assert report["verified_count"] == 1
     assert report["failed_count"] == 0
+
+
+def test_cross_language_e2e_formats_methods_evidence_requires_numeric_and_hash_parity(
+    tmp_path: Path,
+) -> None:
+    e2e = _load_e2e_module()
+    binding_artifact = tmp_path / "formats-io-methods" / "binding-parity.json"
+    predictions_artifact = tmp_path / "formats-io-methods" / "predictions-by-language.json"
+    binding_artifact.parent.mkdir(parents=True)
+
+    binding_payload = _synthetic_evidence_payload(binding_artifact)
+    binding_payload["wasm"]["metrics_max_rmse_rel"] = 1e-6
+    _write_json(binding_artifact, binding_payload)
+
+    predictions_payload = _synthetic_evidence_payload(predictions_artifact)
+    predictions_payload["prediction_summary"]["shared_cpp_python_r_sha256"] = False
+    _write_json(predictions_artifact, predictions_payload)
+
+    report = e2e.artifact_evidence_report(
+        [
+            {
+                "id": "e2e-formats-io-datasets-methods-language-bindings",
+                "artifacts": [str(binding_artifact), str(predictions_artifact)],
+                "steps": [],
+                "parity_checks": [],
+            }
+        ]
+    )
+
+    assert report["failed_count"] == 1
+    failures = "\n".join(
+        report["scenarios"]["e2e-formats-io-datasets-methods-language-bindings"]["failures"]
+    )
+    assert "wasm.metrics_max_rmse_rel" in failures
+    assert "prediction_summary.shared_cpp_python_r_sha256" in failures
 
 
 def test_cross_language_e2e_wasm_repository_evidence_requires_python_reopen_rerun(
@@ -2312,13 +2403,10 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "strict": 24,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
-    assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
+    assert report["debt_summary"]["strict_non_numeric_check_count"] == 3
     assert report["debt_summary"]["strict_non_numeric_checks"] == {
         "e2e-r-dataset-io-pipeline-save": ["make test-r-parity fixture gate passes"],
         "e2e-cluster-dag-rights-client-core": ["num_tasks, best_task_id, and best_metric parity"],
-        "e2e-formats-io-datasets-methods-language-bindings": [
-            "method outputs and predictions match tolerance ledger"
-        ],
         "e2e-core-ui-custom-app-host": [
             "prediction contract parity: serialized_model_predict_surfaces is exactly "
             "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline"
@@ -2486,7 +2574,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=6 strict_non_numeric_checks=4 v1_contract_phases=2 "
+        "debt: strictness_gaps=6 strict_non_numeric_checks=3 v1_contract_phases=2 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2510,7 +2598,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
     assert report["debt_summary"]["strictness_gap_count"] == 6
-    assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
+    assert report["debt_summary"]["strict_non_numeric_check_count"] == 3
     assert any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
 
@@ -2530,11 +2618,11 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
     assert "| strictness gaps | 6 |" in report
-    assert "| strict non-numeric checks | 4 |" in report
+    assert "| strict non-numeric checks | 3 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
     assert "## Strict Numeric Proof Exceptions" in report
-    assert "method outputs and predictions match tolerance ledger" in report
+    assert "method outputs and predictions match tolerance ledger" not in report
     assert "## Strictness Gap Detail" in report
     assert "dense fused-matrix multimodal proxy" in report
     assert "e2e-core-ui-custom-app-host" in report

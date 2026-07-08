@@ -263,9 +263,6 @@ STRICT_NUMERIC_PROOF_EXEMPTIONS: dict[str, tuple[str, ...]] = {
     "e2e-cluster-dag-rights-client-core": (
         "num_tasks, best_task_id, and best_metric parity",
     ),
-    "e2e-formats-io-datasets-methods-language-bindings": (
-        "method outputs and predictions match tolerance ledger",
-    ),
     "e2e-core-ui-custom-app-host": (
         "prediction contract parity: serialized_model_predict_surfaces is exactly "
         "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline",
@@ -730,17 +727,38 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
         ],
     },
     "e2e-formats-io-datasets-methods-language-bindings": {
+        "formats-io-methods/assembled-datasets.json": [
+            {"path": "scenario", "equals": "e2e-formats-io-datasets-methods-language-bindings"},
+            {"path": "datasets", "non_empty": True},
+        ],
         "formats-io-methods/binding-parity.json": [
+            {"path": "schema", "equals": "n4a.methods.cross_binding_parity.v1"},
             {"path": "status", "equals": "pass"},
             {"path": "build.build_invoked", "equals": True},
             {"path": "required_backends", "contains_all": ["cpp", "python_tier1", "r_tier1"]},
             {"path": "parity_rows", "non_empty": True},
+            {"path": "binding_summary.all_required_backends_present", "equals": True},
+            {"path": "binding_summary.binding_backend_count", "gte": 3},
+            {"path": "binding_summary.binding_parity_all_ok", "equals": True},
+            {"path": "binding_summary.binding_parity_max_diff", "lte_path": "tolerances.binding_parity_max_diff"},
+            {"path": "binding_summary.reference_parity_all_ok", "equals": True},
+            {"path": "binding_summary.reference_parity_rmse_rel_max", "lte_path": "tolerances.reference_parity_rmse_rel"},
+            {"path": "wasm.ok", "equals": True},
             {"path": "wasm.metrics", "non_empty": True},
+            {"path": "wasm.metrics_max_rmse_rel", "lte_path": "tolerances.wasm_rmse_rel"},
+            {"path": "rust_archive.release_target", "equals": False},
+            {"path": "rust_archive.legacy_symbol_present", "equals": False},
         ],
         "formats-io-methods/predictions-by-language.json": [
+            {"path": "schema", "equals": "n4a.methods.predictions_by_language.v1"},
             {"path": "status", "equals": "pass"},
             {"path": "predictions", "non_empty": True},
+            {"path": "prediction_summary.backend_count", "gte": 4},
+            {"path": "prediction_summary.prediction_rows_min", "gt": 0},
+            {"path": "prediction_summary.shared_cpp_python_r_sha256", "equals": True},
             {"path": "wasm.metrics", "non_empty": True},
+            {"path": "wasm.metrics_max_rmse_rel", "lte_path": "tolerances.wasm_rmse_rel"},
+            {"path": "rust_archive.release_target", "equals": False},
         ],
     },
     "e2e-core-ui-custom-app-host": {
