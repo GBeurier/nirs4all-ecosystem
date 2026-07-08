@@ -16,7 +16,7 @@ the checked-in repository pipeline against those files.
 
 ## Files Modified
 
-- `nirs4all-web` submodule pinned to `0e14ee3`.
+- `nirs4all-web` submodule pinned to `e273674`.
 - `docs/contracts/e2e/cross-language-scenarios.n4a.json`
 - `docs/CROSS_LANGUAGE_E2E.md`
 - `scripts/export_repository_dataset_fixture.py`
@@ -48,6 +48,8 @@ the checked-in repository pipeline against those files.
   test harness helper; it is not a Web backend.
 - Do not reopen `nirs4all-ui`; Web only vendored the already integrated shared
   UI package output required by its shim check.
+- Keep Web's vendored `nirs4all-core` shim in sync with the current core WASM
+  package metadata so the CI client-only gate stays green.
 - Treat `nirs4all-ecosystem` helper paths as orchestration surfaces, not
   submodule repos, in the E2E contract tests.
 
