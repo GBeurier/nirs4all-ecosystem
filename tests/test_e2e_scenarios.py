@@ -128,10 +128,20 @@ def _synthetic_evidence_payload(path: Path) -> dict:
                 "workspace_reopened": True,
                 "pipeline_reopened": True,
                 "python_rerun_executed": True,
+                "finite_targets": True,
                 "finite_predictions": True,
                 "dataset_hash_match": True,
+                "targets_max_abs_delta": 0,
                 "selected_prediction_max_abs_delta": 0,
                 "selected_rmse_delta": 0,
+                "variants": [
+                    {
+                        "index": 0,
+                        "n_components": 2,
+                        "rmse_delta": 0,
+                        "prediction_max_abs_delta": 0,
+                    }
+                ],
                 "r_prediction_artifact_max_abs_delta": 0,
             },
         }
@@ -965,7 +975,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "python-reopen-ledger.json",
                 },
                 "commands": {"e2e_dataset_io_pipeline.R", "make test-r-parity", "reopen_r_dataset_io_pipeline.py"},
-                "evidence": {"Python reopen/rerun ledger", "Python portable oracle", "Native methods parity"},
+                "evidence": {"Python reopen/rerun ledger", "Python portable fixture oracle", "Native methods parity"},
                 "phase_statuses": {
                     "python_open_pipeline": "strict",
                     "python_rerun_pipeline": "strict",
@@ -2209,7 +2219,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
 
     assert report["scenario_count"] == 11
     assert report["expected_scenario_count"] == 11
-    assert report["evidence_levels"] == {"hybrid": 7, "strict": 4}
+    assert report["evidence_levels"] == {"hybrid": 6, "strict": 5}
     assert report["required_languages"] == {
         "javascript_wasm": 8,
         "python": 11,
@@ -2239,7 +2249,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web_results": 5,
         "workspace_save": 6,
     }
-    assert report["debt_summary"]["strictness_gap_count"] == 7
+    assert report["debt_summary"]["strictness_gap_count"] == 6
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 3,
         "strict": 24,
@@ -2260,6 +2270,15 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["debt_summary"]["v1_contract_phase_count"] == 2
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
+    assert report["debt_summary"]["scenario_phase_debt"]["e2e-r-dataset-io-pipeline-save"] == {
+        "strictness_gaps": 0,
+        "contract_phases": [],
+        "gap_phases": [],
+        "not_applicable_phases": ["papers_export", "repository_forced_best_refit", "wasm_web_reuse"],
+        "contract_parity_checks": 0,
+        "strict_parity_checks": 2,
+        "strict_non_numeric_checks": 1,
+    }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
         "strictness_gaps": 0,
         "contract_phases": [],
@@ -2410,7 +2429,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=7 strict_non_numeric_checks=4 v1_contract_phases=2 "
+        "debt: strictness_gaps=6 strict_non_numeric_checks=4 v1_contract_phases=2 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2433,9 +2452,9 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
-    assert report["debt_summary"]["strictness_gap_count"] == 7
+    assert report["debt_summary"]["strictness_gap_count"] == 6
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
-    assert report["scenario_details"][0]["strictness_gaps"]
+    assert any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
 
 def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path: Path) -> None:
@@ -2453,7 +2472,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     report = report_path.read_text(encoding="utf-8")
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
-    assert "| strictness gaps | 7 |" in report
+    assert "| strictness gaps | 6 |" in report
     assert "| strict non-numeric checks | 4 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
@@ -2556,6 +2575,16 @@ def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_pat
 def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     manifest = _read_manifest()
     flow = manifest["v1_refactor_contract"]["scenario_coverage"]
+
+    r_dataset_io = _scenario_by_id(manifest, "e2e-r-dataset-io-pipeline-save")
+    assert r_dataset_io["evidence_level"] == "strict"
+    assert r_dataset_io["strictness_gaps"] == []
+    r_dataset_flow = flow["e2e-r-dataset-io-pipeline-save"]
+    assert r_dataset_flow["python_parity"]["status"] == "strict"
+    r_dataset_contract = json.dumps(r_dataset_flow["python_parity"], sort_keys=True)
+    assert "same catalog dataset ledger" in r_dataset_contract
+    assert "variant prediction" in r_dataset_contract
+    assert "R prediction artifact deltas within tolerance" in r_dataset_contract
 
     repository_refit = _scenario_by_id(manifest, "e2e-python-reopen-paper-repository-refit")
     assert repository_refit["evidence_level"] == "strict"

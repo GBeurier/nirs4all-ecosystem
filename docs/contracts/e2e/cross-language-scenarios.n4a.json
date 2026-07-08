@@ -49,13 +49,14 @@
         "python_parity": {
           "status": "strict",
           "evidence": [
-            "The portable fixture gate runs make test-r-parity and records native method parity."
+            "The portable fixture gate runs make test-r-parity and the same catalog dataset ledger compares Python aggregate rerun output against R/native targets, RMSE, selected predictions, variant predictions, and prediction artifacts."
           ],
           "artifacts": [
-            "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json"
+            "{artifacts_dir}/r-dataset-io-pipeline/roundtrip-checks.json",
+            "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json"
           ],
           "acceptance": [
-            "Keep the strict portable fixture parity gate green and add same-dataset parity before removing the hybrid gap."
+            "Keep the strict portable fixture parity gate green and require python-reopen-ledger.json to report target, RMSE, selected prediction, variant prediction, and R prediction artifact deltas within tolerance."
           ]
         },
         "papers_export": {
@@ -828,10 +829,8 @@
       "id": "e2e-r-dataset-io-pipeline-save",
       "title": "R dataset load, IO reshape, complex pipeline, and saved workspace",
       "objective": "In R, load a catalog dataset, change its structure through nirs4all-io, run a multi-step NIRS pipeline, and persist both pipeline and workspace artifacts.",
-      "evidence_level": "hybrid",
-      "strictness_gaps": [
-        "The portable R parity fixture is strict, but the real catalog dataset path currently proves IO preservation and finite R/native predictions rather than numeric R-vs-Python parity on that dataset."
-      ],
+      "evidence_level": "strict",
+      "strictness_gaps": [],
       "languages": [
         "r",
         "python",
@@ -870,7 +869,7 @@
         "Saved pipeline/workspace SHA256",
         "Reopened workspace/pipeline/prediction artifact roundtrip checks",
         "Python reopen/rerun ledger over the R-produced workspace and pipeline",
-        "Python portable oracle comparison when the fixture oracle is present",
+        "Python portable fixture oracle and same-dataset R/Python numeric comparison",
         "Native methods parity summary"
       ],
       "parity_checks": [

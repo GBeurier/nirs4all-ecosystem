@@ -51,8 +51,9 @@ surface to review before any production switch: they expose what remains hybrid
 without relying on skipped or xfailed tests.
 
 Current coverage is intentionally mixed: every parity-tagged scenario has at
-least one strict parity check, and the custom-app-host plus legacy-save
-converter/rendering scenarios are strict end to end for their declared scope.
+least one strict parity check, and the R dataset/IO/save lane, custom-app-host,
+and legacy-save converter/rendering scenarios are strict end to end for their
+declared scope.
 The manifest still records contract-level surfaces and explicit gaps for
 residual work such as source-aware native multimodal replay, Web/Studio runtime
 reuse, provider-backed browser datasets, broader source-aware by_source
