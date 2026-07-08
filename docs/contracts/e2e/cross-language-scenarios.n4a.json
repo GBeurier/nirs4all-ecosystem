@@ -493,13 +493,13 @@
         "python_parity": {
           "status": "strict",
           "evidence": [
-            "Python and JavaScript/WASM portable pipeline execution compare numeric outputs within tolerance."
+            "Python, R, and JavaScript/WASM portable pipeline execution compare pairwise numeric outputs within tolerance."
           ],
           "artifacts": [
             "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
           ],
           "acceptance": [
-            "Python/WASM RMSE and prediction vectors must match within 1e-10 on the provider-materialized deterministic NIRS CSV dataset."
+            "Python/R/WASM RMSE and prediction vectors must match within 1e-10 on the provider-materialized deterministic NIRS CSV dataset."
           ]
         },
         "papers_export": {
@@ -525,13 +525,13 @@
         "wasm_web_reuse": {
           "status": "strict",
           "evidence": [
-            "JavaScript/WASM consumes and executes the same repository descriptor as Python."
+            "JavaScript/WASM consumes and executes the same repository descriptor as Python and R."
           ],
           "artifacts": [
             "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
           ],
           "acceptance": [
-            "WASM descriptor consumption and numeric execution must match the Python portable pipeline ledger."
+            "WASM descriptor consumption and numeric execution must match the Python and R portable pipeline ledgers."
           ]
         }
       },
@@ -1629,13 +1629,12 @@
     {
       "id": "e2e-dataset-provider-repository-roundtrip",
       "title": "Dataset provider to repository to core roundtrip",
-      "objective": "Resolve a dataset provider descriptor, materialize through IO, publish a repository pipeline descriptor, and consume it through core Python and JavaScript/WASM entrypoints.",
-      "evidence_level": "hybrid",
-      "strictness_gaps": [
-        "Provider-materialized dataset execution is strict for Python/WASM portable pipeline parity; R execution for the same repository descriptor remains covered by separate core/methods gates."
-      ],
+      "objective": "Resolve a dataset provider descriptor, materialize through IO, publish a repository pipeline descriptor, and consume/execute it through core Python, R, and JavaScript/WASM entrypoints.",
+      "evidence_level": "strict",
+      "strictness_gaps": [],
       "languages": [
         "python",
+        "r",
         "javascript_wasm"
       ],
       "repos": [
@@ -1663,7 +1662,7 @@
         "Dataset manifest and IO materialization summary",
         "Repository index conformance",
         "Python and JavaScript/WASM descriptor consumption contract",
-        "Strict Python/WASM portable pipeline execution comparison on the provider-materialized dataset"
+        "Strict Python/R/WASM portable pipeline execution comparison on the provider-materialized dataset, including R predictions, r-vs-python, and r-vs-wasm numeric deltas"
       ],
       "parity_checks": [
         {
@@ -1677,8 +1676,17 @@
         },
         {
           "oracle": "nirs4all-core Python portable pipeline execution",
-          "candidate": "nirs4all-core JavaScript/WASM portable pipeline execution",
-          "metric": "split, preprocessing, targets, RMSE, predictions, and predictPortablePipeline roundtrip match within 1e-10 on the provider-materialized deterministic NIRS CSV dataset",
+          "candidate": "nirs4all-core R portable pipeline execution",
+          "metric": "R predictions, split, preprocessing, targets, RMSE, and r-vs-python pairwise prediction_abs_max/rmse_abs_max match within 1e-10 on the provider-materialized deterministic NIRS CSV dataset",
+          "evidence_level": "strict",
+          "artifacts": [
+            "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
+          ]
+        },
+        {
+          "oracle": "nirs4all-core Python portable pipeline execution",
+          "candidate": "nirs4all-core R and JavaScript/WASM portable pipeline execution",
+          "metric": "split, preprocessing, targets, RMSE, predictions, Python/R/WASM pairwise comparisons, and predictPortablePipeline roundtrip match within 1e-10 on the provider-materialized deterministic NIRS CSV dataset",
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
@@ -1735,11 +1743,12 @@
         },
         {
           "id": "core-consume-repository",
-          "title": "Consume the repository descriptor from Python and JavaScript/WASM",
+          "title": "Consume the repository descriptor from Python, R, and JavaScript/WASM",
           "kind": "verify",
           "repo": "nirs4all-core",
           "requires_tools": [
             "python3.11",
+            "Rscript",
             "npm"
           ],
           "requires_paths": [
@@ -1748,7 +1757,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && npm --prefix bindings/wasm ci --ignore-scripts --no-audit --no-fund && python3.11 scripts/e2e/consume_repository_descriptor.py --artifacts-dir {artifacts_dir}/provider-repository-roundtrip"
+            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH Rscript --version >/dev/null && PATH=/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH npm --prefix bindings/wasm ci --ignore-scripts --no-audit --no-fund && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH LD_LIBRARY_PATH={workspace_root}/nirs4all-methods/build/dev-release/cpp/src:${{LD_LIBRARY_PATH:-}} python3.11 scripts/e2e/consume_repository_descriptor.py --artifacts-dir {artifacts_dir}/provider-repository-roundtrip"
           ],
           "produces": [
             "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"

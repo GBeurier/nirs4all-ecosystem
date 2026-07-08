@@ -97,7 +97,7 @@ that count and the tests assert the expected handoff for each workflow:
 | `e2e-multimodal-python-r-wasm-roundtrip` | Python persists and reopens the multimodal pipeline artifact, then R/WASM consume the dense-fused artifacts with strict numeric parity against the Python oracle. |
 | `e2e-multisource-branching-stacking-replay` | Python builds, persists and reopens multisource stacking replay evidence before native/core replay verifies score and prediction-vector parity. |
 | `e2e-converter-legacy-save-predictions-web` | Python converts a legacy save and Web renders the lowered prediction result panels. |
-| `e2e-dataset-provider-repository-roundtrip` | Providers materialize a deterministic NIRS CSV dataset, publish a repository descriptor, and Python core plus JavaScript/WASM execute the same pipeline with strict prediction parity. |
+| `e2e-dataset-provider-repository-roundtrip` | Providers materialize a deterministic NIRS CSV dataset, publish a repository descriptor, and Python/R/JavaScript-WASM core surfaces execute the same pipeline with strict prediction parity. |
 | `e2e-pipeline-generation-performance-compare` | Python persists and reopens one generated candidate, then Web/native runtimes compare prediction and performance evidence. |
 | `e2e-cluster-dag-rights-client-core` | Cluster DAG execution is compared with a local Python numeric oracle and core handoff checks. |
 | `e2e-formats-io-datasets-methods-language-bindings` | Formats/IO assemble reference datasets and methods bindings compare Python/R/WASM/native prediction evidence. |

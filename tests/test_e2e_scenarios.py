@@ -872,7 +872,7 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
             "tags": {"workspace_save", "predictions", "web_results"},
         },
         "e2e-dataset-provider-repository-roundtrip": {
-            "languages": {"python", "javascript_wasm"},
+            "languages": {"python", "r", "javascript_wasm"},
             "repos": {"nirs4all-core", "nirs4all-providers", "nirs4all-datasets", "nirs4all-repository"},
             "tags": {"datasets", "repository", "pipeline", "parity"},
         },
@@ -1378,12 +1378,12 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
             "e2e-dataset-provider-repository-roundtrip",
             {
                 "steps": ["provider-materialize", "core-consume-repository"],
-                "languages": {"python", "javascript_wasm"},
+                "languages": {"python", "r", "javascript_wasm"},
                 "tags": {"datasets", "io", "repository", "pipeline", "parity"},
-                "tools": {"python3.11", "npm"},
+                "tools": {"python3.11", "Rscript", "npm"},
                 "produces": {"provider-resolution.json", "repository-pipeline.n4a.json", "cross-language-consumption.json"},
-                "commands": {"test_dataset_provider_repository_roundtrip.py", "consume_repository_descriptor.py"},
-                "evidence": {"provider materialization", "provider-materialized", "Python/WASM RMSE"},
+                "commands": {"test_dataset_provider_repository_roundtrip.py", "consume_repository_descriptor.py", "Rscript"},
+                "evidence": {"provider materialization", "provider-materialized", "Python/R/WASM", "r-vs-python"},
                 "phase_statuses": {"python_open_pipeline": "strict", "wasm_web_reuse": "strict"},
             },
         ),
@@ -2465,18 +2465,18 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
 
     assert report["scenario_count"] == 11
     assert report["expected_scenario_count"] == 11
-    assert report["evidence_levels"] == {"hybrid": 6, "strict": 5}
+    assert report["evidence_levels"] == {"hybrid": 5, "strict": 6}
     assert report["required_languages"] == {
         "javascript_wasm": 8,
         "python": 11,
-        "r": 4,
+        "r": 5,
         "web": 5,
     }
     assert report["languages"] == {
         "javascript_wasm": 8,
         "native": 6,
         "python": 11,
-        "r": 4,
+        "r": 5,
         "rust": 1,
         "rust_archive": 1,
         "web": 5,
@@ -2495,10 +2495,10 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web_results": 5,
         "workspace_save": 6,
     }
-    assert report["debt_summary"]["strictness_gap_count"] == 6
+    assert report["debt_summary"]["strictness_gap_count"] == 5
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 3,
-        "strict": 24,
+        "strict": 25,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
@@ -2558,6 +2558,15 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 0,
         "strict_parity_checks": 1,
+        "strict_non_numeric_checks": 0,
+    }
+    assert report["debt_summary"]["scenario_phase_debt"]["e2e-dataset-provider-repository-roundtrip"] == {
+        "strictness_gaps": 0,
+        "contract_phases": [],
+        "gap_phases": [],
+        "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
+        "contract_parity_checks": 1,
+        "strict_parity_checks": 2,
         "strict_non_numeric_checks": 0,
     }
     assert len(report["scenario_details"]) == 11
@@ -2665,7 +2674,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=6 strict_non_numeric_checks=0 v1_contract_phases=2 "
+        "debt: strictness_gaps=5 strict_non_numeric_checks=0 v1_contract_phases=2 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2688,7 +2697,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
-    assert report["debt_summary"]["strictness_gap_count"] == 6
+    assert report["debt_summary"]["strictness_gap_count"] == 5
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
     assert any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
@@ -2708,7 +2717,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     report = report_path.read_text(encoding="utf-8")
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
-    assert "| strictness gaps | 6 |" in report
+    assert "| strictness gaps | 5 |" in report
     assert "| strict non-numeric checks | 0 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
@@ -2913,10 +2922,13 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     )
 
     dataset_roundtrip = _scenario_by_id(manifest, "e2e-dataset-provider-repository-roundtrip")
-    assert dataset_roundtrip["evidence_level"] == "hybrid"
-    assert any("R execution" in gap for gap in dataset_roundtrip["strictness_gaps"])
-    assert any("Provider-materialized dataset execution is strict" in gap for gap in dataset_roundtrip["strictness_gaps"])
+    assert dataset_roundtrip["evidence_level"] == "strict"
+    assert dataset_roundtrip["strictness_gaps"] == []
+    assert "r" in dataset_roundtrip["languages"]
+    assert any("R portable pipeline execution" in check["candidate"] for check in dataset_roundtrip["parity_checks"])
+    assert any("r-vs-python" in check["metric"] for check in dataset_roundtrip["parity_checks"])
     assert flow["e2e-dataset-provider-repository-roundtrip"]["wasm_web_reuse"]["status"] == "strict"
+    assert flow["e2e-dataset-provider-repository-roundtrip"]["python_parity"]["status"] == "strict"
     assert (
         flow["e2e-dataset-provider-repository-roundtrip"]["repository_forced_best_refit"]["status"]
         == "not_applicable"
