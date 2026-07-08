@@ -23,6 +23,7 @@ ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS = {
 }
 ALLOWED_ORCHESTRATION_PATH_ROOTS = {
     "nirs4all-ecosystem",
+    "scripts",
 }
 LANGUAGE_EVIDENCE_FRAGMENTS = {
     "python": ("python", "python3", "nirs4all"),
@@ -1020,6 +1021,10 @@ def test_cross_language_e2e_step_repos_and_path_gates_stay_on_declared_public_su
 
             for raw_path in step.get("requires_paths", []):
                 if any(fragment in raw_path for fragment in ALLOWED_PUBLIC_CHECKOUT_DATA_BLOCKERS):
+                    continue
+                if raw_path.startswith("{ecosystem_root}/"):
+                    gated_root = raw_path.removeprefix("{ecosystem_root}/").split("/", 1)[0]
+                    assert gated_root in ALLOWED_ORCHESTRATION_PATH_ROOTS, f"{step_id}: {raw_path}"
                     continue
                 assert raw_path.startswith("{workspace_root}/"), f"{step_id}: {raw_path}"
                 gated_repo = raw_path.removeprefix("{workspace_root}/").split("/", 1)[0]
@@ -4127,7 +4132,15 @@ def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked(tmp_pa
             )
             step["requires_env"] = []
             for raw_path in step.get("requires_paths", []):
-                path = Path(raw_path.format(workspace_root=workspace_root, artifacts_dir=artifacts_dir))
+                path = Path(
+                    raw_path.format(
+                        workspace_root=workspace_root,
+                        ecosystem_root=ROOT,
+                        artifacts_dir=artifacts_dir,
+                    )
+                )
+                if path.exists():
+                    continue
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text("e2e entrypoint placeholder\n", encoding="utf-8")
     manifest_path = tmp_path / "scenarios.json"

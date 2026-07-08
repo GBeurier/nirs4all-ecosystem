@@ -987,7 +987,11 @@ def _unique(values: list[str], field: str) -> None:
 
 def _format_value(value: Any, workspace_root: Path, artifacts_dir: Path) -> Any:
     if isinstance(value, str):
-        return value.format(workspace_root=str(workspace_root), artifacts_dir=str(artifacts_dir))
+        return value.format(
+            workspace_root=str(workspace_root),
+            ecosystem_root=str(repo_root()),
+            artifacts_dir=str(artifacts_dir),
+        )
     if isinstance(value, list):
         return [_format_value(item, workspace_root, artifacts_dir) for item in value]
     if isinstance(value, dict):

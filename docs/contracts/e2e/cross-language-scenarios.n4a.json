@@ -1262,12 +1262,12 @@
             "{workspace_root}/nirs4all-providers/src/nirs4all_providers/datasets.py",
             "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/bootstrap.py",
             "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/organize.py",
-            "{workspace_root}/nirs4all-ecosystem/scripts/export_repository_dataset_fixture.py"
+            "{ecosystem_root}/scripts/export_repository_dataset_fixture.py"
           ],
           "command": [
             "bash",
             "-lc",
-            "python3.11 {workspace_root}/nirs4all-ecosystem/scripts/export_repository_dataset_fixture.py --workspace-root {workspace_root} --out-dir {artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset --build-synthetic-catalog-fixture && cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset N4A_REPOSITORY_DATASET_EXPECTED_BADGE='48 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
+            "python3.11 {ecosystem_root}/scripts/export_repository_dataset_fixture.py --workspace-root {workspace_root} --out-dir {artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset --build-synthetic-catalog-fixture && cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset N4A_REPOSITORY_DATASET_EXPECTED_BADGE='48 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
           ],
           "produces": [
             "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
