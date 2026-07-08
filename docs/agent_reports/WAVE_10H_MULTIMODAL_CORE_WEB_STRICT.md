@@ -20,6 +20,7 @@ dense-fused portable representation.
 - `nirs4all-ecosystem/tests/test_e2e_scenarios.py`
 - `nirs4all-ecosystem/docs/CROSS_LANGUAGE_E2E.md`
 - `nirs4all-ecosystem/docs/agent_reports/WAVE_10H_MULTIMODAL_CORE_WEB_STRICT.md`
+- `nirs4all-ecosystem/nirs4all-core` submodule pointer
 
 ## Tests run
 
@@ -60,6 +61,10 @@ records:
 - Leave the multisource scenario as the only remaining hybrid scenario until
   source-aware `by_source` or external-corpus replay is implemented or split into
   separate strict scenarios.
+- Advance the ecosystem `nirs4all-core` submodule pointer to the pushed core
+  head that contains both the formats/IO core web import script and this
+  multimodal web-core import evidence, so public GitHub checkouts plan the same
+  paths as the local workspace.
 
 ## Risks
 
