@@ -648,6 +648,31 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             },
             "rust_archive": {"release_target": False},
         }
+    if key == "cluster-dag-rights/local-vs-cluster-numeric.json":
+        return {
+            "status": "passed",
+            "cluster_best_rmse": 0.123,
+            "local_best_rmse": 0.123,
+            "abs_diff": 0,
+            "tolerance_abs": 1e-6,
+        }
+    if key == "cluster-dag-rights/local-vs-cluster-parity.json":
+        return {
+            "status": "passed",
+            "checks": {
+                "numeric_oracle_valid": True,
+                "best_metric_match": True,
+                "best_task_match": True,
+                "all_succeeded": True,
+            },
+            "numeric_recompute": {
+                "task_count_absolute_delta": 0,
+                "succeeded_count_absolute_delta": 0,
+                "count_tolerance": 0,
+                "best_metric_absolute_delta": 0,
+                "best_metric_tolerance": 1e-12,
+            },
+        }
     return {
         "status": "passed",
         "ok": True,
@@ -1323,7 +1348,12 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "languages": {"python", "native"},
                 "tags": {"pipeline", "workspace_save", "parity"},
                 "tools": {"python3.11"},
-                "produces": {"scheduler-run.json", "local-vs-cluster-numeric.json", "core-client-result.json"},
+                "produces": {
+                    "scheduler-run.json",
+                    "local-vs-cluster-numeric.json",
+                    "core-client-result.json",
+                    "local-vs-cluster-parity.json",
+                },
                 "commands": {"test_cluster_dag_rights_core_client.py", "verify_cluster_handoff.py"},
                 "evidence": {"N4A_CLUSTER_NUMERIC_ORACLE=1", "Local-vs-cluster"},
                 "phase_statuses": {"python_rerun_pipeline": "strict", "python_parity": "strict"},
@@ -1876,7 +1906,6 @@ def test_cross_language_e2e_strict_artifacts_have_scenario_field_requirements() 
 
     assert non_numeric_by_scenario == {
         "e2e-r-dataset-io-pipeline-save": ["make test-r-parity fixture gate passes"],
-        "e2e-cluster-dag-rights-client-core": ["num_tasks, best_task_id, and best_metric parity"],
         "e2e-core-ui-custom-app-host": [
             "prediction contract parity: serialized_model_predict_surfaces is exactly "
             "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline"
@@ -2403,10 +2432,9 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "strict": 24,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
-    assert report["debt_summary"]["strict_non_numeric_check_count"] == 3
+    assert report["debt_summary"]["strict_non_numeric_check_count"] == 2
     assert report["debt_summary"]["strict_non_numeric_checks"] == {
         "e2e-r-dataset-io-pipeline-save": ["make test-r-parity fixture gate passes"],
-        "e2e-cluster-dag-rights-client-core": ["num_tasks, best_task_id, and best_metric parity"],
         "e2e-core-ui-custom-app-host": [
             "prediction contract parity: serialized_model_predict_surfaces is exactly "
             "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline"
@@ -2574,7 +2602,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=6 strict_non_numeric_checks=3 v1_contract_phases=2 "
+        "debt: strictness_gaps=6 strict_non_numeric_checks=2 v1_contract_phases=2 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2598,7 +2626,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
     assert report["debt_summary"]["strictness_gap_count"] == 6
-    assert report["debt_summary"]["strict_non_numeric_check_count"] == 3
+    assert report["debt_summary"]["strict_non_numeric_check_count"] == 2
     assert any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
 
@@ -2618,7 +2646,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
     assert "| strictness gaps | 6 |" in report
-    assert "| strict non-numeric checks | 3 |" in report
+    assert "| strict non-numeric checks | 2 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
     assert "## Strict Numeric Proof Exceptions" in report

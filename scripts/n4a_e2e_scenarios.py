@@ -260,9 +260,6 @@ STRICT_NUMERIC_PROOF_EXEMPTIONS: dict[str, tuple[str, ...]] = {
     "e2e-r-dataset-io-pipeline-save": (
         "make test-r-parity fixture gate passes",
     ),
-    "e2e-cluster-dag-rights-client-core": (
-        "num_tasks, best_task_id, and best_metric parity",
-    ),
     "e2e-core-ui-custom-app-host": (
         "prediction contract parity: serialized_model_predict_surfaces is exactly "
         "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline",
@@ -724,6 +721,15 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "checks.best_metric_match", "equals": True},
             {"path": "checks.best_task_match", "equals": True},
             {"path": "checks.all_succeeded", "equals": True},
+            {"path": "numeric_recompute.task_count_absolute_delta", "lte_path": "numeric_recompute.count_tolerance"},
+            {
+                "path": "numeric_recompute.succeeded_count_absolute_delta",
+                "lte_path": "numeric_recompute.count_tolerance",
+            },
+            {
+                "path": "numeric_recompute.best_metric_absolute_delta",
+                "lte_path": "numeric_recompute.best_metric_tolerance",
+            },
         ],
     },
     "e2e-formats-io-datasets-methods-language-bindings": {
