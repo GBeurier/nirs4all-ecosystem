@@ -864,6 +864,22 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "y_mean", "non_empty": True},
             {"path": "cpp_native_predictions_rmse_rel", "lte_path": "tolerances.binding_parity_max_diff"},
         ],
+        "formats-io-methods/web-core-pipeline-import.json": [
+            {"path": "schema_version", "equals": "n4a.e2e.formats_io_core_web_import.v1"},
+            {"path": "scenario_id", "equals": "e2e-formats-io-datasets-methods-language-bindings"},
+            {"path": "status", "equals": "passed"},
+            {"path": "assembled_ledger_sha256", "non_empty": True},
+            {"path": "dataset_count", "gte": 2},
+            {"path": "executed_dataset_ids", "contains_all": ["io_single_source_split", "io_multi_source"]},
+            {"path": "feature_policies", "contains_all": ["single_source", "dense_fused_sources"]},
+            {"path": "cases", "non_empty": True},
+            {"path": "comparison_summary.prediction_max_abs_delta", "lte_path": "comparison_summary.tolerance"},
+            {"path": "comparison_summary.target_max_abs_delta", "lte_path": "comparison_summary.tolerance"},
+            {"path": "comparison_summary.rmse_delta", "lte_path": "comparison_summary.tolerance"},
+            {"path": "comparison_summary.variant_prediction_max_abs_delta", "lte_path": "comparison_summary.tolerance"},
+            {"path": "comparison_summary.variant_rmse_max_abs_delta", "lte_path": "comparison_summary.tolerance"},
+            {"path": "comparison_summary.predict_roundtrip_abs_max", "lte_path": "comparison_summary.tolerance"},
+        ],
     },
     "e2e-core-ui-custom-app-host": {
         "custom-app-host/custom-host-r-parity.json": [

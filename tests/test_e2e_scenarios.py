@@ -763,6 +763,47 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "y_mean": [0.0],
             "predictions": [0.0],
         }
+    if key == "formats-io-methods/web-core-pipeline-import.json":
+        return {
+            "schema_version": "n4a.e2e.formats_io_core_web_import.v1",
+            "scenario_id": "e2e-formats-io-datasets-methods-language-bindings",
+            "status": "passed",
+            "assembled_ledger_sha256": "a" * 64,
+            "dataset_count": 2,
+            "executed_dataset_ids": ["io_single_source_split", "io_multi_source"],
+            "feature_policies": ["single_source", "dense_fused_sources"],
+            "comparison_summary": {
+                "tolerance": 1e-8,
+                "prediction_max_abs_delta": 0,
+                "target_max_abs_delta": 0,
+                "rmse_delta": 0,
+                "variant_prediction_max_abs_delta": 0,
+                "variant_rmse_max_abs_delta": 0,
+                "predict_roundtrip_abs_max": 0,
+            },
+            "cases": [
+                {
+                    "dataset_id": "io_single_source_split",
+                    "status": "passed",
+                    "runtime": {
+                        "surface": "javascript_wasm",
+                        "client_side_only": True,
+                        "backend_api_request_count": 0,
+                    },
+                    "comparison": {"status": "passed", "tolerance": 1e-8, "prediction_max_abs_delta": 0},
+                },
+                {
+                    "dataset_id": "io_multi_source",
+                    "status": "passed",
+                    "runtime": {
+                        "surface": "javascript_wasm",
+                        "client_side_only": True,
+                        "backend_api_request_count": 0,
+                    },
+                    "comparison": {"status": "passed", "tolerance": 1e-8, "prediction_max_abs_delta": 0},
+                },
+            ],
+        }
     if key == "cluster-dag-rights/local-vs-cluster-numeric.json":
         return {
             "status": "passed",
@@ -1489,19 +1530,32 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
         (
             "e2e-formats-io-datasets-methods-language-bindings",
             {
-                "steps": ["assemble-reference-datasets", "cross-binding-methods-parity"],
+                "steps": [
+                    "assemble-reference-datasets",
+                    "cross-binding-methods-parity",
+                    "core-web-import-assembled-ledger",
+                ],
                 "languages": {"python", "r", "javascript_wasm", "rust_archive", "native"},
                 "tags": {"datasets", "io", "predictions", "parity", "pipeline"},
-                "tools": {"python3.11", "Rscript", "cmake", "ninja"},
+                "tools": {"python3.11", "Rscript", "cmake", "ninja", "node"},
                 "produces": {
                     "assembled-datasets.json",
                     "binding-parity.json",
                     "predictions-by-language.json",
                     "wasm-orchestrator-fixture.json",
+                    "web-core-pipeline-import.json",
                 },
-                "commands": {"test_formats_io_datasets_methods.py", "cross_binding_methods_parity.py"},
-                "evidence": {"Native methods ABI", "WASM methods orchestrator ledger fixture"},
-                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "contract"},
+                "commands": {
+                    "test_formats_io_datasets_methods.py",
+                    "cross_binding_methods_parity.py",
+                    "run_formats_io_core_web_import.py",
+                },
+                "evidence": {
+                    "Native methods ABI",
+                    "WASM methods orchestrator ledger fixture",
+                    "client-side WASM import",
+                },
+                "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "strict"},
             },
         ),
     ],
@@ -2528,7 +2582,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
 
     assert report["scenario_count"] == 11
     assert report["expected_scenario_count"] == 11
-    assert report["evidence_levels"] == {"hybrid": 3, "strict": 8}
+    assert report["evidence_levels"] == {"hybrid": 2, "strict": 9}
     assert report["required_languages"] == {
         "javascript_wasm": 8,
         "python": 11,
@@ -2558,26 +2612,25 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web_results": 5,
         "workspace_save": 6,
     }
-    assert report["debt_summary"]["strictness_gap_count"] == 3
+    assert report["debt_summary"]["strictness_gap_count"] == 2
     assert report["debt_summary"]["full_strict_ready"] is False
     assert report["debt_summary"]["full_strict_blockers"] == [
-        "non_strict_evidence_levels=hybrid:3",
-        "strictness_gaps=3",
-        "v1_contract_phases=2",
+        "non_strict_evidence_levels=hybrid:2",
+        "strictness_gaps=2",
+        "v1_contract_phases=1",
     ]
     assert report["debt_summary"]["non_strict_scenarios"] == [
         "e2e-multimodal-python-r-wasm-roundtrip",
         "e2e-multisource-branching-stacking-replay",
-        "e2e-formats-io-datasets-methods-language-bindings",
     ]
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 3,
-        "strict": 26,
+        "strict": 27,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
     assert report["debt_summary"]["strict_non_numeric_checks"] == {}
-    assert report["debt_summary"]["v1_contract_phase_count"] == 2
+    assert report["debt_summary"]["v1_contract_phase_count"] == 1
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-r-dataset-io-pipeline-save"] == {
@@ -2702,7 +2755,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "python_parity": {"strict": 11, "contract": 0, "gap": 0, "not_applicable": 0},
         "papers_export": {"strict": 1, "contract": 0, "gap": 0, "not_applicable": 10},
         "repository_forced_best_refit": {"strict": 2, "contract": 0, "gap": 0, "not_applicable": 9},
-        "wasm_web_reuse": {"strict": 6, "contract": 2, "gap": 0, "not_applicable": 3},
+        "wasm_web_reuse": {"strict": 7, "contract": 1, "gap": 0, "not_applicable": 3},
     }
     assert report["v1_refactor_phase_status_counts"] == expected_phase_counts
     scenario_ids_by_phase = report["v1_refactor_phase_scenario_ids"]
@@ -2722,6 +2775,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "e2e-converter-legacy-save-predictions-web",
         "e2e-dataset-provider-repository-roundtrip",
         "e2e-pipeline-generation-performance-compare",
+        "e2e-formats-io-datasets-methods-language-bindings",
         "e2e-python-reopen-paper-repository-refit",
         "e2e-wasm-open-repo-pipeline-alt-dataset",
     }
@@ -2748,12 +2802,12 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: full_strict_ready=false strictness_gaps=3 strict_non_numeric_checks=0 v1_contract_phases=2 "
+        "debt: full_strict_ready=false strictness_gaps=2 strict_non_numeric_checks=0 v1_contract_phases=1 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert (
-        "full strict blockers: non_strict_evidence_levels=hybrid:3, "
-        "strictness_gaps=3, v1_contract_phases=2"
+        "full strict blockers: non_strict_evidence_levels=hybrid:2, "
+        "strictness_gaps=2, v1_contract_phases=1"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
@@ -2772,8 +2826,8 @@ def test_cross_language_e2e_cli_coverage_full_strict_gate_fails_on_hybrid_debt()
     )
 
     assert covered.returncode == 1
-    assert "full strict gate failed: non_strict_evidence_levels=hybrid:3" in covered.stderr
-    assert "v1_contract_phases=2" in covered.stderr
+    assert "full strict gate failed: non_strict_evidence_levels=hybrid:2" in covered.stderr
+    assert "v1_contract_phases=1" in covered.stderr
 
 
 def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) -> None:
@@ -2792,7 +2846,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
-    assert report["debt_summary"]["strictness_gap_count"] == 3
+    assert report["debt_summary"]["strictness_gap_count"] == 2
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
     assert any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
@@ -2814,8 +2868,8 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
     assert "| full strict ready | no |" in report
     assert "## Full Strict Gate" in report
-    assert "| fail | non_strict_evidence_levels=hybrid:3, strictness_gaps=3, v1_contract_phases=2 |" in report
-    assert "| strictness gaps | 3 |" in report
+    assert "| fail | non_strict_evidence_levels=hybrid:2, strictness_gaps=2, v1_contract_phases=1 |" in report
+    assert "| strictness gaps | 2 |" in report
     assert "| strict non-numeric checks | 0 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
@@ -3047,15 +3101,23 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     )
 
     formats_bindings = _scenario_by_id(manifest, "e2e-formats-io-datasets-methods-language-bindings")
-    assert formats_bindings["evidence_level"] == "hybrid"
-    assert any("same nirs4all-methods orchestrator ledger fixture" in gap for gap in formats_bindings["strictness_gaps"])
-    assert any("lacks Web/core pipeline import" in gap for gap in formats_bindings["strictness_gaps"])
+    assert formats_bindings["evidence_level"] == "strict"
+    assert formats_bindings["strictness_gaps"] == []
     assert any(
         check["candidate"] == "WASM methods binding over orchestrator ledger fixture"
         and check["evidence_level"] == "strict"
         for check in formats_bindings["parity_checks"]
     )
-    assert flow["e2e-formats-io-datasets-methods-language-bindings"]["wasm_web_reuse"]["status"] == "contract"
+    assert any(
+        check["candidate"] == "nirs4all npm/WASM portable pipeline import"
+        and check["evidence_level"] == "strict"
+        for check in formats_bindings["parity_checks"]
+    )
+    assert flow["e2e-formats-io-datasets-methods-language-bindings"]["wasm_web_reuse"]["status"] == "strict"
+    assert "web-core-pipeline-import.json" in json.dumps(
+        flow["e2e-formats-io-datasets-methods-language-bindings"]["wasm_web_reuse"],
+        sort_keys=True,
+    )
 
     cluster = _scenario_by_id(manifest, "e2e-cluster-dag-rights-client-core")
     assert cluster["evidence_level"] == "strict"
