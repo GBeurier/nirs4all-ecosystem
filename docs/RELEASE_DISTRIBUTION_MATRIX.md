@@ -15,6 +15,11 @@ aggregation lock is:
 
 `docs/agent_reports/WAVE_10O_RUNTIME_E2E_LOCK_AUDIT.md`
 
+The latest operational follow-up for Studio RC packaging, cockpit manual
+blocker ordering, and the cluster GitGuardian audit is:
+
+`docs/agent_reports/WAVE_10P_STUDIO_RC_COCKPIT_CLUSTER_AUDIT.md`
+
 When live RC worktrees diverge from the selected release members, the
 aggregation lock validated from an isolated `checkout-members` workspace is the
 authority, not the live `_worktrees` checkout state.
