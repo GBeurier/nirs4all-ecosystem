@@ -481,7 +481,7 @@
         "python_rerun_pipeline": {
           "status": "strict",
           "evidence": [
-            "The Python portable pipeline executes over deterministic synthetic NIRS data for the repository descriptor."
+            "The Python portable pipeline executes over the provider-materialized deterministic NIRS CSV dataset for the repository descriptor."
           ],
           "artifacts": [
             "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
@@ -499,7 +499,7 @@
             "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
           ],
           "acceptance": [
-            "Python/WASM RMSE and prediction vectors must match within 1e-10 on deterministic synthetic NIRS data."
+            "Python/WASM RMSE and prediction vectors must match within 1e-10 on the provider-materialized deterministic NIRS CSV dataset."
           ]
         },
         "papers_export": {
@@ -1631,7 +1631,7 @@
       "objective": "Resolve a dataset provider descriptor, materialize through IO, publish a repository pipeline descriptor, and consume it through core Python and JavaScript/WASM entrypoints.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
-        "Repository descriptor execution is strict for a deterministic Python/WASM portable pipeline proof, but it still does not execute R or run the provider materialized dataset through the same prediction parity gate."
+        "Provider-materialized dataset execution is strict for Python/WASM portable pipeline parity; R execution for the same repository descriptor remains covered by separate core/methods gates."
       ],
       "languages": [
         "python",
@@ -1662,7 +1662,7 @@
         "Dataset manifest and IO materialization summary",
         "Repository index conformance",
         "Python and JavaScript/WASM descriptor consumption contract",
-        "Strict Python/WASM portable pipeline execution comparison"
+        "Strict Python/WASM portable pipeline execution comparison on the provider-materialized dataset"
       ],
       "parity_checks": [
         {
@@ -1677,7 +1677,7 @@
         {
           "oracle": "nirs4all-core Python portable pipeline execution",
           "candidate": "nirs4all-core JavaScript/WASM portable pipeline execution",
-          "metric": "split, preprocessing, targets, RMSE, predictions, and predictPortablePipeline roundtrip match within 1e-10 on deterministic synthetic NIRS data",
+          "metric": "split, preprocessing, targets, RMSE, predictions, and predictPortablePipeline roundtrip match within 1e-10 on the provider-materialized deterministic NIRS CSV dataset",
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"

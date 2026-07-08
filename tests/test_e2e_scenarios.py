@@ -276,6 +276,63 @@ def _synthetic_evidence_payload(path: Path) -> dict:
                 "predictions_tolerance": 1e-6,
             },
         }
+    if key == "provider-repository-roundtrip/provider-resolution.json":
+        return {
+            "schema_version": "n4a.e2e.provider-repository-roundtrip/v1",
+            "dataset": {
+                "io_package_summary": {
+                    "schema_version": 2,
+                    "name": "provider-roundtrip",
+                    "n_sources": 1,
+                },
+                "io_package_summary_sha256": "a" * 64,
+                "execution_dataset": {
+                    "kind": "provider_materialized_csv_nirs_matrix",
+                    "rows": 40,
+                    "cols": 28,
+                    "X": [[1.0] * 28],
+                    "y": [1.0],
+                },
+                "execution_dataset_sha256": "b" * 64,
+                "execution_dataset_csv_sha256": "c" * 64,
+            },
+        }
+    if key == "provider-repository-roundtrip/cross-language-consumption.json":
+        return {
+            "status": "passed",
+            "python": {"status": "passed"},
+            "javascript_wasm": {"status": "passed"},
+            "parity": {
+                "classes_match": True,
+                "random_state_match": True,
+            },
+            "execution": {
+                "dataset": {
+                    "kind": "provider_materialized_csv_nirs_matrix",
+                    "rows": 40,
+                    "cols": 28,
+                    "sha256": "b" * 64,
+                    "provider_resolution_sha256": "b" * 64,
+                    "source_csv_sha256": "c" * 64,
+                    "io_package_summary_sha256": "a" * 64,
+                },
+                "comparison": {
+                    "status": "passed",
+                    "tolerance": 1e-10,
+                    "targets_abs_max": 0,
+                    "prediction_abs_max": 0,
+                    "rmse_abs_max": 0,
+                    "predict_roundtrip_abs_max": 0,
+                    "variants": [
+                        {
+                            "n_components": 2,
+                            "prediction_abs_max": 0,
+                            "rmse_abs": 0,
+                        }
+                    ],
+                },
+            },
+        }
     if key == "legacy-converter/python-open-pipeline.json":
         return {
             "schema_version": "n4a.e2e.python_open_pipeline.v1",
@@ -1173,7 +1230,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "tools": {"python3.11", "npm"},
                 "produces": {"provider-resolution.json", "repository-pipeline.n4a.json", "cross-language-consumption.json"},
                 "commands": {"test_dataset_provider_repository_roundtrip.py", "consume_repository_descriptor.py"},
-                "evidence": {"provider materialization", "Python/WASM RMSE"},
+                "evidence": {"provider materialization", "provider-materialized", "Python/WASM RMSE"},
                 "phase_statuses": {"python_open_pipeline": "strict", "wasm_web_reuse": "strict"},
             },
         ),
@@ -2678,7 +2735,8 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
 
     dataset_roundtrip = _scenario_by_id(manifest, "e2e-dataset-provider-repository-roundtrip")
     assert dataset_roundtrip["evidence_level"] == "hybrid"
-    assert any("does not execute R" in gap for gap in dataset_roundtrip["strictness_gaps"])
+    assert any("R execution" in gap for gap in dataset_roundtrip["strictness_gaps"])
+    assert any("Provider-materialized dataset execution is strict" in gap for gap in dataset_roundtrip["strictness_gaps"])
     assert flow["e2e-dataset-provider-repository-roundtrip"]["wasm_web_reuse"]["status"] == "strict"
     assert (
         flow["e2e-dataset-provider-repository-roundtrip"]["repository_forced_best_refit"]["status"]
