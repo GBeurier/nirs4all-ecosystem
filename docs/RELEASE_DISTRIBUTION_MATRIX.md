@@ -13,7 +13,7 @@ The aggregate release-member intent and exact selected lock are tracked in:
 The latest head-selection and publication-state audit for this matrix and the
 aggregation lock is:
 
-`docs/agent_reports/WAVE_10K_COCKPIT_MANUAL_ACTION_SOURCE_SYNC.md`
+`docs/agent_reports/WAVE_10O_RUNTIME_E2E_LOCK_AUDIT.md`
 
 When live RC worktrees diverge from the selected release members, the
 aggregation lock validated from an isolated `checkout-members` workspace is the
