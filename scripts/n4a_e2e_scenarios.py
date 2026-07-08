@@ -52,7 +52,7 @@ REQUIRED_TAGS = {
 REQUIRED_SUITE_WORKFLOW_SURFACES = {
     "core_ui_web_custom_app": {
         "languages": {"python", "r", "javascript_wasm", "web"},
-        "repos": {"nirs4all-core", "nirs4all-ui", "nirs4all-web"},
+        "repos": {"nirs4all-core", "nirs4all-quality", "nirs4all-ui", "nirs4all-web"},
         "tags": {"pipeline", "predictions", "parity", "web_results"},
     },
     "r_python_wasm_roundtrip": {
@@ -1017,17 +1017,46 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "published_package_install", "equals": True},
             {"path": "bundled_downstream_app", "equals": True},
             {"path": "public_imports_only", "equals": True},
-            {"path": "nirs4all_version", "equals": "0.3.3"},
-            {"path": "nirs4all_ui_version", "equals": "0.1.7"},
+            {"path": "nirs4all_version", "equals": "0.3.7"},
+            {"path": "nirs4all_ui_version", "equals": "0.1.8"},
+            {"path": "nirs4all_methods_version", "equals": "1.0.8"},
+            {"path": "upstream_methods_installed", "equals": True},
             {"path": "controller_count", "gt": 0},
             {"path": "predict_surface", "equals": "javascript_wasm"},
             {"path": "dataset_title", "equals": "Published custom host dataset"},
             {"path": "engine_label", "equals": "Nirs4all Core Wasm"},
             {"path": "run_entrypoint", "equals": "function"},
             {"path": "predict_entrypoint", "equals": "function"},
+            {"path": "portable_pipeline_executed", "equals": True},
+            {"path": "selected_rmse", "gte": 0},
+            {"path": "selected_prediction_count", "gt": 0},
+            {"path": "prediction_rows", "gt": 0},
+            {"path": "prediction_cols", "equals": 1},
+            {"path": "finite_predictions", "equals": True},
             {"path": "dist_index_exists", "equals": True},
             {"path": "dist_asset_count", "gt": 0},
+            {"path": "dist_wasm_asset_count", "gt": 0},
             {"path": "dist_files", "non_empty": True},
+        ],
+        "custom-app-host/custom-host-quality-smoke.json": [
+            {"path": "schema_version", "equals": "n4a.e2e.quality_custom_host_smoke.v1"},
+            {"path": "scenario_id", "equals": "e2e-core-ui-custom-app-host"},
+            {"path": "status", "equals": "passed"},
+            {"path": "repo", "equals": "nirs4all-quality"},
+            {"path": "client_side_only", "equals": True},
+            {"path": "static_preview", "equals": True},
+            {"path": "no_python_backend", "equals": True},
+            {"path": "build.dist_index_exists", "equals": True},
+            {"path": "build.dist_asset_count", "gt": 0},
+            {"path": "build.wasm_asset_count", "gt": 0},
+            {"path": "nirs4all_ui.theme_import", "equals": True},
+            {"path": "nirs4all_ui.lab_source_declared", "equals": True},
+            {"path": "nirs4all_ui.brand_assets_present", "equals": True},
+            {"path": "wasm_smoke.executed", "equals": True},
+            {"path": "wasm_smoke.engine_label", "equals": "nirs4all-core-wasm"},
+            {"path": "wasm_smoke.nirs4all_core_wasm", "equals": True},
+            {"path": "wasm_smoke.rmsep_rendered", "equals": True},
+            {"path": "wasm_smoke.console_error_count", "equals": 0},
         ],
     },
 }
@@ -1963,6 +1992,7 @@ def _validate_custom_app_host_contract(
         "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",
         "{artifacts_dir}/custom-app-host/custom-host-ui.json",
         "{artifacts_dir}/custom-app-host/published-custom-host.json",
+        "{artifacts_dir}/custom-app-host/custom-host-quality-smoke.json",
     }
     missing_artifacts = sorted(required_artifacts - set(scenario["artifacts"]))
     if missing_artifacts:
@@ -1989,6 +2019,9 @@ def _validate_custom_app_host_contract(
         },
         "published-package-custom-host": {
             "{artifacts_dir}/custom-app-host/published-custom-host.json",
+        },
+        "quality-custom-host-smoke": {
+            "{artifacts_dir}/custom-app-host/custom-host-quality-smoke.json",
         },
     }
     steps_by_id = {step["id"]: step for step in scenario["steps"]}

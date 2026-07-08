@@ -574,16 +574,25 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "published_package_install": True,
             "bundled_downstream_app": True,
             "public_imports_only": True,
-            "nirs4all_version": "0.3.3",
-            "nirs4all_ui_version": "0.1.7",
+            "nirs4all_version": "0.3.7",
+            "nirs4all_ui_version": "0.1.8",
+            "nirs4all_methods_version": "1.0.8",
+            "upstream_methods_installed": True,
             "controller_count": 5,
             "predict_surface": "javascript_wasm",
             "dataset_title": "Published custom host dataset",
             "engine_label": "Nirs4all Core Wasm",
             "run_entrypoint": "function",
             "predict_entrypoint": "function",
+            "portable_pipeline_executed": True,
+            "selected_rmse": 0.0123,
+            "selected_prediction_count": 3,
+            "prediction_rows": 12,
+            "prediction_cols": 1,
+            "finite_predictions": True,
             "dist_index_exists": True,
             "dist_asset_count": 10,
+            "dist_wasm_asset_count": 1,
             "dist_files": ["index.html", "assets/index.js"],
         }
     if key == "multimodal-roundtrip/python-open-ledger.json":
@@ -1433,10 +1442,11 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "core-ui-runtime-host",
                     "shared-ui-host-render",
                     "published-package-custom-host",
+                    "quality-custom-host-smoke",
                 ],
                 "languages": {"python", "r", "javascript_wasm", "web"},
                 "tags": {"pipeline", "predictions", "parity", "web_results"},
-                "tools": {"python3.11", "Rscript", "npm"},
+                "tools": {"python3.11", "Rscript", "npm", "google-chrome"},
                 "produces": {
                     "custom-host-r-parity.json",
                     "custom-host-python-open.json",
@@ -1446,11 +1456,13 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "custom-host-runtime-contracts.json",
                     "custom-host-ui.json",
                     "published-custom-host.json",
+                    "custom-host-quality-smoke.json",
                 },
                 "commands": {
                     "run_custom_app_host.py",
                     "smoke:custom-app-host",
                     "smoke:published-custom-host",
+                    "run_quality_custom_host_smoke.py",
                     "check:ui-shim",
                     "Rscript",
                 },
@@ -1462,6 +1474,8 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "runtimeContracts",
                     "nirs4all-ui",
                     "Published nirs4all",
+                    "nirs4all-quality",
+                    "nirs4all-core-wasm",
                 },
                 "phase_statuses": {
                     "python_open_pipeline": "strict",
@@ -1761,16 +1775,20 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
     phases = manifest["v1_refactor_contract"]["scenario_coverage"][scenario["id"]]
 
     assert {"python", "r", "javascript_wasm", "web"}.issubset(set(scenario["languages"]))
-    assert {"nirs4all-core", "nirs4all-ui", "nirs4all-web"}.issubset(set(scenario["repos"]))
+    assert {"nirs4all-core", "nirs4all-quality", "nirs4all-ui", "nirs4all-web"}.issubset(
+        set(scenario["repos"])
+    )
     assert [step["id"] for step in scenario["steps"]] == [
         "core-r-parity",
         "core-python-open-rerun",
         "core-ui-runtime-host",
         "shared-ui-host-render",
         "published-package-custom-host",
+        "quality-custom-host-smoke",
     ]
     assert {step["repo"] for step in scenario["steps"][:2]} == {"nirs4all-core"}
-    assert {step["repo"] for step in scenario["steps"][2:]} == {"nirs4all-web"}
+    assert {step["repo"] for step in scenario["steps"][2:5]} == {"nirs4all-web"}
+    assert scenario["steps"][5]["repo"] == "nirs4all-quality"
     assert scenario["evidence_level"] == "strict"
     assert scenario["strictness_gaps"] == []
     assert phases["python_open_pipeline"]["status"] == "strict"
@@ -1788,6 +1806,7 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
         "custom-host-runtime-contracts.json",
         "custom-host-ui.json",
         "published-custom-host.json",
+        "custom-host-quality-smoke.json",
         "r binding numeric parity",
         "prediction_max_abs_delta",
         "rmse_delta",
@@ -1803,7 +1822,12 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
         "result panel",
         "published package install",
         "public imports only",
+        "@nirs4all/methods",
+        "portable run/predict execution",
         "vite dist asset",
+        "nirs4all-quality",
+        "nirs4all-core-wasm",
+        "shared nirs4all-ui theme",
     ):
         assert fragment in text
 
@@ -1823,6 +1847,14 @@ def test_cross_language_e2e_custom_app_host_declares_python_r_wasm_web_artifact_
     assert published_check["evidence_level"] == "strict"
     assert "published package install" in published_check["metric"]
     assert "public imports only" in published_check["metric"]
+    assert "@nirs4all/methods" in published_check["metric"]
+    assert "portable run/predict execution" in published_check["metric"]
+    quality_check = checks_by_artifact[
+        ("{artifacts_dir}/custom-app-host/custom-host-quality-smoke.json",)
+    ]
+    assert quality_check["evidence_level"] == "strict"
+    assert "no Python backend" in quality_check["metric"]
+    assert "nirs4all-core-wasm" in quality_check["metric"]
 
 
 @pytest.mark.parametrize(
@@ -2702,7 +2734,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["debt_summary"]["non_strict_scenarios"] == []
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 3,
-        "strict": 28,
+        "strict": 29,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
@@ -2725,7 +2757,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "gap_phases": [],
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 0,
-        "strict_parity_checks": 6,
+        "strict_parity_checks": 7,
         "strict_non_numeric_checks": 0,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-wasm-open-repo-pipeline-alt-dataset"] == {
@@ -2821,6 +2853,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "nirs4all-providers": 3,
         "nirs4all-repository": 3,
         "nirs4all-tools": 1,
+        "nirs4all-quality": 1,
         "nirs4all-ui": 3,
         "nirs4all-web": 5,
     }

@@ -814,15 +814,18 @@
           "status": "strict",
           "evidence": [
             "The same Web host imports nirs4all-core runtime outputs and renders nirs4all-ui dataset, pipeline, prediction result panel, engine, and metric components.",
-            "A standalone downstream Vite/React host installs the published nirs4all and nirs4all-ui packages and bundles public imports only."
+            "A standalone downstream Vite/React host installs the published nirs4all and nirs4all-ui packages, executes portable run/predict, and bundles public imports only.",
+            "nirs4all-quality builds as a static client-side core/UI app and executes its libn4m WASM calibration smoke."
           ],
           "artifacts": [
             "{artifacts_dir}/custom-app-host/custom-host-ui.json",
-            "{artifacts_dir}/custom-app-host/published-custom-host.json"
+            "{artifacts_dir}/custom-app-host/published-custom-host.json",
+            "{artifacts_dir}/custom-app-host/custom-host-quality-smoke.json"
           ],
           "acceptance": [
             "custom-host-ui.json must record rendered nirs4all-ui component tags, dataset title, selected pipeline id, prediction result panel/count, and the nirs4all-core engine label with status=passed.",
-            "published-custom-host.json must record package install success, public_imports_only=true, controller count, javascript_wasm predict surface, portable run/predict entrypoints, and a non-empty Vite dist asset build."
+            "published-custom-host.json must record package install success, public_imports_only=true, published nirs4all/nirs4all-ui/@nirs4all/methods versions, controller count, javascript_wasm predict surface, portable run/predict execution, finite predictions, a non-empty Vite dist asset build, and at least one bundled WASM asset.",
+            "custom-host-quality-smoke.json must record static preview success, no Python backend, shared nirs4all-ui theme/brand usage, nirs4all-core-wasm engine label, and zero console errors."
           ]
         }
       }
@@ -2162,6 +2165,7 @@
       ],
       "repos": [
         "nirs4all-web",
+        "nirs4all-quality",
         "nirs4all-core",
         "nirs4all-methods",
         "nirs4all-ui"
@@ -2180,7 +2184,8 @@
         "{artifacts_dir}/custom-app-host/custom-host-predictions.json",
         "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",
         "{artifacts_dir}/custom-app-host/custom-host-ui.json",
-        "{artifacts_dir}/custom-app-host/published-custom-host.json"
+        "{artifacts_dir}/custom-app-host/published-custom-host.json",
+        "{artifacts_dir}/custom-app-host/custom-host-quality-smoke.json"
       ],
       "evidence": [
         "R binding numeric parity ledger against the portable Python oracle",
@@ -2192,6 +2197,7 @@
         "Prediction max_abs_delta versus Python oracle tolerance",
         "nirs4all-ui DatasetPreviewCard, RuntimeEngineBadge, and MetricValueBadge React elements rendered in the same host",
         "Published nirs4all and nirs4all-ui packages install into a standalone downstream Vite/React custom host and bundle using public imports only",
+        "nirs4all-quality builds as a static client-side app, imports shared nirs4all-ui theme/brand assets, and executes its libn4m WASM calibration smoke with engine label nirs4all-core-wasm",
         "Client-side-only custom app host path with no Studio backend or Web API calls"
       ],
       "parity_checks": [
@@ -2244,10 +2250,19 @@
         {
           "oracle": "published nirs4all and nirs4all-ui package surfaces",
           "candidate": "standalone downstream Vite/React custom host build",
-          "metric": "package composition parity: published package install, public imports only, controller count, javascript_wasm predict surface, portable run/predict entrypoints, and Vite dist asset build are verified",
+          "metric": "package composition parity: published package install, public imports only, runtime @nirs4all/methods peer install, controller count, javascript_wasm predict surface, portable run/predict execution, finite predictions, Vite dist asset build, and WASM bundle are verified",
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/custom-app-host/published-custom-host.json"
+          ]
+        },
+        {
+          "oracle": "nirs4all-quality client-side core/UI host contract",
+          "candidate": "static preview app built from shared nirs4all-ui theme/assets and nirs4all-core WASM",
+          "metric": "custom host reuse parity: static preview, no Python backend, shared nirs4all-ui theme/brand, nirs4all-core-wasm execution, RMSEP render, and zero console errors are verified",
+          "evidence_level": "strict",
+          "artifacts": [
+            "{artifacts_dir}/custom-app-host/custom-host-quality-smoke.json"
           ]
         }
       ],
@@ -2359,10 +2374,36 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.3 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.7 npm run smoke:published-custom-host"
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.7 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.8 N4A_PUBLISHED_METHODS_VERSION=1.0.8 npm run smoke:published-custom-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/published-custom-host.json"
+          ]
+        },
+        {
+          "id": "quality-custom-host-smoke",
+          "title": "Build and smoke nirs4all-quality as a reusable client-side core/UI app",
+          "kind": "ui",
+          "repo": "nirs4all-quality",
+          "requires_tools": [
+            "npm",
+            "python3.11",
+            "google-chrome"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-quality/app/package.json",
+            "{workspace_root}/nirs4all-quality/app/scripts/wasm-smoke.mjs",
+            "{workspace_root}/nirs4all-quality/app/src/styles/index.css",
+            "{workspace_root}/nirs4all-ui/assets/theme.css",
+            "{workspace_root}/nirs4all-core/bindings/wasm"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-quality && SCRIPT={workspace_root}/scripts/e2e/run_quality_custom_host_smoke.py; if [ ! -f \"$SCRIPT\" ]; then SCRIPT={workspace_root}/nirs4all-ecosystem/scripts/e2e/run_quality_custom_host_smoke.py; fi; python3.11 \"$SCRIPT\" --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}"
+          ],
+          "produces": [
+            "{artifacts_dir}/custom-app-host/custom-host-quality-smoke.json"
           ]
         }
       ]
