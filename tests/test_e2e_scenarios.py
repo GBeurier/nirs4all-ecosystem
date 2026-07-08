@@ -886,10 +886,15 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
     ]
 
     assert [scenario_id for scenario_id, _contract in strict] == [
-        "e2e-python-reopen-paper-repository-refit"
+        "e2e-python-reopen-paper-repository-refit",
+        "e2e-wasm-open-repo-pipeline-alt-dataset",
     ]
-    assert strict[0][1]["artifacts"] == [
+    artifacts_by_scenario = {scenario_id: contract["artifacts"] for scenario_id, contract in strict}
+    assert artifacts_by_scenario["e2e-python-reopen-paper-repository-refit"] == [
         "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"
+    ]
+    assert artifacts_by_scenario["e2e-wasm-open-repo-pipeline-alt-dataset"] == [
+        "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
     ]
 
 
@@ -1447,8 +1452,8 @@ def test_cross_language_e2e_plan_summarizes_v1_refactor_gaps(tmp_path: Path) -> 
     assert plan["evidence_level"] == "hybrid"
     assert plan["v1_refactor_summary"] == {
         "total": 6,
-        "strict": 4,
-        "contract": 1,
+        "strict": 5,
+        "contract": 0,
         "gap": 0,
         "not_applicable": 1,
         "non_gap": 5,
@@ -1456,9 +1461,10 @@ def test_cross_language_e2e_plan_summarizes_v1_refactor_gaps(tmp_path: Path) -> 
             "python_open_pipeline",
             "python_rerun_pipeline",
             "python_parity",
+            "repository_forced_best_refit",
             "wasm_web_reuse",
         ],
-        "contract_phases": ["repository_forced_best_refit"],
+        "contract_phases": [],
         "gap_phases": [],
         "not_applicable_phases": ["papers_export"],
     }
@@ -2028,8 +2034,10 @@ def test_cross_language_e2e_manifest_requires_strict_repository_forced_refit_cov
 ) -> None:
     e2e = _load_e2e_module()
     manifest = _read_manifest()
-    phase = manifest["v1_refactor_contract"]["scenario_coverage"]["e2e-python-reopen-paper-repository-refit"]["repository_forced_best_refit"]
-    phase["status"] = "contract"
+    for phases in manifest["v1_refactor_contract"]["scenario_coverage"].values():
+        phase = phases["repository_forced_best_refit"]
+        if phase["status"] == "strict":
+            phase["status"] = "contract"
     manifest_path = tmp_path / "no-strict-repository-forced-refit.json"
     _write_json(manifest_path, manifest)
 
@@ -2191,7 +2199,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
             "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline"
         ],
     }
-    assert report["debt_summary"]["v1_contract_phase_count"] == 5
+    assert report["debt_summary"]["v1_contract_phase_count"] == 4
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-core-ui-custom-app-host"] == {
@@ -2205,7 +2213,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-wasm-open-repo-pipeline-alt-dataset"] == {
         "strictness_gaps": 1,
-        "contract_phases": ["repository_forced_best_refit"],
+        "contract_phases": [],
         "gap_phases": [],
         "not_applicable_phases": ["papers_export"],
         "contract_parity_checks": 1,
@@ -2297,17 +2305,16 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "python_rerun_pipeline": {"strict": 10, "contract": 0, "gap": 0, "not_applicable": 1},
         "python_parity": {"strict": 11, "contract": 0, "gap": 0, "not_applicable": 0},
         "papers_export": {"strict": 1, "contract": 0, "gap": 0, "not_applicable": 10},
-        "repository_forced_best_refit": {"strict": 1, "contract": 1, "gap": 0, "not_applicable": 9},
+        "repository_forced_best_refit": {"strict": 2, "contract": 0, "gap": 0, "not_applicable": 9},
         "wasm_web_reuse": {"strict": 4, "contract": 4, "gap": 0, "not_applicable": 3},
     }
     assert report["v1_refactor_phase_status_counts"] == expected_phase_counts
     scenario_ids_by_phase = report["v1_refactor_phase_scenario_ids"]
     assert scenario_ids_by_phase["repository_forced_best_refit"]["strict"] == [
         "e2e-python-reopen-paper-repository-refit",
-    ]
-    assert set(scenario_ids_by_phase["repository_forced_best_refit"]["contract"]) == {
         "e2e-wasm-open-repo-pipeline-alt-dataset",
-    }
+    ]
+    assert scenario_ids_by_phase["repository_forced_best_refit"]["contract"] == []
     assert scenario_ids_by_phase["papers_export"]["gap"] == []
     assert set(scenario_ids_by_phase["papers_export"]["not_applicable"]) == {
         scenario_id
@@ -2343,7 +2350,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=9 strict_non_numeric_checks=4 v1_contract_phases=5 "
+        "debt: strictness_gaps=9 strict_non_numeric_checks=4 v1_contract_phases=4 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2517,6 +2524,11 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert "python_open_pipeline.status=passed" in json.dumps(wasm_flow["python_open_pipeline"], sort_keys=True)
     assert "python_rerun_pipeline.status=passed" in json.dumps(wasm_flow["python_rerun_pipeline"], sort_keys=True)
     assert wasm_flow["python_parity"]["status"] == "strict"
+    assert wasm_flow["repository_forced_best_refit"]["status"] == "strict"
+    wasm_forced_refit_contract = json.dumps(wasm_flow["repository_forced_best_refit"], sort_keys=True)
+    assert "force_best_refit=true" in wasm_forced_refit_contract
+    assert "descriptor_sha256_verified=true" in wasm_forced_refit_contract
+    assert "selected_pipeline_id matching repository_pipeline_id" in wasm_forced_refit_contract
     assert wasm_flow["wasm_web_reuse"]["status"] == "strict"
 
     multimodal = _scenario_by_id(manifest, "e2e-multimodal-python-r-wasm-roundtrip")
@@ -2638,6 +2650,7 @@ def test_cross_language_e2e_plan_exposes_hybrid_web_gaps_and_strict_checks() -> 
     assert "parity" in plan["tags"]
     assert [check["evidence_level"] for check in plan["parity_checks"]].count("strict") >= 2
     assert plan["v1_refactor_contract"]["python_parity"]["status"] == "strict"
+    assert plan["v1_refactor_contract"]["repository_forced_best_refit"]["status"] == "strict"
     assert plan["v1_refactor_contract"]["wasm_web_reuse"]["status"] == "strict"
     assert plan["steps"][0]["delegates_to_repos"] == ["nirs4all-repository"]
     assert plan["steps"][0]["delegated_invocations"][0]["repo"] == "nirs4all-repository"

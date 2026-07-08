@@ -212,16 +212,15 @@
           "applicability": "This Web/WASM repository-import lane is scoped to browser execution and Python oracle comparison; reproducible paper export is covered by the Python/papers/repository lane."
         },
         "repository_forced_best_refit": {
-          "status": "contract",
+          "status": "strict",
           "evidence": [
-            "The Web smoke imports a deterministic repository pipeline fixture and records its descriptor hash."
+            "The Web smoke imports a deterministic repository pipeline fixture paired with a repository forced-best-refit descriptor, verifies descriptor SHA256, force_best_refit=true, selected pipeline id, recipe SHA256, dataset id, and records the repository-owned contract fields in pipeline-repository-smoke.json."
           ],
           "artifacts": [
             "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
           ],
-          "gap": "The fixture is not a forced best-refit descriptor emitted by nirs4all-repository.",
           "acceptance": [
-            "Replace or pair the fixture with a repository descriptor carrying force_best_refit=true once the repository handoff format is published."
+            "pipeline-repository-smoke.json must report repository_forced_best_refit.status=passed, source_repo=GBeurier/nirs4all-repository, force_best_refit=true, descriptor_sha256_verified=true, selected_pipeline_id matching repository_pipeline_id, recipe_sha256 matching repository_pipeline_sha256, and dataset_id matching repository_dataset_id."
           ]
         },
         "wasm_web_reuse": {
@@ -1168,7 +1167,7 @@
       ],
       "evidence": [
         "WASM package version and web build hash",
-        "Repository pipeline descriptor, descriptor SHA256, stable pipeline id, non-demo dataset id, and shared UI shim check",
+        "Repository pipeline descriptor, forced-best-refit contract descriptor, descriptor SHA256, stable pipeline id, non-demo dataset id, and shared UI shim check",
         "Client-only prediction artifact reuse with export/import hash evidence",
         "Imported pipeline execution screenshot and runtime resource hashes",
         "Python nirs4all/sklearn oracle comparison over browser-emitted dag-ml folds",
@@ -1228,10 +1227,11 @@
               "mode": "fixture-provenance",
               "calls": [
                 "repository fixture manifest import",
-                "repository descriptor_sha256 verification"
+                "repository descriptor_sha256 verification",
+                "repository forced_best_refit descriptor verification"
               ],
               "evidence": [
-                "pipeline-repository-smoke.mjs verifies the checked-in repository fixture manifest and descriptor SHA256 before Web/WASM import, then records repository_pipeline_id, descriptor hash, and source-vs-imported execution evidence in pipeline-repository-smoke.json."
+                "pipeline-repository-smoke.mjs verifies the checked-in repository fixture manifest, pipeline descriptor SHA256, and forced_best_refit descriptor SHA256 before Web/WASM import, then records repository_pipeline_id, repository_forced_best_refit, descriptor hash, and source-vs-imported execution evidence in pipeline-repository-smoke.json."
               ],
               "artifacts": [
                 "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
@@ -1245,7 +1245,8 @@
           "requires_paths": [
             "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
             "{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs",
-            "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/manifest.json"
+            "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/manifest.json",
+            "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/repository-forced-best-refit.n4a.json"
           ],
           "command": [
             "bash",
