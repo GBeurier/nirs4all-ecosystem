@@ -2498,7 +2498,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["debt_summary"]["strictness_gap_count"] == 5
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 3,
-        "strict": 25,
+        "strict": 26,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
@@ -2950,7 +2950,11 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
 
     formats_bindings = _scenario_by_id(manifest, "e2e-formats-io-datasets-methods-language-bindings")
     assert formats_bindings["evidence_level"] == "hybrid"
-    assert any("WASM remains fixture-scoped" in gap for gap in formats_bindings["strictness_gaps"])
+    assert any("WASM is still fixture-scoped" in gap for gap in formats_bindings["strictness_gaps"])
+    assert any(
+        check["candidate"] == "WASM methods binding fixture" and check["evidence_level"] == "strict"
+        for check in formats_bindings["parity_checks"]
+    )
     assert flow["e2e-formats-io-datasets-methods-language-bindings"]["wasm_web_reuse"]["status"] == "contract"
 
     cluster = _scenario_by_id(manifest, "e2e-cluster-dag-rights-client-core")

@@ -1984,7 +1984,7 @@
       "objective": "Read heterogeneous file formats, assemble reference datasets, invoke native methods through current release-target language bindings, compare exported predictions, and record the archived Rust binding status explicitly.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
-        "Native/Python/R method parity is strict, but WASM remains fixture-scoped and Rust is archived as non-release-target evidence."
+        "Native/Python/R/WASM method parity is strict for the current deterministic fixture/oracle, but WASM is still fixture-scoped and Rust is archived as non-release-target evidence."
       ],
       "languages": [
         "python",
@@ -2030,11 +2030,22 @@
           ]
         },
         {
-          "oracle": "native nirs4all-methods ABI",
-          "candidate": "WASM fixture and archived Rust binding status",
-          "metric": "WASM fixture output is checked and archived Rust status is recorded as non-release-target evidence",
+          "oracle": "native nirs4all-methods ABI and Python scikit-learn reference",
+          "candidate": "WASM methods binding fixture",
+          "metric": "WASM coefficients, predictions, x_mean, and y_mean RMSE relative deltas are finite and metrics_max_rmse_rel <= 1e-12",
+          "evidence_level": "strict",
+          "artifacts": [
+            "{artifacts_dir}/formats-io-methods/binding-parity.json",
+            "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
+          ]
+        },
+        {
+          "oracle": "current release-target language binding matrix",
+          "candidate": "archived Rust binding status",
+          "metric": "archived Rust wrapper is recorded as non-release-target evidence with release_target=false and gate=not_applicable",
           "evidence_level": "contract",
           "artifacts": [
+            "{artifacts_dir}/formats-io-methods/binding-parity.json",
             "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
           ]
         }

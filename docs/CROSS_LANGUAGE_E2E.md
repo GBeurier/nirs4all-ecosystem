@@ -100,7 +100,7 @@ that count and the tests assert the expected handoff for each workflow:
 | `e2e-dataset-provider-repository-roundtrip` | Providers materialize a deterministic NIRS CSV dataset, publish a repository descriptor, and Python/R/JavaScript-WASM core surfaces execute the same pipeline with strict prediction parity. |
 | `e2e-pipeline-generation-performance-compare` | Python persists and reopens one generated candidate, then Web/native runtimes compare prediction and performance evidence. |
 | `e2e-cluster-dag-rights-client-core` | Cluster DAG execution is compared with a local Python numeric oracle and core handoff checks. |
-| `e2e-formats-io-datasets-methods-language-bindings` | Formats/IO assemble reference datasets and methods bindings compare Python/R/WASM/native prediction evidence. |
+| `e2e-formats-io-datasets-methods-language-bindings` | Formats/IO assemble reference datasets, methods bindings compare Python/R/WASM/native prediction evidence, and archived Rust remains explicit non-release-target evidence. |
 | `e2e-core-ui-custom-app-host` | A custom client host runs R parity against the Python oracle, proves runtimeContracts expose serialized-model prediction only for JavaScript/WASM, runs nirs4all-core WASM predictions against the same oracle, renders reusable nirs4all-ui result components, and bundles a downstream Vite/React app from the published nirs4all and nirs4all-ui packages. |
 
 Every step must declare at least one explicit dependency gate through
