@@ -12,14 +12,16 @@
     "custom_app_host_surface_ids": [
       "nirs4all.javascript_wasm.aggregate",
       "nirs4all.ui.package",
-      "nirs4all.web.product"
+      "nirs4all.web.product",
+      "nirs4all.quality.product"
     ],
     "python_name_policy": "The bare Python/PyPI nirs4all name remains owned by the full Python oracle production line until an intentional cutover. The portable Python aggregate ships as nirs4all-core; the R, Rust, JavaScript/WASM, and MATLAB/Octave aggregate surfaces emitted by nirs4all-core use the public nirs4all namespace."
   },
   "source_documents": [
     "docs/PARALLEL_REFACTORING_ROADMAP.md",
     "docs/RELEASE_DISTRIBUTION_MATRIX.md",
-    "../RELEASE_DISTRIBUTION_INVENTORY.md",
+    "docs/contracts/release/aggregation-manifest.n4a.json",
+    "docs/contracts/release/aggregation-lock.n4a.lock.json",
     "docs/agent_reports/WAVE_2O_CLUSTER_IO_TOOLS.md",
     "docs/agent_reports/WAVE_2P_RELEASE_PROOF_AND_PARITY.md",
     "docs/agent_reports/WAVE_4D_STUDIO_RELEASE_READINESS.md",
@@ -44,7 +46,9 @@
     "docs/agent_reports/WAVE_7H_RELEASE_HEAD_AUDIT_2026-07-06.md",
     "docs/agent_reports/WAVE_8R_UI_CUSTOM_HOST_ASSET_BOUNDARY.md",
     "docs/agent_reports/WAVE_8S_STUDIO_WINDOWS_RC_PREP.md",
-    "docs/agent_reports/WAVE_8T_ORG_COCKPIT_RELEASE_SYNC.md"
+    "docs/agent_reports/WAVE_8T_ORG_COCKPIT_RELEASE_SYNC.md",
+    "docs/agent_reports/WAVE_10K_COCKPIT_MANUAL_ACTION_SOURCE_SYNC.md",
+    "docs/agent_reports/WAVE_10L_CORE_WEB_STUDIO_QUALITY_TOPOLOGY.md"
   ],
   "aggregation_lock": {
     "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
@@ -265,6 +269,20 @@
       "release_batch_role": "custom_app_host_product",
       "proof_boundary": "Public client-side-only browser/WASM product surface; not a member of the aggregation lock, implies no Python server, and must not overclaim Python parity.",
       "local_gate_policy": "typecheck/build/Vitest/client-side browser smoke according to touched Web surface."
+    },
+    {
+      "id": "nirs4all.quality.product",
+      "display_name": "nirs4all-quality client-side browser quality workflow",
+      "ecosystem": "static_web_app",
+      "distribution": "nirs4all-quality",
+      "namespace": "quali.nirs4all.org",
+      "repo_path": "nirs4all-quality",
+      "lock_relation": "outside_aggregation_lock",
+      "lock_member_key": null,
+      "required_for_nirs4all_v1": false,
+      "release_batch_role": "custom_app_host_product",
+      "proof_boundary": "Public client-side-only browser/WASM quality workflow surface; not a member of the aggregation lock, implies no Python server, and is tracked because the cockpit links and monitors the app.",
+      "local_gate_policy": "npm run typecheck, npm run build, and browser smoke checks according to touched quality workflow surfaces."
     },
     {
       "id": "nirs4all.providers.contracts",

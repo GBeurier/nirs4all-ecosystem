@@ -78,3 +78,7 @@
 	path = nirs4all-web
 	url = https://github.com/GBeurier/nirs4all-web.git
 	branch = main
+[submodule "nirs4all-quality"]
+	path = nirs4all-quality
+	url = https://github.com/GBeurier/nirs4all-quality.git
+	branch = main

@@ -131,6 +131,14 @@ def test_public_surface_matrix_accounts_for_web_providers_and_sites() -> None:
     assert "client-side-only" in web["proof_boundary"]
     assert "Python server" in web["proof_boundary"]
 
+    quality = by_id["nirs4all.quality.product"]
+    assert quality["distribution"] == "nirs4all-quality"
+    assert quality["repo_path"] == "nirs4all-quality"
+    assert quality["lock_relation"] == "outside_aggregation_lock"
+    assert quality["required_for_nirs4all_v1"] is False
+    assert "client-side-only" in quality["proof_boundary"]
+    assert "cockpit links and monitors" in quality["proof_boundary"]
+
     providers = by_id["nirs4all.providers.contracts"]
     assert providers["distribution"] == "nirs4all-providers"
     assert providers["lock_relation"] == "outside_aggregation_lock"
@@ -167,6 +175,7 @@ def test_release_batch_semantics_keep_oracle_and_shipped_surfaces_distinct() -> 
         "nirs4all.javascript_wasm.aggregate",
         "nirs4all.ui.package",
         "nirs4all.web.product",
+        "nirs4all.quality.product",
     ]
     assert (
         by_id["nirs4all.javascript_wasm.aggregate"]["release_batch_role"]

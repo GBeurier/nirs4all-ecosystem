@@ -23,6 +23,7 @@ PUBLIC_SUBMODULES = {
     "nirs4all-org",
     "nirs4all-papers",
     "nirs4all-providers",
+    "nirs4all-quality",
     "nirs4all-repository",
     "nirs4all-studio",
     "nirs4all-tools",
