@@ -255,6 +255,22 @@ DELTA_FIELD_FRAGMENTS = (
     "score_delta",
 )
 TOLERANCE_FIELD_FRAGMENTS = ("atol", "rtol", "tolerance")
+STRICT_NUMERIC_REQUIREMENT_OPERATORS = ("lte_path", "gt", "gte")
+STRICT_NUMERIC_PROOF_EXEMPTIONS: dict[str, tuple[str, ...]] = {
+    "e2e-r-dataset-io-pipeline-save": (
+        "make test-r-parity fixture gate passes",
+    ),
+    "e2e-cluster-dag-rights-client-core": (
+        "num_tasks, best_task_id, and best_metric parity",
+    ),
+    "e2e-formats-io-datasets-methods-language-bindings": (
+        "method outputs and predictions match tolerance ledger",
+    ),
+    "e2e-core-ui-custom-app-host": (
+        "prediction contract parity: serialized_model_predict_surfaces is exactly "
+        "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline",
+    ),
+}
 SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
     "e2e-r-dataset-io-pipeline-save": {
         "r-dataset-io-pipeline/roundtrip-checks.json": [
@@ -972,6 +988,33 @@ def _scenario_artifact_requirements(plan: dict[str, Any], raw_path: str) -> list
     return SCENARIO_ARTIFACT_REQUIREMENTS.get(plan["id"], {}).get(_artifact_requirement_key(raw_path), [])
 
 
+def _requirement_has_numeric_proof(requirement: dict[str, Any]) -> bool:
+    return any(operator in requirement for operator in STRICT_NUMERIC_REQUIREMENT_OPERATORS)
+
+
+def _strict_check_has_numeric_proof(
+    requirements: dict[str, list[dict[str, Any]]],
+    check: dict[str, Any],
+) -> bool:
+    for artifact in check.get("artifacts", []):
+        artifact_requirements = requirements.get(_artifact_requirement_key(artifact), [])
+        if any(_requirement_has_numeric_proof(requirement) for requirement in artifact_requirements):
+            return True
+    return False
+
+
+def _strict_checks_without_numeric_proof(scenario_id: str, parity_checks: list[Any]) -> list[str]:
+    requirements = SCENARIO_ARTIFACT_REQUIREMENTS.get(scenario_id, {})
+    missing_numeric: list[str] = []
+    for check in parity_checks:
+        if check.get("evidence_level") != "strict":
+            continue
+        if _strict_check_has_numeric_proof(requirements, check):
+            continue
+        missing_numeric.append(check.get("metric") or "<missing metric>")
+    return missing_numeric
+
+
 def _validate_scenario_artifact_contract(
     plan: dict[str, Any],
     raw_path: str,
@@ -1000,6 +1043,14 @@ def _validate_strict_artifact_requirement_coverage(scenario_id: str, parity_chec
         raise E2EScenarioError(
             f"{scenario_id}: strict parity artifact(s) lack scenario evidence requirements: "
             + ", ".join(missing)
+        )
+    non_numeric = _strict_checks_without_numeric_proof(scenario_id, parity_checks)
+    exemptions = set(STRICT_NUMERIC_PROOF_EXEMPTIONS.get(scenario_id, ()))
+    unexpected_non_numeric = sorted(metric for metric in non_numeric if metric not in exemptions)
+    if unexpected_non_numeric:
+        raise E2EScenarioError(
+            f"{scenario_id}: strict parity_check lacks numeric evidence requirement: "
+            + "; ".join(unexpected_non_numeric)
         )
 
 
@@ -2185,6 +2236,8 @@ def coverage_report(
     parity_check_evidence_levels: dict[str, int] = {}
     strictness_gap_count = 0
     scenarios_without_strict_parity_check: list[str] = []
+    strict_non_numeric_check_count = 0
+    strict_non_numeric_checks: dict[str, list[str]] = {}
     scenario_phase_debt: dict[str, dict[str, Any]] = {}
     scenario_details: list[dict[str, Any]] = []
     plans_by_id = {plan["id"]: plan for plan in plans}
@@ -2226,6 +2279,13 @@ def coverage_report(
             )
         if strict_parity_checks == 0:
             scenarios_without_strict_parity_check.append(scenario_id)
+        scenario_non_numeric_checks = _strict_checks_without_numeric_proof(
+            scenario_id,
+            scenario.get("parity_checks", []),
+        )
+        if scenario_non_numeric_checks:
+            strict_non_numeric_checks[scenario_id] = scenario_non_numeric_checks
+            strict_non_numeric_check_count += len(scenario_non_numeric_checks)
         scenario_strictness_gaps = len(scenario.get("strictness_gaps", []))
         strictness_gap_count += scenario_strictness_gaps
         phase_details = {
@@ -2247,6 +2307,7 @@ def coverage_report(
             "not_applicable_phases": v1_summary["not_applicable_phases"],
             "contract_parity_checks": contract_parity_checks,
             "strict_parity_checks": strict_parity_checks,
+            "strict_non_numeric_checks": len(scenario_non_numeric_checks),
         }
         scenario_summaries[scenario_id] = {
             "evidence_level": evidence_level,
@@ -2275,6 +2336,7 @@ def coverage_report(
                 "phase_details": phase_details,
                 "strict_parity_checks": strict_parity_checks,
                 "contract_parity_checks": contract_parity_checks,
+                "strict_non_numeric_checks": scenario_non_numeric_checks,
                 "parity_checks": parity_check_details,
             }
         )
@@ -2312,6 +2374,8 @@ def coverage_report(
             "strictness_gap_count": strictness_gap_count,
             "parity_check_evidence_levels": dict(sorted(parity_check_evidence_levels.items())),
             "scenarios_without_strict_parity_check": scenarios_without_strict_parity_check,
+            "strict_non_numeric_check_count": strict_non_numeric_check_count,
+            "strict_non_numeric_checks": strict_non_numeric_checks,
             "v1_contract_phase_count": sum(
                 counts["contract"] for counts in phase_status_counts.values()
             ),
@@ -2362,6 +2426,7 @@ def render_coverage_markdown(report: dict[str, Any]) -> str:
                 ["blocked", str(report["blocked_count"])],
                 ["evidence levels", ", ".join(f"{k}={v}" for k, v in report["evidence_levels"].items())],
                 ["strictness gaps", str(debt["strictness_gap_count"])],
+                ["strict non-numeric checks", str(debt["strict_non_numeric_check_count"])],
                 ["V1 contract phases", str(debt["v1_contract_phase_count"])],
                 ["V1 gap phases", str(debt["v1_gap_phase_count"])],
                 ["V1 not applicable phases", str(debt["v1_not_applicable_phase_count"])],
@@ -2387,18 +2452,39 @@ def render_coverage_markdown(report: dict[str, Any]) -> str:
         "## Scenario Debt",
         "",
         *_markdown_table(
-            ["scenario", "strict checks", "contract checks", "strictness gaps", "contract phases", "gap phases", "n/a phases"],
+            [
+                "scenario",
+                "strict checks",
+                "contract checks",
+                "strictness gaps",
+                "strict non-numeric",
+                "contract phases",
+                "gap phases",
+                "n/a phases",
+            ],
             [
                 [
                     scenario_id,
                     str(debt_item["strict_parity_checks"]),
                     str(debt_item["contract_parity_checks"]),
                     str(debt_item["strictness_gaps"]),
+                    str(debt_item["strict_non_numeric_checks"]),
                     ", ".join(debt_item["contract_phases"]) or "-",
                     ", ".join(debt_item["gap_phases"]) or "-",
                     ", ".join(debt_item["not_applicable_phases"]) or "-",
                 ]
                 for scenario_id, debt_item in debt["scenario_phase_debt"].items()
+            ],
+        ),
+        "",
+        "## Strict Numeric Proof Exceptions",
+        "",
+        *_markdown_table(
+            ["scenario", "metric"],
+            [
+                [_md_cell(scenario_id), _md_cell(metric)]
+                for scenario_id, metrics in debt["strict_non_numeric_checks"].items()
+                for metric in metrics
             ],
         ),
         "",
@@ -2628,6 +2714,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(
                     "debt: "
                     f"strictness_gaps={debt['strictness_gap_count']} "
+                    f"strict_non_numeric_checks={debt['strict_non_numeric_check_count']} "
                     f"v1_contract_phases={debt['v1_contract_phase_count']} "
                     f"v1_gap_phases={debt['v1_gap_phase_count']} "
                     f"v1_not_applicable_phases={debt['v1_not_applicable_phase_count']} "

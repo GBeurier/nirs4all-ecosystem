@@ -53,11 +53,13 @@ without relying on skipped or xfailed tests.
 Current coverage is intentionally hybrid: every parity-tagged scenario has at
 least one strict parity check, including the multimodal dense-fused
 Python/R/WASM prediction contract. The manifest still records contract-level
-surfaces and explicit gaps for pending runtimes such as source-aware native
-multimodal replay, converted-save Python rerun, and generated-pipeline Python
-reopen evidence. Do not present this suite as full strict ecosystem parity
-unless those phase statuses are promoted in the manifest and the coverage tests
-are updated with matching evidence.
+surfaces and explicit gaps for residual work such as source-aware native
+multimodal replay, Web/Studio runtime reuse, provider-backed browser datasets,
+multisource native prediction-vector parity, fixture-scoped WASM coverage, and
+structural binding-surface checks. Do not present this suite as full strict
+ecosystem parity unless those phase statuses and non-numeric strict exceptions
+are promoted in the manifest and the coverage tests are updated with matching
+evidence.
 
 The validator also protects the suite shape from collapsing into shallow smoke
 claims. Each scenario must include Python as the portable oracle runtime, at
@@ -77,6 +79,9 @@ parity checks must use JSON evidence artifacts so the runner can reject skipped,
 xfail, false boolean, non-finite, or out-of-tolerance ledgers during `evidence`
 verification. Non-JSON outputs such as screenshots or paper ZIPs can still be
 scenario or phase artifacts, but they cannot be the sole strict parity proof.
+The coverage report also lists current strict checks whose artifact requirements
+are structural rather than numeric; new strict checks without numeric evidence
+requirements are rejected unless they are explicitly added to that debt list.
 
 ## Orchestrated scenario set
 

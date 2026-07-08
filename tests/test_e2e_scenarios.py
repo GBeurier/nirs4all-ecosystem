@@ -1543,6 +1543,7 @@ def test_cross_language_e2e_strict_check_requires_json_artifact_evidence(tmp_pat
 def test_cross_language_e2e_strict_artifacts_have_scenario_field_requirements() -> None:
     e2e = _load_e2e_module()
     manifest = e2e.validate_scenarios(MANIFEST)
+    non_numeric_by_scenario = {}
 
     for scenario in manifest["scenarios"]:
         requirements = e2e.SCENARIO_ARTIFACT_REQUIREMENTS.get(scenario["id"], {})
@@ -1557,6 +1558,36 @@ def test_cross_language_e2e_strict_artifacts_have_scenario_field_requirements() 
             requirement_key = e2e._artifact_requirement_key(artifact)
             assert requirement_key in requirements, f"{scenario['id']}: {artifact}"
             assert requirements[requirement_key], f"{scenario['id']}: {artifact}"
+        non_numeric = e2e._strict_checks_without_numeric_proof(
+            scenario["id"],
+            scenario["parity_checks"],
+        )
+        if non_numeric:
+            non_numeric_by_scenario[scenario["id"]] = non_numeric
+
+    assert non_numeric_by_scenario == {
+        "e2e-r-dataset-io-pipeline-save": ["make test-r-parity fixture gate passes"],
+        "e2e-cluster-dag-rights-client-core": ["num_tasks, best_task_id, and best_metric parity"],
+        "e2e-formats-io-datasets-methods-language-bindings": [
+            "method outputs and predictions match tolerance ledger"
+        ],
+        "e2e-core-ui-custom-app-host": [
+            "prediction contract parity: serialized_model_predict_surfaces is exactly "
+            "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline"
+        ],
+    }
+
+
+def test_cross_language_e2e_new_strict_check_requires_numeric_requirement(tmp_path: Path) -> None:
+    e2e = _load_e2e_module()
+    manifest = _read_manifest()
+    scenario = _scenario_by_id(manifest, "e2e-r-dataset-io-pipeline-save")
+    scenario["parity_checks"][0]["metric"] = "new fixture gate promoted without numeric evidence"
+    manifest_path = tmp_path / "strict-check-without-numeric-requirement.json"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(e2e.E2EScenarioError, match="strict parity_check lacks numeric evidence requirement"):
+        e2e.validate_scenarios(manifest_path)
 
 
 def test_cross_language_e2e_evidence_rejects_passed_artifact_missing_required_fields(
@@ -2029,6 +2060,18 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "strict": 18,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
+    assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
+    assert report["debt_summary"]["strict_non_numeric_checks"] == {
+        "e2e-r-dataset-io-pipeline-save": ["make test-r-parity fixture gate passes"],
+        "e2e-cluster-dag-rights-client-core": ["num_tasks, best_task_id, and best_metric parity"],
+        "e2e-formats-io-datasets-methods-language-bindings": [
+            "method outputs and predictions match tolerance ledger"
+        ],
+        "e2e-core-ui-custom-app-host": [
+            "prediction contract parity: serialized_model_predict_surfaces is exactly "
+            "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline"
+        ],
+    }
     assert report["debt_summary"]["v1_contract_phase_count"] == 5
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
@@ -2039,6 +2082,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 1,
         "strict_parity_checks": 3,
+        "strict_non_numeric_checks": 1,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-wasm-open-repo-pipeline-alt-dataset"] == {
         "strictness_gaps": 1,
@@ -2047,6 +2091,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "not_applicable_phases": ["papers_export"],
         "contract_parity_checks": 1,
         "strict_parity_checks": 3,
+        "strict_non_numeric_checks": 0,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-multimodal-python-r-wasm-roundtrip"] == {
         "strictness_gaps": 1,
@@ -2055,6 +2100,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 0,
         "strict_parity_checks": 1,
+        "strict_non_numeric_checks": 0,
     }
     assert len(report["scenario_details"]) == 11
     details = {detail["id"]: detail for detail in report["scenario_details"]}
@@ -2160,7 +2206,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=12 v1_contract_phases=5 "
+        "debt: strictness_gaps=12 strict_non_numeric_checks=4 v1_contract_phases=5 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2184,6 +2230,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
     assert report["debt_summary"]["strictness_gap_count"] == 12
+    assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
     assert report["scenario_details"][0]["strictness_gaps"]
 
 
@@ -2203,8 +2250,11 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
     assert "| strictness gaps | 12 |" in report
+    assert "| strict non-numeric checks | 4 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
+    assert "## Strict Numeric Proof Exceptions" in report
+    assert "method outputs and predictions match tolerance ledger" in report
     assert "## Strictness Gap Detail" in report
     assert "dense fused-matrix multimodal proxy" in report
     assert "e2e-core-ui-custom-app-host" in report
