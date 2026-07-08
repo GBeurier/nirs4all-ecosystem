@@ -481,6 +481,20 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "dataset": {"rows": 40, "cols": 28},
             "cases": [{"name": "portable_methods_pipeline", "prediction_rows": 12}],
         }
+    if key == "custom-app-host/custom-host-runtime-contracts.json":
+        return {
+            "status": "passed",
+            "schema": "nirs4all-core.capabilities.v1",
+            "runtime_surfaces": ["python", "r", "javascript_wasm"],
+            "serialized_model_predict_surfaces": ["javascript_wasm"],
+            "wasm_predict_entrypoint": "predictPortablePipeline",
+            "runtime_contract_checks": {
+                "serialized_predict_surface_count_absolute_delta": 0,
+                "serialized_predict_surface_count_tolerance": 0,
+                "wasm_predict_entrypoint_absolute_delta": 0,
+                "wasm_predict_entrypoint_tolerance": 0,
+            },
+        }
     if key == "custom-app-host/published-custom-host.json":
         return {
             "schema_version": "n4a.e2e.published_custom_host.v1",
@@ -1906,10 +1920,6 @@ def test_cross_language_e2e_strict_artifacts_have_scenario_field_requirements() 
 
     assert non_numeric_by_scenario == {
         "e2e-r-dataset-io-pipeline-save": ["make test-r-parity fixture gate passes"],
-        "e2e-core-ui-custom-app-host": [
-            "prediction contract parity: serialized_model_predict_surfaces is exactly "
-            "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline"
-        ],
     }
 
 
@@ -2432,13 +2442,9 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "strict": 24,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
-    assert report["debt_summary"]["strict_non_numeric_check_count"] == 2
+    assert report["debt_summary"]["strict_non_numeric_check_count"] == 1
     assert report["debt_summary"]["strict_non_numeric_checks"] == {
         "e2e-r-dataset-io-pipeline-save": ["make test-r-parity fixture gate passes"],
-        "e2e-core-ui-custom-app-host": [
-            "prediction contract parity: serialized_model_predict_surfaces is exactly "
-            "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline"
-        ],
     }
     assert report["debt_summary"]["v1_contract_phase_count"] == 2
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
@@ -2459,7 +2465,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 0,
         "strict_parity_checks": 6,
-        "strict_non_numeric_checks": 1,
+        "strict_non_numeric_checks": 0,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-wasm-open-repo-pipeline-alt-dataset"] == {
         "strictness_gaps": 1,
@@ -2602,7 +2608,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=6 strict_non_numeric_checks=2 v1_contract_phases=2 "
+        "debt: strictness_gaps=6 strict_non_numeric_checks=1 v1_contract_phases=2 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2626,7 +2632,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
     assert report["debt_summary"]["strictness_gap_count"] == 6
-    assert report["debt_summary"]["strict_non_numeric_check_count"] == 2
+    assert report["debt_summary"]["strict_non_numeric_check_count"] == 1
     assert any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
 
@@ -2646,7 +2652,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
     assert "| strictness gaps | 6 |" in report
-    assert "| strict non-numeric checks | 2 |" in report
+    assert "| strict non-numeric checks | 1 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
     assert "## Strict Numeric Proof Exceptions" in report

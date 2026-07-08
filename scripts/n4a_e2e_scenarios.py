@@ -260,10 +260,6 @@ STRICT_NUMERIC_PROOF_EXEMPTIONS: dict[str, tuple[str, ...]] = {
     "e2e-r-dataset-io-pipeline-save": (
         "make test-r-parity fixture gate passes",
     ),
-    "e2e-core-ui-custom-app-host": (
-        "prediction contract parity: serialized_model_predict_surfaces is exactly "
-        "['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline",
-    ),
 }
 SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
     "e2e-r-dataset-io-pipeline-save": {
@@ -834,6 +830,14 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "schema", "equals": "nirs4all-core.capabilities.v1"},
             {"path": "serialized_model_predict_surfaces", "equals": ["javascript_wasm"]},
             {"path": "wasm_predict_entrypoint", "equals": "predictPortablePipeline"},
+            {
+                "path": "runtime_contract_checks.serialized_predict_surface_count_absolute_delta",
+                "lte_path": "runtime_contract_checks.serialized_predict_surface_count_tolerance",
+            },
+            {
+                "path": "runtime_contract_checks.wasm_predict_entrypoint_absolute_delta",
+                "lte_path": "runtime_contract_checks.wasm_predict_entrypoint_tolerance",
+            },
         ],
         "custom-app-host/custom-host-ui.json": [
             {"path": "status", "equals": "passed"},
