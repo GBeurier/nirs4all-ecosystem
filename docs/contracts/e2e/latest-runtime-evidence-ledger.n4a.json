@@ -1,0 +1,1040 @@
+{
+  "coverage": {
+    "blocked_count": 0,
+    "evidence_levels": {
+      "strict": 11
+    },
+    "expected_scenario_count": 11,
+    "full_strict_blockers": [],
+    "full_strict_ready": true,
+    "ready_count": 11,
+    "required_languages": {
+      "javascript_wasm": 8,
+      "python": 11,
+      "r": 5,
+      "web": 5
+    },
+    "required_tags": {
+      "datasets": 5,
+      "io": 4,
+      "multimodal": 1,
+      "multisource": 1,
+      "papers": 1,
+      "parity": 11,
+      "pipeline": 11,
+      "pipeline_generation": 2,
+      "predictions": 6,
+      "repository": 3,
+      "web_results": 5,
+      "workspace_save": 6
+    },
+    "scenario_count": 11,
+    "strict_non_numeric_check_count": 0,
+    "strictness_gap_count": 0,
+    "v1_contract_phase_count": 0,
+    "v1_gap_phase_count": 0,
+    "v1_not_applicable_phase_count": 25,
+    "v1_refactor_phase_status_counts": {
+      "papers_export": {
+        "contract": 0,
+        "gap": 0,
+        "not_applicable": 10,
+        "strict": 1
+      },
+      "python_open_pipeline": {
+        "contract": 0,
+        "gap": 0,
+        "not_applicable": 2,
+        "strict": 9
+      },
+      "python_parity": {
+        "contract": 0,
+        "gap": 0,
+        "not_applicable": 0,
+        "strict": 11
+      },
+      "python_rerun_pipeline": {
+        "contract": 0,
+        "gap": 0,
+        "not_applicable": 1,
+        "strict": 10
+      },
+      "repository_forced_best_refit": {
+        "contract": 0,
+        "gap": 0,
+        "not_applicable": 9,
+        "strict": 2
+      },
+      "wasm_web_reuse": {
+        "contract": 0,
+        "gap": 0,
+        "not_applicable": 3,
+        "strict": 8
+      }
+    }
+  },
+  "evidence": {
+    "artifact_count": 70,
+    "failed_count": 0,
+    "failure_count": 0,
+    "max_age_seconds": null,
+    "scenario_count": 11,
+    "verified_count": 11
+  },
+  "scenarios": [
+    {
+      "artifact_count": 11,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "r-dataset-io-pipeline/dataset-card.json",
+        "r-dataset-io-pipeline/dataset-package-summary.json",
+        "r-dataset-io-pipeline/io-spec.n4a.json",
+        "r-dataset-io-pipeline/pipeline.n4a.json",
+        "r-dataset-io-pipeline/python-reopen-ledger.json",
+        "r-dataset-io-pipeline/r-parity-ledger.json",
+        "r-dataset-io-pipeline/r-predictions.json",
+        "r-dataset-io-pipeline/r-session-info.json",
+        "r-dataset-io-pipeline/reshaped-dataset.json",
+        "r-dataset-io-pipeline/roundtrip-checks.json",
+        "r-dataset-io-pipeline/workspace.n4a.json"
+      ],
+      "failure_count": 0,
+      "id": "e2e-r-dataset-io-pipeline-save",
+      "languages": [
+        "r",
+        "python",
+        "native"
+      ],
+      "repos": [
+        "nirs4all-core",
+        "nirs4all-providers",
+        "nirs4all-datasets",
+        "nirs4all-io",
+        "nirs4all-methods",
+        "dag-ml-data"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 2,
+      "strictness_gaps": 0,
+      "tags": [
+        "datasets",
+        "io",
+        "pipeline",
+        "workspace_save",
+        "parity"
+      ],
+      "title": "R dataset load, IO reshape, complex pipeline, and saved workspace",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 3,
+        "not_applicable": 3,
+        "not_applicable_phases": [
+          "papers_export",
+          "repository_forced_best_refit",
+          "wasm_web_reuse"
+        ],
+        "strict": 3,
+        "strict_phases": [
+          "python_open_pipeline",
+          "python_rerun_pipeline",
+          "python_parity"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "r-dataset-io-pipeline/dataset-card.json",
+          "sha256": "7551016c8924b9299f58bd2b30e1d1cd9e21cec35c35cd9be2e23ad68da57661"
+        },
+        {
+          "path": "r-dataset-io-pipeline/dataset-package-summary.json",
+          "sha256": "1aa7ec8ac0510cb854b2f53f0ad09387934bb98e71f5fcfb14edd5e178ec9d97"
+        },
+        {
+          "path": "r-dataset-io-pipeline/io-spec.n4a.json",
+          "sha256": "51d1266ee1447cfbc2ace152b2873477198e314f553c9e088cfe70d115140508"
+        },
+        {
+          "path": "r-dataset-io-pipeline/pipeline.n4a.json",
+          "sha256": "ccc5dc629bc18fa66517078332b90f8b4a4b77c85664e9b0273cc6cbca34e68d"
+        },
+        {
+          "path": "r-dataset-io-pipeline/python-reopen-ledger.json",
+          "sha256": "ef984ebc3c669967b4fcee23bf030d58845f2edf6848927ed71118ece51b6bf1"
+        },
+        {
+          "path": "r-dataset-io-pipeline/r-parity-ledger.json",
+          "sha256": "930f0f801e5c3a08fb1aef336f22a9646b1233d0d6b331a361bd9b0677da4b10"
+        },
+        {
+          "path": "r-dataset-io-pipeline/r-predictions.json",
+          "sha256": "bd29b5506b25157336e846f24ecd347ac2ff710ccbd4c20c67e76bf60b969fe7"
+        },
+        {
+          "path": "r-dataset-io-pipeline/r-session-info.json",
+          "sha256": "70111926fbb91929babdd27f1bab498ea8dca104e87df425863f0b17097fddef"
+        },
+        {
+          "path": "r-dataset-io-pipeline/reshaped-dataset.json",
+          "sha256": "3b0d2514a54bae1498fc674b402337033c8f4825c7aadc112d5612f05cb66d2b"
+        },
+        {
+          "path": "r-dataset-io-pipeline/roundtrip-checks.json",
+          "sha256": "c1d9d3639839f15f6d318ace4026b766f41e08b0095d127b4d90d44a2d7a6058"
+        },
+        {
+          "path": "r-dataset-io-pipeline/workspace.n4a.json",
+          "sha256": "cb453e34f13575f70b499169f8694bbde59955d793c5780a89b16e66448046d4"
+        }
+      ]
+    },
+    {
+      "artifact_count": 8,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "python-paper-repository/paper-export.zip",
+        "python-paper-repository/reopened-result.json",
+        "python-paper-repository/repository-best-pipeline-web-results.png",
+        "python-paper-repository/repository-best-pipeline.json",
+        "python-paper-repository/repository_X_train.csv",
+        "python-paper-repository/repository_metadata.csv",
+        "python-paper-repository/repository_y_train.csv",
+        "python-paper-repository/web-repository-best-pipeline.json"
+      ],
+      "failure_count": 0,
+      "id": "e2e-python-reopen-paper-repository-refit",
+      "languages": [
+        "python",
+        "native",
+        "javascript_wasm",
+        "web"
+      ],
+      "repos": [
+        "nirs4all",
+        "nirs4all-repository",
+        "nirs4all-papers",
+        "nirs4all-web",
+        "dag-ml",
+        "nirs4all-methods"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 3,
+      "strictness_gaps": 0,
+      "tags": [
+        "pipeline",
+        "repository",
+        "papers",
+        "workspace_save",
+        "parity",
+        "web_results"
+      ],
+      "title": "Python reopen pipeline, prove parity, export paper, publish repository refit handoff, and import it in Web/WASM",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 6,
+        "not_applicable": 0,
+        "not_applicable_phases": [],
+        "strict": 6,
+        "strict_phases": [
+          "python_open_pipeline",
+          "python_rerun_pipeline",
+          "python_parity",
+          "papers_export",
+          "repository_forced_best_refit",
+          "wasm_web_reuse"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "python-paper-repository/paper-export.zip",
+          "sha256": "035ae86c08b5877be37bb62847bf40e0704bbfe0251b714e1d137b4abb962bc7"
+        },
+        {
+          "path": "python-paper-repository/reopened-result.json",
+          "sha256": "0e3fc7cc9c2bbbb2e91fbbe78127cb181748d57a9a23f75fd6c4769324461d20"
+        },
+        {
+          "path": "python-paper-repository/repository-best-pipeline-web-results.png",
+          "sha256": "daede7f13c04b6852aac2938a31d72925433908df7139b29ea8271ed419f4e9c"
+        },
+        {
+          "path": "python-paper-repository/repository-best-pipeline.json",
+          "sha256": "9898fdb7363f4d88d6063768dc468fe5a8388c927c633af23ee2407e66b1e50b"
+        },
+        {
+          "path": "python-paper-repository/repository_X_train.csv",
+          "sha256": "f834efb83a9834cde6d7dbde3ff3ce30e4f9e8d7f5d92d314ff9e24f896afe58"
+        },
+        {
+          "path": "python-paper-repository/repository_metadata.csv",
+          "sha256": "ae5072051ea8f765fa5cd75c1fc99a99e4801b57af00b2c1eee25cf75650c598"
+        },
+        {
+          "path": "python-paper-repository/repository_y_train.csv",
+          "sha256": "70d5e721980c01401aa51ef66c67e4598f163d1f03aff3a83e9bea156cb032e2"
+        },
+        {
+          "path": "python-paper-repository/web-repository-best-pipeline.json",
+          "sha256": "5cfc67b260b0e368f34c7efc624c1870f85d81f757cfb0c1a4b7c371276b7d6c"
+        }
+      ]
+    },
+    {
+      "artifact_count": 4,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
+        "wasm-repo-alt-dataset/pipeline-repository-smoke.json",
+        "wasm-repo-alt-dataset/predict-artifact-smoke.json",
+        "wasm-repo-alt-dataset/web-results.png"
+      ],
+      "failure_count": 0,
+      "id": "e2e-wasm-open-repo-pipeline-alt-dataset",
+      "languages": [
+        "javascript_wasm",
+        "web",
+        "python"
+      ],
+      "repos": [
+        "nirs4all-web",
+        "nirs4all-core",
+        "nirs4all-repository",
+        "nirs4all-providers",
+        "nirs4all-datasets",
+        "nirs4all-ui"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 3,
+      "strictness_gaps": 0,
+      "tags": [
+        "datasets",
+        "pipeline",
+        "repository",
+        "predictions",
+        "web_results",
+        "parity"
+      ],
+      "title": "WASM opens repository pipeline, executes client-side import smoke, and renders predictions",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 5,
+        "not_applicable": 1,
+        "not_applicable_phases": [
+          "papers_export"
+        ],
+        "strict": 5,
+        "strict_phases": [
+          "python_open_pipeline",
+          "python_rerun_pipeline",
+          "python_parity",
+          "repository_forced_best_refit",
+          "wasm_web_reuse"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
+          "sha256": "b2595fadace64d1432cf8ded0c80c2a59c40e5d0ed71fd402cd57ea2e7bd4d51"
+        },
+        {
+          "path": "wasm-repo-alt-dataset/pipeline-repository-smoke.json",
+          "sha256": "8b7df3dd37b5806235dc6720d1a921c8d3d5ef440571ef6130c95d81339bd7ae"
+        },
+        {
+          "path": "wasm-repo-alt-dataset/predict-artifact-smoke.json",
+          "sha256": "d24a03b068f5eef06150f7ca6e97dd6ecf05f7074d827440f2fe11271ef8833d"
+        },
+        {
+          "path": "wasm-repo-alt-dataset/web-results.png",
+          "sha256": "c73b14ad0d87471789c33d93d5d69ea15ccd41196fab4c9ac40bc26526323558"
+        }
+      ]
+    },
+    {
+      "artifact_count": 9,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "multimodal-roundtrip/core-roundtrip-evidence.json",
+        "multimodal-roundtrip/multimodal-dataset.json",
+        "multimodal-roundtrip/multimodal-pipeline.n4a.json",
+        "multimodal-roundtrip/python-open-ledger.json",
+        "multimodal-roundtrip/python-predictions.parquet",
+        "multimodal-roundtrip/python-rerun-ledger.json",
+        "multimodal-roundtrip/r-predictions.parquet",
+        "multimodal-roundtrip/wasm-predictions.json",
+        "multimodal-roundtrip/web-core-import.json"
+      ],
+      "failure_count": 0,
+      "id": "e2e-multimodal-python-r-wasm-roundtrip",
+      "languages": [
+        "python",
+        "r",
+        "javascript_wasm"
+      ],
+      "repos": [
+        "nirs4all",
+        "nirs4all-core"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 2,
+      "strictness_gaps": 0,
+      "tags": [
+        "multimodal",
+        "datasets",
+        "io",
+        "pipeline",
+        "predictions",
+        "workspace_save",
+        "parity"
+      ],
+      "title": "Multimodal Python/R/WASM pipeline roundtrip",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 4,
+        "not_applicable": 2,
+        "not_applicable_phases": [
+          "papers_export",
+          "repository_forced_best_refit"
+        ],
+        "strict": 4,
+        "strict_phases": [
+          "python_open_pipeline",
+          "python_rerun_pipeline",
+          "python_parity",
+          "wasm_web_reuse"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "multimodal-roundtrip/core-roundtrip-evidence.json",
+          "sha256": "2f39810df350f1db10e42889a24f56f53a3059fdf43889efad19b1bde9c397cf"
+        },
+        {
+          "path": "multimodal-roundtrip/multimodal-dataset.json",
+          "sha256": "1f830298dd49c8ac57fe3f210fb54d7ee7e3f49b51ca776ce7a59d7429c4f57d"
+        },
+        {
+          "path": "multimodal-roundtrip/multimodal-pipeline.n4a.json",
+          "sha256": "4a1d961d1c50d1a28a38b149072af492cfa167a9eae4b7debffd7b8fd1ecdbdd"
+        },
+        {
+          "path": "multimodal-roundtrip/python-open-ledger.json",
+          "sha256": "00ff047fab77911ee327188c4f2012a1585e82c17ecf02f1bc86f7e52eb257a0"
+        },
+        {
+          "path": "multimodal-roundtrip/python-predictions.parquet",
+          "sha256": "dd79063c0af4a15c9791542e9f9fd5239ebb3cfdd619d619cfd0f3e82dccf8e2"
+        },
+        {
+          "path": "multimodal-roundtrip/python-rerun-ledger.json",
+          "sha256": "11402e09ddc0278d8599f60fb5238e72c332c3da2c43d4454d4f3ac5e0fab2da"
+        },
+        {
+          "path": "multimodal-roundtrip/r-predictions.parquet",
+          "sha256": "80afb33e0bc537e009c7c072fbcef5b42f81c9798ebc53d52e4629d242ada31a"
+        },
+        {
+          "path": "multimodal-roundtrip/wasm-predictions.json",
+          "sha256": "b6de50b3d273dbad0c06b86989a54efd7b4c1580dc90c1a070afae6595fe0563"
+        },
+        {
+          "path": "multimodal-roundtrip/web-core-import.json",
+          "sha256": "e929c6075f72b4e170e775ace7df2ee72b920d06f949c4a5517c51d879703f17"
+        }
+      ]
+    },
+    {
+      "artifact_count": 5,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "multisource-stacking/native-replay.json",
+        "multisource-stacking/oof-ledger.json",
+        "multisource-stacking/python-open-ledger.json",
+        "multisource-stacking/python-rerun-ledger.json",
+        "multisource-stacking/stacking-replay.n4a.json"
+      ],
+      "failure_count": 0,
+      "id": "e2e-multisource-branching-stacking-replay",
+      "languages": [
+        "python",
+        "native",
+        "rust"
+      ],
+      "repos": [
+        "nirs4all",
+        "dag-ml",
+        "dag-ml-data",
+        "nirs4all-core",
+        "nirs4all-methods"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 2,
+      "strictness_gaps": 0,
+      "tags": [
+        "multisource",
+        "pipeline_generation",
+        "pipeline",
+        "workspace_save",
+        "parity"
+      ],
+      "title": "Multisource branching, stacking score replay, and native prediction-vector parity",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 3,
+        "not_applicable": 3,
+        "not_applicable_phases": [
+          "papers_export",
+          "repository_forced_best_refit",
+          "wasm_web_reuse"
+        ],
+        "strict": 3,
+        "strict_phases": [
+          "python_open_pipeline",
+          "python_rerun_pipeline",
+          "python_parity"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "multisource-stacking/native-replay.json",
+          "sha256": "a99bfc451e5579e2d8d2bdfb728d6d9ce13e6a29c0d1ad4c6ef1fad70697ceae"
+        },
+        {
+          "path": "multisource-stacking/oof-ledger.json",
+          "sha256": "36fd596dab52fafe667650fc390695355750e73459cda7e4c73ca3847188efb5"
+        },
+        {
+          "path": "multisource-stacking/python-open-ledger.json",
+          "sha256": "cd3406e8daae53debb9d883214e13b07d013857416f0168e6601dc964168286c"
+        },
+        {
+          "path": "multisource-stacking/python-rerun-ledger.json",
+          "sha256": "4d488d7fe509486c9ca016f58d39d8bce63f9b14068b4dac152fe918881cef93"
+        },
+        {
+          "path": "multisource-stacking/stacking-replay.n4a.json",
+          "sha256": "12754dc0363a1f541c5711ad549d42c0a665fdbb7f82e7b69b4709248c6b8837"
+        }
+      ]
+    },
+    {
+      "artifact_count": 6,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "legacy-converter/converted-workspace.n4a.json",
+        "legacy-converter/predictions.rt_result.json",
+        "legacy-converter/python-open-pipeline.json",
+        "legacy-converter/python-rerun-pipeline.json",
+        "legacy-converter/web-results-panels.json",
+        "legacy-converter/web-results.png"
+      ],
+      "failure_count": 0,
+      "id": "e2e-converter-legacy-save-predictions-web",
+      "languages": [
+        "python",
+        "javascript_wasm",
+        "web"
+      ],
+      "repos": [
+        "nirs4all-tools",
+        "nirs4all",
+        "nirs4all-web",
+        "nirs4all-ui"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 1,
+      "strictness_gaps": 0,
+      "tags": [
+        "workspace_save",
+        "predictions",
+        "web_results",
+        "pipeline",
+        "parity"
+      ],
+      "title": "Legacy save conversion, prediction lowering, and Web results rendering",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 4,
+        "not_applicable": 2,
+        "not_applicable_phases": [
+          "papers_export",
+          "repository_forced_best_refit"
+        ],
+        "strict": 4,
+        "strict_phases": [
+          "python_open_pipeline",
+          "python_rerun_pipeline",
+          "python_parity",
+          "wasm_web_reuse"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "legacy-converter/converted-workspace.n4a.json",
+          "sha256": "ea5edaee3862da9673bea9fa0380691b2067b618ae492f2dfddd6c447b607207"
+        },
+        {
+          "path": "legacy-converter/predictions.rt_result.json",
+          "sha256": "3996424c51ce18d49f5c9f190d35d9bb91e289b6adff620fb08cb7696234601e"
+        },
+        {
+          "path": "legacy-converter/python-open-pipeline.json",
+          "sha256": "69904d3d48ee215855a99f5ac7a563dc7a10150edd566e834cd038adee2e5cd3"
+        },
+        {
+          "path": "legacy-converter/python-rerun-pipeline.json",
+          "sha256": "dc0b50e69d703306eb68852661c1231dded14404fe8a80ebb180056f52c2a00f"
+        },
+        {
+          "path": "legacy-converter/web-results-panels.json",
+          "sha256": "6cf2a19857b9163853555e81b90406aa1ccbded072d639a9d746e92c237fa91d"
+        },
+        {
+          "path": "legacy-converter/web-results.png",
+          "sha256": "77e51f581e6ee681e45ceda3e3f956d1b693f161eefeb141548175f52602088b"
+        }
+      ]
+    },
+    {
+      "artifact_count": 4,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "provider-repository-roundtrip/cross-language-consumption.json",
+        "provider-repository-roundtrip/provider-resolution.json",
+        "provider-repository-roundtrip/repository-index.json",
+        "provider-repository-roundtrip/repository-pipeline.n4a.json"
+      ],
+      "failure_count": 0,
+      "id": "e2e-dataset-provider-repository-roundtrip",
+      "languages": [
+        "python",
+        "r",
+        "javascript_wasm"
+      ],
+      "repos": [
+        "nirs4all-providers",
+        "nirs4all-datasets",
+        "nirs4all-io",
+        "nirs4all-repository",
+        "nirs4all-core"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 2,
+      "strictness_gaps": 0,
+      "tags": [
+        "datasets",
+        "io",
+        "repository",
+        "pipeline",
+        "parity"
+      ],
+      "title": "Dataset provider to repository to core roundtrip",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 4,
+        "not_applicable": 2,
+        "not_applicable_phases": [
+          "papers_export",
+          "repository_forced_best_refit"
+        ],
+        "strict": 4,
+        "strict_phases": [
+          "python_open_pipeline",
+          "python_rerun_pipeline",
+          "python_parity",
+          "wasm_web_reuse"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "provider-repository-roundtrip/cross-language-consumption.json",
+          "sha256": "13c393288b4e290f3099b9bde1bda712d904e18bebfd68bf3b4d66c1bf32224f"
+        },
+        {
+          "path": "provider-repository-roundtrip/provider-resolution.json",
+          "sha256": "e9c9346b5d41cb6bf5658edfb63cfe23779df0df4e3edcabfac5a513fb554c1b"
+        },
+        {
+          "path": "provider-repository-roundtrip/repository-index.json",
+          "sha256": "bd33497ec345f628a7fa3b4c62f6321fabb1a90918a5a7011cecc265aec9c5f1"
+        },
+        {
+          "path": "provider-repository-roundtrip/repository-pipeline.n4a.json",
+          "sha256": "8eebd00109310ffeee2e502580e0f69950c47a476df6d41ef7784ee4329f20b5"
+        }
+      ]
+    },
+    {
+      "artifact_count": 5,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "performance-compare/dataset-web-oracle.json",
+        "performance-compare/pipeline-candidate.n4a.json",
+        "performance-compare/pipeline-family.json",
+        "performance-compare/python-vs-dagml.json",
+        "performance-compare/web-runtime.json"
+      ],
+      "failure_count": 0,
+      "id": "e2e-pipeline-generation-performance-compare",
+      "languages": [
+        "python",
+        "javascript_wasm",
+        "web",
+        "native"
+      ],
+      "repos": [
+        "nirs4all",
+        "dag-ml",
+        "nirs4all-core",
+        "nirs4all-web"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 2,
+      "strictness_gaps": 0,
+      "tags": [
+        "pipeline_generation",
+        "pipeline",
+        "parity",
+        "predictions",
+        "web_results"
+      ],
+      "title": "Complex pipeline generation with Python/Web performance comparison",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 4,
+        "not_applicable": 2,
+        "not_applicable_phases": [
+          "papers_export",
+          "repository_forced_best_refit"
+        ],
+        "strict": 4,
+        "strict_phases": [
+          "python_open_pipeline",
+          "python_rerun_pipeline",
+          "python_parity",
+          "wasm_web_reuse"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "performance-compare/dataset-web-oracle.json",
+          "sha256": "492a8880cb479cd5efe33c938f0db4cb4b7b40f86330d727dbe019aefd94644f"
+        },
+        {
+          "path": "performance-compare/pipeline-candidate.n4a.json",
+          "sha256": "7bc624fc9bc5b73758290e9ec2180d736995883a2b9b869059b32be0e7965c96"
+        },
+        {
+          "path": "performance-compare/pipeline-family.json",
+          "sha256": "47a4e1e932e34e9f6a4b78ba712a9e89b6e55990b997a3ee37d6b008ed701e53"
+        },
+        {
+          "path": "performance-compare/python-vs-dagml.json",
+          "sha256": "4d0ef547f024c44677f9c7a4c3b3a9fe29079874b47c63ce1500165ae51ed302"
+        },
+        {
+          "path": "performance-compare/web-runtime.json",
+          "sha256": "d049089ca68ec299b0a2dcf0060b8d42a37f4b7c576c00cdb5e843c41aac8e8b"
+        }
+      ]
+    },
+    {
+      "artifact_count": 4,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "cluster-dag-rights/core-client-result.json",
+        "cluster-dag-rights/local-vs-cluster-numeric.json",
+        "cluster-dag-rights/local-vs-cluster-parity.json",
+        "cluster-dag-rights/scheduler-run.json"
+      ],
+      "failure_count": 0,
+      "id": "e2e-cluster-dag-rights-client-core",
+      "languages": [
+        "python",
+        "native"
+      ],
+      "repos": [
+        "nirs4all-cluster",
+        "nirs4all-core",
+        "dag-ml",
+        "nirs4all-methods",
+        "nirs4all"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 2,
+      "strictness_gaps": 0,
+      "tags": [
+        "pipeline",
+        "workspace_save",
+        "parity"
+      ],
+      "title": "Cluster scheduler runs a DAG pipeline with rights checks and core client handoff",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 2,
+        "not_applicable": 4,
+        "not_applicable_phases": [
+          "python_open_pipeline",
+          "papers_export",
+          "repository_forced_best_refit",
+          "wasm_web_reuse"
+        ],
+        "strict": 2,
+        "strict_phases": [
+          "python_rerun_pipeline",
+          "python_parity"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "cluster-dag-rights/core-client-result.json",
+          "sha256": "c1596799b764f83c9c014d35b1160f5b40ec03734daffd6cd60fa4fa8f06b27f"
+        },
+        {
+          "path": "cluster-dag-rights/local-vs-cluster-numeric.json",
+          "sha256": "537e5666f6e3442b5f53b2af2fb02f41095e1797fa3eaffde2e173bea159c6e6"
+        },
+        {
+          "path": "cluster-dag-rights/local-vs-cluster-parity.json",
+          "sha256": "ab0f8724fd2580e7fbb953128dd83c6061892bda205fbd4de0c643d8c6a0aca8"
+        },
+        {
+          "path": "cluster-dag-rights/scheduler-run.json",
+          "sha256": "2d86924513a2cec3b018f413ddc968570c5b3d0e9658eb4ee690870b5eb4c9ab"
+        }
+      ]
+    },
+    {
+      "artifact_count": 5,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "formats-io-methods/assembled-datasets.json",
+        "formats-io-methods/binding-parity.json",
+        "formats-io-methods/predictions-by-language.json",
+        "formats-io-methods/wasm-orchestrator-fixture.json",
+        "formats-io-methods/web-core-pipeline-import.json"
+      ],
+      "failure_count": 0,
+      "id": "e2e-formats-io-datasets-methods-language-bindings",
+      "languages": [
+        "python",
+        "r",
+        "javascript_wasm",
+        "rust_archive",
+        "native"
+      ],
+      "repos": [
+        "nirs4all-formats",
+        "nirs4all-io",
+        "nirs4all-datasets",
+        "nirs4all-methods",
+        "nirs4all-core"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 3,
+      "strictness_gaps": 0,
+      "tags": [
+        "datasets",
+        "io",
+        "predictions",
+        "parity",
+        "pipeline"
+      ],
+      "title": "Formats, IO, datasets, and methods parity across native/Python/R/WASM plus Rust archive audit",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 2,
+        "not_applicable": 4,
+        "not_applicable_phases": [
+          "python_open_pipeline",
+          "python_rerun_pipeline",
+          "papers_export",
+          "repository_forced_best_refit"
+        ],
+        "strict": 2,
+        "strict_phases": [
+          "python_parity",
+          "wasm_web_reuse"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "formats-io-methods/assembled-datasets.json",
+          "sha256": "4bf0456506929bdd9fe577400d60fbe40e5919c7cb2daa106d2ee7c40f0570bb"
+        },
+        {
+          "path": "formats-io-methods/binding-parity.json",
+          "sha256": "a1f4837f805f678dd420735e3fb26b69140b98c7621bb8ac5717a77289b0da9c"
+        },
+        {
+          "path": "formats-io-methods/predictions-by-language.json",
+          "sha256": "cf03d751e3cba8b053630e0650886b3e91279a37f763d86e0f4129b62cb9cafa"
+        },
+        {
+          "path": "formats-io-methods/wasm-orchestrator-fixture.json",
+          "sha256": "89d314578be9153d14abec70973b011c0490f16d520b45fff94df53f2e06ef44"
+        },
+        {
+          "path": "formats-io-methods/web-core-pipeline-import.json",
+          "sha256": "02b9906138933e6792bca80087b7489b4e0da38d8ae27cf4d1e9f33a89a0d5b9"
+        }
+      ]
+    },
+    {
+      "artifact_count": 9,
+      "evidence_level": "strict",
+      "expected_artifacts": [
+        "custom-app-host/custom-host-predictions.json",
+        "custom-app-host/custom-host-python-open.json",
+        "custom-app-host/custom-host-python-rerun.json",
+        "custom-app-host/custom-host-quality-smoke.json",
+        "custom-app-host/custom-host-r-parity.json",
+        "custom-app-host/custom-host-run.json",
+        "custom-app-host/custom-host-runtime-contracts.json",
+        "custom-app-host/custom-host-ui.json",
+        "custom-app-host/published-custom-host.json"
+      ],
+      "failure_count": 0,
+      "id": "e2e-core-ui-custom-app-host",
+      "languages": [
+        "python",
+        "r",
+        "javascript_wasm",
+        "web"
+      ],
+      "repos": [
+        "nirs4all-web",
+        "nirs4all-quality",
+        "nirs4all-core",
+        "nirs4all-methods",
+        "nirs4all-ui"
+      ],
+      "status": "ready",
+      "strict_parity_checks": 7,
+      "strictness_gaps": 0,
+      "tags": [
+        "pipeline",
+        "predictions",
+        "parity",
+        "web_results"
+      ],
+      "title": "Custom Web host composes nirs4all-core runtime with reusable nirs4all-ui components",
+      "v1_refactor_summary": {
+        "contract": 0,
+        "contract_phases": [],
+        "gap": 0,
+        "gap_phases": [],
+        "non_gap": 4,
+        "not_applicable": 2,
+        "not_applicable_phases": [
+          "papers_export",
+          "repository_forced_best_refit"
+        ],
+        "strict": 4,
+        "strict_phases": [
+          "python_open_pipeline",
+          "python_rerun_pipeline",
+          "python_parity",
+          "wasm_web_reuse"
+        ],
+        "total": 6
+      },
+      "verification_status": "verified",
+      "verified_artifacts": [
+        {
+          "path": "custom-app-host/custom-host-predictions.json",
+          "sha256": "6c17a43d3700345f69be795f50963808a772e00b5c1428ddc266e6955bf248d9"
+        },
+        {
+          "path": "custom-app-host/custom-host-python-open.json",
+          "sha256": "39881d74ba2ab3f0051250b6b37cf68842027d4639e54449487e01e4abc9d321"
+        },
+        {
+          "path": "custom-app-host/custom-host-python-rerun.json",
+          "sha256": "e6516bac362e6061d4bf2e53aad7634cfba0632cde7d02b9392915aef11d97e7"
+        },
+        {
+          "path": "custom-app-host/custom-host-quality-smoke.json",
+          "sha256": "454c645f9187c02a31b86a936aaaa464c82cb6f10a8a64d46b6ea391d57342b4"
+        },
+        {
+          "path": "custom-app-host/custom-host-r-parity.json",
+          "sha256": "4c27c9d1992133405a9aecd32ecb410323cfc7364aac74c4bb6e1a9f70a3a958"
+        },
+        {
+          "path": "custom-app-host/custom-host-run.json",
+          "sha256": "070496c87a9197ad9247545fb2b45aca7717da40c0011ac7dea0fea3a0a8fa4d"
+        },
+        {
+          "path": "custom-app-host/custom-host-runtime-contracts.json",
+          "sha256": "b0c3f3522d72fb1827fbdeb25c988f6fd06691d6fc651ca70d5d190e8c069ceb"
+        },
+        {
+          "path": "custom-app-host/custom-host-ui.json",
+          "sha256": "08b90de504e708cff516ce5beaafbbd567f6bd1300c3cbd5a682ca2fa6b89fd9"
+        },
+        {
+          "path": "custom-app-host/published-custom-host.json",
+          "sha256": "6df5b90e7c388fae0b05f3ffcb9de086c8f96bc5117cb1576011827164a5bad1"
+        }
+      ]
+    }
+  ],
+  "schema_version": "n4a.cross-language-e2e-runtime-evidence-ledger/v1",
+  "source": {
+    "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
+    "manifest_schema_version": "n4a.cross-language-e2e/v1",
+    "manifest_sha256": "fb7ed4242c1c15686d52f2147edfbc669e218bcfd83184c275e7a55166461f6e",
+    "regenerate": "python3 scripts/n4a_e2e_scenarios.py evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
+    "runtime_artifacts_policy": ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; this ledger records the normalized verified artifact inventory."
+  }
+}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import importlib.util
 import json
 import os
@@ -110,6 +111,14 @@ def _read_manifest() -> dict:
 
 def _write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, ensure_ascii=True, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _synthetic_evidence_payload(path: Path) -> dict:
@@ -2965,6 +2974,124 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
     assert not any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
 
+def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract() -> None:
+    e2e = _load_e2e_module()
+    manifest = e2e.validate_scenarios(MANIFEST)
+    artifacts_dir = ROOT / ".n4a-e2e-artifacts"
+    coverage = e2e.coverage_report(
+        manifest,
+        workspace_root=ROOT.parent,
+        artifacts_dir=artifacts_dir,
+    )
+    plans = [
+        e2e.plan_scenario(scenario, workspace_root=ROOT.parent, artifacts_dir=artifacts_dir)
+        for scenario in manifest["scenarios"]
+    ]
+    ledger_path = ROOT / "docs" / "contracts" / "e2e" / "latest-runtime-evidence-ledger.n4a.json"
+    ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+
+    assert ledger["schema_version"] == e2e.EVIDENCE_LEDGER_SCHEMA_VERSION
+    assert ledger["source"]["manifest"] == "docs/contracts/e2e/cross-language-scenarios.n4a.json"
+    assert ledger["source"]["manifest_sha256"] == _sha256(MANIFEST)
+    assert ledger["source"]["manifest_schema_version"] == manifest["schema_version"]
+    assert ".n4a-e2e-artifacts/" in ledger["source"]["runtime_artifacts_policy"]
+    assert "evidence-ledger" in ledger["source"]["regenerate"]
+    assert ledger["coverage"] == {
+        "scenario_count": coverage["scenario_count"],
+        "expected_scenario_count": coverage["expected_scenario_count"],
+        "ready_count": coverage["ready_count"],
+        "blocked_count": coverage["blocked_count"],
+        "evidence_levels": coverage["evidence_levels"],
+        "required_languages": coverage["required_languages"],
+        "required_tags": coverage["required_tags"],
+        "full_strict_ready": coverage["debt_summary"]["full_strict_ready"],
+        "full_strict_blockers": coverage["debt_summary"]["full_strict_blockers"],
+        "strictness_gap_count": coverage["debt_summary"]["strictness_gap_count"],
+        "strict_non_numeric_check_count": coverage["debt_summary"]["strict_non_numeric_check_count"],
+        "v1_contract_phase_count": coverage["debt_summary"]["v1_contract_phase_count"],
+        "v1_gap_phase_count": coverage["debt_summary"]["v1_gap_phase_count"],
+        "v1_not_applicable_phase_count": coverage["debt_summary"]["v1_not_applicable_phase_count"],
+        "v1_refactor_phase_status_counts": coverage["v1_refactor_phase_status_counts"],
+    }
+    assert ledger["evidence"] == {
+        "scenario_count": 11,
+        "verified_count": 11,
+        "failed_count": 0,
+        "artifact_count": 70,
+        "failure_count": 0,
+        "max_age_seconds": None,
+    }
+    assert [scenario["id"] for scenario in ledger["scenarios"]] == [plan["id"] for plan in plans]
+
+    for scenario, plan in zip(ledger["scenarios"], plans, strict=True):
+        expected_artifacts = sorted(
+            {
+                e2e._relative_artifact_path(raw_path, artifacts_dir)
+                for raw_path in [
+                    *plan["artifacts"],
+                    *[
+                        produced
+                        for step in plan["steps"]
+                        for produced in step.get("produces", [])
+                    ],
+                ]
+            }
+        )
+        summary = coverage["scenario_summaries"][plan["id"]]
+        assert scenario["verification_status"] == "verified"
+        assert scenario["failure_count"] == 0
+        assert scenario["status"] == plan["status"]
+        assert scenario["evidence_level"] == plan["evidence_level"]
+        assert scenario["languages"] == plan["languages"]
+        assert scenario["tags"] == plan["tags"]
+        assert scenario["repos"] == plan["repos"]
+        assert scenario["strict_parity_checks"] == summary["strict_parity_checks"]
+        assert scenario["strictness_gaps"] == summary["strictness_gaps"]
+        assert scenario["v1_refactor_summary"] == summary["v1_refactor_summary"]
+        assert scenario["expected_artifacts"] == expected_artifacts
+        assert [artifact["path"] for artifact in scenario["verified_artifacts"]] == expected_artifacts
+        assert all(
+            re.fullmatch(r"[0-9a-f]{64}", artifact["sha256"])
+            for artifact in scenario["verified_artifacts"]
+        )
+        assert scenario["artifact_count"] == len(expected_artifacts)
+        assert all(not Path(path).is_absolute() for path in scenario["expected_artifacts"])
+        assert all(".." not in Path(path).parts for path in scenario["expected_artifacts"])
+        assert all(".n4a-e2e-artifacts" not in path for path in scenario["expected_artifacts"])
+        assert all(not Path(artifact["path"]).is_absolute() for artifact in scenario["verified_artifacts"])
+        assert all(".." not in Path(artifact["path"]).parts for artifact in scenario["verified_artifacts"])
+        assert all(".n4a-e2e-artifacts" not in artifact["path"] for artifact in scenario["verified_artifacts"])
+
+
+def test_cross_language_e2e_cli_evidence_ledger_fails_on_missing_artifacts(tmp_path: Path) -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+    report_path = tmp_path / "latest-runtime-evidence-ledger.n4a.json"
+
+    failed = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--artifacts-dir",
+            str(tmp_path / "missing-artifacts"),
+            "evidence-ledger",
+            "--out",
+            str(report_path),
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+
+    assert failed.returncode == 1
+    assert "failures=" in failed.stdout
+    assert report["evidence"]["verified_count"] == 0
+    assert report["evidence"]["failed_count"] == 11
+    assert report["evidence"]["failure_count"] > 0
+
+
 def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path: Path) -> None:
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
     report_path = tmp_path / "coverage-debt.md"
@@ -3362,6 +3489,10 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert '--max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"' in workflow
     assert "--json-out .n4a-e2e-artifacts/evidence-summary.json" in workflow
     assert workflow.count("--json-out .n4a-e2e-artifacts/evidence-summary.json") == 2
+    assert "Check committed runtime evidence ledger" in workflow
+    assert "python3 scripts/n4a_e2e_scenarios.py evidence-ledger" in workflow
+    assert "--check" in workflow
+    assert "--out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json" in workflow
     assert "actions/upload-artifact@v4" in workflow
     assert "n4a-e2e-coverage-debt-${{ github.run_id }}" in workflow
     assert "n4a-e2e-ready-runtime-evidence-${{ github.run_id }}" in workflow

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -18,6 +19,8 @@ from typing import Any
 
 DEFAULT_MANIFEST = Path("docs/contracts/e2e/cross-language-scenarios.n4a.json")
 SCHEMA_VERSION = "n4a.cross-language-e2e/v1"
+DEFAULT_EVIDENCE_LEDGER = Path("docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json")
+EVIDENCE_LEDGER_SCHEMA_VERSION = "n4a.cross-language-e2e-runtime-evidence-ledger/v1"
 EXPECTED_SCENARIO_COUNT = 11
 MIN_STEPS_PER_SCENARIO = 2
 MIN_ARTIFACTS_PER_SCENARIO = 2
@@ -3057,6 +3060,144 @@ def artifact_evidence_report(
     }
 
 
+def _relative_artifact_path(raw_path: str, artifacts_dir: Path) -> str:
+    path = Path(raw_path)
+    try:
+        return path.resolve().relative_to(artifacts_dir.resolve()).as_posix()
+    except ValueError:
+        normalized = raw_path.replace("\\", "/")
+        marker = "/.n4a-e2e-artifacts/"
+        if marker in normalized:
+            return normalized.split(marker, 1)[1]
+        if normalized.startswith(".n4a-e2e-artifacts/"):
+            return normalized.removeprefix(".n4a-e2e-artifacts/")
+        return normalized
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _artifact_ledger_records(paths: list[str], artifacts_dir: Path) -> list[dict[str, Any]]:
+    records = []
+    for raw_path in sorted(paths):
+        path = Path(raw_path)
+        record: dict[str, Any] = {
+            "path": _relative_artifact_path(raw_path, artifacts_dir),
+        }
+        if path.is_file():
+            record["sha256"] = _file_sha256(path)
+        records.append(record)
+    return records
+
+
+def runtime_evidence_ledger(
+    manifest: dict[str, Any],
+    *,
+    manifest_path: Path = DEFAULT_MANIFEST,
+    workspace_root: Path,
+    artifacts_dir: Path,
+    max_age_seconds: int | None = None,
+) -> dict[str, Any]:
+    """Return a portable committed summary of the latest verified runtime evidence."""
+
+    plans = _all_plans(manifest, workspace_root, artifacts_dir)
+    coverage = coverage_report(
+        manifest,
+        workspace_root=workspace_root,
+        artifacts_dir=artifacts_dir,
+    )
+    evidence = artifact_evidence_report(plans, max_age_seconds=max_age_seconds)
+    evidence_scenarios = evidence["scenarios"]
+    scenario_summaries = coverage["scenario_summaries"]
+    scenarios = []
+    for plan in plans:
+        scenario_report = evidence_scenarios[plan["id"]]
+        summary = scenario_summaries[plan["id"]]
+        expected_artifacts = sorted(
+            {
+                _relative_artifact_path(raw_path, artifacts_dir)
+                for raw_path in [
+                    *plan["artifacts"],
+                    *[
+                        produced
+                        for step in plan["steps"]
+                        for produced in step.get("produces", [])
+                    ],
+                ]
+            }
+        )
+        scenarios.append(
+            {
+                "id": plan["id"],
+                "title": plan["title"],
+                "status": plan["status"],
+                "verification_status": scenario_report["status"],
+                "failure_count": len(scenario_report["failures"]),
+                "artifact_count": scenario_report["artifact_count"],
+                "expected_artifacts": expected_artifacts,
+                "verified_artifacts": _artifact_ledger_records(
+                    scenario_report["verified_artifacts"],
+                    artifacts_dir,
+                ),
+                "evidence_level": plan["evidence_level"],
+                "languages": plan["languages"],
+                "tags": plan["tags"],
+                "repos": plan["repos"],
+                "strict_parity_checks": summary["strict_parity_checks"],
+                "strictness_gaps": summary["strictness_gaps"],
+                "v1_refactor_summary": summary["v1_refactor_summary"],
+            }
+        )
+    debt = coverage["debt_summary"]
+    return {
+        "schema_version": EVIDENCE_LEDGER_SCHEMA_VERSION,
+        "source": {
+            "manifest": manifest_path.as_posix(),
+            "manifest_sha256": _file_sha256(manifest_path),
+            "manifest_schema_version": manifest["schema_version"],
+            "runtime_artifacts_policy": (
+                ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; "
+                "this ledger records the normalized verified artifact inventory."
+            ),
+            "regenerate": (
+                "python3 scripts/n4a_e2e_scenarios.py evidence-ledger "
+                "--out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json"
+            ),
+        },
+        "coverage": {
+            "scenario_count": coverage["scenario_count"],
+            "expected_scenario_count": coverage["expected_scenario_count"],
+            "ready_count": coverage["ready_count"],
+            "blocked_count": coverage["blocked_count"],
+            "evidence_levels": coverage["evidence_levels"],
+            "required_languages": coverage["required_languages"],
+            "required_tags": coverage["required_tags"],
+            "full_strict_ready": debt["full_strict_ready"],
+            "full_strict_blockers": debt["full_strict_blockers"],
+            "strictness_gap_count": debt["strictness_gap_count"],
+            "strict_non_numeric_check_count": debt["strict_non_numeric_check_count"],
+            "v1_contract_phase_count": debt["v1_contract_phase_count"],
+            "v1_gap_phase_count": debt["v1_gap_phase_count"],
+            "v1_not_applicable_phase_count": debt["v1_not_applicable_phase_count"],
+            "v1_refactor_phase_status_counts": coverage["v1_refactor_phase_status_counts"],
+        },
+        "evidence": {
+            "scenario_count": evidence["scenario_count"],
+            "verified_count": evidence["verified_count"],
+            "failed_count": evidence["failed_count"],
+            "artifact_count": evidence["artifact_count"],
+            "failure_count": evidence["failure_count"],
+            "max_age_seconds": max_age_seconds,
+        },
+        "scenarios": scenarios,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
@@ -3108,6 +3249,27 @@ def main(argv: list[str] | None = None) -> int:
         "--max-age-seconds",
         type=int,
         help="fail if any expected artifact is older than this many seconds",
+    )
+
+    evidence_ledger_parser = subparsers.add_parser(
+        "evidence-ledger",
+        help="write a portable committed summary of the latest verified runtime evidence",
+    )
+    evidence_ledger_parser.add_argument(
+        "--out",
+        type=Path,
+        default=DEFAULT_EVIDENCE_LEDGER,
+        help="write the normalized evidence ledger to this tracked path",
+    )
+    evidence_ledger_parser.add_argument(
+        "--max-age-seconds",
+        type=int,
+        help="fail if any expected artifact is older than this many seconds",
+    )
+    evidence_ledger_parser.add_argument(
+        "--check",
+        action="store_true",
+        help="compare the generated ledger with --out instead of writing it",
     )
 
     run_parser = subparsers.add_parser("run", help="execute one scenario")
@@ -3254,6 +3416,37 @@ def main(argv: list[str] | None = None) -> int:
                     for failure in scenario_report["failures"]:
                         print(f"  {failure}")
             return 0 if report["failed_count"] == 0 else 1
+        if args.command == "evidence-ledger":
+            ledger = runtime_evidence_ledger(
+                manifest,
+                manifest_path=args.manifest,
+                workspace_root=workspace_root,
+                artifacts_dir=artifacts_dir,
+                max_age_seconds=args.max_age_seconds,
+            )
+            ledger_text = json.dumps(ledger, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
+            evidence = ledger["evidence"]
+            if args.check:
+                try:
+                    current_text = args.out.read_text(encoding="utf-8")
+                except OSError as exc:
+                    raise E2EScenarioError(f"cannot read existing evidence ledger {args.out}: {exc}") from exc
+                if current_text != ledger_text:
+                    raise E2EScenarioError(f"runtime evidence ledger is stale: regenerate {args.out}")
+                print(
+                    f"checked {args.out}: {evidence['verified_count']}/{evidence['scenario_count']} "
+                    f"scenarios verified; artifacts={evidence['artifact_count']} "
+                    f"failures={evidence['failure_count']}"
+                )
+                return 0 if evidence["failed_count"] == 0 else 1
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            args.out.write_text(ledger_text, encoding="utf-8")
+            print(
+                f"wrote {args.out}: {evidence['verified_count']}/{evidence['scenario_count']} "
+                f"scenarios verified; artifacts={evidence['artifact_count']} "
+                f"failures={evidence['failure_count']}"
+            )
+            return 0 if evidence["failed_count"] == 0 else 1
         if args.command == "run":
             plan = plan_scenario(
                 _scenario_by_id(manifest, args.scenario),

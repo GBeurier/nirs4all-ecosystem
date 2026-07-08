@@ -90,6 +90,13 @@ jobs:
           --ready-only
           --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
           --json-out .n4a-e2e-artifacts/evidence-summary.json
+      - name: Check committed runtime evidence ledger
+        if: ${{ !github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
+        run: >
+          python3 scripts/n4a_e2e_scenarios.py evidence-ledger
+          --check
+          --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
+          --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
       - name: Plan selected scenario
         if: ${{ github.event.inputs.scenario && github.event.inputs.execute != 'true' }}
         env:
