@@ -50,18 +50,14 @@ The JSON `scenario_details` and Markdown strictness detail table are the audit
 surface to review before any production switch: they expose what remains hybrid
 without relying on skipped or xfailed tests.
 
-Current coverage is intentionally mixed but close to full strict: every
-parity-tagged scenario has at least one strict parity check, ten of the eleven
+Current coverage is full strict for the declared scenario set: every
+parity-tagged scenario has at least one strict parity check, all eleven
 scenarios are strict for their declared scope, and no V1 phase remains in
-`contract` status. The remaining full-strict blockers are
-`non_strict_evidence_levels=hybrid:1` and `strictness_gaps=1`, both tied to the
-multisource replay lane.
-The manifest still records the explicit multisource boundary: native score-set
-and prediction-vector replay are strict for the deterministic duplication-branch
-fixture, while source-aware `by_source` legacy stacking and broader external
-multisource/catalog corpora remain outside the scenario. Do not present this
-suite as full strict ecosystem parity until that remaining scenario is promoted
-or split into narrower strict scenarios with matching evidence.
+`contract` or `gap` status. The multisource replay lane is strict for its
+deterministic duplication-branch fixture, including native score-set and
+prediction-vector parity. Source-aware `by_source` legacy stacking and broader
+external multisource/catalog corpora remain outside that scenario unless they
+are added as separate strict scenarios with matching evidence.
 
 The validator also protects the suite shape from collapsing into shallow smoke
 claims. Each scenario must include Python as the portable oracle runtime, at

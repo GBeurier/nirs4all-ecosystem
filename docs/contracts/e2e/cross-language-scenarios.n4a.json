@@ -1418,10 +1418,8 @@
       "id": "e2e-multisource-branching-stacking-replay",
       "title": "Multisource branching, stacking score replay, and native prediction-vector parity",
       "objective": "Assemble multiple sources with distinct preprocessing branches, train stacking/OOF, save replay manifests, compare native score-set metrics against the direct Python oracle, and enforce native prediction-vector parity on the deterministic duplication-branch fixture.",
-      "evidence_level": "hybrid",
-      "strictness_gaps": [
-        "Native score-set and prediction-vector replay are strict for the deterministic duplication-branch stacking fixture; source-aware by_source legacy stacking and broader external multisource catalog corpora remain outside this scenario."
-      ],
+      "evidence_level": "strict",
+      "strictness_gaps": [],
       "languages": [
         "python",
         "native",
