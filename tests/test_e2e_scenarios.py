@@ -586,6 +586,19 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "dist_asset_count": 10,
             "dist_files": ["index.html", "assets/index.js"],
         }
+    if key == "multimodal-roundtrip/python-open-ledger.json":
+        return {
+            "schema_version": "n4a.e2e.python_open_pipeline.v1",
+            "scenario_id": "e2e-multimodal-python-r-wasm-roundtrip",
+            "status": "passed",
+            "pipeline_reopened": True,
+            "pipeline_hash_match": True,
+            "name_match": True,
+            "source_count_match": True,
+            "pipeline_sha256": "sha256:" + "7" * 64,
+            "reopened_pipeline_sha256": "sha256:" + "7" * 64,
+            "dataset_sha256": "sha256:" + "8" * 64,
+        }
     if key == "multimodal-roundtrip/python-rerun-ledger.json":
         return {
             "schema_version": "n4a.e2e.python_rerun_pipeline.v1",
@@ -608,6 +621,71 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "target_tolerance": 1e-8,
             "rmse_delta": 0,
             "rmse_tolerance": 1e-8,
+        }
+    if key == "multimodal-roundtrip/web-core-import.json":
+        return {
+            "schema_version": "n4a.e2e.multimodal_web_core_import.v1",
+            "scenario_id": "e2e-multimodal-python-r-wasm-roundtrip",
+            "status": "passed",
+            "runtime": "javascript_wasm",
+            "artifact": "web-core-import.json",
+            "pipeline_sha256": "7" * 64,
+            "dataset_sha256": "8" * 64,
+            "client_side_only": True,
+            "backend_api_calls": 0,
+            "capability_schema": "nirs4all-core.capabilities.v1",
+            "runtime_surfaces": ["python", "r", "javascript_wasm"],
+            "runtime_contract": {
+                "surface": "javascript_wasm",
+                "pipelineEntrypoint": "runPortablePipeline",
+                "predictEntrypoint": "predictPortablePipeline",
+                "serializedModelPredict": True,
+            },
+            "serialized_model_predict_surfaces": ["javascript_wasm"],
+            "pipeline_import": {
+                "imported": True,
+                "loaded_pipeline_name": "synthetic multimodal",
+                "original_pipeline_name": "synthetic multimodal",
+                "pipeline_name_match": True,
+            },
+            "dataset_import": {
+                "imported": True,
+                "dataset_name": "synthetic multimodal dataset",
+                "rows": 40,
+                "cols": 32,
+                "source_count": 2,
+                "source_ids": ["nir", "sample_metadata"],
+                "source_slices": [[0, 28], [28, 32]],
+                "sample_count": 40,
+            },
+            "prediction_comparison": {
+                "prediction_abs_max": 0,
+                "predict_roundtrip_abs_max": 0,
+                "tolerance": 1e-8,
+                "prediction_rows": 12,
+            },
+            "checks": {
+                "client_side_only": True,
+                "backend_api_calls_zero": True,
+                "capability_schema": True,
+                "javascript_wasm_surface_declared": True,
+                "runtime_contract_predict_entrypoint": True,
+                "runtime_contract_pipeline_entrypoint": True,
+                "serialized_model_predict_surface": True,
+                "pipeline_imported": True,
+                "pipeline_name_match": True,
+                "run_entrypoint_is_function": True,
+                "predict_entrypoint_is_function": True,
+                "dataset_imported": True,
+                "dataset_shape_match": True,
+                "source_count_match": True,
+                "source_ids_match": True,
+                "source_slices_match": True,
+                "sample_count_match": True,
+                "prediction_rows_match": True,
+                "prediction_abs_max_within_tolerance": True,
+                "predict_roundtrip_abs_max_within_tolerance": True,
+            },
         }
     if key == "multisource-stacking/python-rerun-ledger.json":
         return {
@@ -1406,14 +1484,20 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "python-rerun-ledger.json",
                     "r-predictions.parquet",
                     "wasm-predictions.json",
+                    "web-core-import.json",
                 },
                 "commands": {"test_multimodal_roundtrip.py", "run_multimodal_roundtrip.py"},
-                "evidence": {"dense-fused multimodal", "Python saved artifact rerun ledger", "Roundtrip manifest hash equality"},
+                "evidence": {
+                    "dense-fused multimodal",
+                    "Python saved artifact rerun ledger",
+                    "client-side nirs4all-core",
+                    "Roundtrip manifest hash equality",
+                },
                 "phase_statuses": {
                     "python_open_pipeline": "strict",
                     "python_rerun_pipeline": "strict",
                     "python_parity": "strict",
-                    "wasm_web_reuse": "contract",
+                    "wasm_web_reuse": "strict",
                 },
             },
         ),
@@ -2582,7 +2666,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
 
     assert report["scenario_count"] == 11
     assert report["expected_scenario_count"] == 11
-    assert report["evidence_levels"] == {"hybrid": 2, "strict": 9}
+    assert report["evidence_levels"] == {"hybrid": 1, "strict": 10}
     assert report["required_languages"] == {
         "javascript_wasm": 8,
         "python": 11,
@@ -2612,25 +2696,23 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web_results": 5,
         "workspace_save": 6,
     }
-    assert report["debt_summary"]["strictness_gap_count"] == 2
+    assert report["debt_summary"]["strictness_gap_count"] == 1
     assert report["debt_summary"]["full_strict_ready"] is False
     assert report["debt_summary"]["full_strict_blockers"] == [
-        "non_strict_evidence_levels=hybrid:2",
-        "strictness_gaps=2",
-        "v1_contract_phases=1",
+        "non_strict_evidence_levels=hybrid:1",
+        "strictness_gaps=1",
     ]
     assert report["debt_summary"]["non_strict_scenarios"] == [
-        "e2e-multimodal-python-r-wasm-roundtrip",
         "e2e-multisource-branching-stacking-replay",
     ]
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 3,
-        "strict": 27,
+        "strict": 28,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
     assert report["debt_summary"]["strict_non_numeric_checks"] == {}
-    assert report["debt_summary"]["v1_contract_phase_count"] == 1
+    assert report["debt_summary"]["v1_contract_phase_count"] == 0
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
     assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-r-dataset-io-pipeline-save"] == {
@@ -2661,12 +2743,12 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "strict_non_numeric_checks": 0,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-multimodal-python-r-wasm-roundtrip"] == {
-        "strictness_gaps": 1,
-        "contract_phases": ["wasm_web_reuse"],
+        "strictness_gaps": 0,
+        "contract_phases": [],
         "gap_phases": [],
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 0,
-        "strict_parity_checks": 1,
+        "strict_parity_checks": 2,
         "strict_non_numeric_checks": 0,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-multisource-branching-stacking-replay"] == {
@@ -2701,12 +2783,9 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     multimodal = details["e2e-multimodal-python-r-wasm-roundtrip"]
     assert multimodal["status"] == "ready"
     assert multimodal["blocked_steps"] == {}
-    assert multimodal["strictness_gaps"] == [
-        "Current execution proves a dense fused-matrix multimodal proxy; native multimodal runtime and Web/Studio roundtrip steps are still pending."
-    ]
+    assert multimodal["strictness_gaps"] == []
     assert set(multimodal["phase_details"]) == {"contract", "gap", "not_applicable"}
-    assert set(multimodal["phase_details"]["contract"]) == {"wasm_web_reuse"}
-    assert "Web/Studio runtime reuse" in multimodal["phase_details"]["contract"]["wasm_web_reuse"]["gap"]
+    assert multimodal["phase_details"]["contract"] == {}
     assert set(multimodal["phase_details"]["not_applicable"]) == {
         "papers_export",
         "repository_forced_best_refit",
@@ -2721,7 +2800,17 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
                 "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json",
                 "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json",
             ],
-        }
+        },
+        {
+            "evidence_level": "strict",
+            "oracle": "python dense-fused multimodal pipeline, dataset hashes, source slices, and predictions",
+            "candidate": "client-side nirs4all-core JavaScript/WASM import over the same multimodal artifacts",
+            "metric": "pipeline/dataset import, runtime contract, source slices, zero backend calls, prediction_abs_max, and predict_roundtrip_abs_max within tolerance",
+            "artifacts": [
+                "{artifacts_dir}/multimodal-roundtrip/web-core-import.json",
+                "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json",
+            ],
+        },
     ]
     assert report["repos"] == {
         "dag-ml": 4,
@@ -2755,7 +2844,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "python_parity": {"strict": 11, "contract": 0, "gap": 0, "not_applicable": 0},
         "papers_export": {"strict": 1, "contract": 0, "gap": 0, "not_applicable": 10},
         "repository_forced_best_refit": {"strict": 2, "contract": 0, "gap": 0, "not_applicable": 9},
-        "wasm_web_reuse": {"strict": 7, "contract": 1, "gap": 0, "not_applicable": 3},
+        "wasm_web_reuse": {"strict": 8, "contract": 0, "gap": 0, "not_applicable": 3},
     }
     assert report["v1_refactor_phase_status_counts"] == expected_phase_counts
     scenario_ids_by_phase = report["v1_refactor_phase_scenario_ids"]
@@ -2776,6 +2865,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "e2e-dataset-provider-repository-roundtrip",
         "e2e-pipeline-generation-performance-compare",
         "e2e-formats-io-datasets-methods-language-bindings",
+        "e2e-multimodal-python-r-wasm-roundtrip",
         "e2e-python-reopen-paper-repository-refit",
         "e2e-wasm-open-repo-pipeline-alt-dataset",
     }
@@ -2802,12 +2892,12 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: full_strict_ready=false strictness_gaps=2 strict_non_numeric_checks=0 v1_contract_phases=1 "
+        "debt: full_strict_ready=false strictness_gaps=1 strict_non_numeric_checks=0 v1_contract_phases=0 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert (
-        "full strict blockers: non_strict_evidence_levels=hybrid:2, "
-        "strictness_gaps=2, v1_contract_phases=1"
+        "full strict blockers: non_strict_evidence_levels=hybrid:1, "
+        "strictness_gaps=1"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
@@ -2826,8 +2916,8 @@ def test_cross_language_e2e_cli_coverage_full_strict_gate_fails_on_hybrid_debt()
     )
 
     assert covered.returncode == 1
-    assert "full strict gate failed: non_strict_evidence_levels=hybrid:2" in covered.stderr
-    assert "v1_contract_phases=1" in covered.stderr
+    assert "full strict gate failed: non_strict_evidence_levels=hybrid:1" in covered.stderr
+    assert "strictness_gaps=1" in covered.stderr
 
 
 def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) -> None:
@@ -2846,7 +2936,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
-    assert report["debt_summary"]["strictness_gap_count"] == 2
+    assert report["debt_summary"]["strictness_gap_count"] == 1
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
     assert any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
@@ -2868,15 +2958,15 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
     assert "| full strict ready | no |" in report
     assert "## Full Strict Gate" in report
-    assert "| fail | non_strict_evidence_levels=hybrid:2, strictness_gaps=2, v1_contract_phases=1 |" in report
-    assert "| strictness gaps | 2 |" in report
+    assert "| fail | non_strict_evidence_levels=hybrid:1, strictness_gaps=1 |" in report
+    assert "| strictness gaps | 1 |" in report
     assert "| strict non-numeric checks | 0 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
     assert "## Strict Numeric Proof Exceptions" in report
     assert "method outputs and predictions match tolerance ledger" not in report
     assert "## Strictness Gap Detail" in report
-    assert "dense fused-matrix multimodal proxy" in report
+    assert "deterministic duplication-branch stacking fixture" in report
     assert "e2e-core-ui-custom-app-host" in report
     assert "repository_forced_best_refit" in report
     assert "javascript_wasm" in report
@@ -3018,10 +3108,15 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert wasm_flow["wasm_web_reuse"]["status"] == "strict"
 
     multimodal = _scenario_by_id(manifest, "e2e-multimodal-python-r-wasm-roundtrip")
-    assert multimodal["evidence_level"] == "hybrid"
-    assert any("dense fused-matrix multimodal proxy" in gap for gap in multimodal["strictness_gaps"])
+    assert multimodal["evidence_level"] == "strict"
+    assert multimodal["strictness_gaps"] == []
     assert not any("proxy representation" in check["metric"] for check in multimodal["parity_checks"])
     assert any("dense-fused feature representation" in check["metric"] for check in multimodal["parity_checks"])
+    assert any("zero backend calls" in check["metric"] for check in multimodal["parity_checks"])
+    assert "does not claim a full Studio shell render" in json.dumps(
+        flow["e2e-multimodal-python-r-wasm-roundtrip"]["wasm_web_reuse"],
+        sort_keys=True,
+    )
     assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["python_open_pipeline"]["status"] == "strict"
     assert "python-open-ledger.json" in json.dumps(
         flow["e2e-multimodal-python-r-wasm-roundtrip"]["python_open_pipeline"],
@@ -3033,7 +3128,7 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
         sort_keys=True,
     )
     assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["python_parity"]["status"] == "strict"
-    assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["wasm_web_reuse"]["status"] == "contract"
+    assert flow["e2e-multimodal-python-r-wasm-roundtrip"]["wasm_web_reuse"]["status"] == "strict"
 
     multisource = _scenario_by_id(manifest, "e2e-multisource-branching-stacking-replay")
     assert multisource["evidence_level"] == "hybrid"

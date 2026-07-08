@@ -50,17 +50,18 @@ The JSON `scenario_details` and Markdown strictness detail table are the audit
 surface to review before any production switch: they expose what remains hybrid
 without relying on skipped or xfailed tests.
 
-Current coverage is intentionally mixed: every parity-tagged scenario has at
-least one strict parity check, and the R dataset/IO/save lane, custom-app-host,
-and legacy-save converter/rendering scenarios are strict end to end for their
-declared scope.
-The manifest still records contract-level surfaces and explicit gaps for
-residual work such as source-aware native multimodal replay, Web/Studio runtime
-reuse, provider-backed browser datasets, broader source-aware by_source
-multisource/catalog corpora, and Web/core reuse over the formats/IO assembled dataset ledger. Do not present
-this suite as full strict ecosystem parity unless those phase statuses and
-non-numeric strict exceptions are promoted in the manifest and the coverage
-tests are updated with matching evidence.
+Current coverage is intentionally mixed but close to full strict: every
+parity-tagged scenario has at least one strict parity check, ten of the eleven
+scenarios are strict for their declared scope, and no V1 phase remains in
+`contract` status. The remaining full-strict blockers are
+`non_strict_evidence_levels=hybrid:1` and `strictness_gaps=1`, both tied to the
+multisource replay lane.
+The manifest still records the explicit multisource boundary: native score-set
+and prediction-vector replay are strict for the deterministic duplication-branch
+fixture, while source-aware `by_source` legacy stacking and broader external
+multisource/catalog corpora remain outside the scenario. Do not present this
+suite as full strict ecosystem parity until that remaining scenario is promoted
+or split into narrower strict scenarios with matching evidence.
 
 The validator also protects the suite shape from collapsing into shallow smoke
 claims. Each scenario must include Python as the portable oracle runtime, at
@@ -94,7 +95,7 @@ that count and the tests assert the expected handoff for each workflow:
 | `e2e-r-dataset-io-pipeline-save` | R loads a catalog dataset, reshapes it through IO, runs/saves a pipeline, and records Python/native parity evidence. |
 | `e2e-python-reopen-paper-repository-refit` | Python reopens/reruns a saved pipeline, papers export preserves provenance, repository handoff is emitted, and Web/WASM imports it. |
 | `e2e-wasm-open-repo-pipeline-alt-dataset` | A Python oracle opens and reruns the repository descriptor, then a fresh Web/WASM session imports the same pipeline over a nirs4all-providers/nirs4all-datasets catalog dataset and compares predictions. |
-| `e2e-multimodal-python-r-wasm-roundtrip` | Python persists and reopens the multimodal pipeline artifact, then R/WASM consume the dense-fused artifacts with strict numeric parity against the Python oracle. |
+| `e2e-multimodal-python-r-wasm-roundtrip` | Python persists and reopens the multimodal pipeline artifact, R/WASM consume the dense-fused artifacts with strict numeric parity against the Python oracle, and client-side nirs4all-core JavaScript/WASM imports the same multimodal pipeline/dataset hashes with zero backend calls. |
 | `e2e-multisource-branching-stacking-replay` | Python builds, persists and reopens multisource stacking replay evidence before native/core replay verifies score and prediction-vector parity. |
 | `e2e-converter-legacy-save-predictions-web` | Python converts a legacy save and Web renders the lowered prediction result panels. |
 | `e2e-dataset-provider-repository-roundtrip` | Providers materialize a deterministic NIRS CSV dataset, publish a repository descriptor, and Python/R/JavaScript-WASM core surfaces execute the same pipeline with strict prediction parity. |

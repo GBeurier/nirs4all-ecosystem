@@ -309,16 +309,16 @@
           "applicability": "This multimodal lane does not claim repository publication; repository forced-refit coverage remains in the Python/papers/repository scenario."
         },
         "wasm_web_reuse": {
-          "status": "contract",
+          "status": "strict",
           "evidence": [
-            "The WASM binding consumes the generated dense-fused proxy pipeline, but no Web UI roundtrip is present."
+            "The client-side nirs4all-core JavaScript/WASM runtime imports the same multimodal pipeline and dataset artifacts, verifies the capability/runtime contract, source slices, zero backend calls, and prediction deltas, then records web-core-import.json."
           ],
           "artifacts": [
-            "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"
+            "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json",
+            "{artifacts_dir}/multimodal-roundtrip/web-core-import.json"
           ],
-          "gap": "Web/Studio runtime reuse for multimodal source structure is still pending.",
           "acceptance": [
-            "Add a Web/WASM import/render step over the same multimodal pipeline and dataset hashes."
+            "web-core-import.json must report schema_version=n4a.e2e.multimodal_web_core_import.v1, status=passed, client_side_only=true, backend_api_calls=0, capability_schema=nirs4all-core.capabilities.v1, javascript_wasm runtime contract entrypoints, matching multimodal source ids/slices, and prediction/predict-roundtrip deltas within tolerance. This phase proves reusable client-side core runtime import; it does not claim a full Studio shell render."
           ]
         }
       },
@@ -1301,11 +1301,9 @@
     {
       "id": "e2e-multimodal-python-r-wasm-roundtrip",
       "title": "Multimodal Python/R/WASM pipeline roundtrip",
-      "objective": "Generate a multimodal NIRS plus metadata pipeline in Python, roundtrip the current portable dense-fused representation through R and WASM, and verify predictions and saved manifests remain equivalent within that proxy contract.",
-      "evidence_level": "hybrid",
-      "strictness_gaps": [
-        "Current execution proves a dense fused-matrix multimodal proxy; native multimodal runtime and Web/Studio roundtrip steps are still pending."
-      ],
+      "objective": "Generate a multimodal NIRS plus metadata pipeline in Python, roundtrip the current portable dense-fused representation through R and client-side nirs4all-core JavaScript/WASM, and verify predictions, source slices, runtime contracts, and saved manifests remain equivalent within that portable contract.",
+      "evidence_level": "strict",
+      "strictness_gaps": [],
       "languages": [
         "python",
         "r",
@@ -1332,12 +1330,14 @@
         "{artifacts_dir}/multimodal-roundtrip/python-predictions.parquet",
         "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet",
         "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json",
-        "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json"
+        "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json",
+        "{artifacts_dir}/multimodal-roundtrip/web-core-import.json"
       ],
       "evidence": [
         "Multimodal schema validation",
         "Python saved artifact rerun ledger",
         "Python/R/WASM proxy prediction comparison table",
+        "Client-side nirs4all-core JavaScript/WASM import contract with no backend calls",
         "Roundtrip manifest hash equality"
       ],
       "parity_checks": [
@@ -1348,6 +1348,16 @@
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json",
+            "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"
+          ]
+        },
+        {
+          "oracle": "python dense-fused multimodal pipeline, dataset hashes, source slices, and predictions",
+          "candidate": "client-side nirs4all-core JavaScript/WASM import over the same multimodal artifacts",
+          "metric": "pipeline/dataset import, runtime contract, source slices, zero backend calls, prediction_abs_max, and predict_roundtrip_abs_max within tolerance",
+          "evidence_level": "strict",
+          "artifacts": [
+            "{artifacts_dir}/multimodal-roundtrip/web-core-import.json",
             "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json"
           ]
         }
@@ -1398,7 +1408,8 @@
           "produces": [
             "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet",
             "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json",
-            "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json"
+            "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json",
+            "{artifacts_dir}/multimodal-roundtrip/web-core-import.json"
           ]
         }
       ]
