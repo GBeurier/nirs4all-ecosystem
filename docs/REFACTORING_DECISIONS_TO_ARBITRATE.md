@@ -278,13 +278,13 @@ host-only dans WASM.
 
 **Debloque:** `L13`, `LOCK-CAP`, `LOCK-RT`, `LOCK-UI`.
 
-### `ARB-013` - `nirs4all-lite` vers `nirs4all-core`
+### `ARB-013` - `nirs4all-core` aggregate public
 
-**Question:** le scaffold `nirs4all-lite` devient-il le futur aggregate public
-`nirs4all-core`, et avec quels extras?
+**Question:** quels extras et surfaces l'aggregate public `nirs4all-core`
+expose-t-il?
 
-**Recommendation actuelle:** oui seulement apres clarification du clone
-temporaire `nirs4all-core`. `datasets` devrait etre optionnel par defaut sauf
+**Decision actuelle:** l'ancien nom `nirs4all-lite` est retire et aucun alias
+public legacy n'est maintenu. `datasets` devrait etre optionnel par defaut sauf
 decision contraire.
 
 **Debloque:** `L1`, `L4`, release inventory.

@@ -56,8 +56,8 @@ encore instables.
 
 Ces contraintes viennent des docs existantes et doivent etre repetees aux agents:
 
-- `nirs4all-core` local actuel est un clone temporaire d'integration Python, pas
-  encore le futur aggregate final.
+- `nirs4all-core` est l'aggregate public canonique; l'ancien nom de chantier
+  `nirs4all-lite` ne doit plus etre publie ni maintenu comme alias public.
 - Le futur `core` agrege. Il ne devient pas un second moteur.
 - Les parsers vendor restent dans `nirs4all-formats`.
 - L'assemblage dataset reste dans `nirs4all-io`.
@@ -97,7 +97,7 @@ suivants sont serialises au debut:
 
 | Lock | Contrat a figer | Bloque |
 |---|---|---|
-| `LOCK-GOV` | noms publics, statut du clone temporaire, ownership des repos | `CORE-*`, docs publiques, releases |
+| `LOCK-GOV` | noms publics, ownership des repos, politique no-legacy-alias | `CORE-*`, docs publiques, releases |
 | `LOCK-CAP` | vocabulaire capability/unsupported/portability | runtimes, UI, core aggregate, Studio/Web |
 | `LOCK-PYREF` | oracle de parite Python: corpus, comparateurs, tolerances, commandes de test | `dag-ml`, runtime Python, controllers, Studio, methods |
 | `LOCK-MIG` | politique et schema de migration legacy -> V1: inputs supportes, target store, rapport, verification, refus | `nirs4all-tools`, `dag-ml`, Studio, support utilisateurs |
@@ -164,15 +164,16 @@ Gates:
 ### `L1` Governance, naming, ADR
 
 **Repos:** `nirs4all-ecosystem`, puis docs publiques selon decision
-**Dependances:** `PRE-1` pour statuer sur le clone temporaire
+**Dependances:** `PRE-1` pour verrouiller le statut de l'aggregate canonique
 **Role:** retirer l'ambiguite `lite/core/python/web/runtime/ui`.
 
 Taches:
 
-- `GOV-001`: ADR statut du clone temporaire `nirs4all-core`.
-- `GOV-002`: ADR final `nirs4all-lite` -> `nirs4all-core` ou alternative.
+- `GOV-001`: ADR statut de `nirs4all-core` comme aggregate canonique.
+- `GOV-002`: ADR final applique: l'aggregate public est `nirs4all-core`.
 - `GOV-003`: table source-of-truth repo/package/import par langage.
-- `GOV-004`: politique aliases/deprecations et fenetre de compatibilite.
+- `GOV-004`: politique aliases/deprecations: aucun alias public legacy pour
+  l'ancien nom `nirs4all-lite`.
 - `GOV-005`: matrice licence par repo/runtime/artifact.
 
 Sortie:
@@ -183,7 +184,7 @@ Sortie:
 
 ### `L2` Capabilities, portability, conformance
 
-**Repos:** `nirs4all-ecosystem`, `dag-ml`, `dag-ml-data`, `nirs4all-lite`,
+**Repos:** `nirs4all-ecosystem`, `dag-ml`, `dag-ml-data`, `nirs4all-core`,
 `nirs4all`, `nirs4all-studio`, `nirs4all-web`
 **Dependances:** `PRE-3`, puis `LOCK-GOV`, coordination avec `L17`
 **Role:** fournir le langage commun que tous les produits consomment.
@@ -236,18 +237,19 @@ Sortie:
 - un aggregate se reconstruit depuis manifest + lockfile;
 - le cockpit lit les manifests, mais ne devient pas moteur de rebuild.
 
-### `L4` Core aggregate: `nirs4all-lite` vers core final
+### `L4` Core aggregate: `nirs4all-core`
 
-**Repo:** `nirs4all-lite`
+**Repo:** `nirs4all-core`
 **Dependances:** `LOCK-GOV`, `LOCK-REL`, `LOCK-CAP`
 **Role:** faire de l'aggregate portable le `core` final sans y ajouter de
-logique metier. Attention: `nirs4all-lite` est aujourd'hui plutot un
-scaffold/registry; exposer directement tous les upstreams est un vrai travail
-d'implementation, pas un simple rename.
+logique metier. L'ancien nom de chantier `nirs4all-lite` est retire: il ne doit
+pas rester de package, workflow ou cible de release publique sous ce nom.
+Exposer directement tous les upstreams reste un vrai travail d'implementation,
+pas un simple rename.
 
 Taches:
 
-- `CORE-001`: alias/rename package/repo selon ADR.
+- `CORE-001`: verifier les noms package/repo et l'absence d'alias legacy public.
 - `CORE-002`: exposition directe de `dag-ml`, `dag-ml-data`, `formats`, `io`,
   `methods`, `datasets` si `DEC-GOV-002` le confirme; sinon documenter le
   modele `libloading`/lazy proxy. Decider explicitement si `datasets` est dans
@@ -404,7 +406,7 @@ Sortie:
 ### `L10` Runtime API commune
 
 **Repos:** nouveau repo ou packages existants selon ADR; probablement spec dans
-`nirs4all-ecosystem`, implementations dans `nirs4all`, `nirs4all-lite`,
+`nirs4all-ecosystem`, implementations dans `nirs4all`, `nirs4all-core`,
 `nirs4all-web`
 **Dependances:** `LOCK-CAP`, `LOCK-RT`, `DML-001`
 **Role:** donner a Studio/Web/CLI une surface stable.
@@ -575,7 +577,7 @@ Sortie:
 
 ### `L16` Controllers et bindings idiomatiques
 
-**Repos:** `dag-ml`, `nirs4all`, `nirs4all-lite`/core,
+**Repos:** `dag-ml`, `nirs4all`, `nirs4all-core`,
 `nirs4all-methods`, bindings langage, runtimes
 **Dependances:** `LOCK-CAP`, `LOCK-RT`; `dag-ml` controller schemas stables
 **Role:** rendre explicite que l'ajout d'un binding/langage passe surtout par

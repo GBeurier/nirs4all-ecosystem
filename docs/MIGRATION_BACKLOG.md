@@ -689,8 +689,8 @@ All NN controllers subclass `BaseModelController` (`controllers/models/base_mode
 Of the five named consumers, **only `nirs4all-studio` imports the Python `nirs4all` package** — and it reaches deep into *private* internals (`WorkspaceStore._fetch_pl`, raw `store.sqlite` SQL, `pipeline.analysis.*`, `operators.*` by introspection). **Count (use a reproducible definition — flagged by the Codex review):** `grep -rl 'import nirs4all\|from nirs4all' nirs4all-studio/api` → **~28 backend API files**; ~112 import occurrences in `api/`, ~133 across all studio Python (37 files). The migration checklist must **freeze the exact file list** from a checked-in command, not a prose number. The other four consumers are **not at risk** (FACT):
 - `nirs4all-aom` (`pyproject.toml:63`): nirs4all is only an "Instrumentation context" link; the dependency runs the other way.
 - `nirs4all-datasets` (`reproduce.py:85`): imports `nirs4all_io`, never the main lib.
-- `nirs4all-lite`: references `nirs4all.operators.*` only as class-name **strings** in a parity oracle; it already *is* the Rust path.
-- `nirs4all-web`: pure TS/WASM over `nirs4all-lite`; no Python `nirs4all`.
+- `nirs4all-core`: references `nirs4all.operators.*` only as class-name **strings** in a parity oracle; it already *is* the Rust/native aggregate path.
+- `nirs4all-web`: pure TS/WASM over `nirs4all-core`; no Python `nirs4all`.
 
 The studio already guards the import (`try: import nirs4all … except ImportError`, e.g. `system.py:85-88`, `lazy_imports.py`), so it boots without the lib — the swap can lean on that.
 
@@ -723,7 +723,7 @@ The studio already guards the import (`try: import nirs4all … except ImportErr
 
 ### 7.4 Compatibility test harness (parity oracle)
 
-Because the swap is signature-preserving but **numerics- and bytes-changing**, the only safe gate is a **golden-run differential harness** (modeled on `nirs4all-lite/scripts/parity/generate_python_oracle.py`, `nirs4all-aom/tests/.../test_parity_with_production.py`):
+Because the swap is signature-preserving but **numerics- and bytes-changing**, the only safe gate is a **golden-run differential harness** (modeled on `nirs4all-core/scripts/parity/generate_python_oracle.py`, `nirs4all-aom/tests/.../test_parity_with_production.py`):
 
 1. **Freeze golden runs (pre-swap):** on the current backend, run a matrix of pipelines × datasets covering every controller path the studio exercises. Snapshot: `RunResult.top(n)` rows, `best_score/best_rmse/best_r2`, the full predictions table, the `store.sqlite` (every table dumped), the `*.parquet` arrays, and the `.n4a` (manifest + per-artifact `predict()` on a fixed probe matrix).
 2. **Replay post-swap, assert three layers:**

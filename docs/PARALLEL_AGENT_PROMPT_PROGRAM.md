@@ -540,13 +540,13 @@ Livrables:
 ```text
 Tu es A13, agent L1/L3/L4 governance/release/core.
 
-Repos: nirs4all-lite, nirs4all-ecosystem, release docs. Read-only au depart.
+Repos: nirs4all-core, nirs4all-ecosystem, release docs. Read-only au depart.
 
 Mission:
 1. Clarifier les collisions:
-   dag-ml-core crate, nirs4all-core clone temporaire, futur nirs4all-core
-   aggregate, nirs4all-lite scaffold.
-2. Auditer ce que nirs4all-lite expose vraiment aujourd'hui.
+   dag-ml-core crate, nirs4all-core aggregate public, ancien scaffold
+   nirs4all-lite retire.
+2. Auditer ce que nirs4all-core expose vraiment aujourd'hui.
 3. Proposer package/install/import namespaces Python/R/npm.
 4. Proposer aggregation-manifest et aggregation-lock minimal.
 5. Mettre a jour release inventory si necessaire.
