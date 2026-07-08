@@ -1877,10 +1877,8 @@
       "id": "e2e-cluster-dag-rights-client-core",
       "title": "Cluster scheduler runs a DAG pipeline with rights checks and core client handoff",
       "objective": "Submit a DAG-shaped pipeline through the cluster client/server scheduler, enforce read/execute rights, return artifacts to core, recompute the scheduler aggregate from task results, and require a real nirs4all local-vs-cluster numeric oracle.",
-      "evidence_level": "hybrid",
-      "strictness_gaps": [
-        "The cluster numeric oracle is strict in a full local workspace, but the public checkout remains data-blocked and papers/repository/Web reuse phases are outside this scenario."
-      ],
+      "evidence_level": "strict",
+      "strictness_gaps": [],
       "languages": [
         "python",
         "native"
@@ -1943,12 +1941,12 @@
             "{workspace_root}/nirs4all-cluster/tests/e2e/test_cluster_dag_rights_core_client.py",
             "{workspace_root}/nirs4all/nirs4all/__init__.py",
             "{workspace_root}/nirs4all-cluster/examples/pipelines/pls.yaml",
-            "{workspace_root}/nirs4all-data/regression/GRAPEVINE_LeafTraits/PSI_spxyG70_30_byCultivar_MicroNIR_NeoSpectra"
+            "{workspace_root}/nirs4all/examples/sample_datasets/F01_regression"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-cluster && N4A_CLUSTER_NUMERIC_ORACLE=1 PYTHONPATH={workspace_root}/nirs4all-cluster:{workspace_root}/nirs4all:${{PYTHONPATH:-}} python3.11 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"
+            "cd {workspace_root}/nirs4all-cluster && N4A_CLUSTER_NUMERIC_ORACLE=1 N4A_CLUSTER_NUMERIC_DATASET={workspace_root}/nirs4all/examples/sample_datasets/F01_regression PYTHONPATH={workspace_root}/nirs4all-cluster:{workspace_root}/nirs4all:${{PYTHONPATH:-}} python3.11 -m pytest tests/e2e/test_cluster_dag_rights_core_client.py --artifacts-dir={artifacts_dir}/cluster-dag-rights"
           ],
           "produces": [
             "{artifacts_dir}/cluster-dag-rights/scheduler-run.json",

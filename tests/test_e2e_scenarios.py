@@ -17,11 +17,9 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs" / "contracts" / "e2e" / "cross-language-scenarios.n4a.json"
 ALLOWED_PUBLIC_CHECKOUT_DATA_BLOCKERS = {
     "nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json",
-    "nirs4all-data/regression/GRAPEVINE_LeafTraits/PSI_spxyG70_30_byCultivar_MicroNIR_NeoSpectra",
 }
 ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS = {
     "e2e-r-dataset-io-pipeline-save",
-    "e2e-cluster-dag-rights-client-core",
 }
 LANGUAGE_EVIDENCE_FRAGMENTS = {
     "python": ("python", "python3", "nirs4all"),
@@ -2465,7 +2463,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
 
     assert report["scenario_count"] == 11
     assert report["expected_scenario_count"] == 11
-    assert report["evidence_levels"] == {"hybrid": 5, "strict": 6}
+    assert report["evidence_levels"] == {"hybrid": 4, "strict": 7}
     assert report["required_languages"] == {
         "javascript_wasm": 8,
         "python": 11,
@@ -2495,7 +2493,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web_results": 5,
         "workspace_save": 6,
     }
-    assert report["debt_summary"]["strictness_gap_count"] == 5
+    assert report["debt_summary"]["strictness_gap_count"] == 4
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 3,
         "strict": 26,
@@ -2674,7 +2672,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=5 strict_non_numeric_checks=0 v1_contract_phases=2 "
+        "debt: strictness_gaps=4 strict_non_numeric_checks=0 v1_contract_phases=2 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2697,7 +2695,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
-    assert report["debt_summary"]["strictness_gap_count"] == 5
+    assert report["debt_summary"]["strictness_gap_count"] == 4
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
     assert any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
@@ -2717,7 +2715,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     report = report_path.read_text(encoding="utf-8")
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
-    assert "| strictness gaps | 5 |" in report
+    assert "| strictness gaps | 4 |" in report
     assert "| strict non-numeric checks | 0 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
@@ -2958,8 +2956,8 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert flow["e2e-formats-io-datasets-methods-language-bindings"]["wasm_web_reuse"]["status"] == "contract"
 
     cluster = _scenario_by_id(manifest, "e2e-cluster-dag-rights-client-core")
-    assert cluster["evidence_level"] == "hybrid"
-    assert any("public checkout remains data-blocked" in gap for gap in cluster["strictness_gaps"])
+    assert cluster["evidence_level"] == "strict"
+    assert cluster["strictness_gaps"] == []
     assert flow["e2e-cluster-dag-rights-client-core"]["python_parity"]["status"] == "strict"
     assert flow["e2e-cluster-dag-rights-client-core"]["wasm_web_reuse"]["status"] == "not_applicable"
     assert (
@@ -3094,8 +3092,6 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     expected_blocked_requirements = {
         "e2e-r-dataset-io-pipeline-save="
         "nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json",
-        "e2e-cluster-dag-rights-client-core="
-        "nirs4all-data/regression/GRAPEVINE_LeafTraits/PSI_spxyG70_30_byCultivar_MicroNIR_NeoSpectra",
     }
     assert set(re.findall(r"--allowed-blocked-requirement ([^\s]+)", workflow)) == (
         expected_blocked_requirements

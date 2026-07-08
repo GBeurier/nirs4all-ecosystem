@@ -80,8 +80,6 @@ jobs:
               --allow-blocked
               --allowed-blocked-scenario e2e-r-dataset-io-pipeline-save
               --allowed-blocked-requirement e2e-r-dataset-io-pipeline-save=nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json
-              --allowed-blocked-scenario e2e-cluster-dag-rights-client-core
-              --allowed-blocked-requirement e2e-cluster-dag-rights-client-core=nirs4all-data/regression/GRAPEVINE_LeafTraits/PSI_spxyG70_30_byCultivar_MicroNIR_NeoSpectra
             )
           fi
           python3 scripts/n4a_e2e_scenarios.py "${args[@]}"
