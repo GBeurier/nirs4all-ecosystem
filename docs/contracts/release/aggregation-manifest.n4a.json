@@ -237,7 +237,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v1.0.7",
+      "preferred_exact_tag": "v1.0.8",
       "repo_url": "GBeurier/nirs4all-methods",
       "role": "Portable methods kernels and C ABI",
       "owner_boundary": "kernels",
@@ -412,7 +412,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.1.9",
+      "preferred_exact_tag": "v0.1.10",
       "repo_url": "GBeurier/nirs4all-io",
       "role": "Dataset assembly and DatasetPackage bridge",
       "owner_boundary": "assembly",
@@ -484,7 +484,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.3.5",
+      "preferred_exact_tag": "v0.3.6",
       "repo_url": "GBeurier/nirs4all-core",
       "role": "Canonical portable aggregate bindings (Python distribution nirs4all-core; Rust, npm/WASM, R, and MATLAB/Octave publish/import as nirs4all where the bare name is available)",
       "owner_boundary": "aggregate",
