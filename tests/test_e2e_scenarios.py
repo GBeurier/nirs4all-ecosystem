@@ -2524,6 +2524,17 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "workspace_save": 6,
     }
     assert report["debt_summary"]["strictness_gap_count"] == 3
+    assert report["debt_summary"]["full_strict_ready"] is False
+    assert report["debt_summary"]["full_strict_blockers"] == [
+        "non_strict_evidence_levels=hybrid:3",
+        "strictness_gaps=3",
+        "v1_contract_phases=2",
+    ]
+    assert report["debt_summary"]["non_strict_scenarios"] == [
+        "e2e-multimodal-python-r-wasm-roundtrip",
+        "e2e-multisource-branching-stacking-replay",
+        "e2e-formats-io-datasets-methods-language-bindings",
+    ]
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 3,
         "strict": 26,
@@ -2702,11 +2713,32 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=3 strict_non_numeric_checks=0 v1_contract_phases=2 "
+        "debt: full_strict_ready=false strictness_gaps=3 strict_non_numeric_checks=0 v1_contract_phases=2 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
+    ) in covered.stdout
+    assert (
+        "full strict blockers: non_strict_evidence_levels=hybrid:3, "
+        "strictness_gaps=3, v1_contract_phases=2"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
+
+
+def test_cross_language_e2e_cli_coverage_full_strict_gate_fails_on_hybrid_debt() -> None:
+    script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
+
+    covered = subprocess.run(
+        [sys.executable, str(script), "coverage", "--require-full-strict"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    assert covered.returncode == 1
+    assert "full strict gate failed: non_strict_evidence_levels=hybrid:3" in covered.stderr
+    assert "v1_contract_phases=2" in covered.stderr
 
 
 def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) -> None:
@@ -2745,6 +2777,9 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     report = report_path.read_text(encoding="utf-8")
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
+    assert "| full strict ready | no |" in report
+    assert "## Full Strict Gate" in report
+    assert "| fail | non_strict_evidence_levels=hybrid:3, strictness_gaps=3, v1_contract_phases=2 |" in report
     assert "| strictness gaps | 3 |" in report
     assert "| strict non-numeric checks | 0 |" in report
     assert "| V1 gap phases | 0 |" in report

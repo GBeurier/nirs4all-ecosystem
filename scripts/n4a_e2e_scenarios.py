@@ -2545,6 +2545,7 @@ def coverage_report(
     evidence_levels: dict[str, int] = {}
     parity_check_evidence_levels: dict[str, int] = {}
     strictness_gap_count = 0
+    non_strict_scenarios: list[str] = []
     scenarios_without_strict_parity_check: list[str] = []
     strict_non_numeric_check_count = 0
     strict_non_numeric_checks: dict[str, list[str]] = {}
@@ -2562,6 +2563,8 @@ def coverage_report(
             repos[repo] = repos.get(repo, 0) + 1
         evidence_level = scenario["evidence_level"]
         evidence_levels[evidence_level] = evidence_levels.get(evidence_level, 0) + 1
+        if evidence_level != "strict":
+            non_strict_scenarios.append(scenario_id)
 
         v1_summary = _v1_refactor_summary(scenario["v1_refactor_contract"])
         for phase in V1_REFACTOR_PHASE_ORDER:
@@ -2662,6 +2665,29 @@ def coverage_report(
         for plan in plans
         if plan["status"] == "blocked"
     }
+    non_strict_evidence_levels = {
+        level: count for level, count in sorted(evidence_levels.items()) if level != "strict"
+    }
+    full_strict_blockers: list[str] = []
+    if non_strict_evidence_levels:
+        full_strict_blockers.append(
+            "non_strict_evidence_levels="
+            + ",".join(f"{level}:{count}" for level, count in non_strict_evidence_levels.items())
+        )
+    if strictness_gap_count:
+        full_strict_blockers.append(f"strictness_gaps={strictness_gap_count}")
+    if strict_non_numeric_check_count:
+        full_strict_blockers.append(f"strict_non_numeric_checks={strict_non_numeric_check_count}")
+    v1_contract_phase_count = sum(counts["contract"] for counts in phase_status_counts.values())
+    v1_gap_phase_count = sum(counts["gap"] for counts in phase_status_counts.values())
+    if v1_contract_phase_count:
+        full_strict_blockers.append(f"v1_contract_phases={v1_contract_phase_count}")
+    if v1_gap_phase_count:
+        full_strict_blockers.append(f"v1_gap_phases={v1_gap_phase_count}")
+    if scenarios_without_strict_parity_check:
+        full_strict_blockers.append(
+            "without_strict_parity=" + ",".join(scenarios_without_strict_parity_check)
+        )
     return {
         "schema_version": manifest["schema_version"],
         "scenario_count": len(scenarios),
@@ -2681,17 +2707,16 @@ def coverage_report(
             for language in ("python", "r", "javascript_wasm", "web")
         },
         "debt_summary": {
+            "full_strict_ready": not full_strict_blockers,
+            "full_strict_blockers": full_strict_blockers,
+            "non_strict_scenarios": non_strict_scenarios,
             "strictness_gap_count": strictness_gap_count,
             "parity_check_evidence_levels": dict(sorted(parity_check_evidence_levels.items())),
             "scenarios_without_strict_parity_check": scenarios_without_strict_parity_check,
             "strict_non_numeric_check_count": strict_non_numeric_check_count,
             "strict_non_numeric_checks": strict_non_numeric_checks,
-            "v1_contract_phase_count": sum(
-                counts["contract"] for counts in phase_status_counts.values()
-            ),
-            "v1_gap_phase_count": sum(
-                counts["gap"] for counts in phase_status_counts.values()
-            ),
+            "v1_contract_phase_count": v1_contract_phase_count,
+            "v1_gap_phase_count": v1_gap_phase_count,
             "v1_not_applicable_phase_count": sum(
                 counts["not_applicable"] for counts in phase_status_counts.values()
             ),
@@ -2735,11 +2760,24 @@ def render_coverage_markdown(report: dict[str, Any]) -> str:
                 ["ready", str(report["ready_count"])],
                 ["blocked", str(report["blocked_count"])],
                 ["evidence levels", ", ".join(f"{k}={v}" for k, v in report["evidence_levels"].items())],
+                ["full strict ready", "yes" if debt["full_strict_ready"] else "no"],
                 ["strictness gaps", str(debt["strictness_gap_count"])],
                 ["strict non-numeric checks", str(debt["strict_non_numeric_check_count"])],
                 ["V1 contract phases", str(debt["v1_contract_phase_count"])],
                 ["V1 gap phases", str(debt["v1_gap_phase_count"])],
                 ["V1 not applicable phases", str(debt["v1_not_applicable_phase_count"])],
+            ],
+        ),
+        "",
+        "## Full Strict Gate",
+        "",
+        *_markdown_table(
+            ["status", "blockers"],
+            [
+                [
+                    "pass" if debt["full_strict_ready"] else "fail",
+                    ", ".join(debt["full_strict_blockers"]) or "-",
+                ]
             ],
         ),
         "",
@@ -2925,6 +2963,11 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="write a human-readable coverage/debt board to this path",
     )
+    coverage_parser.add_argument(
+        "--require-full-strict",
+        action="store_true",
+        help="exit non-zero unless every scenario and V1 refactor phase is strict where applicable",
+    )
 
     evidence_parser = subparsers.add_parser("evidence", help="verify expected post-run artifacts")
     evidence_parser.add_argument("--scenario")
@@ -3023,6 +3066,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 print(
                     "debt: "
+                    f"full_strict_ready={str(debt['full_strict_ready']).lower()} "
                     f"strictness_gaps={debt['strictness_gap_count']} "
                     f"strict_non_numeric_checks={debt['strict_non_numeric_check_count']} "
                     f"v1_contract_phases={debt['v1_contract_phase_count']} "
@@ -3031,6 +3075,8 @@ def main(argv: list[str] | None = None) -> int:
                     "without_strict_parity="
                     + ",".join(debt["scenarios_without_strict_parity_check"])
                 )
+                if debt["full_strict_blockers"]:
+                    print("full strict blockers: " + ", ".join(debt["full_strict_blockers"]))
                 print(
                     "required languages: "
                     + ", ".join(
@@ -3049,6 +3095,13 @@ def main(argv: list[str] | None = None) -> int:
                         f"contract={counts['contract']} gap={counts['gap']} "
                         f"not_applicable={counts['not_applicable']}"
                     )
+            if args.require_full_strict and not report["debt_summary"]["full_strict_ready"]:
+                print(
+                    "full strict gate failed: "
+                    + ", ".join(report["debt_summary"]["full_strict_blockers"]),
+                    file=sys.stderr,
+                )
+                return 1
             return 0
         if args.command == "evidence":
             if args.ready_only and args.scenario:
