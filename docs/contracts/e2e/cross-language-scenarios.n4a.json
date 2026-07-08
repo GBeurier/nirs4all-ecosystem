@@ -172,9 +172,10 @@
         "python_open_pipeline": {
           "status": "strict",
           "evidence": [
-            "The Web smoke launches a full Python nirs4all/sklearn oracle harness that opens the same repository descriptor JSON before browser import, records descriptor hash parity, and exposes the result in pipeline-repository-smoke.json."
+            "The Web smoke launches a full Python nirs4all/sklearn oracle harness that opens the same repository descriptor JSON before browser import, records descriptor hash parity and catalog/provider dataset provenance, and exposes the result in pipeline-repository-smoke.json."
           ],
           "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
             "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
           ],
           "acceptance": [
@@ -184,9 +185,10 @@
         "python_rerun_pipeline": {
           "status": "strict",
           "evidence": [
-            "The Python oracle harness reruns the opened repository pipeline over the same non-demo fixture and dag-ml emitted fold assignments before the fresh Web/WASM import is compared."
+            "The Python oracle harness reruns the opened repository pipeline over the nirs4all-providers/nirs4all-datasets catalog CSV export and dag-ml emitted fold assignments before the fresh Web/WASM import is compared."
           ],
           "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
             "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
           ],
           "acceptance": [
@@ -196,9 +198,10 @@
         "python_parity": {
           "status": "strict",
           "evidence": [
-            "The Web smoke computes a Python nirs4all/sklearn oracle over the browser-emitted dag-ml folds and compares Web/WASM predictions and metrics."
+            "The Web smoke computes a Python nirs4all/sklearn oracle over the catalog/provider CSV export and browser-emitted dag-ml folds, then compares Web/WASM predictions and metrics."
           ],
           "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
             "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
           ],
           "acceptance": [
@@ -218,9 +221,10 @@
         "repository_forced_best_refit": {
           "status": "strict",
           "evidence": [
-            "The Web smoke imports a deterministic repository pipeline fixture paired with a repository forced-best-refit descriptor, verifies descriptor SHA256, force_best_refit=true, selected pipeline id, recipe SHA256, dataset id, and records the repository-owned contract fields in pipeline-repository-smoke.json."
+            "The Web smoke imports a deterministic repository pipeline fixture paired with a repository forced-best-refit descriptor, verifies descriptor SHA256, force_best_refit=true, selected pipeline id, recipe SHA256, dataset id, records the repository-owned contract fields in pipeline-repository-smoke.json, and executes it over a catalog/provider dataset export."
           ],
           "artifacts": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
             "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
           ],
           "acceptance": [
@@ -1142,11 +1146,9 @@
     {
       "id": "e2e-wasm-open-repo-pipeline-alt-dataset",
       "title": "WASM opens repository pipeline, executes client-side import smoke, and renders predictions",
-      "objective": "Run the browser/WASM aggregate locally, export/import a pipeline repository artifact, execute the imported pipeline client-side, validate saved prediction artifact reuse, and verify the Web build consumes the shared nirs4all-ui shim.",
-      "evidence_level": "hybrid",
-      "strictness_gaps": [
-        "The current Playwright path uses a deterministic non-demo uploaded fixture dataset materialized through dag-ml-data; it still does not execute an external provider/catalog dataset."
-      ],
+      "objective": "Run the browser/WASM aggregate locally, export/import a pipeline repository artifact over a catalog/provider dataset, execute the imported pipeline client-side, validate saved prediction artifact reuse, and verify the Web build consumes the shared nirs4all-ui shim.",
+      "evidence_level": "strict",
+      "strictness_gaps": [],
       "languages": [
         "javascript_wasm",
         "web",
@@ -1156,6 +1158,7 @@
         "nirs4all-web",
         "nirs4all-core",
         "nirs4all-repository",
+        "nirs4all-providers",
         "nirs4all-datasets",
         "nirs4all-ui"
       ],
@@ -1168,13 +1171,15 @@
         "parity"
       ],
       "artifacts": [
+        "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
         "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json",
         "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",
         "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"
       ],
       "evidence": [
         "WASM package version and web build hash",
-        "Repository pipeline descriptor, forced-best-refit contract descriptor, descriptor SHA256, stable pipeline id, non-demo dataset id, and shared UI shim check",
+            "Repository pipeline descriptor, forced-best-refit contract descriptor, descriptor SHA256, stable pipeline id, non-demo dataset id, and shared UI shim check",
+        "nirs4all-providers/nirs4all-datasets catalog provenance for the uploaded alternate dataset",
         "Client-only prediction artifact reuse with export/import hash evidence",
         "Imported pipeline execution screenshot and runtime resource hashes",
         "Python nirs4all/sklearn oracle comparison over browser-emitted dag-ml folds",
@@ -1253,14 +1258,19 @@
             "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
             "{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs",
             "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/manifest.json",
-            "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/repository-forced-best-refit.n4a.json"
+            "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/repository-forced-best-refit.n4a.json",
+            "{workspace_root}/nirs4all-providers/src/nirs4all_providers/datasets.py",
+            "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/bootstrap.py",
+            "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/organize.py",
+            "{workspace_root}/nirs4all-ecosystem/scripts/export_repository_dataset_fixture.py"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
+            "python3.11 {workspace_root}/nirs4all-ecosystem/scripts/export_repository_dataset_fixture.py --workspace-root {workspace_root} --out-dir {artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset --build-synthetic-catalog-fixture && cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset N4A_REPOSITORY_DATASET_EXPECTED_BADGE='48 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
           ],
           "produces": [
+            "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
             "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json",
             "{artifacts_dir}/wasm-repo-alt-dataset/web-results.png"
           ]

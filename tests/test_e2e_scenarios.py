@@ -21,6 +21,9 @@ ALLOWED_PUBLIC_CHECKOUT_DATA_BLOCKERS = {
 ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS = {
     "e2e-r-dataset-io-pipeline-save",
 }
+ALLOWED_ORCHESTRATION_PATH_ROOTS = {
+    "nirs4all-ecosystem",
+}
 LANGUAGE_EVIDENCE_FRAGMENTS = {
     "python": ("python", "python3", "nirs4all"),
     "r": ("rscript", "r-predictions", "python/r", "r and wasm", "python/r bindings"),
@@ -286,6 +289,20 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "repository_descriptor_verified": True,
             "repository_dataset_id_non_demo_sample": True,
             "repository_dataset_files_sha256": "1" * 64,
+            "uploaded_dataset_manifest": {
+                "schema_version": "n4a.web.repository_dataset_fixture/v1",
+                "provider": {"id": "datasets"},
+                "dataset": {
+                    "id": "web_repository_provider_fixture",
+                    "synthetic_catalog_fixture": True,
+                    "source": "X",
+                    "target": "LMA",
+                    "rows": 48,
+                    "cols": 2151,
+                },
+                "expected_badge": "48 samples × 2151 wavelengths",
+                "files_sha256": "1" * 64,
+            },
             "provider_runtime_assertions": {
                 "original_folds": {
                     "assignment_sha256": "2" * 64,
@@ -1006,6 +1023,8 @@ def test_cross_language_e2e_step_repos_and_path_gates_stay_on_declared_public_su
                     continue
                 assert raw_path.startswith("{workspace_root}/"), f"{step_id}: {raw_path}"
                 gated_repo = raw_path.removeprefix("{workspace_root}/").split("/", 1)[0]
+                if gated_repo in ALLOWED_ORCHESTRATION_PATH_ROOTS:
+                    continue
                 assert gated_repo in repos, f"{step_id}: {raw_path}"
 
 
@@ -1162,6 +1181,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
         "{artifacts_dir}/python-paper-repository/repository-best-pipeline.json"
     ]
     assert artifacts_by_scenario["e2e-wasm-open-repo-pipeline-alt-dataset"] == [
+        "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
         "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
     ]
 
@@ -1234,7 +1254,12 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "languages": {"javascript_wasm", "web", "python"},
                 "tags": {"datasets", "pipeline", "repository", "predictions", "web_results"},
                 "tools": {"npm", "python3.11"},
-                "produces": {"pipeline-repository-smoke.json", "predict-artifact-smoke.json", "web-results.png"},
+                "produces": {
+                    "repository_dataset_manifest.json",
+                    "pipeline-repository-smoke.json",
+                    "predict-artifact-smoke.json",
+                    "web-results.png",
+                },
                 "commands": {"smoke:pipeline-repository", "smoke:predict-artifact"},
                 "evidence": {"Python nirs4all/sklearn oracle", "fresh Web/WASM session", "python_rerun_pipeline"},
                 "phase_statuses": {
@@ -1730,7 +1755,7 @@ def test_cross_language_e2e_plan_summarizes_v1_refactor_gaps(tmp_path: Path) -> 
         artifacts_dir=tmp_path / "artifacts",
     )
 
-    assert plan["evidence_level"] == "hybrid"
+    assert plan["evidence_level"] == "strict"
     assert plan["v1_refactor_summary"] == {
         "total": 6,
         "strict": 5,
@@ -2463,7 +2488,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
 
     assert report["scenario_count"] == 11
     assert report["expected_scenario_count"] == 11
-    assert report["evidence_levels"] == {"hybrid": 4, "strict": 7}
+    assert report["evidence_levels"] == {"hybrid": 3, "strict": 8}
     assert report["required_languages"] == {
         "javascript_wasm": 8,
         "python": 11,
@@ -2493,7 +2518,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web_results": 5,
         "workspace_save": 6,
     }
-    assert report["debt_summary"]["strictness_gap_count"] == 4
+    assert report["debt_summary"]["strictness_gap_count"] == 3
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 3,
         "strict": 26,
@@ -2523,7 +2548,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "strict_non_numeric_checks": 0,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-wasm-open-repo-pipeline-alt-dataset"] == {
-        "strictness_gaps": 1,
+        "strictness_gaps": 0,
         "contract_phases": [],
         "gap_phases": [],
         "not_applicable_phases": ["papers_export"],
@@ -2605,7 +2630,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "nirs4all-io": 3,
         "nirs4all-methods": 6,
         "nirs4all-papers": 1,
-        "nirs4all-providers": 2,
+        "nirs4all-providers": 3,
         "nirs4all-repository": 3,
         "nirs4all-tools": 1,
         "nirs4all-ui": 3,
@@ -2672,7 +2697,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=4 strict_non_numeric_checks=0 v1_contract_phases=2 "
+        "debt: strictness_gaps=3 strict_non_numeric_checks=0 v1_contract_phases=2 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2695,7 +2720,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
-    assert report["debt_summary"]["strictness_gap_count"] == 4
+    assert report["debt_summary"]["strictness_gap_count"] == 3
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
     assert any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
@@ -2715,7 +2740,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     report = report_path.read_text(encoding="utf-8")
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
-    assert "| strictness gaps | 4 |" in report
+    assert "| strictness gaps | 3 |" in report
     assert "| strict non-numeric checks | 0 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
@@ -2847,9 +2872,9 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert "Python-exported original 130x2151 dataset" in json.dumps(repository_flow["wasm_web_reuse"])
 
     wasm_alt_dataset = _scenario_by_id(manifest, "e2e-wasm-open-repo-pipeline-alt-dataset")
-    assert wasm_alt_dataset["evidence_level"] == "hybrid"
-    assert any("non-demo uploaded fixture dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
-    assert any("external provider/catalog dataset" in gap for gap in wasm_alt_dataset["strictness_gaps"])
+    assert wasm_alt_dataset["evidence_level"] == "strict"
+    assert wasm_alt_dataset["strictness_gaps"] == []
+    assert "nirs4all-providers/nirs4all-datasets catalog provenance" in json.dumps(wasm_alt_dataset, sort_keys=True)
     wasm_flow = flow["e2e-wasm-open-repo-pipeline-alt-dataset"]
     assert wasm_flow["python_open_pipeline"]["status"] == "strict"
     assert wasm_flow["python_rerun_pipeline"]["status"] == "strict"
@@ -2986,8 +3011,8 @@ def test_cross_language_e2e_plan_exposes_hybrid_web_gaps_and_strict_checks() -> 
     )
     plan = json.loads(planned.stdout)[0]
 
-    assert plan["evidence_level"] == "hybrid"
-    assert plan["strictness_gaps"]
+    assert plan["evidence_level"] == "strict"
+    assert plan["strictness_gaps"] == []
     assert "parity" in plan["tags"]
     assert [check["evidence_level"] for check in plan["parity_checks"]].count("strict") >= 2
     assert plan["v1_refactor_contract"]["python_parity"]["status"] == "strict"
@@ -3037,6 +3062,8 @@ def test_cross_language_e2e_required_paths_stay_in_declared_repos_or_allowlisted
                 relative = raw_path[len(prefix) :]
                 top_level = relative.split("/", 1)[0]
                 if top_level in declared_repos:
+                    continue
+                if top_level in ALLOWED_ORCHESTRATION_PATH_ROOTS:
                     continue
                 assert scenario["id"] in ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS, (
                     f"{scenario['id']}.{step['id']} requires {raw_path}, but {top_level!r} "
