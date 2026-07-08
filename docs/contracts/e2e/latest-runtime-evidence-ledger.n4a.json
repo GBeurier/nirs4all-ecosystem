@@ -148,47 +148,53 @@
       "verified_artifacts": [
         {
           "path": "r-dataset-io-pipeline/dataset-card.json",
-          "sha256": "7551016c8924b9299f58bd2b30e1d1cd9e21cec35c35cd9be2e23ad68da57661"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "r-dataset-io-pipeline/dataset-package-summary.json",
-          "sha256": "1aa7ec8ac0510cb854b2f53f0ad09387934bb98e71f5fcfb14edd5e178ec9d97"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "r-dataset-io-pipeline/io-spec.n4a.json",
-          "sha256": "51d1266ee1447cfbc2ace152b2873477198e314f553c9e088cfe70d115140508"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "r-dataset-io-pipeline/pipeline.n4a.json",
-          "sha256": "ccc5dc629bc18fa66517078332b90f8b4a4b77c85664e9b0273cc6cbca34e68d"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "r-dataset-io-pipeline/python-reopen-ledger.json",
-          "sha256": "ef984ebc3c669967b4fcee23bf030d58845f2edf6848927ed71118ece51b6bf1"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "28b9ecd9ff6191b46a453c2249fb0e1ef19338add34577a79236059098a29ad6",
+          "requirement_count": 12
         },
         {
           "path": "r-dataset-io-pipeline/r-parity-ledger.json",
-          "sha256": "930f0f801e5c3a08fb1aef336f22a9646b1233d0d6b331a361bd9b0677da4b10"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "fa63124ef4cb6019c97caf1c3b075084594cb83d93da162440e474f354651029",
+          "requirement_count": 18
         },
         {
           "path": "r-dataset-io-pipeline/r-predictions.json",
-          "sha256": "bd29b5506b25157336e846f24ecd347ac2ff710ccbd4c20c67e76bf60b969fe7"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "r-dataset-io-pipeline/r-session-info.json",
-          "sha256": "70111926fbb91929babdd27f1bab498ea8dca104e87df425863f0b17097fddef"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "r-dataset-io-pipeline/reshaped-dataset.json",
-          "sha256": "3b0d2514a54bae1498fc674b402337033c8f4825c7aadc112d5612f05cb66d2b"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "r-dataset-io-pipeline/roundtrip-checks.json",
-          "sha256": "c1d9d3639839f15f6d318ace4026b766f41e08b0095d127b4d90d44a2d7a6058"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "08541ecf862fdf409b425f38a4832c1911f0897673b4f28e2587b766b68e3ff6",
+          "requirement_count": 18
         },
         {
           "path": "r-dataset-io-pipeline/workspace.n4a.json",
-          "sha256": "cb453e34f13575f70b499169f8694bbde59955d793c5780a89b16e66448046d4"
+          "proof_kind": "json_semantic_presence"
         }
       ]
     },
@@ -256,35 +262,41 @@
       "verified_artifacts": [
         {
           "path": "python-paper-repository/paper-export.zip",
-          "sha256": "035ae86c08b5877be37bb62847bf40e0704bbfe0251b714e1d137b4abb962bc7"
+          "proof_kind": "presence"
         },
         {
           "path": "python-paper-repository/reopened-result.json",
-          "sha256": "0e3fc7cc9c2bbbb2e91fbbe78127cb181748d57a9a23f75fd6c4769324461d20"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "bf98a32ea843bf35c651ea069733aca45751171255afcee1df45f4087d871596",
+          "requirement_count": 14
         },
         {
           "path": "python-paper-repository/repository-best-pipeline-web-results.png",
-          "sha256": "daede7f13c04b6852aac2938a31d72925433908df7139b29ea8271ed419f4e9c"
+          "proof_kind": "presence"
         },
         {
           "path": "python-paper-repository/repository-best-pipeline.json",
-          "sha256": "9898fdb7363f4d88d6063768dc468fe5a8388c927c633af23ee2407e66b1e50b"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "cb7811e9bbf2c4dbb999e3dfb6267ae62cb78048f3569d3a5f43b97c9327f4e2",
+          "requirement_count": 9
         },
         {
           "path": "python-paper-repository/repository_X_train.csv",
-          "sha256": "f834efb83a9834cde6d7dbde3ff3ce30e4f9e8d7f5d92d314ff9e24f896afe58"
+          "proof_kind": "presence"
         },
         {
           "path": "python-paper-repository/repository_metadata.csv",
-          "sha256": "ae5072051ea8f765fa5cd75c1fc99a99e4801b57af00b2c1eee25cf75650c598"
+          "proof_kind": "presence"
         },
         {
           "path": "python-paper-repository/repository_y_train.csv",
-          "sha256": "70d5e721980c01401aa51ef66c67e4598f163d1f03aff3a83e9bea156cb032e2"
+          "proof_kind": "presence"
         },
         {
           "path": "python-paper-repository/web-repository-best-pipeline.json",
-          "sha256": "5cfc67b260b0e368f34c7efc624c1870f85d81f757cfb0c1a4b7c371276b7d6c"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "dec3720f6c320e3fc8d88ad02e20ef6a336e1a46f2b3c71169677f0f6d2d90c7",
+          "requirement_count": 21
         }
       ]
     },
@@ -348,19 +360,23 @@
       "verified_artifacts": [
         {
           "path": "wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
-          "sha256": "b2595fadace64d1432cf8ded0c80c2a59c40e5d0ed71fd402cd57ea2e7bd4d51"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "wasm-repo-alt-dataset/pipeline-repository-smoke.json",
-          "sha256": "8b7df3dd37b5806235dc6720d1a921c8d3d5ef440571ef6130c95d81339bd7ae"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "0de672564bed7b1b3136c1974038b84e6e2d70b73e1845b79be8a73d99ef6917",
+          "requirement_count": 49
         },
         {
           "path": "wasm-repo-alt-dataset/predict-artifact-smoke.json",
-          "sha256": "d24a03b068f5eef06150f7ca6e97dd6ecf05f7074d827440f2fe11271ef8833d"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "68c7809518eaabe0df3e63241275f4b80584bf516e037196cb0a1e708d43a4b7",
+          "requirement_count": 6
         },
         {
           "path": "wasm-repo-alt-dataset/web-results.png",
-          "sha256": "c73b14ad0d87471789c33d93d5d69ea15ccd41196fab4c9ac40bc26526323558"
+          "proof_kind": "presence"
         }
       ]
     },
@@ -426,39 +442,49 @@
       "verified_artifacts": [
         {
           "path": "multimodal-roundtrip/core-roundtrip-evidence.json",
-          "sha256": "2f39810df350f1db10e42889a24f56f53a3059fdf43889efad19b1bde9c397cf"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "636953ad9b234f1c9118708ef5f14225ba3a9178d5b5dfcf5e7ed6f5887a967f",
+          "requirement_count": 6
         },
         {
           "path": "multimodal-roundtrip/multimodal-dataset.json",
-          "sha256": "1f830298dd49c8ac57fe3f210fb54d7ee7e3f49b51ca776ce7a59d7429c4f57d"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "multimodal-roundtrip/multimodal-pipeline.n4a.json",
-          "sha256": "4a1d961d1c50d1a28a38b149072af492cfa167a9eae4b7debffd7b8fd1ecdbdd"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "multimodal-roundtrip/python-open-ledger.json",
-          "sha256": "00ff047fab77911ee327188c4f2012a1585e82c17ecf02f1bc86f7e52eb257a0"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "f6527640ec48dad4b171c90206884995bf8c87dfcaa723b01b3e7a8d087c5384",
+          "requirement_count": 10
         },
         {
           "path": "multimodal-roundtrip/python-predictions.parquet",
-          "sha256": "dd79063c0af4a15c9791542e9f9fd5239ebb3cfdd619d619cfd0f3e82dccf8e2"
+          "proof_kind": "presence"
         },
         {
           "path": "multimodal-roundtrip/python-rerun-ledger.json",
-          "sha256": "11402e09ddc0278d8599f60fb5238e72c332c3da2c43d4454d4f3ac5e0fab2da"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "f64bf5a6d7148b96a9af68d54c74e8464bfca1cf8ef536481b199369dc89c279",
+          "requirement_count": 17
         },
         {
           "path": "multimodal-roundtrip/r-predictions.parquet",
-          "sha256": "80afb33e0bc537e009c7c072fbcef5b42f81c9798ebc53d52e4629d242ada31a"
+          "proof_kind": "presence"
         },
         {
           "path": "multimodal-roundtrip/wasm-predictions.json",
-          "sha256": "b6de50b3d273dbad0c06b86989a54efd7b4c1580dc90c1a070afae6595fe0563"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "5ca136f5bcd2375064c242b6909523601bec2375c31be738dffed08b906ab52a",
+          "requirement_count": 8
         },
         {
           "path": "multimodal-roundtrip/web-core-import.json",
-          "sha256": "e929c6075f72b4e170e775ace7df2ee72b920d06f949c4a5517c51d879703f17"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "d121bd201cf2e271d7570e5012abf5678e27270147c0ba4e2146408311de3421",
+          "requirement_count": 44
         }
       ]
     },
@@ -521,23 +547,31 @@
       "verified_artifacts": [
         {
           "path": "multisource-stacking/native-replay.json",
-          "sha256": "a99bfc451e5579e2d8d2bdfb728d6d9ce13e6a29c0d1ad4c6ef1fad70697ceae"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "c1ee19e0b01d3017953540f030ebd5738a7e5cd8d05abc414400cdb3dca4c9e2",
+          "requirement_count": 10
         },
         {
           "path": "multisource-stacking/oof-ledger.json",
-          "sha256": "36fd596dab52fafe667650fc390695355750e73459cda7e4c73ca3847188efb5"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "f24bec36f0a84a4dd63ed15bd7c854da1e06454b106591b75bcff6ed4b9e38ba",
+          "requirement_count": 6
         },
         {
           "path": "multisource-stacking/python-open-ledger.json",
-          "sha256": "cd3406e8daae53debb9d883214e13b07d013857416f0168e6601dc964168286c"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "dfc09b8b997de95c0f1e4e66721a1f2f4398f5f9d1065b2e5a567bc3f2bc00a3",
+          "requirement_count": 14
         },
         {
           "path": "multisource-stacking/python-rerun-ledger.json",
-          "sha256": "4d488d7fe509486c9ca016f58d39d8bce63f9b14068b4dac152fe918881cef93"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "085492d27b0f4d9fa06b088fac617f9a1ecca2e4fc2a6482239a33343244f4d4",
+          "requirement_count": 17
         },
         {
           "path": "multisource-stacking/stacking-replay.n4a.json",
-          "sha256": "12754dc0363a1f541c5711ad549d42c0a665fdbb7f82e7b69b4709248c6b8837"
+          "proof_kind": "json_semantic_presence"
         }
       ]
     },
@@ -600,27 +634,37 @@
       "verified_artifacts": [
         {
           "path": "legacy-converter/converted-workspace.n4a.json",
-          "sha256": "ea5edaee3862da9673bea9fa0380691b2067b618ae492f2dfddd6c447b607207"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "ee4d251bd62439a6f297814176123afd68b27e9fee4d333f84270efd4bd5bcde",
+          "requirement_count": 6
         },
         {
           "path": "legacy-converter/predictions.rt_result.json",
-          "sha256": "3996424c51ce18d49f5c9f190d35d9bb91e289b6adff620fb08cb7696234601e"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "05a44f677d958bf3edd9d4610e809416b03d20b829dc8c89d17e18eba239fd47",
+          "requirement_count": 5
         },
         {
           "path": "legacy-converter/python-open-pipeline.json",
-          "sha256": "69904d3d48ee215855a99f5ac7a563dc7a10150edd566e834cd038adee2e5cd3"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "2abf6ead6315c8c7d0e2bc48ac74176cb465c23d84aaecd411a07187e7ba0caa",
+          "requirement_count": 44
         },
         {
           "path": "legacy-converter/python-rerun-pipeline.json",
-          "sha256": "dc0b50e69d703306eb68852661c1231dded14404fe8a80ebb180056f52c2a00f"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "074bdc4f91fad2349719e003f93a09c786797a6bf8e93f409d29f3e2aecb0eb2",
+          "requirement_count": 10
         },
         {
           "path": "legacy-converter/web-results-panels.json",
-          "sha256": "6cf2a19857b9163853555e81b90406aa1ccbded072d639a9d746e92c237fa91d"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "92d8b02263d08e754c1d6361fd55d603722a743fe14d2cb64c3c3e6d723323ee",
+          "requirement_count": 4
         },
         {
           "path": "legacy-converter/web-results.png",
-          "sha256": "77e51f581e6ee681e45ceda3e3f956d1b693f161eefeb141548175f52602088b"
+          "proof_kind": "presence"
         }
       ]
     },
@@ -682,19 +726,23 @@
       "verified_artifacts": [
         {
           "path": "provider-repository-roundtrip/cross-language-consumption.json",
-          "sha256": "13c393288b4e290f3099b9bde1bda712d904e18bebfd68bf3b4d66c1bf32224f"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "89d1db6e3ef49fff41ed0b842ad6bb76b1c23f63afdd88f145e5d9a5eb515e0c",
+          "requirement_count": 17
         },
         {
           "path": "provider-repository-roundtrip/provider-resolution.json",
-          "sha256": "e9c9346b5d41cb6bf5658edfb63cfe23779df0df4e3edcabfac5a513fb554c1b"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "93af6e95964904234ff700e89bb08b0d28285a48e301b24af5e997a7578af53e",
+          "requirement_count": 10
         },
         {
           "path": "provider-repository-roundtrip/repository-index.json",
-          "sha256": "bd33497ec345f628a7fa3b4c62f6321fabb1a90918a5a7011cecc265aec9c5f1"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "provider-repository-roundtrip/repository-pipeline.n4a.json",
-          "sha256": "8eebd00109310ffeee2e502580e0f69950c47a476df6d41ef7784ee4329f20b5"
+          "proof_kind": "json_semantic_presence"
         }
       ]
     },
@@ -757,23 +805,33 @@
       "verified_artifacts": [
         {
           "path": "performance-compare/dataset-web-oracle.json",
-          "sha256": "492a8880cb479cd5efe33c938f0db4cb4b7b40f86330d727dbe019aefd94644f"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "11018622da7d939e8df0d2b4348f35f1d8d2beff73bb08da6c67c2a6ca0258ae",
+          "requirement_count": 10
         },
         {
           "path": "performance-compare/pipeline-candidate.n4a.json",
-          "sha256": "7bc624fc9bc5b73758290e9ec2180d736995883a2b9b869059b32be0e7965c96"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "62704b8ad33989a65b36e0a36c45dba3b5d04e749d9292ffbbc21d69a872e334",
+          "requirement_count": 7
         },
         {
           "path": "performance-compare/pipeline-family.json",
-          "sha256": "47a4e1e932e34e9f6a4b78ba712a9e89b6e55990b997a3ee37d6b008ed701e53"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "a44d5d4790b9406e942c025657ba2aee82f85b46420c0709498f3ffd7bfdf681",
+          "requirement_count": 10
         },
         {
           "path": "performance-compare/python-vs-dagml.json",
-          "sha256": "4d0ef547f024c44677f9c7a4c3b3a9fe29079874b47c63ce1500165ae51ed302"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "5473616bf5ac741a93d703c8ca0768dd8757eeb9d71994e960cd24e0a6fe9c6b",
+          "requirement_count": 23
         },
         {
           "path": "performance-compare/web-runtime.json",
-          "sha256": "d049089ca68ec299b0a2dcf0060b8d42a37f4b7c576c00cdb5e843c41aac8e8b"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "ce20b030bce1d1a849a194a1a83846cfca2d96724861ae281e1c2c93d0211477",
+          "requirement_count": 23
         }
       ]
     },
@@ -832,19 +890,23 @@
       "verified_artifacts": [
         {
           "path": "cluster-dag-rights/core-client-result.json",
-          "sha256": "c1596799b764f83c9c014d35b1160f5b40ec03734daffd6cd60fa4fa8f06b27f"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "cluster-dag-rights/local-vs-cluster-numeric.json",
-          "sha256": "537e5666f6e3442b5f53b2af2fb02f41095e1797fa3eaffde2e173bea159c6e6"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "1b7b49f9c46c7dd6e25166f22845c5000e217d63b94e2ecd1584f2209b478e45",
+          "requirement_count": 4
         },
         {
           "path": "cluster-dag-rights/local-vs-cluster-parity.json",
-          "sha256": "ab0f8724fd2580e7fbb953128dd83c6061892bda205fbd4de0c643d8c6a0aca8"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "be548d8c28afa4c552e504d8ac8faaf9b98abe5cd7639af905c5abd3adb84a37",
+          "requirement_count": 8
         },
         {
           "path": "cluster-dag-rights/scheduler-run.json",
-          "sha256": "2d86924513a2cec3b018f413ddc968570c5b3d0e9658eb4ee690870b5eb4c9ab"
+          "proof_kind": "json_semantic_presence"
         }
       ]
     },
@@ -909,23 +971,33 @@
       "verified_artifacts": [
         {
           "path": "formats-io-methods/assembled-datasets.json",
-          "sha256": "4bf0456506929bdd9fe577400d60fbe40e5919c7cb2daa106d2ee7c40f0570bb"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "af011856415db4bf93329be8f69d5c52f101abde7b6f5e362270f92e196fd62b",
+          "requirement_count": 2
         },
         {
           "path": "formats-io-methods/binding-parity.json",
-          "sha256": "a1f4837f805f678dd420735e3fb26b69140b98c7621bb8ac5717a77289b0da9c"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "7fa91297fb71e5c44d4508ed0f48b5d322f87bc319290c85eae273ca1179d7d0",
+          "requirement_count": 17
         },
         {
           "path": "formats-io-methods/predictions-by-language.json",
-          "sha256": "cf03d751e3cba8b053630e0650886b3e91279a37f763d86e0f4129b62cb9cafa"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "bea0220c863eb012f5b31340e51cae8c55a471fe0556639c084ad0659de6a700",
+          "requirement_count": 10
         },
         {
           "path": "formats-io-methods/wasm-orchestrator-fixture.json",
-          "sha256": "89d314578be9153d14abec70973b011c0490f16d520b45fff94df53f2e06ef44"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "0456f76a6d8a0fff9560fe3e50bc775dcd3d52ed1914501f4afb81c028934676",
+          "requirement_count": 23
         },
         {
           "path": "formats-io-methods/web-core-pipeline-import.json",
-          "sha256": "02b9906138933e6792bca80087b7489b4e0da38d8ae27cf4d1e9f33a89a0d5b9"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "14f715f39071c25dc5dd86e853d3278a3cdf1a2a3a1e8c696607d516ea25e0ef",
+          "requirement_count": 14
         }
       ]
     },
@@ -992,39 +1064,55 @@
       "verified_artifacts": [
         {
           "path": "custom-app-host/custom-host-predictions.json",
-          "sha256": "6c17a43d3700345f69be795f50963808a772e00b5c1428ddc266e6955bf248d9"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "8f4024b9b95b5e2c1c79a625223f52a5f1f153643e851d95b44b49d0d55070c0",
+          "requirement_count": 3
         },
         {
           "path": "custom-app-host/custom-host-python-open.json",
-          "sha256": "39881d74ba2ab3f0051250b6b37cf68842027d4639e54449487e01e4abc9d321"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "8a3f816685c159758485556e1a2f9c8cf8dbcbacdb8148f7d2c9b719dc16d7ae",
+          "requirement_count": 16
         },
         {
           "path": "custom-app-host/custom-host-python-rerun.json",
-          "sha256": "e6516bac362e6061d4bf2e53aad7634cfba0632cde7d02b9392915aef11d97e7"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "fcaa8e494a461195d70294d03a613d93738d05f8a729fdbc43c33ec712c4a731",
+          "requirement_count": 16
         },
         {
           "path": "custom-app-host/custom-host-quality-smoke.json",
-          "sha256": "454c645f9187c02a31b86a936aaaa464c82cb6f10a8a64d46b6ea391d57342b4"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "6ef8768fd6ff0b377815d0721a9bc26f25ddc994de7ee7577ea7b483946c84bb",
+          "requirement_count": 18
         },
         {
           "path": "custom-app-host/custom-host-r-parity.json",
-          "sha256": "4c27c9d1992133405a9aecd32ecb410323cfc7364aac74c4bb6e1a9f70a3a958"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "472fbe3d3f205bd2c02f16657fe06ba3c4451d58ace58ce98838101e89b4a737",
+          "requirement_count": 18
         },
         {
           "path": "custom-app-host/custom-host-run.json",
-          "sha256": "070496c87a9197ad9247545fb2b45aca7717da40c0011ac7dea0fea3a0a8fa4d"
+          "proof_kind": "json_semantic_presence"
         },
         {
           "path": "custom-app-host/custom-host-runtime-contracts.json",
-          "sha256": "b0c3f3522d72fb1827fbdeb25c988f6fd06691d6fc651ca70d5d190e8c069ceb"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "045220cbfb5d4e1d734803f58b3c0617a9bee8f75a7de860e6229e8c42d1911c",
+          "requirement_count": 6
         },
         {
           "path": "custom-app-host/custom-host-ui.json",
-          "sha256": "08b90de504e708cff516ce5beaafbbd567f6bd1300c3cbd5a682ca2fa6b89fd9"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "7d58b0c80fe5c44cea3d7e1a982e718adef5f0fadc4d74c2ed3fc6efc7e162d4",
+          "requirement_count": 5
         },
         {
           "path": "custom-app-host/published-custom-host.json",
-          "sha256": "6df5b90e7c388fae0b05f3ffcb9de086c8f96bc5117cb1576011827164a5bad1"
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "f7a0a7257f037a53d49d56ec8e1c408aae57f2cafbe2e44f83fafa6f97991b63",
+          "requirement_count": 26
         }
       ]
     }
@@ -1035,6 +1123,6 @@
     "manifest_schema_version": "n4a.cross-language-e2e/v1",
     "manifest_sha256": "fb7ed4242c1c15686d52f2147edfbc669e218bcfd83184c275e7a55166461f6e",
     "regenerate": "python3 scripts/n4a_e2e_scenarios.py evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
-    "runtime_artifacts_policy": ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; this ledger records the normalized verified artifact inventory."
+    "runtime_artifacts_policy": ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; this ledger records the normalized verified artifact inventory and host-stable proof hashes over required evidence fields."
   }
 }

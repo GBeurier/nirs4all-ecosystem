@@ -3082,15 +3082,69 @@ def _file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _artifact_ledger_records(paths: list[str], artifacts_dir: Path) -> list[dict[str, Any]]:
+def _canonical_json_sha256(payload: Any) -> str:
+    text = json.dumps(payload, ensure_ascii=True, separators=(",", ":"), sort_keys=True)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _artifact_requirement_proof_payload(
+    payload: dict[str, Any],
+    requirements: list[dict[str, Any]],
+) -> dict[str, Any]:
+    requirement_proofs = []
+    for requirement in requirements:
+        path = requirement["path"]
+        exists, value = _json_path(payload, path)
+        proof: dict[str, Any] = {
+            "path": path,
+            "value": value if exists else None,
+        }
+        for operator in ("equals", "non_empty", "empty", "contains_all", "gt", "gte"):
+            if operator in requirement:
+                proof[operator] = requirement[operator]
+        if "equals_path" in requirement:
+            expected_path = requirement["equals_path"]
+            expected_exists, expected_value = _json_path(payload, expected_path)
+            proof["equals_path"] = expected_path
+            proof["equals_path_value"] = expected_value if expected_exists else None
+        if "lte_path" in requirement:
+            tolerance_path = requirement["lte_path"]
+            tolerance_exists, tolerance_value = _json_path(payload, tolerance_path)
+            proof["lte_path"] = tolerance_path
+            proof["lte_path_value"] = tolerance_value if tolerance_exists else None
+        requirement_proofs.append(proof)
+    return {
+        "proof_schema_version": "n4a.cross-language-e2e-artifact-proof/v1",
+        "requirements": requirement_proofs,
+    }
+
+
+def _artifact_ledger_records(
+    paths: list[str],
+    artifacts_dir: Path,
+    plan: dict[str, Any],
+) -> list[dict[str, Any]]:
     records = []
     for raw_path in sorted(paths):
         path = Path(raw_path)
         record: dict[str, Any] = {
             "path": _relative_artifact_path(raw_path, artifacts_dir),
         }
-        if path.is_file():
-            record["sha256"] = _file_sha256(path)
+        requirements = _scenario_artifact_requirements(plan, raw_path)
+        if requirements and path.suffix.lower() == ".json" and path.is_file():
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            proof_payload = _artifact_requirement_proof_payload(payload, requirements)
+            record.update(
+                {
+                    "proof_kind": "required_json_fields",
+                    "proof_sha256": _canonical_json_sha256(proof_payload),
+                    "requirement_count": len(requirements),
+                }
+            )
+        elif path.suffix.lower() == ".json":
+            record["proof_kind"] = "json_semantic_presence"
+        else:
+            record["proof_kind"] = "presence"
         records.append(record)
     return records
 
@@ -3143,6 +3197,7 @@ def runtime_evidence_ledger(
                 "verified_artifacts": _artifact_ledger_records(
                     scenario_report["verified_artifacts"],
                     artifacts_dir,
+                    plan,
                 ),
                 "evidence_level": plan["evidence_level"],
                 "languages": plan["languages"],
@@ -3162,7 +3217,8 @@ def runtime_evidence_ledger(
             "manifest_schema_version": manifest["schema_version"],
             "runtime_artifacts_policy": (
                 ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; "
-                "this ledger records the normalized verified artifact inventory."
+                "this ledger records the normalized verified artifact inventory and host-stable "
+                "proof hashes over required evidence fields."
             ),
             "regenerate": (
                 "python3 scripts/n4a_e2e_scenarios.py evidence-ledger "

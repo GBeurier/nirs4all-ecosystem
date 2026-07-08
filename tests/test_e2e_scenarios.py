@@ -2988,7 +2988,8 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
         for scenario in manifest["scenarios"]
     ]
     ledger_path = ROOT / "docs" / "contracts" / "e2e" / "latest-runtime-evidence-ledger.n4a.json"
-    ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+    ledger_text = ledger_path.read_text(encoding="utf-8")
+    ledger = json.loads(ledger_text)
 
     assert ledger["schema_version"] == e2e.EVIDENCE_LEDGER_SCHEMA_VERSION
     assert ledger["source"]["manifest"] == "docs/contracts/e2e/cross-language-scenarios.n4a.json"
@@ -3025,6 +3026,11 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
         "failure_count": 0,
         "max_age_seconds": None,
     }
+    assert str(ROOT.parent) not in ledger_text
+    assert "created_at" not in ledger_text
+    assert "elapsed_seconds" not in ledger_text
+    assert "duration_seconds" not in ledger_text
+    assert "native_results_dir" not in ledger_text
     assert [scenario["id"] for scenario in ledger["scenarios"]] == [plan["id"] for plan in plans]
 
     for scenario, plan in zip(ledger["scenarios"], plans, strict=True):
@@ -3054,10 +3060,24 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
         assert scenario["v1_refactor_summary"] == summary["v1_refactor_summary"]
         assert scenario["expected_artifacts"] == expected_artifacts
         assert [artifact["path"] for artifact in scenario["verified_artifacts"]] == expected_artifacts
-        assert all(
-            re.fullmatch(r"[0-9a-f]{64}", artifact["sha256"])
-            for artifact in scenario["verified_artifacts"]
-        )
+        requirement_map = e2e.SCENARIO_ARTIFACT_REQUIREMENTS.get(plan["id"], {})
+        for artifact in scenario["verified_artifacts"]:
+            assert "sha256" not in artifact
+            requirements = requirement_map.get(artifact["path"], [])
+            if requirements:
+                assert artifact["proof_kind"] == "required_json_fields"
+                assert artifact["requirement_count"] == len(requirements)
+                assert re.fullmatch(r"[0-9a-f]{64}", artifact["proof_sha256"])
+            elif artifact["path"].endswith(".json"):
+                assert artifact == {
+                    "path": artifact["path"],
+                    "proof_kind": "json_semantic_presence",
+                }
+            else:
+                assert artifact == {
+                    "path": artifact["path"],
+                    "proof_kind": "presence",
+                }
         assert scenario["artifact_count"] == len(expected_artifacts)
         assert all(not Path(path).is_absolute() for path in scenario["expected_artifacts"])
         assert all(".." not in Path(path).parts for path in scenario["expected_artifacts"])

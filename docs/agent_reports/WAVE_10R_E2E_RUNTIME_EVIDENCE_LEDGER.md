@@ -33,11 +33,12 @@ The ledger records:
 - required language and tag coverage;
 - V1 refactor phase status counts;
 - verified scenario count, artifact count, and failure count;
-- per-scenario normalized artifact inventory, verified artifact SHA-256 values,
-  and strict parity metadata.
+- per-scenario normalized artifact inventory, host-stable proof SHA-256 values
+  over required evidence fields, and strict parity metadata.
 
-It intentionally does not record absolute paths, timestamps, or full artifact
-payloads, so it can be reviewed and regenerated without noisy churn.
+It intentionally does not record absolute paths, timestamps, duration fields, or
+full artifact payload hashes, so it can be reviewed and regenerated without
+host-specific churn.
 
 `--check` compares a regenerated ledger with the tracked ledger and exits
 non-zero on drift; it is intended for full executed E2E batches, not for a fresh

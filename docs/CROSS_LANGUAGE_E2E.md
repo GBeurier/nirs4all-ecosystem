@@ -23,6 +23,10 @@ The suite deliberately separates planning from execution:
   archive; add `--max-age-seconds <N>` when the gate must prove a fresh run.
 - `python3 scripts/n4a_e2e_scenarios.py evidence --json-out <path>` writes the
   same verification report to disk for CI artifact upload.
+- `python3 scripts/n4a_e2e_scenarios.py evidence-ledger --out <path>` writes a
+  committed summary of the latest verified runtime evidence.
+- `python3 scripts/n4a_e2e_scenarios.py evidence-ledger --check --out <path>`
+  regenerates that summary and fails on drift after a full executed batch.
 
 The runner reports missing toolchains as `blocked`; it does not xfail or silently
 skip. Full parity scenarios are meant to run after large integration batches or
@@ -35,6 +39,11 @@ runtime scenarios are only planned. Runtime execution is explicit: dispatch
 `Cross-language E2E scenarios` with `execute=true`, optionally selecting one
 scenario. Those manual runs additionally upload `.n4a-e2e-artifacts`, including
 `evidence-summary.json`, so fresh runtime proof can be audited after the job.
+Full-suite manual execution also checks
+`docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json`. That ledger records
+normalized artifact paths plus host-stable proof hashes over required JSON
+evidence fields; it deliberately avoids full-file hashes because generated
+artifacts can contain absolute paths, timestamps, and duration fields.
 
 Coverage output also includes an explicit `debt_summary`. Keep this visible in
 boards and CI logs: it names scenarios without strict parity checks, counts
