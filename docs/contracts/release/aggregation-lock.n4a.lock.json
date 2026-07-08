@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:1829a1e9d601db0e2a2c9df18d09c5d49d1472c9c53158f7228bead2132c3767",
+  "manifest_digest": "sha256:08f69a96bdf9ac845e47731a2bcb0530e086fea1bb357607ba4d2d748b1ca438",
   "members": {
     "core": {
       "availability": {
@@ -717,9 +717,9 @@
       "selected_workspace_path": "nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "3ff5bb21a23852f708665d9089f33d47b33f5dbf",
+        "commit": "47465ea0495f6f0cc9afa273ece677ab8a92c14c",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc15-2026.07-refactor"
+        "exact_tag": "v0.3.1"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -728,25 +728,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.3.0"
+          "value": "0.3.1"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.3.0"
+          "value": "0.3.1"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.3.0"
+          "value": "0.3.1"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.3.0"
+          "value": "0.3.1"
         }
       }
     },
@@ -1261,7 +1261,7 @@
       "state": {
         "branch": "main",
         "commit": "3e819dd1e178df50069977e6d892f5d15c95e0bd",
-        "dirty": false,
+        "dirty": true,
         "exact_tag": null
       },
       "target_repo_path": null,
