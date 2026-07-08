@@ -46,7 +46,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.2.5",
+      "preferred_exact_tag": "v0.2.7",
       "repo_url": "GBeurier/dag-ml",
       "role": "DAG runtime and native execution contracts",
       "owner_boundary": "control",
@@ -136,7 +136,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.2.5",
+      "preferred_exact_tag": "v0.2.7",
       "repo_url": "GBeurier/dag-ml-data",
       "role": "Data provider contracts and DMD representations",
       "owner_boundary": "data",
@@ -339,7 +339,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.2.4",
+      "preferred_exact_tag": "v0.2.5",
       "repo_url": "GBeurier/nirs4all-formats",
       "role": "Vendor readers and bindings",
       "owner_boundary": "readers",
@@ -484,7 +484,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.3.6",
+      "preferred_exact_tag": "v0.3.7",
       "repo_url": "GBeurier/nirs4all-core",
       "role": "Canonical portable aggregate bindings (Python distribution nirs4all-core; Rust, npm/WASM, R, and MATLAB/Octave publish/import as nirs4all where the bare name is available)",
       "owner_boundary": "aggregate",
