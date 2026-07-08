@@ -55,8 +55,8 @@ least one strict parity check, including the multimodal dense-fused
 Python/R/WASM prediction contract. The manifest still records contract-level
 surfaces and explicit gaps for residual work such as source-aware native
 multimodal replay, Web/Studio runtime reuse, provider-backed browser datasets,
-multisource native prediction-vector parity, fixture-scoped WASM coverage, and
-structural binding-surface checks. Do not present this suite as full strict
+broader source-aware by_source multisource/catalog corpora, fixture-scoped WASM
+coverage, and structural binding-surface checks. Do not present this suite as full strict
 ecosystem parity unless those phase statuses and non-numeric strict exceptions
 are promoted in the manifest and the coverage tests are updated with matching
 evidence.
@@ -94,7 +94,7 @@ that count and the tests assert the expected handoff for each workflow:
 | `e2e-python-reopen-paper-repository-refit` | Python reopens/reruns a saved pipeline, papers export preserves provenance, repository handoff is emitted, and Web/WASM imports it. |
 | `e2e-wasm-open-repo-pipeline-alt-dataset` | A Python oracle opens and reruns the repository descriptor, then a fresh Web/WASM session imports the same pipeline over an alternate dataset and compares predictions. |
 | `e2e-multimodal-python-r-wasm-roundtrip` | Python persists and reopens the multimodal pipeline artifact, then R/WASM consume the dense-fused artifacts with strict numeric parity against the Python oracle. |
-| `e2e-multisource-branching-stacking-replay` | Python builds, persists and reopens multisource stacking replay evidence before native/core replay verifies score parity. |
+| `e2e-multisource-branching-stacking-replay` | Python builds, persists and reopens multisource stacking replay evidence before native/core replay verifies score and prediction-vector parity. |
 | `e2e-converter-legacy-save-predictions-web` | Python converts a legacy save and Web renders the lowered prediction result panels. |
 | `e2e-dataset-provider-repository-roundtrip` | Providers materialize data into a repository descriptor consumed by Python core and JavaScript/WASM. |
 | `e2e-pipeline-generation-performance-compare` | Python persists and reopens one generated candidate, then Web/native runtimes compare prediction and performance evidence. |

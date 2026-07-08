@@ -345,14 +345,14 @@
         "python_parity": {
           "status": "strict",
           "evidence": [
-            "Python stacking replay and dag-ml/native replay compare score-set metrics and prediction table coverage."
+            "Python stacking replay and dag-ml/native replay compare score-set metrics plus native prediction-vector and target deltas."
           ],
           "artifacts": [
             "{artifacts_dir}/multisource-stacking/oof-ledger.json",
             "{artifacts_dir}/multisource-stacking/native-replay.json"
           ],
           "acceptance": [
-            "Score deltas must stay within tolerance and native prediction-table schema/array coverage must be audited explicitly."
+            "Score deltas and native prediction-vector deltas must stay within tolerance, with compared_rows>0."
           ]
         },
         "papers_export": {
@@ -361,7 +361,7 @@
             "No paper bundle is exported for multisource stacking replay."
           ],
           "acceptance": [
-            "Add paper export after vector-level native predictions are persisted and compared."
+            "Keep paper export outside this lane unless a reproducible multisource paper bundle is added explicitly."
           ],
           "applicability": "This multisource lane is scoped to stacking replay and native/core parity; paper export is outside the scenario."
         },
@@ -1383,11 +1383,11 @@
     },
     {
       "id": "e2e-multisource-branching-stacking-replay",
-      "title": "Multisource branching, stacking score replay, and native prediction-table audit",
-      "objective": "Assemble multiple sources with distinct preprocessing branches, train stacking/OOF, save replay manifests, compare native score-set metrics against the direct Python oracle, and audit the native predictions.parquet schema/array coverage.",
+      "title": "Multisource branching, stacking score replay, and native prediction-vector parity",
+      "objective": "Assemble multiple sources with distinct preprocessing branches, train stacking/OOF, save replay manifests, compare native score-set metrics against the direct Python oracle, and enforce native prediction-vector parity on the deterministic duplication-branch fixture.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
-        "Native score-set replay is strict, but vector-level native predictions are currently audited for schema/array coverage rather than enforced as full prediction-vector parity."
+        "Native score-set and prediction-vector replay are strict for the deterministic duplication-branch stacking fixture; source-aware by_source legacy stacking and broader external multisource catalog corpora remain outside this scenario."
       ],
       "languages": [
         "python",
@@ -1436,8 +1436,8 @@
         {
           "oracle": "python nirs4all stacking replay prediction table",
           "candidate": "native replay prediction table",
-          "metric": "schema, row count, partitions, folds, and current array coverage are audited explicitly pending full vector parity",
-          "evidence_level": "contract",
+          "metric": "native replay prediction-vector max_abs_delta and target_max_abs_delta stay within tolerance against the Python oracle test ledger",
+          "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/multisource-stacking/native-replay.json"
           ]

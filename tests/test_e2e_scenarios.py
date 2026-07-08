@@ -387,6 +387,48 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "best_rmse_delta": 0,
             "score_tolerance": 1e-8,
         }
+    if key == "multisource-stacking/oof-ledger.json":
+        return {
+            "schema_version": "n4a.e2e.oof_ledger.v1",
+            "scenario_id": "e2e-multisource-branching-stacking-replay",
+            "status": "passed",
+            "parity_ok": True,
+            "within_tolerance": True,
+            "score_tolerance": 1e-3,
+            "prediction_tolerance": 1e-8,
+            "cv_best_score_delta": 0,
+            "best_rmse_delta": 0,
+            "test": {
+                "sample_ids": [1, 2],
+                "predictions": [0.25, 0.5],
+                "targets": [0.2, 0.55],
+            },
+        }
+    if key == "multisource-stacking/native-replay.json":
+        return {
+            "scenario_id": "e2e-multisource-branching-stacking-replay",
+            "status": "passed",
+            "checks": {
+                "native_engine": True,
+                "native_num_predictions": True,
+            },
+            "score_set_parity": {
+                "best_rmse_abs": 0,
+                "cv_best_score_abs": 0,
+                "tolerance": 1e-3,
+            },
+            "prediction_vector_parity": {
+                "available": True,
+                "compared_rows": 2,
+                "max_abs_delta": 0,
+                "target_max_abs_delta": 0,
+                "tolerance": 1e-8,
+                "within_tolerance": True,
+            },
+            "prediction_table": {
+                "rows": 8,
+            },
+        }
     return {
         "status": "passed",
         "ok": True,
@@ -957,7 +999,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "native-replay.json",
                 },
                 "commands": {"test_multisource_stacking_replay.py", "run_multisource_stacking_replay.py"},
-                "evidence": {"OOF", "Python saved stacking replay rerun ledger", "native prediction-table schema/array coverage"},
+                "evidence": {"OOF", "Python saved stacking replay rerun ledger", "native prediction-vector parity"},
                 "phase_statuses": {
                     "python_open_pipeline": "strict",
                     "python_parity": "strict",
@@ -2056,8 +2098,8 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert report["debt_summary"]["strictness_gap_count"] == 12
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
-        "contract": 7,
-        "strict": 18,
+        "contract": 6,
+        "strict": 19,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
@@ -2100,6 +2142,15 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
         "contract_parity_checks": 0,
         "strict_parity_checks": 1,
+        "strict_non_numeric_checks": 0,
+    }
+    assert report["debt_summary"]["scenario_phase_debt"]["e2e-multisource-branching-stacking-replay"] == {
+        "strictness_gaps": 1,
+        "contract_phases": [],
+        "gap_phases": [],
+        "not_applicable_phases": ["papers_export", "repository_forced_best_refit", "wasm_web_reuse"],
+        "contract_parity_checks": 0,
+        "strict_parity_checks": 2,
         "strict_non_numeric_checks": 0,
     }
     assert len(report["scenario_details"]) == 11
@@ -2400,7 +2451,7 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
 
     multisource = _scenario_by_id(manifest, "e2e-multisource-branching-stacking-replay")
     assert multisource["evidence_level"] == "hybrid"
-    assert any("schema/array coverage" in gap for gap in multisource["strictness_gaps"])
+    assert any("deterministic duplication-branch stacking fixture" in gap for gap in multisource["strictness_gaps"])
     assert flow["e2e-multisource-branching-stacking-replay"]["python_open_pipeline"]["status"] == "strict"
     assert "branch/source/pipeline identity" in json.dumps(
         flow["e2e-multisource-branching-stacking-replay"]["python_open_pipeline"],

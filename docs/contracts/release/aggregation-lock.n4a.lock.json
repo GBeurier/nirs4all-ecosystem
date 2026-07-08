@@ -717,9 +717,9 @@
       "selected_workspace_path": "nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "47465ea0495f6f0cc9afa273ece677ab8a92c14c",
+        "commit": "3a8fdd9104239df782bc54a28f7722449ebed709",
         "dirty": false,
-        "exact_tag": "v0.3.1"
+        "exact_tag": null
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -1261,7 +1261,7 @@
       "state": {
         "branch": "main",
         "commit": "3e819dd1e178df50069977e6d892f5d15c95e0bd",
-        "dirty": false,
+        "dirty": true,
         "exact_tag": null
       },
       "target_repo_path": null,
