@@ -39,7 +39,7 @@ WASM strict evidence from `binding-parity.json`:
 
 ## Decision
 
-The scenario remains `hybrid` because WASM is still fixture-scoped and Rust is intentionally archived as non-release-target evidence. The WASM parity check itself is now strict because the produced JSON artifacts contain finite numeric deltas under tolerance.
+The scenario remains `hybrid` because Web/core pipeline import over the assembled formats/IO dataset ledger is still contract-only and Rust is intentionally archived as non-release-target evidence. The WASM methods parity check itself is strict over the shared methods orchestrator ledger fixture because the produced JSON artifacts contain finite numeric deltas under tolerance.
 
 ## Tests
 
@@ -52,4 +52,4 @@ python3.11 -m pytest tests/test_e2e_scenarios.py -q
 ## Risks / Remaining Gaps
 
 - No broad full-parity sweep was run in this batch.
-- The remaining formats lane gap is real: WASM proof is deterministic-fixture parity, not external/catalog runtime coverage; Rust remains archived and is not a V1 release target here.
+- The remaining formats lane gap is real: WASM methods proof uses the shared methods orchestrator ledger fixture, but this is not yet Web/core pipeline import over the assembled formats/IO dataset ledger; Rust remains archived and is not a V1 release target here.

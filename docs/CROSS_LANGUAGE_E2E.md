@@ -57,7 +57,7 @@ declared scope.
 The manifest still records contract-level surfaces and explicit gaps for
 residual work such as source-aware native multimodal replay, Web/Studio runtime
 reuse, provider-backed browser datasets, broader source-aware by_source
-multisource/catalog corpora, and fixture-scoped WASM coverage. Do not present
+multisource/catalog corpora, and Web/core reuse over the formats/IO assembled dataset ledger. Do not present
 this suite as full strict ecosystem parity unless those phase statuses and
 non-numeric strict exceptions are promoted in the manifest and the coverage
 tests are updated with matching evidence.

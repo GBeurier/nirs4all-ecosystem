@@ -40,7 +40,7 @@ Hybrid:
 - Web/WASM repository pipeline import and result rendering: strict source-vs-imported Web prediction comparison was added in `nirs4all-web@73b9184`, but Python-vs-WASM numeric oracle remains outside this scenario.
 - Multisource stacking replay: strict score parity, but native vector-level prediction equality is still only audited.
 - Pipeline generation performance: strict Python-vs-dag-ml parity, Web timing remains contract evidence and Studio is outside the gate.
-- Formats/IO/datasets/methods: strict native/Python/R method parity, WASM remains fixture-scoped and Rust is archive evidence.
+- Formats/IO/datasets/methods: strict native/Python/R/WASM method parity over the shared methods orchestrator ledger fixture; Web/core pipeline import over the assembled formats/IO dataset ledger remains contract-only and Rust is archive evidence.
 - Provider/dataset/repository descriptor roundtrip: strict Python/WASM portable pipeline execution was added in `nirs4all-core@a853894`, but R and provider-materialized dataset prediction parity remain outside this gate.
 
 Contract smoke:

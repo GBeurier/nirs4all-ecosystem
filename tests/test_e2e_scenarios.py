@@ -710,6 +710,7 @@ def _synthetic_evidence_payload(path: Path) -> dict:
                 "ok": True,
                 "metrics": {"predictions_rmse_rel": 0},
                 "metrics_max_rmse_rel": 0,
+                "fixture": "wasm-orchestrator-fixture.json",
             },
             "rust_archive": {
                 "release_target": False,
@@ -730,8 +731,37 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "wasm": {
                 "metrics": {"predictions_rmse_rel": 0},
                 "metrics_max_rmse_rel": 0,
+                "fixture": "wasm-orchestrator-fixture.json",
             },
             "rust_archive": {"release_target": False},
+        }
+    if key == "formats-io-methods/wasm-orchestrator-fixture.json":
+        return {
+            "schema": "n4a.methods.wasm_orchestrator_fixture.v1",
+            "status": "pass",
+            "source": "benchmarks/cross_binding/orchestrator.py",
+            "n": 20,
+            "p": 8,
+            "q": 1,
+            "n_components": 3,
+            "tolerances": {"binding_parity_max_diff": 1e-12},
+            "dataset_csv_sha256": "d" * 64,
+            "X": [0.0, 1.0],
+            "Y": [0.0],
+            "X_sha256": "x" * 64,
+            "Y_sha256": "y" * 64,
+            "reference_backend": "cpp",
+            "reference_predictions_sha256": "p" * 64,
+            "prediction_digests": {
+                "cpp": {"sha256": "a" * 64},
+                "python_tier1": {"sha256": "b" * 64},
+                "r_tier1": {"sha256": "c" * 64},
+            },
+            "cpp_native_predictions_rmse_rel": 0,
+            "coefficients": [1.0],
+            "x_mean": [0.5],
+            "y_mean": [0.0],
+            "predictions": [0.0],
         }
     if key == "cluster-dag-rights/local-vs-cluster-numeric.json":
         return {
@@ -1463,9 +1493,14 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "languages": {"python", "r", "javascript_wasm", "rust_archive", "native"},
                 "tags": {"datasets", "io", "predictions", "parity", "pipeline"},
                 "tools": {"python3.11", "Rscript", "cmake", "ninja"},
-                "produces": {"assembled-datasets.json", "binding-parity.json", "predictions-by-language.json"},
+                "produces": {
+                    "assembled-datasets.json",
+                    "binding-parity.json",
+                    "predictions-by-language.json",
+                    "wasm-orchestrator-fixture.json",
+                },
                 "commands": {"test_formats_io_datasets_methods.py", "cross_binding_methods_parity.py"},
-                "evidence": {"Native methods ABI", "WASM fixture output"},
+                "evidence": {"Native methods ABI", "WASM methods orchestrator ledger fixture"},
                 "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "contract"},
             },
         ),
@@ -3013,9 +3048,11 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
 
     formats_bindings = _scenario_by_id(manifest, "e2e-formats-io-datasets-methods-language-bindings")
     assert formats_bindings["evidence_level"] == "hybrid"
-    assert any("WASM is still fixture-scoped" in gap for gap in formats_bindings["strictness_gaps"])
+    assert any("same nirs4all-methods orchestrator ledger fixture" in gap for gap in formats_bindings["strictness_gaps"])
+    assert any("lacks Web/core pipeline import" in gap for gap in formats_bindings["strictness_gaps"])
     assert any(
-        check["candidate"] == "WASM methods binding fixture" and check["evidence_level"] == "strict"
+        check["candidate"] == "WASM methods binding over orchestrator ledger fixture"
+        and check["evidence_level"] == "strict"
         for check in formats_bindings["parity_checks"]
     )
     assert flow["e2e-formats-io-datasets-methods-language-bindings"]["wasm_web_reuse"]["status"] == "contract"

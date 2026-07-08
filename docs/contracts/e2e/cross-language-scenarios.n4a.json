@@ -705,14 +705,14 @@
         "python_parity": {
           "status": "strict",
           "evidence": [
-            "Native methods ABI outputs are compared with Python/R bindings and WASM fixture evidence is recorded."
+        "Native methods ABI outputs are compared with Python/R bindings, and WASM consumes the same nirs4all-methods orchestrator ledger fixture."
           ],
           "artifacts": [
             "{artifacts_dir}/formats-io-methods/binding-parity.json",
             "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
           ],
           "acceptance": [
-            "Native/Python/R method outputs and predictions must match the tolerance ledger; WASM remains fixture-scoped until release-target parity exists."
+        "Native/Python/R method outputs, R method outputs, WASM method outputs, and predictions must match the same methods orchestrator ledger tolerance."
           ]
         },
         "papers_export": {
@@ -738,14 +738,14 @@
         "wasm_web_reuse": {
           "status": "contract",
           "evidence": [
-            "WASM fixture output is checked and archived Rust status is recorded as non-release-target evidence."
+        "WASM methods parity consumes the shared methods orchestrator ledger fixture, and archived Rust status is recorded as non-release-target evidence."
           ],
           "artifacts": [
             "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
           ],
-          "gap": "This is fixture-level WASM binding evidence, not a Web UI import/rerun of a repository pipeline.",
+      "gap": "This is methods binding-level WASM evidence over the shared methods orchestrator ledger, not a Web/core import/rerun of a pipeline over the assembled formats/IO dataset ledger.",
           "acceptance": [
-            "Promote to strict only after WASM release-target binding parity and Web pipeline import share the same assembled dataset ledger."
+        "Promote to strict only after Web/core pipeline import shares the same assembled formats/IO dataset ledger."
           ]
         }
       },
@@ -1992,7 +1992,7 @@
       "objective": "Read heterogeneous file formats, assemble reference datasets, invoke native methods through current release-target language bindings, compare exported predictions, and record the archived Rust binding status explicitly.",
       "evidence_level": "hybrid",
       "strictness_gaps": [
-        "Native/Python/R/WASM method parity is strict for the current deterministic fixture/oracle, but WASM is still fixture-scoped and Rust is archived as non-release-target evidence."
+        "WASM methods parity now consumes the same nirs4all-methods orchestrator ledger fixture as C++/Python/R, but this lane still lacks Web/core pipeline import over the assembled formats/IO dataset ledger; Rust remains archived as non-release-target evidence."
       ],
       "languages": [
         "python",
@@ -2015,22 +2015,24 @@
         "parity",
         "pipeline"
       ],
-      "artifacts": [
-        "{artifacts_dir}/formats-io-methods/assembled-datasets.json",
-        "{artifacts_dir}/formats-io-methods/binding-parity.json",
-        "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
+    "artifacts": [
+      "{artifacts_dir}/formats-io-methods/assembled-datasets.json",
+      "{artifacts_dir}/formats-io-methods/binding-parity.json",
+      "{artifacts_dir}/formats-io-methods/predictions-by-language.json",
+      "{artifacts_dir}/formats-io-methods/wasm-orchestrator-fixture.json"
       ],
       "evidence": [
         "Formats reader manifest",
         "IO dataset assembly trace",
         "Methods binding ABI/version report",
-        "Language binding prediction parity"
+      "Language binding prediction parity",
+      "WASM methods orchestrator ledger fixture"
       ],
       "parity_checks": [
         {
           "oracle": "native nirs4all-methods ABI",
           "candidate": "Python/R bindings",
-          "metric": "method outputs and predictions match tolerance ledger",
+      "metric": "Native/Python/R method outputs, R method outputs, and predictions match tolerance ledger",
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/formats-io-methods/binding-parity.json",
@@ -2039,12 +2041,13 @@
         },
         {
           "oracle": "native nirs4all-methods ABI and Python scikit-learn reference",
-          "candidate": "WASM methods binding fixture",
-          "metric": "WASM coefficients, predictions, x_mean, and y_mean RMSE relative deltas are finite and metrics_max_rmse_rel <= 1e-12",
-          "evidence_level": "strict",
-          "artifacts": [
-            "{artifacts_dir}/formats-io-methods/binding-parity.json",
-            "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
+      "candidate": "WASM methods binding over orchestrator ledger fixture",
+      "metric": "WASM coefficients, predictions, x_mean, and y_mean consume the same orchestrator dataset/prediction ledger as C++/Python/R, and metrics_max_rmse_rel <= 1e-12",
+      "evidence_level": "strict",
+      "artifacts": [
+        "{artifacts_dir}/formats-io-methods/binding-parity.json",
+        "{artifacts_dir}/formats-io-methods/predictions-by-language.json",
+        "{artifacts_dir}/formats-io-methods/wasm-orchestrator-fixture.json"
           ]
         },
         {
@@ -2098,10 +2101,11 @@
             "-lc",
             "cd {workspace_root}/nirs4all-methods && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH Rscript --version >/dev/null && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"
           ],
-          "produces": [
-            "{artifacts_dir}/formats-io-methods/binding-parity.json",
-            "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
-          ]
+      "produces": [
+        "{artifacts_dir}/formats-io-methods/binding-parity.json",
+        "{artifacts_dir}/formats-io-methods/predictions-by-language.json",
+        "{artifacts_dir}/formats-io-methods/wasm-orchestrator-fixture.json"
+      ]
         }
       ]
     },

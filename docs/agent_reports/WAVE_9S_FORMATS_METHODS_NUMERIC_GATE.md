@@ -5,7 +5,7 @@ Date: 2026-07-08
 ## Scope
 
 - Tightened `e2e-formats-io-datasets-methods-language-bindings` artifact validation.
-- Kept the scenario hybrid: native/Python/R parity is strict; WASM remains fixture-scoped; Rust remains archived/non-release evidence.
+- Kept the scenario hybrid: native/Python/R/WASM methods parity is strict over the shared methods orchestrator ledger; Web/core pipeline import over the assembled formats/IO dataset ledger is still contract-only; Rust remains archived/non-release evidence.
 - Did not touch `nirs4all-ui`, `nirs4all-datasets` web work, `nirs4all-drafts`, or `nirs4all-lab`.
 
 ## Files Modified
@@ -38,5 +38,5 @@ Date: 2026-07-08
 
 ## Risks
 
-- WASM remains a fixture smoke, not a Web UI import/rerun gate; the scenario's `strictness_gaps` still states that explicitly.
+- WASM methods parity now uses the orchestrator ledger fixture, but it is still not a Web UI import/rerun gate; the scenario's `strictness_gaps` states that explicitly.
 - The Rust binding remains archived and is only audited as non-release evidence.
