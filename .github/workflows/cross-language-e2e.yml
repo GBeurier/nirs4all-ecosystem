@@ -57,6 +57,21 @@ jobs:
         working-directory: ${{ github.workspace }}
       - name: Install test dependencies
         run: python3 -m pip install pytest
+      - name: Install executed E2E package dependencies
+        if: ${{ github.event.inputs.execute == 'true' }}
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install \
+            -e "nirs4all[dev]" \
+            -e "nirs4all-datasets[dev,nirs4all,io]" \
+            -e "nirs4all-repository[dev,nirs4all,datasets]" \
+            -e "nirs4all-providers[dev,all]" \
+            -e "nirs4all-io[dev,parquet]" \
+            -e "nirs4all-papers[dev]" \
+            -e "nirs4all-tools[dev,duckdb,parquet]" \
+            -e "nirs4all-cluster[dev]" \
+            -e "nirs4all-core/bindings/python"
+          npm --prefix nirs4all-web/studio-lite ci --no-audit --no-fund
       - name: Validate scenario contract
         run: python3 scripts/n4a_e2e_scenarios.py validate
       - name: Run pytest validation
