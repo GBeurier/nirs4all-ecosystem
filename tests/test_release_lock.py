@@ -542,7 +542,7 @@ def test_central_manifest_declares_reproducible_methods_and_core_topology_source
     assert components["core"]["preferred_exact_tag"] == "v0.3.7"
     assert components["core"]["target_repo_path"] == "nirs4all-core"
     assert components["core"].get("repo_aliases", []) == []
-    assert components["formats"]["preferred_exact_tag"] == "v0.2.5"
+    assert components["formats"]["preferred_exact_tag"] == "v0.2.6"
     methods_sources = {
         source["key"]: source for source in components["methods"]["version_sources"]
     }

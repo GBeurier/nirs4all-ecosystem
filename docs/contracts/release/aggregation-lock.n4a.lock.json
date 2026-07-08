@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:fb8056466262b4ab0ff9b7f007fd7acd2f5e523ba0cba524e745f5b3e4e45987",
+  "manifest_digest": "sha256:e1543d40fe43b14bdae091a60abf2624add9ddb98734917f40b85eb43a3df87f",
   "members": {
     "core": {
       "availability": {
@@ -951,7 +951,7 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:8251daceeff65376fee7b85ee81ac1c8d34d097656b50d6f82ce1b5fdf29f234",
+          "canonical_json_sha256": "sha256:ed575ceb08e4262adb2d6151910ba7506906166c13cf66e4b65de5e0130fe7c5",
           "crate": "dag-ml-data",
           "headers": [
             {
@@ -961,9 +961,9 @@
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.2.7",
+          "package_version": "0.2.8",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:4dad975354ee2c0ab1821b8f403c98216077a15b0f9267fa5f03b535097e7057"
+          "raw_sha256": "sha256:cf7d80e59e441a9274f41d817efbf3fdc798862f7c464bc9e590c31e65f04d33"
         }
       ],
       "default_inclusion": "base",
@@ -1017,9 +1017,9 @@
       "selected_workspace_path": "dag-ml-data",
       "state": {
         "branch": "main",
-        "commit": "c269f97f588d781614ab2af9e6d2abd9c5cc05a1",
+        "commit": "c3ce2ad58c6402e0080054aadcb4a4b8967125bd",
         "dirty": false,
-        "exact_tag": "v0.2.7"
+        "exact_tag": "v0.2.8"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1028,25 +1028,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.2.7"
+          "value": "0.2.8"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-data-py/pyproject.toml",
-          "value": "0.2.7"
+          "value": "0.2.8"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-data-r/DESCRIPTION",
-          "value": "0.2.7"
+          "value": "0.2.8"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.2.7"
+          "value": "0.2.8"
         }
       }
     },
@@ -1178,9 +1178,9 @@
       "selected_workspace_path": "nirs4all-formats",
       "state": {
         "branch": "main",
-        "commit": "4846d8eefcfe3ebfb4a311e4dabf5561bd0689c0",
+        "commit": "3bc4fa6efe4415289bfef905cae21a515578e1ca",
         "dirty": false,
-        "exact_tag": "v0.2.5"
+        "exact_tag": "v0.2.6"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1189,19 +1189,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/Cargo.toml",
-          "value": "0.2.5"
+          "value": "0.2.6"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/nirs4allformats/DESCRIPTION",
-          "value": "0.2.5"
+          "value": "0.2.6"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.2.5"
+          "value": "0.2.6"
         }
       }
     },

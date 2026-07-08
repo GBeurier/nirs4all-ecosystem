@@ -136,7 +136,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.2.7",
+      "preferred_exact_tag": "v0.2.8",
       "repo_url": "GBeurier/dag-ml-data",
       "role": "Data provider contracts and DMD representations",
       "owner_boundary": "data",
@@ -339,7 +339,7 @@
       "selected_branch_patterns": [
         "main"
       ],
-      "preferred_exact_tag": "v0.2.5",
+      "preferred_exact_tag": "v0.2.6",
       "repo_url": "GBeurier/nirs4all-formats",
       "role": "Vendor readers and bindings",
       "owner_boundary": "readers",
