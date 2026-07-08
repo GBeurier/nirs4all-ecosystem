@@ -2186,6 +2186,8 @@ def coverage_report(
     strictness_gap_count = 0
     scenarios_without_strict_parity_check: list[str] = []
     scenario_phase_debt: dict[str, dict[str, Any]] = {}
+    scenario_details: list[dict[str, Any]] = []
+    plans_by_id = {plan["id"]: plan for plan in plans}
 
     for scenario in scenarios:
         scenario_id = scenario["id"]
@@ -2205,6 +2207,7 @@ def coverage_report(
             phase_status_scenario_ids[phase][phase_status].append(scenario_id)
         strict_parity_checks = 0
         contract_parity_checks = 0
+        parity_check_details: list[dict[str, Any]] = []
         for check in scenario.get("parity_checks", []):
             level = check.get("evidence_level")
             parity_check_evidence_levels[level] = parity_check_evidence_levels.get(level, 0) + 1
@@ -2212,10 +2215,31 @@ def coverage_report(
                 strict_parity_checks += 1
             elif level == "contract":
                 contract_parity_checks += 1
+            parity_check_details.append(
+                {
+                    "evidence_level": level,
+                    "oracle": check.get("oracle"),
+                    "candidate": check.get("candidate"),
+                    "metric": check.get("metric"),
+                    "artifacts": check.get("artifacts", []),
+                }
+            )
         if strict_parity_checks == 0:
             scenarios_without_strict_parity_check.append(scenario_id)
         scenario_strictness_gaps = len(scenario.get("strictness_gaps", []))
         strictness_gap_count += scenario_strictness_gaps
+        phase_details = {
+            status: {
+                phase: {
+                    "gap": contract.get("gap"),
+                    "applicability": contract.get("applicability"),
+                    "artifacts": contract.get("artifacts", []),
+                }
+                for phase, contract in scenario["v1_refactor_contract"].items()
+                if contract["status"] == status
+            }
+            for status in ("contract", "gap", "not_applicable")
+        }
         scenario_phase_debt[scenario_id] = {
             "strictness_gaps": scenario_strictness_gaps,
             "contract_phases": v1_summary["contract_phases"],
@@ -2235,6 +2259,25 @@ def coverage_report(
             "strictness_gaps": scenario_strictness_gaps,
             "v1_refactor_summary": v1_summary,
         }
+        plan = plans_by_id[scenario_id]
+        scenario_details.append(
+            {
+                "id": scenario_id,
+                "title": scenario["title"],
+                "status": plan["status"],
+                "blocked_steps": {
+                    step["id"]: step["missing"]
+                    for step in plan["steps"]
+                    if step["status"] == "blocked"
+                },
+                "evidence_level": evidence_level,
+                "strictness_gaps": scenario.get("strictness_gaps", []),
+                "phase_details": phase_details,
+                "strict_parity_checks": strict_parity_checks,
+                "contract_parity_checks": contract_parity_checks,
+                "parity_checks": parity_check_details,
+            }
+        )
 
     ready = [plan["id"] for plan in plans if plan["status"] == "ready"]
     blocked = [plan["id"] for plan in plans if plan["status"] == "blocked"]
@@ -2283,6 +2326,7 @@ def coverage_report(
         "v1_refactor_phase_status_counts": phase_status_counts,
         "v1_refactor_phase_scenario_ids": phase_status_scenario_ids,
         "scenario_summaries": scenario_summaries,
+        "scenario_details": scenario_details,
     }
 
 
@@ -2292,6 +2336,10 @@ def _markdown_table(headers: list[str], rows: list[list[str]]) -> list[str]:
         "| " + " | ".join("---" for _ in headers) + " |",
         *["| " + " | ".join(row) + " |" for row in rows],
     ]
+
+
+def _md_cell(value: Any) -> str:
+    return str(value).replace("\n", " ").replace("|", "\\|")
 
 
 def render_coverage_markdown(report: dict[str, Any]) -> str:
@@ -2351,6 +2399,17 @@ def render_coverage_markdown(report: dict[str, Any]) -> str:
                     ", ".join(debt_item["not_applicable_phases"]) or "-",
                 ]
                 for scenario_id, debt_item in debt["scenario_phase_debt"].items()
+            ],
+        ),
+        "",
+        "## Strictness Gap Detail",
+        "",
+        *_markdown_table(
+            ["scenario", "gap"],
+            [
+                [_md_cell(detail["id"]), _md_cell(gap)]
+                for detail in report["scenario_details"]
+                for gap in detail["strictness_gaps"]
             ],
         ),
         "",

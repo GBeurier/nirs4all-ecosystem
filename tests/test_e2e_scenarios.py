@@ -2056,6 +2056,33 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "contract_parity_checks": 0,
         "strict_parity_checks": 1,
     }
+    assert len(report["scenario_details"]) == 11
+    details = {detail["id"]: detail for detail in report["scenario_details"]}
+    multimodal = details["e2e-multimodal-python-r-wasm-roundtrip"]
+    assert multimodal["status"] == "ready"
+    assert multimodal["blocked_steps"] == {}
+    assert multimodal["strictness_gaps"] == [
+        "Current execution proves a dense fused-matrix multimodal proxy; native multimodal runtime and Web/Studio roundtrip steps are still pending."
+    ]
+    assert set(multimodal["phase_details"]) == {"contract", "gap", "not_applicable"}
+    assert set(multimodal["phase_details"]["contract"]) == {"wasm_web_reuse"}
+    assert "Web/Studio runtime reuse" in multimodal["phase_details"]["contract"]["wasm_web_reuse"]["gap"]
+    assert set(multimodal["phase_details"]["not_applicable"]) == {
+        "papers_export",
+        "repository_forced_best_refit",
+    }
+    assert multimodal["parity_checks"] == [
+        {
+            "evidence_level": "strict",
+            "oracle": "python dense-fused multimodal feature matrix predictions",
+            "candidate": "R and WASM dense-fused multimodal feature matrix predictions",
+            "metric": "per-output prediction_abs_max <= 1e-8 within the dense-fused feature representation",
+            "artifacts": [
+                "{artifacts_dir}/multimodal-roundtrip/core-roundtrip-evidence.json",
+                "{artifacts_dir}/multimodal-roundtrip/wasm-predictions.json",
+            ],
+        }
+    ]
     assert report["repos"] == {
         "dag-ml": 4,
         "dag-ml-data": 2,
@@ -2157,6 +2184,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
     assert report["debt_summary"]["strictness_gap_count"] == 12
+    assert report["scenario_details"][0]["strictness_gaps"]
 
 
 def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path: Path) -> None:
@@ -2177,6 +2205,8 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     assert "| strictness gaps | 12 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
+    assert "## Strictness Gap Detail" in report
+    assert "dense fused-matrix multimodal proxy" in report
     assert "e2e-core-ui-custom-app-host" in report
     assert "repository_forced_best_refit" in report
     assert "javascript_wasm" in report

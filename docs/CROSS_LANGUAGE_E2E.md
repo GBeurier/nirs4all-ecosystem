@@ -13,9 +13,12 @@ The suite deliberately separates planning from execution:
 - `python3 scripts/n4a_e2e_scenarios.py run <scenario-id> --execute` runs the
   commands and fails with exit code 2 if required tools or env vars are missing.
 - `python3 scripts/n4a_e2e_scenarios.py coverage --json` reports readiness,
-  language/tag coverage, and V1 strict/contract/gap/not-applicable phase counts.
+  language/tag coverage, V1 strict/contract/gap/not-applicable phase counts,
+  and per-scenario `scenario_details` for blocked steps, parity checks, and
+  strictness gaps.
 - `python3 scripts/n4a_e2e_scenarios.py coverage --markdown-out <path>`
-  writes the same readiness/debt board as a human-readable Markdown artifact.
+  writes the same readiness/debt board as a human-readable Markdown artifact,
+  including an explicit strictness gap detail table.
 - `python3 scripts/n4a_e2e_scenarios.py evidence` verifies an existing artifact
   archive; add `--max-age-seconds <N>` when the gate must prove a fresh run.
 - `python3 scripts/n4a_e2e_scenarios.py evidence --json-out <path>` writes the
@@ -43,6 +46,9 @@ counting unrelated paper/repository/Web phases as missing implementation. A
 green coverage command therefore means the contracts are coherent and
 executable; it does not mean all relevant V1 phases are strict until the
 contract/gap counts reach zero for the relevant cutover gates.
+The JSON `scenario_details` and Markdown strictness detail table are the audit
+surface to review before any production switch: they expose what remains hybrid
+without relying on skipped or xfailed tests.
 
 Current coverage is intentionally hybrid: every parity-tagged scenario has at
 least one strict parity check, including the multimodal dense-fused
