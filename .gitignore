@@ -21,6 +21,7 @@ REVIEW_VISION.md
 /docs/agent_reports/*
 !/docs/agent_reports/WAVE_7*.md
 !/docs/agent_reports/WAVE_9*.md
+!/docs/agent_reports/WAVE_10*.md
 !/docs/contracts/
 /docs/contracts/*
 !/docs/contracts/e2e/
