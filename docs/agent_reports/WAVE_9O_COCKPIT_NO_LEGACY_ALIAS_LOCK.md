@@ -11,7 +11,9 @@
 
 ## Integrated changes
 
-- `nirs4all-cockpit` was advanced to commit `42614d1`.
+- `nirs4all-cockpit` was advanced to commit `42614d1`, then repinned to
+  `7ecf345` after refreshing the Web head metadata and the cockpit roadmap core
+  version note.
 - The cockpit inventory wording for the held Python `nirs4all` GitHub release
   target now says the production release line is kept intact for existing users,
   not kept as a compatibility alias.
