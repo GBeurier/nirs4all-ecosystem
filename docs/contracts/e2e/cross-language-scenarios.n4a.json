@@ -591,16 +591,17 @@
           "applicability": "This generation/performance lane compares generated candidates directly and does not publish a repository best-refit descriptor."
         },
         "wasm_web_reuse": {
-          "status": "contract",
+          "status": "strict",
           "evidence": [
-            "Web runtime executes the generated family and records timing verdicts."
+            "Web runtime imports the selected generated candidate, executes it on the Python-materialized dataset, and compares refit predictions against the Python/dag-ml oracle."
           ],
           "artifacts": [
+            "{artifacts_dir}/performance-compare/pipeline-candidate.n4a.json",
+            "{artifacts_dir}/performance-compare/dataset-web-oracle.json",
             "{artifacts_dir}/performance-compare/web-runtime.json"
           ],
-          "gap": "The Web path records runtime/performance evidence but not Python-vs-WASM numeric oracle parity for each candidate.",
           "acceptance": [
-            "Promote to strict when Web/WASM imports the selected candidate artifact and compares predictions against Python for that candidate."
+            "The Web/WASM runtime must import the selected candidate, execute the same materialized dataset, and keep predicted/actual/residual deltas within the declared Web/WASM tolerance."
           ]
         }
       },
@@ -1752,11 +1753,9 @@
     {
       "id": "e2e-pipeline-generation-performance-compare",
       "title": "Complex pipeline generation with Python/Web performance comparison",
-      "objective": "Generate a family of candidate pipelines, run Python reference and dag-ml/native backends, compare outputs, and record performance gains for library and client-side Web runtime paths. Studio runtime comparison is intentionally outside this Web-only gate until a dedicated Studio entrypoint exists.",
-      "evidence_level": "hybrid",
-      "strictness_gaps": [
-        "Python-vs-dag-ml prediction parity is strict, but Web timing remains a runtime/performance contract and Studio is explicitly outside this Web-only gate."
-      ],
+      "objective": "Generate a family of candidate pipelines, run Python reference and dag-ml/native backends, compare outputs, and record performance gains for library and client-side Web runtime paths. Studio runtime comparison remains a separate production-validation track.",
+      "evidence_level": "strict",
+      "strictness_gaps": [],
       "languages": [
         "python",
         "javascript_wasm",
@@ -1779,14 +1778,15 @@
       "artifacts": [
         "{artifacts_dir}/performance-compare/pipeline-candidate.n4a.json",
         "{artifacts_dir}/performance-compare/pipeline-family.json",
+        "{artifacts_dir}/performance-compare/dataset-web-oracle.json",
         "{artifacts_dir}/performance-compare/python-vs-dagml.json",
         "{artifacts_dir}/performance-compare/web-runtime.json"
       ],
       "evidence": [
         "Generated pipeline search-space manifest",
         "Python reference vs dag-ml parity ledger",
-        "Web runtime timing comparison",
-        "Studio excluded from this Web-only gate",
+        "Python-materialized dataset consumed by Web/WASM",
+        "Web/WASM refit prediction parity against Python/dag-ml oracle",
         "Regression budget verdict"
       ],
       "parity_checks": [
@@ -1802,9 +1802,10 @@
         {
           "oracle": "Web dag-ml/WASM runtime ledger",
           "candidate": "client-side browser runtime",
-          "metric": "web runtime executes generated family and records timing verdict",
-          "evidence_level": "contract",
+          "metric": "line-by-line refit prediction parity for selected generated candidate on the materialized Python dataset",
+          "evidence_level": "strict",
           "artifacts": [
+            "{artifacts_dir}/performance-compare/dataset-web-oracle.json",
             "{artifacts_dir}/performance-compare/web-runtime.json"
           ]
         }
@@ -1828,7 +1829,8 @@
           ],
           "produces": [
             "{artifacts_dir}/performance-compare/pipeline-candidate.n4a.json",
-            "{artifacts_dir}/performance-compare/pipeline-family.json"
+            "{artifacts_dir}/performance-compare/pipeline-family.json",
+            "{artifacts_dir}/performance-compare/dataset-web-oracle.json"
           ]
         },
         {
