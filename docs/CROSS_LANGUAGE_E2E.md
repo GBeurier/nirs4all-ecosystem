@@ -50,16 +50,16 @@ The JSON `scenario_details` and Markdown strictness detail table are the audit
 surface to review before any production switch: they expose what remains hybrid
 without relying on skipped or xfailed tests.
 
-Current coverage is intentionally hybrid: every parity-tagged scenario has at
-least one strict parity check, including the multimodal dense-fused
-Python/R/WASM prediction contract. The manifest still records contract-level
-surfaces and explicit gaps for residual work such as source-aware native
-multimodal replay, Web/Studio runtime reuse, provider-backed browser datasets,
-broader source-aware by_source multisource/catalog corpora, fixture-scoped WASM
-coverage, and packaged downstream custom-host coverage. Do not present this suite as full strict
-ecosystem parity unless those phase statuses and non-numeric strict exceptions
-are promoted in the manifest and the coverage tests are updated with matching
-evidence.
+Current coverage is intentionally mixed: every parity-tagged scenario has at
+least one strict parity check, and the custom-app-host plus legacy-save
+converter/rendering scenarios are strict end to end for their declared scope.
+The manifest still records contract-level surfaces and explicit gaps for
+residual work such as source-aware native multimodal replay, Web/Studio runtime
+reuse, provider-backed browser datasets, broader source-aware by_source
+multisource/catalog corpora, and fixture-scoped WASM coverage. Do not present
+this suite as full strict ecosystem parity unless those phase statuses and
+non-numeric strict exceptions are promoted in the manifest and the coverage
+tests are updated with matching evidence.
 
 The validator also protects the suite shape from collapsing into shallow smoke
 claims. Each scenario must include Python as the portable oracle runtime, at

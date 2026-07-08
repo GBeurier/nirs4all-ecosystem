@@ -1498,10 +1498,8 @@
       "id": "e2e-converter-legacy-save-predictions-web",
       "title": "Legacy save conversion, prediction lowering, and Web results rendering",
       "objective": "Convert a legacy workspace/save fixture, lower predictions into the V1 result contract, prove deterministic converter preservation against fixture values and checksums, open the output in Web, and verify every result panel renders.",
-      "evidence_level": "hybrid",
-      "strictness_gaps": [
-        "The converter/save/render slice is executable, but papers export and repository best-refit phases are outside this scenario."
-      ],
+      "evidence_level": "strict",
+      "strictness_gaps": [],
       "languages": [
         "python",
         "javascript_wasm",

@@ -2143,7 +2143,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
 
     assert report["scenario_count"] == 11
     assert report["expected_scenario_count"] == 11
-    assert report["evidence_levels"] == {"hybrid": 10, "strict": 1}
+    assert report["evidence_levels"] == {"hybrid": 9, "strict": 2}
     assert report["required_languages"] == {
         "javascript_wasm": 8,
         "python": 11,
@@ -2173,7 +2173,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web_results": 5,
         "workspace_save": 6,
     }
-    assert report["debt_summary"]["strictness_gap_count"] == 10
+    assert report["debt_summary"]["strictness_gap_count"] == 9
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
         "contract": 5,
         "strict": 22,
@@ -2228,6 +2228,15 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit", "wasm_web_reuse"],
         "contract_parity_checks": 0,
         "strict_parity_checks": 2,
+        "strict_non_numeric_checks": 0,
+    }
+    assert report["debt_summary"]["scenario_phase_debt"]["e2e-converter-legacy-save-predictions-web"] == {
+        "strictness_gaps": 0,
+        "contract_phases": [],
+        "gap_phases": [],
+        "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
+        "contract_parity_checks": 0,
+        "strict_parity_checks": 1,
         "strict_non_numeric_checks": 0,
     }
     assert len(report["scenario_details"]) == 11
@@ -2334,7 +2343,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: strictness_gaps=10 strict_non_numeric_checks=4 v1_contract_phases=5 "
+        "debt: strictness_gaps=9 strict_non_numeric_checks=4 v1_contract_phases=5 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
@@ -2357,7 +2366,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
-    assert report["debt_summary"]["strictness_gap_count"] == 10
+    assert report["debt_summary"]["strictness_gap_count"] == 9
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 4
     assert report["scenario_details"][0]["strictness_gaps"]
 
@@ -2377,7 +2386,7 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     report = report_path.read_text(encoding="utf-8")
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
-    assert "| strictness gaps | 10 |" in report
+    assert "| strictness gaps | 9 |" in report
     assert "| strict non-numeric checks | 4 |" in report
     assert "| V1 gap phases | 0 |" in report
     assert "| V1 not applicable phases | 25 |" in report
@@ -2548,6 +2557,22 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert (
         "does not publish a repository recipe"
         in flow["e2e-multisource-branching-stacking-replay"]["repository_forced_best_refit"]["applicability"]
+    )
+
+    converter = _scenario_by_id(manifest, "e2e-converter-legacy-save-predictions-web")
+    assert converter["evidence_level"] == "strict"
+    assert converter["strictness_gaps"] == []
+    assert flow["e2e-converter-legacy-save-predictions-web"]["python_open_pipeline"]["status"] == "strict"
+    assert flow["e2e-converter-legacy-save-predictions-web"]["python_rerun_pipeline"]["status"] == "strict"
+    assert flow["e2e-converter-legacy-save-predictions-web"]["python_parity"]["status"] == "strict"
+    assert flow["e2e-converter-legacy-save-predictions-web"]["wasm_web_reuse"]["status"] == "strict"
+    assert (
+        flow["e2e-converter-legacy-save-predictions-web"]["papers_export"]["status"]
+        == "not_applicable"
+    )
+    assert (
+        flow["e2e-converter-legacy-save-predictions-web"]["repository_forced_best_refit"]["status"]
+        == "not_applicable"
     )
 
     dataset_roundtrip = _scenario_by_id(manifest, "e2e-dataset-provider-repository-roundtrip")
