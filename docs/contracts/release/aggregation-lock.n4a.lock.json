@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:0a834bc1d6f961a9b35de816b4ccd0919423503f35c1b0bbcdb50ebd76a357f9",
+  "manifest_digest": "sha256:8b1b69f4ac671520a615a55335a1f648161a71961bdfe0927c87153a811e107c",
   "members": {
     "core": {
       "availability": {
@@ -70,7 +70,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:e5c4cc2d5333490157070e3b17be5a5e3e078dc6a20e5663e433a0010ad40f2f",
+          "canonical_json_sha256": "sha256:466a522d9a186ad960553157f239439b53ad8ab121d53cfe900cf6215da36330",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -565,8 +565,7 @@
                     }
                   ],
                   "matlab": [
-                    "+n4m",
-                    "+pls4all"
+                    "+n4m"
                   ],
                   "npm": [
                     "@nirs4all/methods"
@@ -660,7 +659,7 @@
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_core/_topology.py",
-          "raw_sha256": "sha256:9cec713959c9fd80108c1f04227334e2d2cd7808ece3763bf17ed61927407d89",
+          "raw_sha256": "sha256:8744f63c31d728ad2f1e373a4c9aa7e7b9feb83fec8a6e16c584fd578beaf198",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -717,9 +716,9 @@
       "selected_workspace_path": "nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "bd76b6b4ea61bf7dd922b194b246004ddabaaf87",
+        "commit": "553a2985534dc9ceaf33c52784e2e3ce0ec5cdeb",
         "dirty": false,
-        "exact_tag": "v0.3.3"
+        "exact_tag": "v0.3.4"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -728,25 +727,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.3.3"
+          "value": "0.3.4"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.3.3"
+          "value": "0.3.4"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.3.3"
+          "value": "0.3.4"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.3.3"
+          "value": "0.3.4"
         }
       }
     },
@@ -1300,7 +1299,7 @@
           "id": "n4m_version_header",
           "kind": "text",
           "path": "cpp/include/n4m/n4m_version.h",
-          "raw_sha256": "sha256:fffa4d70c0880356e15942aaa545a0fc676f96cff84ebf589f91a85ce4d47490"
+          "raw_sha256": "sha256:ce43f2916ac45a369bfb9a1a80d58388582f7b604be31430e4c628c5e155cac0"
         }
       ],
       "default_inclusion": "aggregate-extra",
@@ -1356,9 +1355,9 @@
       "selected_workspace_path": "nirs4all-methods",
       "state": {
         "branch": "main",
-        "commit": "019411c79712d6f3c02f077928e0d88aa353d171",
+        "commit": "990077e4b9f9902ba547592d81f0b1a70c7ea8a1",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "v1.0.7"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1370,10 +1369,10 @@
           "value": {
             "abi_version": "2.0.0",
             "abi_version_int": null,
-            "project_version": "1.0.6",
+            "project_version": "1.0.7",
             "serialization_format_version": 1,
             "serialization_magic": "N4MM",
-            "source_sha256": "sha256:fffa4d70c0880356e15942aaa545a0fc676f96cff84ebf589f91a85ce4d47490"
+            "source_sha256": "sha256:ce43f2916ac45a369bfb9a1a80d58388582f7b604be31430e4c628c5e155cac0"
           }
         },
         "python_nirs4all_methods": {
@@ -1385,7 +1384,7 @@
           "module": "n4m",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "1.0.6"
+          "value": "1.0.7"
         },
         "python_pls4all": {
           "distribution": "pls4all",
@@ -1396,13 +1395,13 @@
           "module": "pls4all",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "1.0.6"
+          "value": "1.0.7"
         },
         "r_n4m": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/n4m/DESCRIPTION",
-          "value": "1.0.6"
+          "value": "1.0.7"
         }
       }
     }
