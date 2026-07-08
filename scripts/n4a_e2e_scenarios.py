@@ -1018,7 +1018,7 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "bundled_downstream_app", "equals": True},
             {"path": "public_imports_only", "equals": True},
             {"path": "nirs4all_version", "equals": "0.3.7"},
-            {"path": "nirs4all_ui_version", "equals": "0.1.8"},
+            {"path": "nirs4all_ui_version", "equals": "0.1.9"},
             {"path": "nirs4all_methods_version", "equals": "1.0.8"},
             {"path": "upstream_methods_installed", "equals": True},
             {"path": "controller_count", "gt": 0},
