@@ -3690,6 +3690,10 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert "--check" in workflow
     assert "--out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json" in workflow
     assert "npm --prefix nirs4all-core/bindings/wasm ci --no-audit --no-fund" in workflow
+    assert '-e "nirs4all-methods/bindings/python"' in workflow
+    assert workflow.index('-e "nirs4all-methods/bindings/python"') < workflow.index(
+        '-e "nirs4all-core/bindings/python"'
+    )
     assert "actions/upload-artifact@v4" in workflow
     assert "n4a-e2e-coverage-debt-${{ github.run_id }}" in workflow
     assert "n4a-e2e-ready-runtime-evidence-${{ github.run_id }}" in workflow
