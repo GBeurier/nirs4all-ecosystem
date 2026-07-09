@@ -3113,6 +3113,124 @@ def test_cross_language_e2e_evidence_ledger_check_treats_max_age_as_runtime_guar
     assert e2e._evidence_ledger_check_text(generated, current_text) == current_text
 
 
+def test_cross_language_e2e_artifact_proof_hash_uses_constraint_results() -> None:
+    e2e = _load_e2e_module()
+    requirements = [
+        {"path": "delta", "lte_path": "tolerance"},
+        {"path": "digest", "equals_path": "expected_digest"},
+        {"path": "rows", "gt": 0},
+        {"path": "labels", "contains_all": ["a", "b"]},
+        {"path": "status", "equals": "passed"},
+    ]
+    first = {
+        "delta": 0.1,
+        "tolerance": 1.0,
+        "digest": "abc",
+        "expected_digest": "abc",
+        "rows": 3,
+        "labels": ["a", "b", "c"],
+        "status": "passed",
+    }
+    second = {
+        "delta": 0.2,
+        "tolerance": 2.0,
+        "digest": "def",
+        "expected_digest": "def",
+        "rows": 9,
+        "labels": ["b", "a", "d"],
+        "status": "passed",
+    }
+
+    assert e2e._canonical_json_sha256(
+        e2e._artifact_requirement_proof_payload(first, requirements)
+    ) == e2e._canonical_json_sha256(
+        e2e._artifact_requirement_proof_payload(second, requirements)
+    )
+
+
+def test_cross_language_e2e_evidence_ledger_check_filters_allowed_public_blocker() -> None:
+    e2e = _load_e2e_module()
+    current = {
+        "schema_version": e2e.EVIDENCE_LEDGER_SCHEMA_VERSION,
+        "coverage": {
+            "scenario_count": 2,
+            "ready_count": 2,
+            "blocked_count": 0,
+            "full_strict_ready": True,
+            "full_strict_blockers": [],
+        },
+        "evidence": {
+            "scenario_count": 2,
+            "verified_count": 2,
+            "failed_count": 0,
+            "artifact_count": 3,
+            "failure_count": 0,
+            "max_age_seconds": None,
+        },
+        "scenarios": [
+            {
+                "id": "kept",
+                "status": "ready",
+                "verification_status": "verified",
+                "artifact_count": 1,
+                "failure_count": 0,
+            },
+            {
+                "id": "public-missing",
+                "status": "ready",
+                "verification_status": "verified",
+                "artifact_count": 2,
+                "failure_count": 0,
+            },
+        ],
+    }
+    generated = {
+        **current,
+        "coverage": {
+            **current["coverage"],
+            "ready_count": 1,
+            "blocked_count": 1,
+            "full_strict_ready": False,
+            "full_strict_blockers": ["public-missing: path:/private/dataset.json"],
+        },
+        "evidence": {
+            **current["evidence"],
+            "verified_count": 1,
+            "failed_count": 1,
+            "failure_count": 2,
+            "max_age_seconds": 14400,
+        },
+        "scenarios": [
+            current["scenarios"][0],
+            {
+                **current["scenarios"][1],
+                "status": "blocked",
+                "verification_status": "failed",
+                "failure_count": 2,
+            },
+        ],
+    }
+    current_text = json.dumps(current, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
+
+    plain_current, plain_generated = e2e._evidence_ledger_check_texts(generated, current_text)
+    assert plain_current != plain_generated
+
+    filtered_current, filtered_generated = e2e._evidence_ledger_check_texts(
+        generated,
+        current_text,
+        allowed_blocked_scenarios={"public-missing"},
+    )
+    assert filtered_current == filtered_generated
+    checked = json.loads(filtered_current)
+    assert [scenario["id"] for scenario in checked["scenarios"]] == ["kept"]
+    assert checked["coverage"]["ready_count"] == 1
+    assert checked["coverage"]["blocked_count"] == 0
+    assert checked["coverage"]["full_strict_ready"] is True
+    assert checked["evidence"]["scenario_count"] == 1
+    assert checked["evidence"]["verified_count"] == 1
+    assert checked["evidence"]["failed_count"] == 0
+
+
 def test_cross_language_e2e_cli_evidence_ledger_fails_on_missing_artifacts(tmp_path: Path) -> None:
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
     report_path = tmp_path / "latest-runtime-evidence-ledger.n4a.json"
@@ -3540,7 +3658,8 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert "--json-out .n4a-e2e-artifacts/evidence-summary.json" in workflow
     assert workflow.count("--json-out .n4a-e2e-artifacts/evidence-summary.json") == 2
     assert "Check committed runtime evidence ledger" in workflow
-    assert "python3 scripts/n4a_e2e_scenarios.py evidence-ledger" in workflow
+    assert "evidence-ledger" in workflow
+    assert 'python3 scripts/n4a_e2e_scenarios.py "${args[@]}"' in workflow
     assert "--check" in workflow
     assert "--out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json" in workflow
     assert "npm --prefix nirs4all-core/bindings/wasm ci --no-audit --no-fund" in workflow
@@ -3555,7 +3674,7 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert set(re.findall(r"--allowed-blocked-scenario ([a-z0-9-]+)", workflow)) == (
         ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS
     )
-    assert workflow.count("--allowed-blocked-scenario ") == len(ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS)
+    assert workflow.count("--allowed-blocked-scenario ") == 2 * len(ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS)
     expected_blocked_requirements = {
         "e2e-r-dataset-io-pipeline-save="
         "nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json",
@@ -3563,7 +3682,7 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert set(re.findall(r"--allowed-blocked-requirement ([^\s]+)", workflow)) == (
         expected_blocked_requirements
     )
-    assert workflow.count("--allowed-blocked-requirement ") == len(expected_blocked_requirements)
+    assert workflow.count("--allowed-blocked-requirement ") == 2 * len(expected_blocked_requirements)
     assert "N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}" in workflow
     assert "N4A_ALLOW_BLOCKED: ${{ github.event.inputs.allow_blocked }}" in workflow
     assert '[[ "$N4A_ALLOW_BLOCKED" == "true" ]]' in workflow

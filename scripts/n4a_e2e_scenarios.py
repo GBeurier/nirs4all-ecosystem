@@ -3099,21 +3099,97 @@ def _artifact_requirement_proof_payload(
         exists, value = _json_path(payload, path)
         proof: dict[str, Any] = {
             "path": path,
-            "value": value if exists else None,
+            "exists": exists,
         }
-        for operator in ("equals", "non_empty", "empty", "contains_all", "gt", "gte"):
-            if operator in requirement:
-                proof[operator] = requirement[operator]
+        checks = []
+        if "equals" in requirement:
+            expected = requirement["equals"]
+            checks.append(
+                {
+                    "operator": "equals",
+                    "expected": expected,
+                    "passed": exists and value == expected,
+                }
+            )
         if "equals_path" in requirement:
             expected_path = requirement["equals_path"]
             expected_exists, expected_value = _json_path(payload, expected_path)
-            proof["equals_path"] = expected_path
-            proof["equals_path_value"] = expected_value if expected_exists else None
+            checks.append(
+                {
+                    "operator": "equals_path",
+                    "expected_path": expected_path,
+                    "expected_exists": expected_exists,
+                    "passed": exists and expected_exists and value == expected_value,
+                }
+            )
+        if "non_empty" in requirement:
+            checks.append(
+                {
+                    "operator": "non_empty",
+                    "expected": bool(requirement["non_empty"]),
+                    "passed": exists and (bool(value) is bool(requirement["non_empty"])),
+                }
+            )
+        if "empty" in requirement:
+            checks.append(
+                {
+                    "operator": "empty",
+                    "expected": bool(requirement["empty"]),
+                    "passed": exists and (bool(value) is not bool(requirement["empty"])),
+                }
+            )
+        if "contains_all" in requirement:
+            expected_entries = sorted(requirement["contains_all"], key=str)
+            checks.append(
+                {
+                    "operator": "contains_all",
+                    "expected": expected_entries,
+                    "passed": (
+                        exists
+                        and isinstance(value, list)
+                        and not (set(expected_entries) - set(value))
+                    ),
+                }
+            )
+        for operator, compare in (("gt", lambda a, b: a > b), ("gte", lambda a, b: a >= b)):
+            if operator not in requirement:
+                continue
+            numeric, error = _requirement_number(value, path, path) if exists else (None, "missing")
+            checks.append(
+                {
+                    "operator": operator,
+                    "expected": requirement[operator],
+                    "passed": (
+                        error is None
+                        and numeric is not None
+                        and compare(numeric, float(requirement[operator]))
+                    ),
+                }
+            )
         if "lte_path" in requirement:
             tolerance_path = requirement["lte_path"]
             tolerance_exists, tolerance_value = _json_path(payload, tolerance_path)
-            proof["lte_path"] = tolerance_path
-            proof["lte_path_value"] = tolerance_value if tolerance_exists else None
+            numeric, numeric_error = _requirement_number(value, path, path) if exists else (None, "missing")
+            tolerance, tolerance_error = (
+                _requirement_number(tolerance_value, tolerance_path, tolerance_path)
+                if tolerance_exists
+                else (None, "missing")
+            )
+            checks.append(
+                {
+                    "operator": "lte_path",
+                    "tolerance_path": tolerance_path,
+                    "tolerance_exists": tolerance_exists,
+                    "passed": (
+                        numeric_error is None
+                        and tolerance_error is None
+                        and numeric is not None
+                        and tolerance is not None
+                        and abs(numeric) <= tolerance
+                    ),
+                }
+            )
+        proof["checks"] = checks or [{"operator": "present", "passed": exists}]
         requirement_proofs.append(proof)
     return {
         "proof_schema_version": "n4a.cross-language-e2e-artifact-proof/v1",
@@ -3277,6 +3353,89 @@ def _evidence_ledger_check_text(ledger: dict[str, Any], current_text: str) -> st
     return json.dumps(comparable, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
 
 
+def _recount_evidence_ledger(
+    ledger: dict[str, Any],
+    *,
+    removed_scenario_ids: set[str] | None = None,
+) -> dict[str, Any]:
+    scenarios = ledger.get("scenarios", [])
+    if not isinstance(scenarios, list):
+        return ledger
+    evidence = dict(ledger.get("evidence", {}))
+    evidence["scenario_count"] = len(scenarios)
+    evidence["verified_count"] = sum(
+        1 for scenario in scenarios if scenario.get("verification_status") == "verified"
+    )
+    evidence["failed_count"] = len(scenarios) - evidence["verified_count"]
+    evidence["artifact_count"] = sum(int(scenario.get("artifact_count") or 0) for scenario in scenarios)
+    evidence["failure_count"] = sum(int(scenario.get("failure_count") or 0) for scenario in scenarios)
+    ledger["evidence"] = evidence
+
+    coverage = dict(ledger.get("coverage", {}))
+    coverage["scenario_count"] = len(scenarios)
+    coverage["ready_count"] = sum(1 for scenario in scenarios if scenario.get("status") == "ready")
+    coverage["blocked_count"] = sum(1 for scenario in scenarios if scenario.get("status") == "blocked")
+    removed = removed_scenario_ids or set()
+    blockers = [
+        blocker
+        for blocker in coverage.get("full_strict_blockers", [])
+        if isinstance(blocker, str)
+        and not any(blocker.startswith(f"{scenario_id}:") for scenario_id in removed)
+    ]
+    if blockers != coverage.get("full_strict_blockers", []):
+        coverage["full_strict_blockers"] = blockers
+        coverage["full_strict_ready"] = not blockers
+    ledger["coverage"] = coverage
+    return ledger
+
+
+def _filter_evidence_ledger_scenarios(
+    ledger: dict[str, Any],
+    scenario_ids: set[str],
+) -> dict[str, Any]:
+    if not scenario_ids:
+        return ledger
+    filtered = dict(ledger)
+    filtered["scenarios"] = [
+        scenario
+        for scenario in ledger.get("scenarios", [])
+        if scenario.get("id") not in scenario_ids
+    ]
+    return _recount_evidence_ledger(filtered, removed_scenario_ids=scenario_ids)
+
+
+def _evidence_ledger_check_texts(
+    ledger: dict[str, Any],
+    current_text: str,
+    *,
+    allowed_blocked_scenarios: set[str] | None = None,
+) -> tuple[str, str]:
+    generated = ledger
+    compare_current_text = current_text
+    allowed = allowed_blocked_scenarios or set()
+    active_allowed = {
+        scenario.get("id")
+        for scenario in ledger.get("scenarios", [])
+        if scenario.get("id") in allowed and scenario.get("status") == "blocked"
+    }
+    active_allowed.discard(None)
+    if active_allowed:
+        try:
+            current = json.loads(current_text)
+        except json.JSONDecodeError:
+            current = None
+        generated = _filter_evidence_ledger_scenarios(ledger, active_allowed)
+        if isinstance(current, dict):
+            current = _filter_evidence_ledger_scenarios(current, active_allowed)
+            compare_current_text = json.dumps(
+                current,
+                ensure_ascii=True,
+                indent=2,
+                sort_keys=True,
+            ) + "\n"
+    return compare_current_text, _evidence_ledger_check_text(generated, compare_current_text)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
@@ -3349,6 +3508,25 @@ def main(argv: list[str] | None = None) -> int:
         "--check",
         action="store_true",
         help="compare the generated ledger with --out instead of writing it",
+    )
+    evidence_ledger_parser.add_argument(
+        "--allow-blocked",
+        action="store_true",
+        help="during --check, ignore explicitly allowlisted scenarios that are blocked in this checkout",
+    )
+    evidence_ledger_parser.add_argument(
+        "--allowed-blocked-scenario",
+        action="append",
+        default=[],
+        metavar="SCENARIO_ID",
+        help="scenario id allowed to remain blocked during an allow-blocked ledger check; repeatable",
+    )
+    evidence_ledger_parser.add_argument(
+        "--allowed-blocked-requirement",
+        action="append",
+        default=[],
+        metavar="SCENARIO_ID=REQUIREMENT_FRAGMENT",
+        help="document a missing requirement fragment for an allowlisted blocked scenario; repeatable",
     )
 
     run_parser = subparsers.add_parser("run", help="execute one scenario")
@@ -3496,6 +3674,7 @@ def main(argv: list[str] | None = None) -> int:
                         print(f"  {failure}")
             return 0 if report["failed_count"] == 0 else 1
         if args.command == "evidence-ledger":
+            _parse_allowed_blocked_requirements(args.allowed_blocked_requirement)
             ledger = runtime_evidence_ledger(
                 manifest,
                 manifest_path=args.manifest,
@@ -3510,14 +3689,23 @@ def main(argv: list[str] | None = None) -> int:
                     current_text = args.out.read_text(encoding="utf-8")
                 except OSError as exc:
                     raise E2EScenarioError(f"cannot read existing evidence ledger {args.out}: {exc}") from exc
-                if current_text != _evidence_ledger_check_text(ledger, current_text):
-                    raise E2EScenarioError(f"runtime evidence ledger is stale: regenerate {args.out}")
-                print(
-                    f"checked {args.out}: {evidence['verified_count']}/{evidence['scenario_count']} "
-                    f"scenarios verified; artifacts={evidence['artifact_count']} "
-                    f"failures={evidence['failure_count']}"
+                allowed_blocked_scenarios = set(args.allowed_blocked_scenario) if args.allow_blocked else set()
+                compare_current_text, generated_check_text = _evidence_ledger_check_texts(
+                    ledger,
+                    current_text,
+                    allowed_blocked_scenarios=allowed_blocked_scenarios,
                 )
-                return 0 if evidence["failed_count"] == 0 else 1
+                if compare_current_text != generated_check_text:
+                    raise E2EScenarioError(f"runtime evidence ledger is stale: regenerate {args.out}")
+                checked_ledger = json.loads(generated_check_text)
+                checked_evidence = checked_ledger["evidence"]
+                print(
+                    f"checked {args.out}: "
+                    f"{checked_evidence['verified_count']}/{checked_evidence['scenario_count']} "
+                    f"scenarios verified; artifacts={checked_evidence['artifact_count']} "
+                    f"failures={checked_evidence['failure_count']}"
+                )
+                return 0 if checked_evidence["failed_count"] == 0 else 1
             args.out.parent.mkdir(parents=True, exist_ok=True)
             args.out.write_text(ledger_text, encoding="utf-8")
             print(
