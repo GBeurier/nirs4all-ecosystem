@@ -3715,6 +3715,13 @@ def test_cross_language_e2e_python311_steps_use_python311_command() -> None:
                 assert any("python3.11" in part for part in step["command"]), f"{scenario['id']}.{step['id']}"
 
 
+def _workflow_step_block(workflow: str, name: str) -> str:
+    marker = f"      - name: {name}\n"
+    start = workflow.index(marker)
+    end = workflow.find("\n      - name: ", start + len(marker))
+    return workflow[start:] if end == -1 else workflow[start:end]
+
+
 def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     workflow = (ROOT / ".github" / "workflows" / "cross-language-e2e.yml").read_text(encoding="utf-8")
     gitmodules = (ROOT / ".gitmodules").read_text(encoding="utf-8")
@@ -3723,8 +3730,20 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
 
     assert "N4A_WORKSPACE_ROOT: ${{ github.workspace }}/nirs4all-ecosystem" in workflow
     assert 'N4A_E2E_MAX_ARTIFACT_AGE_SECONDS: "14400"' in workflow
+    assert 'cron: "37 3 * * 1"' in workflow
+    assert "N4A_SCHEDULED_SMOKE_SCENARIO: e2e-cluster-dag-rights-client-core" in workflow
     assert "allow_blocked:" in workflow
     assert "run-ready --execute" in workflow
+    assert "Install scheduled runtime smoke dependencies" in workflow
+    assert 'if: ${{ github.event_name == \'schedule\' }}' in workflow
+    assert '-e "nirs4all[dev]"' in workflow
+    assert '-e "nirs4all-cluster[dev]"' in workflow
+    assert "Execute scheduled runtime smoke scenario" in workflow
+    assert "Verify scheduled runtime smoke artifacts" in workflow
+    assert 'N4A_E2E_SCENARIO: ${{ env.N4A_SCHEDULED_SMOKE_SCENARIO }}' in workflow
+    assert 'run "$N4A_E2E_SCENARIO" --execute' in workflow
+    assert "Upload scheduled runtime smoke evidence" in workflow
+    assert "n4a-e2e-${{ env.N4A_SCHEDULED_SMOKE_SCENARIO }}-scheduled-runtime-evidence-${{ github.run_id }}" in workflow
     assert "Verify ready scenario artifacts" in workflow
     assert "Write coverage debt board" in workflow
     assert "Upload coverage debt board" in workflow
@@ -3734,9 +3753,12 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert "--ready-only" in workflow
     assert '--max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"' in workflow
     assert "--json-out .n4a-e2e-artifacts/evidence-summary.json" in workflow
-    assert workflow.count("--json-out .n4a-e2e-artifacts/evidence-summary.json") == 2
+    assert workflow.count("--json-out .n4a-e2e-artifacts/evidence-summary.json") == 3
     assert "Check committed runtime evidence ledger" in workflow
     assert "evidence-ledger" in workflow
+    assert "github.event_name != 'schedule' && !github.event.inputs.scenario && github.event.inputs.execute != 'true'" in workflow
+    assert "github.event_name == 'schedule' && !github.event.inputs.scenario" not in workflow
+    assert "github.event_name == 'schedule' && github.event.inputs.execute == 'true'" not in workflow
     assert 'python3 scripts/n4a_e2e_scenarios.py "${args[@]}"' in workflow
     assert "--check" in workflow
     assert "--out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json" in workflow
@@ -3757,11 +3779,11 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert "n4a-e2e-ready-runtime-evidence-${{ github.run_id }}" in workflow
     assert "n4a-e2e-${{ github.event.inputs.scenario }}-runtime-evidence-${{ github.run_id }}" in workflow
     assert workflow.count("path: nirs4all-ecosystem/.n4a-e2e-artifacts/coverage/**") == 1
-    assert workflow.count("nirs4all-ecosystem/.n4a-e2e-artifacts/**") == 2
+    assert workflow.count("nirs4all-ecosystem/.n4a-e2e-artifacts/**") == 3
     assert workflow.count(
         "nirs4all-ecosystem/docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json"
     ) == 2
-    assert workflow.count("if-no-files-found: warn") == 3
+    assert workflow.count("if-no-files-found: warn") == 4
     assert "--allow-blocked" in workflow
     assert "--allowed-blocked-scenario " not in workflow
     assert "--allowed-blocked-requirement " not in workflow
@@ -3782,6 +3804,45 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     for repo in sorted(declared_repos):
         assert f'path = {repo}' in gitmodules
         assert f"url = https://github.com/GBeurier/{repo}.git" in gitmodules
+
+
+def test_cross_language_e2e_workflow_scheduled_smoke_contract() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "cross-language-e2e.yml").read_text(encoding="utf-8")
+
+    assert 'cron: "37 3 * * 1"' in workflow
+    assert "N4A_SCHEDULED_SMOKE_SCENARIO: e2e-cluster-dag-rights-client-core" in workflow
+    assert "github.event_name != 'schedule' && !github.event.inputs.scenario" in workflow
+
+    install = _workflow_step_block(workflow, "Install scheduled runtime smoke dependencies")
+    assert "if: ${{ github.event_name == 'schedule' }}" in install
+    assert '-e "nirs4all[dev]"' in install
+    assert '-e "nirs4all-cluster[dev]"' in install
+    assert "nirs4all-core/bindings/wasm" not in install
+    assert "nirs4all-web/studio-lite" not in install
+    assert "nirs4all-methods" not in install
+
+    execute = _workflow_step_block(workflow, "Execute scheduled runtime smoke scenario")
+    assert "if: ${{ github.event_name == 'schedule' }}" in execute
+    assert "N4A_E2E_SCENARIO: ${{ env.N4A_SCHEDULED_SMOKE_SCENARIO }}" in execute
+    assert 'python3 scripts/n4a_e2e_scenarios.py run "$N4A_E2E_SCENARIO" --execute' in execute
+
+    verify = _workflow_step_block(workflow, "Verify scheduled runtime smoke artifacts")
+    assert "if: ${{ github.event_name == 'schedule' }}" in verify
+    assert "python3 scripts/n4a_e2e_scenarios.py evidence" in verify
+    assert '--scenario "$N4A_E2E_SCENARIO"' in verify
+    assert '--max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"' in verify
+    assert "--json-out .n4a-e2e-artifacts/evidence-summary.json" in verify
+
+    upload = _workflow_step_block(workflow, "Upload scheduled runtime smoke evidence")
+    assert "if: ${{ always() && github.event_name == 'schedule' }}" in upload
+    assert "scheduled-runtime-evidence" in upload
+    assert "nirs4all-ecosystem/.n4a-e2e-artifacts/**" in upload
+
+    for block in (install, execute, verify, upload):
+        assert "run-ready" not in block
+        assert "evidence-ledger" not in block
+        assert "--ready-only" not in block
+        assert "latest-runtime-evidence-ledger.n4a.json" not in block
 
 
 def test_cross_language_e2e_allow_blocked_never_returns_green(tmp_path: Path) -> None:

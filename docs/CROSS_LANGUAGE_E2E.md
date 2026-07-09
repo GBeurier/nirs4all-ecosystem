@@ -36,11 +36,18 @@ on selected release heads, not on every small commit.
 GitHub Actions validates and plans on push/PR. Every run uploads a coverage debt
 board under `.n4a-e2e-artifacts/coverage/`, including `coverage-summary.json`
 and `coverage-debt.md`, so the hybrid-vs-strict state is visible even when the
-runtime scenarios are only planned. Runtime execution is explicit: dispatch
-`Cross-language E2E scenarios` with `execute=true`, optionally selecting one
-scenario. Those manual runs additionally upload `.n4a-e2e-artifacts`, including
-`evidence-summary.json`, so fresh runtime proof can be audited after the job.
-Full-suite manual execution also checks
+runtime scenarios are only planned. A weekly scheduled smoke additionally
+executes `e2e-cluster-dag-rights-client-core`, verifies the fresh cluster/core
+runtime artifacts with the four-hour freshness guard, and uploads the runtime
+evidence archive. It does not run `run-ready` or the full evidence ledger gate.
+The scheduled lane uses its own limited Python dependency install for
+`nirs4all` and `nirs4all-cluster`, separate from the full manual executed E2E
+dependency install.
+Full runtime execution remains explicit: dispatch `Cross-language E2E scenarios`
+with `execute=true`, optionally selecting one scenario. Those manual runs
+additionally upload `.n4a-e2e-artifacts`, including `evidence-summary.json`, so
+fresh runtime proof can be audited after the job. Full-suite manual execution
+also checks
 `docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json`. That ledger records
 normalized artifact paths plus host-stable proof hashes over required JSON
 evidence fields; it deliberately avoids full-file hashes because generated
