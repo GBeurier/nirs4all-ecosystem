@@ -29,6 +29,7 @@ No full Python parity run was launched in this workflow-only batch.
 | `nirs4all-cockpit` | `7cfaf49 fix(dashboard): hide release channels from public snapshot` | Removed public `channel` metadata and cache-busted the dashboard assets so old `rc` / `production-held` capsules cannot reappear. |
 | `nirs4all-cockpit` | `0497dbf feat(targets): track device pages surface` | Added `nirs4all-device` as a Pages-only public app surface. |
 | `nirs4all-ecosystem` | this report commit | Added `nirs4all-device` as a public submodule and documented the inventory/audit decision. |
+| `nirs4all-ecosystem` | this follow-up commit | Updated standard `actions/checkout` and `actions/upload-artifact` pins in cross-language, cutover, and version-guard workflows. |
 
 ## Local validation
 
@@ -42,6 +43,8 @@ No full Python parity run was launched in this workflow-only batch.
 - `nirs4all-cockpit` dashboard cleanup: `.venv/bin/python -m pytest -q`; `.venv/bin/python -m ruff check .`; `.venv/bin/python -m cockpit.cli validate-targets ops/targets.yaml`; live `cockpit.nirs4all.org` HTML/JS/JSON checks.
 - `nirs4all-cockpit` device inventory: `.venv/bin/python -m pytest tests/test_targets_topology.py -q`; `.venv/bin/python -m pytest -q`; `.venv/bin/python -m ruff check .`; `.venv/bin/python -m cockpit.cli validate-targets ops/targets.yaml`.
 - `nirs4all-ecosystem`: `python3 scripts/n4a_e2e_scenarios.py validate`; `python3 -m pytest tests/test_e2e_scenarios.py -q`.
+- `nirs4all-ecosystem` action refresh: workflow YAML parse; `git diff --check`;
+  `python3 scripts/n4a_e2e_scenarios.py validate`; `python3 -m pytest tests/test_e2e_scenarios.py -q`.
 
 Notes:
 
@@ -198,6 +201,13 @@ Follow-up Codex Actions audit:
   found in the scanned workflows.
 - `nirs4all-ecosystem`: 6 remaining mutable refs in `cutover-gates.yml` and
   `cross-language-e2e.yml`.
+
+Follow-up integration:
+
+- `actions/checkout` was moved to `v7` in `cutover-gates.yml`,
+  `cross-language-e2e.yml`, and `version-guard.yml`; `actions/upload-artifact`
+  was moved to `v7` in `cutover-gates.yml` and `cross-language-e2e.yml`.
+- The specialized R/Rust/emsdk refs remain unchanged in this batch.
 
 Recommended ordering:
 
