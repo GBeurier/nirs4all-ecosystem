@@ -12,6 +12,12 @@ Date: 2026-07-09
 - Refreshed the public cockpit snapshot through the GitHub `collect` workflow.
 - Aligned dashboard manual-action counters with the unresolved actions actually
   displayed at the bottom of the dashboard.
+- Verified the public R-universe state for `nirs4all`: upstream
+  `r-universe/gbeurier` still points its `nirs4all` gitlink at the old core
+  commit `89afc08`, while the prepared fork branch
+  `GBeurier/gbeurier:update-nirs4all-core-0.3.8` already points at
+  `727fad5`. Direct push, PR creation, and workflow dispatch were denied by the
+  current GitHub token, so the cockpit manual action remains pending.
 
 ## Files Modified
 
@@ -36,6 +42,10 @@ Cockpit:
 - `.venv/bin/python -m ruff check .`
 - `python3 scripts/smoke_dashboard_dom.py`
 - GitHub Actions: `version-guard`, `ci`, `collect`, and `pages` all succeeded.
+- Public R-universe probes:
+  `https://gbeurier.r-universe.dev/src/contrib/PACKAGES` still reports
+  `nirs4all` `0.3.7`; `gh workflow run sync.yml --repo r-universe/gbeurier`
+  and PR creation from the prepared fork branch both returned permission errors.
 
 Core/UI/Web:
 
@@ -63,6 +73,9 @@ Core/UI/Web:
 - Count any manual action whose auto-check is not resolved as pending in the
   public dashboard, even when the human step is declared `done`. This keeps the
   bottom manual-action section and its counters consistent.
+- Mark `runiverse-core-rebuild` as `todo` rather than `done`: the prepared
+  branch exists, but the upstream R-universe master gitlink has not been merged
+  and the public package remains stale at `0.3.7`.
 - Keep `nirs4all-ui` unchanged: the integrated package already exposes shared
   components, default styles, brand assets/generators, motion assets, and the
   GitHub Pages showcase; the validation run left the repo clean.
@@ -73,5 +86,7 @@ Core/UI/Web:
 
 - External/manual items remain: Studio Windows RC smoke, CRAN submissions, and
   public propagation of the R-universe core rebuild.
+- The R-universe core rebuild specifically requires a GitHub account/token with
+  permission to merge or dispatch workflows in `r-universe/gbeurier`.
 - `nirs4all-core` MATLAB/Octave proof remains public release/workflow evidence,
   not a fresh local Octave build on this Linux session.
