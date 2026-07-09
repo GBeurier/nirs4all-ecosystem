@@ -135,6 +135,14 @@ def _ensure_local_ui_build_deps(
     return result
 
 
+def _lab_source_declared(theme_css: str) -> bool:
+    return (
+        "nirs4all-ui/dist/lab" in theme_css
+        or "nirs4all-ui/src/lab" in theme_css
+        or "nirs4all-ui/lab" in theme_css
+    )
+
+
 def run_quality_smoke(workspace_root: Path, artifacts_dir: Path, *, install: bool) -> dict[str, Any]:
     quality_root = workspace_root / "nirs4all-quality"
     app_dir = quality_root / "app"
@@ -187,6 +195,7 @@ def run_quality_smoke(workspace_root: Path, artifacts_dir: Path, *, install: boo
     rmsep = "model report with RMSEP rendered" in stdout
 
     theme_css = _read_text(app_dir / "src/styles/index.css")
+    lab_source_declared = _lab_source_declared(theme_css)
     package_json = json.loads(_read_text(app_dir / "package.json"))
     brand_dir = app_dir / "public/brand"
     required_brand_assets = ["icon.svg", "horizontal.svg", "horizontal-dark.svg", "og.png"]
@@ -205,7 +214,8 @@ def run_quality_smoke(workspace_root: Path, artifacts_dir: Path, *, install: boo
         "build": _dist_summary(app_dir),
         "nirs4all_ui": {
             "theme_import": "nirs4all-ui/assets/theme.css" in theme_css,
-            "lab_source_declared": "nirs4all-ui/src/lab" in theme_css,
+            "lab_source_declared": lab_source_declared,
+            "lab_dist_source_declared": "nirs4all-ui/dist/lab" in theme_css,
             "brand_assets_present": all((brand_dir / name).is_file() for name in required_brand_assets),
             "local_build_deps_install_ran": ui_install_result is not None,
         },

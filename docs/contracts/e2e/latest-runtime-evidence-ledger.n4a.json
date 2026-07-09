@@ -824,8 +824,8 @@
         {
           "path": "performance-compare/python-vs-dagml.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "5473616bf5ac741a93d703c8ca0768dd8757eeb9d71994e960cd24e0a6fe9c6b",
-          "requirement_count": 23
+          "proof_sha256": "379ead2c15f8fd2889c482e61d27269c360e16196bedc3cb34f7322e57cc94b4",
+          "requirement_count": 24
         },
         {
           "path": "performance-compare/web-runtime.json",
@@ -1083,8 +1083,8 @@
         {
           "path": "custom-app-host/custom-host-quality-smoke.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "6ef8768fd6ff0b377815d0721a9bc26f25ddc994de7ee7577ea7b483946c84bb",
-          "requirement_count": 18
+          "proof_sha256": "9948642b162966c4d66793caaa8634beee280697cf45ab4257fe265681241d86",
+          "requirement_count": 19
         },
         {
           "path": "custom-app-host/custom-host-r-parity.json",

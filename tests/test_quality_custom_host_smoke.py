@@ -52,3 +52,11 @@ def test_ensure_local_ui_build_deps_skips_when_tsc_exists(
     monkeypatch.setattr(smoke, "_run", fail_run)
 
     assert smoke._ensure_local_ui_build_deps(workspace, npm="/usr/bin/npm", env={}, install=True) is None
+
+
+def test_lab_source_declared_accepts_packaged_dist_lab_source() -> None:
+    assert smoke._lab_source_declared("@source '../../node_modules/nirs4all-ui/dist/lab/**/*.{js,d.ts}';")
+
+
+def test_lab_source_declared_accepts_legacy_source_alias() -> None:
+    assert smoke._lab_source_declared("@source '../../nirs4all-ui/src/lab/**/*.{ts,tsx}';")
