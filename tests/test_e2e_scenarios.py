@@ -2754,13 +2754,12 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "workspace_save": 6,
     }
     assert report["debt_summary"]["strictness_gap_count"] == 0
-    assert report["debt_summary"]["full_strict_ready"] is False
-    assert report["debt_summary"]["full_strict_blockers"] == ["contract_parity_checks=3"]
+    assert report["debt_summary"]["full_strict_ready"] is True
+    assert report["debt_summary"]["full_strict_blockers"] == []
     assert report["debt_summary"]["non_strict_scenarios"] == []
-    assert report["debt_summary"]["contract_parity_check_count"] == 3
+    assert report["debt_summary"]["contract_parity_check_count"] == 0
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
-        "contract": 3,
-        "strict": 29,
+        "strict": 31,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
@@ -2791,8 +2790,8 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "contract_phases": [],
         "gap_phases": [],
         "not_applicable_phases": ["papers_export"],
-        "contract_parity_checks": 1,
-        "strict_parity_checks": 3,
+        "contract_parity_checks": 0,
+        "strict_parity_checks": 4,
         "strict_non_numeric_checks": 0,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-multimodal-python-r-wasm-roundtrip"] == {
@@ -2827,8 +2826,8 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "contract_phases": [],
         "gap_phases": [],
         "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
-        "contract_parity_checks": 1,
-        "strict_parity_checks": 2,
+        "contract_parity_checks": 0,
+        "strict_parity_checks": 3,
         "strict_non_numeric_checks": 0,
     }
     assert len(report["scenario_details"]) == 11
@@ -2946,11 +2945,11 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: full_strict_ready=false strictness_gaps=0 contract_parity_checks=3 "
+        "debt: full_strict_ready=true strictness_gaps=0 contract_parity_checks=0 "
         "strict_non_numeric_checks=0 v1_contract_phases=0 "
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
-    assert "full strict blockers: contract_parity_checks=3" in covered.stdout
+    assert "full strict blockers:" not in covered.stdout
     assert (
         "gate scope: coverage_gate=manifest_contract_only runtime_evidence_checked=false "
         "runtime_evidence_command=python3 scripts/n4a_e2e_scenarios.py evidence-ledger "
@@ -2960,7 +2959,7 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
 
 
-def test_cross_language_e2e_cli_coverage_full_strict_gate_rejects_contract_parity_checks() -> None:
+def test_cross_language_e2e_cli_coverage_full_strict_gate_passes() -> None:
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
 
     covered = subprocess.run(
@@ -2972,8 +2971,8 @@ def test_cross_language_e2e_cli_coverage_full_strict_gate_rejects_contract_parit
         check=False,
     )
 
-    assert covered.returncode == 1
-    assert "full strict gate failed: contract_parity_checks=3" in covered.stderr
+    assert covered.returncode == 0
+    assert covered.stderr == ""
 
 
 def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) -> None:
@@ -2993,7 +2992,7 @@ def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) 
     assert "11/11 scenarios" in covered.stdout
     assert report["scenario_count"] == 11
     assert report["debt_summary"]["strictness_gap_count"] == 0
-    assert report["debt_summary"]["contract_parity_check_count"] == 3
+    assert report["debt_summary"]["contract_parity_check_count"] == 0
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
     assert not any(detail["strictness_gaps"] for detail in report["scenario_details"])
 
@@ -3304,10 +3303,10 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     assert "| coverage gate | manifest_contract_only |" in report
     assert "| runtime evidence checked | no |" in report
     assert "evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json" in report
-    assert "| full strict ready | no |" in report
-    assert "| contract parity checks | 3 |" in report
+    assert "| full strict ready | yes |" in report
+    assert "| contract parity checks | 0 |" in report
     assert "## Full Strict Gate" in report
-    assert "| fail | contract_parity_checks=3 |" in report
+    assert "| pass | - |" in report
     assert "| strictness gaps | 0 |" in report
     assert "| strict non-numeric checks | 0 |" in report
     assert "| V1 gap phases | 0 |" in report

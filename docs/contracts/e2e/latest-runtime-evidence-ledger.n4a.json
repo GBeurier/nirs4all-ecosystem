@@ -1,15 +1,13 @@
 {
   "coverage": {
     "blocked_count": 0,
-    "contract_parity_check_count": 3,
+    "contract_parity_check_count": 0,
     "evidence_levels": {
       "strict": 11
     },
     "expected_scenario_count": 11,
-    "full_strict_blockers": [
-      "contract_parity_checks=3"
-    ],
-    "full_strict_ready": false,
+    "full_strict_blockers": [],
+    "full_strict_ready": true,
     "ready_count": 11,
     "required_languages": {
       "javascript_wasm": 8,
@@ -328,7 +326,7 @@
         "nirs4all-ui"
       ],
       "status": "ready",
-      "strict_parity_checks": 3,
+      "strict_parity_checks": 4,
       "strictness_gaps": 0,
       "tags": [
         "datasets",
@@ -695,7 +693,7 @@
         "nirs4all-core"
       ],
       "status": "ready",
-      "strict_parity_checks": 2,
+      "strict_parity_checks": 3,
       "strictness_gaps": 0,
       "tags": [
         "datasets",
@@ -1124,7 +1122,7 @@
   "source": {
     "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
     "manifest_schema_version": "n4a.cross-language-e2e/v1",
-    "manifest_sha256": "fb7ed4242c1c15686d52f2147edfbc669e218bcfd83184c275e7a55166461f6e",
+    "manifest_sha256": "3552554255a294e96f5332a0c6a2ff45acc567f15b5c561bd1fd1d256acfc3a7",
     "regenerate": "python3 scripts/n4a_e2e_scenarios.py evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
     "runtime_artifacts_policy": ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; this ledger records the normalized verified artifact inventory and host-stable proof hashes over required evidence fields."
   }

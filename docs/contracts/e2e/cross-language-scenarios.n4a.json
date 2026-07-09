@@ -1192,8 +1192,8 @@
         {
           "oracle": "exported client-side pipeline artifact",
           "candidate": "fresh browser session imported pipeline execution",
-          "metric": "repository pipeline fixture imports over a non-demo uploaded dataset, executes, renders, and records zero console errors plus non-empty screenshot/evidence artifacts",
-          "evidence_level": "contract",
+          "metric": "repository pipeline fixture imports over a non-demo uploaded dataset, executes client-side, records zero console errors, and keeps imported Web/WASM prediction_comparison.max_abs_delta within tolerance",
+          "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/wasm-repo-alt-dataset/pipeline-repository-smoke.json"
           ]
@@ -1690,8 +1690,8 @@
         {
           "oracle": "nirs4all-core Python repository pipeline loader",
           "candidate": "nirs4all-core JavaScript/WASM repository pipeline loader",
-          "metric": "portable class sequence, random_state, and normalized pipeline metadata match",
-          "evidence_level": "contract",
+          "metric": "portable class sequence, random_state, normalized pipeline metadata, targets, predictions, RMSE, and predict-roundtrip deltas match within the execution.comparison tolerance",
+          "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
           ]
@@ -2038,6 +2038,7 @@
         "Methods binding ABI/version report",
       "Language binding prediction parity",
       "WASM methods orchestrator ledger fixture",
+      "Archived Rust wrapper is recorded as non-release-target evidence with release_target=false and gate=not_applicable",
       "nirs4all-core client-side WASM import of assembled formats/IO dataset ledger"
       ],
       "parity_checks": [
@@ -2069,16 +2070,6 @@
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/formats-io-methods/web-core-pipeline-import.json"
-          ]
-        },
-        {
-          "oracle": "current release-target language binding matrix",
-          "candidate": "archived Rust binding status",
-          "metric": "archived Rust wrapper is recorded as non-release-target evidence with release_target=false and gate=not_applicable",
-          "evidence_level": "contract",
-          "artifacts": [
-            "{artifacts_dir}/formats-io-methods/binding-parity.json",
-            "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
           ]
         }
       ],
