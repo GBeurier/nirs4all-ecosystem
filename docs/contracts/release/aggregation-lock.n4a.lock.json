@@ -718,7 +718,7 @@
         "branch": "main",
         "commit": "5f207202124725d749cf3f2a013b57caaa1d0b20",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc17-2026.07-refactor"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -869,7 +869,7 @@
         "branch": "main",
         "commit": "366ca8bd09d558855055daa57199d923f51abb6d",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc17-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1019,7 +1019,7 @@
         "branch": "main",
         "commit": "4aaef0a43990a0f859ad4c28f40042f542858f59",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc17-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1098,7 +1098,7 @@
         "branch": "main",
         "commit": "67d47c557bcb8770506409d2c688cb3b60384c18",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc17-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1179,7 +1179,7 @@
         "branch": "main",
         "commit": "548d04909e4b59010eaff2a0127f8a6fb0d13a12",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc17-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1260,7 +1260,7 @@
         "branch": "main",
         "commit": "684be731b72cbcdd7cbe4f548d5856efba34bb87",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc17-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1356,7 +1356,7 @@
         "branch": "main",
         "commit": "7149d7dbf51b0c47e2f89aa29bc76ed388eead30",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "n4a-v1-rc17-2026.07-refactor"
       },
       "target_repo_path": null,
       "target_repo_url": null,
