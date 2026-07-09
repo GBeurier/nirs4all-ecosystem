@@ -88,7 +88,7 @@ REQUIRED_SUITE_WORKFLOW_SURFACES = {
         "tags": {"multisource", "pipeline_generation", "workspace_save", "parity"},
     },
     "bindings_multi_language_methods": {
-        "languages": {"python", "r", "javascript_wasm", "native"},
+        "languages": {"python", "r", "javascript_wasm", "matlab_octave", "native"},
         "repos": {"nirs4all-formats", "nirs4all-io", "nirs4all-datasets", "nirs4all-methods", "nirs4all-core"},
         "tags": {"datasets", "io", "predictions", "parity"},
     },
@@ -918,6 +918,33 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "x_mean", "non_empty": True},
             {"path": "y_mean", "non_empty": True},
             {"path": "cpp_native_predictions_rmse_rel", "lte_path": "tolerances.binding_parity_max_diff"},
+        ],
+        "formats-io-methods/matlab-octave-release-gate.json": [
+            {"path": "schema_version", "equals": "n4a.e2e.matlab_octave_release_gate.v1"},
+            {"path": "scenario_id", "equals": "e2e-formats-io-datasets-methods-language-bindings"},
+            {"path": "status", "equals": "passed"},
+            {"path": "release.tag", "equals": "v0.3.8"},
+            {"path": "release.asset_name", "equals": "nirs4all-matlab-octave-0.3.8.zip"},
+            {"path": "release.asset_present", "equals": True},
+            {"path": "release.asset_digest", "non_empty": True},
+            {"path": "release.asset_size", "gt": 0},
+            {"path": "workflow_run.workflow", "equals": "release-matlab.yml"},
+            {"path": "workflow_run.event", "equals": "push"},
+            {"path": "workflow_run.head_branch", "equals": "v0.3.8"},
+            {"path": "workflow_run.conclusion", "equals": "success"},
+            {"path": "local_workflow.strict_matlab_parity_job_declared", "equals": True},
+            {"path": "local_workflow.octave_mex_build_declared", "equals": True},
+            {"path": "local_workflow.test_matlab_parity_declared", "equals": True},
+            {"path": "local_workflow.release_asset_upload_declared", "equals": True},
+            {"path": "local_workflow.no_continue_on_error", "equals": True},
+            {"path": "core_makefile.test_matlab_parity_target_declared", "equals": True},
+            {"path": "core_makefile.octave_invocation_declared", "equals": True},
+            {"path": "core_makefile.python_oracle_env_declared", "equals": True},
+            {"path": "core_makefile.methods_parity_env_declared", "equals": True},
+            {"path": "parity_gate.runtime", "equals": "matlab_octave"},
+            {"path": "parity_gate.workflow_declares_octave_build", "equals": True},
+            {"path": "parity_gate.workflow_declares_strict_parity", "equals": True},
+            {"path": "parity_gate.release_asset_uploaded_after_gate", "equals": True},
         ],
         "formats-io-methods/web-core-pipeline-import.json": [
             {"path": "schema_version", "equals": "n4a.e2e.formats_io_core_web_import.v1"},
@@ -2421,7 +2448,7 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
     missing_tags = REQUIRED_TAGS - covered_tags
     if missing_tags:
         raise E2EScenarioError(f"required coverage tags missing: {', '.join(sorted(missing_tags))}")
-    missing_languages = {"python", "r", "javascript_wasm", "web"} - covered_languages
+    missing_languages = {"python", "r", "javascript_wasm", "web", "matlab_octave"} - covered_languages
     if missing_languages:
         raise E2EScenarioError(f"required runtime languages missing: {', '.join(sorted(missing_languages))}")
     v1_refactor_contract = _validate_v1_refactor_contract(
@@ -2853,7 +2880,7 @@ def coverage_report(
         "required_tags": {tag: tags.get(tag, 0) for tag in sorted(REQUIRED_TAGS)},
         "required_languages": {
             language: languages.get(language, 0)
-            for language in ("python", "r", "javascript_wasm", "web")
+            for language in ("python", "r", "javascript_wasm", "web", "matlab_octave")
         },
         "debt_summary": {
             "full_strict_ready": not full_strict_blockers,

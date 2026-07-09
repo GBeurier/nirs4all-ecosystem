@@ -85,7 +85,8 @@ continue to include:
 - datasets/IO/repository handoff;
 - papers/repository/workspace-save provenance;
 - multimodal and multisource workflows;
-- formats/IO/datasets/methods language-binding parity.
+- formats/IO/datasets/methods language-binding parity, including the
+  MATLAB/Octave aggregate release gate.
 
 Every `parity_checks` entry must point to produced scenario artifacts. Strict
 parity checks must use JSON evidence artifacts so the runner can reject skipped,
@@ -112,7 +113,7 @@ that count and the tests assert the expected handoff for each workflow:
 | `e2e-dataset-provider-repository-roundtrip` | Providers materialize a deterministic NIRS CSV dataset, publish a repository descriptor, and Python/R/JavaScript-WASM core surfaces execute the same pipeline with strict prediction parity. |
 | `e2e-pipeline-generation-performance-compare` | Python persists and reopens one generated candidate, then Web/native runtimes compare prediction and performance evidence. |
 | `e2e-cluster-dag-rights-client-core` | Cluster DAG execution on the public `F01_regression` fixture is compared with a local Python numeric oracle and core handoff checks. |
-| `e2e-formats-io-datasets-methods-language-bindings` | Formats/IO assemble reference datasets, methods bindings compare Python/R/WASM/native prediction evidence, and archived Rust remains explicit non-release-target evidence. |
+| `e2e-formats-io-datasets-methods-language-bindings` | Formats/IO assemble reference datasets, methods bindings compare Python/R/WASM/native prediction evidence, the nirs4all-core MATLAB/Octave release archive gate is verified, and archived Rust remains explicit non-release-target evidence. |
 | `e2e-core-ui-custom-app-host` | A custom client host runs R parity against the Python oracle, proves runtimeContracts expose serialized-model prediction only for JavaScript/WASM, runs nirs4all-core WASM predictions against the same oracle, renders reusable nirs4all-ui result components, and bundles a downstream Vite/React app from the published nirs4all and nirs4all-ui packages. |
 
 Every step must declare at least one explicit dependency gate through

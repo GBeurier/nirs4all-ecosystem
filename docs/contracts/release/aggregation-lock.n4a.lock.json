@@ -716,9 +716,9 @@
       "selected_workspace_path": "nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "3b89f5fae5651b61796d5d6e8ac7c6e2ef18c3a6",
+        "commit": "727fad563b01ddb2e71d74a8ef1be5537207ab99",
         "dirty": false,
-        "exact_tag": "v0.3.8"
+        "exact_tag": "n4a-v1-rc16-2026.07-refactor"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",

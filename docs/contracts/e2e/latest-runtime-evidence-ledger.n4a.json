@@ -11,6 +11,7 @@
     "ready_count": 11,
     "required_languages": {
       "javascript_wasm": 8,
+      "matlab_octave": 1,
       "python": 11,
       "r": 5,
       "web": 5
@@ -76,7 +77,7 @@
     }
   },
   "evidence": {
-    "artifact_count": 70,
+    "artifact_count": 71,
     "failed_count": 0,
     "failure_count": 0,
     "max_age_seconds": null,
@@ -913,11 +914,12 @@
       ]
     },
     {
-      "artifact_count": 5,
+      "artifact_count": 6,
       "evidence_level": "strict",
       "expected_artifacts": [
         "formats-io-methods/assembled-datasets.json",
         "formats-io-methods/binding-parity.json",
+        "formats-io-methods/matlab-octave-release-gate.json",
         "formats-io-methods/predictions-by-language.json",
         "formats-io-methods/wasm-orchestrator-fixture.json",
         "formats-io-methods/web-core-pipeline-import.json"
@@ -928,6 +930,7 @@
         "python",
         "r",
         "javascript_wasm",
+        "matlab_octave",
         "rust_archive",
         "native"
       ],
@@ -939,7 +942,7 @@
         "nirs4all-core"
       ],
       "status": "ready",
-      "strict_parity_checks": 3,
+      "strict_parity_checks": 4,
       "strictness_gaps": 0,
       "tags": [
         "datasets",
@@ -948,7 +951,7 @@
         "parity",
         "pipeline"
       ],
-      "title": "Formats, IO, datasets, and methods parity across native/Python/R/WASM plus Rust archive audit",
+      "title": "Formats, IO, datasets, and methods parity across native/Python/R/WASM/MATLAB-Octave plus Rust archive audit",
       "v1_refactor_summary": {
         "contract": 0,
         "contract_phases": [],
@@ -982,6 +985,12 @@
           "proof_kind": "required_json_fields",
           "proof_sha256": "c6d57ca0130d77abf0caf2c8808476892039cddaa4031bf3f6c6906688c6a50d",
           "requirement_count": 17
+        },
+        {
+          "path": "formats-io-methods/matlab-octave-release-gate.json",
+          "proof_kind": "required_json_fields",
+          "proof_sha256": "2647040363542132933647b6fcdcb65648af352b22fe729c740cbcbf6ed3c30d",
+          "requirement_count": 25
         },
         {
           "path": "formats-io-methods/predictions-by-language.json",
@@ -1124,7 +1133,7 @@
   "source": {
     "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
     "manifest_schema_version": "n4a.cross-language-e2e/v1",
-    "manifest_sha256": "583f5afca5cc56cedf54fd432f03a5bed10e46ef30808bcea1563e3262ff8c0a",
+    "manifest_sha256": "2d8890e11bf3e63e7bcbb6b5976f17e88cebfe126d4e83f8e7348a36afb9ae9c",
     "regenerate": "python3 scripts/n4a_e2e_scenarios.py evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
     "runtime_artifacts_policy": ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; this ledger records the normalized verified artifact inventory and host-stable proof hashes over required evidence fields."
   }

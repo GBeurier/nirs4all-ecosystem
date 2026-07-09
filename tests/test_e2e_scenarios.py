@@ -29,6 +29,7 @@ LANGUAGE_EVIDENCE_FRAGMENTS = {
     "rust_archive": ("archived rust", "rust status"),
     "javascript_wasm": ("wasm", "javascript/wasm", "node", "npm"),
     "web": ("web", "nirs4all-web", "screenshot", ".png"),
+    "matlab_octave": ("matlab", "octave", "release-matlab", "matlab-octave"),
     "native": ("native", "dag-ml", "nirs4all-methods", "cluster worker", "libn4m"),
 }
 TAG_EVIDENCE_FRAGMENTS = {
@@ -856,6 +857,44 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "y_mean": [0.0],
             "predictions": [0.0],
         }
+    if key == "formats-io-methods/matlab-octave-release-gate.json":
+        return {
+            "schema_version": "n4a.e2e.matlab_octave_release_gate.v1",
+            "scenario_id": "e2e-formats-io-datasets-methods-language-bindings",
+            "status": "passed",
+            "release": {
+                "tag": "v0.3.8",
+                "asset_name": "nirs4all-matlab-octave-0.3.8.zip",
+                "asset_present": True,
+                "asset_digest": "sha256:" + "m" * 64,
+                "asset_size": 22987,
+            },
+            "workflow_run": {
+                "workflow": "release-matlab.yml",
+                "event": "push",
+                "head_branch": "v0.3.8",
+                "conclusion": "success",
+            },
+            "local_workflow": {
+                "strict_matlab_parity_job_declared": True,
+                "octave_mex_build_declared": True,
+                "test_matlab_parity_declared": True,
+                "release_asset_upload_declared": True,
+                "no_continue_on_error": True,
+            },
+            "core_makefile": {
+                "test_matlab_parity_target_declared": True,
+                "octave_invocation_declared": True,
+                "python_oracle_env_declared": True,
+                "methods_parity_env_declared": True,
+            },
+            "parity_gate": {
+                "runtime": "matlab_octave",
+                "workflow_declares_octave_build": True,
+                "workflow_declares_strict_parity": True,
+                "release_asset_uploaded_after_gate": True,
+            },
+        }
     if key == "formats-io-methods/web-core-pipeline-import.json":
         return {
             "schema_version": "n4a.e2e.formats_io_core_web_import.v1",
@@ -1067,7 +1106,7 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
             "tags": {"pipeline", "workspace_save", "parity"},
         },
         "e2e-formats-io-datasets-methods-language-bindings": {
-            "languages": {"python", "r", "javascript_wasm", "rust_archive", "native"},
+            "languages": {"python", "r", "javascript_wasm", "matlab_octave", "rust_archive", "native"},
             "repos": {"nirs4all-formats", "nirs4all-io", "nirs4all-datasets", "nirs4all-methods", "nirs4all-core"},
             "tags": {"datasets", "io", "predictions", "parity", "pipeline"},
         },
@@ -1637,9 +1676,10 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                 "steps": [
                     "assemble-reference-datasets",
                     "cross-binding-methods-parity",
+                    "core-matlab-octave-release-gate",
                     "core-web-import-assembled-ledger",
                 ],
-                "languages": {"python", "r", "javascript_wasm", "rust_archive", "native"},
+                "languages": {"python", "r", "javascript_wasm", "matlab_octave", "rust_archive", "native"},
                 "tags": {"datasets", "io", "predictions", "parity", "pipeline"},
                 "tools": {"python3.11", "Rscript", "cmake", "ninja", "node"},
                 "produces": {
@@ -1647,16 +1687,19 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "binding-parity.json",
                     "predictions-by-language.json",
                     "wasm-orchestrator-fixture.json",
+                    "matlab-octave-release-gate.json",
                     "web-core-pipeline-import.json",
                 },
                 "commands": {
                     "test_formats_io_datasets_methods.py",
                     "cross_binding_methods_parity.py",
+                    "verify_core_matlab_octave_release_gate.py",
                     "run_formats_io_core_web_import.py",
                 },
                 "evidence": {
                     "Native methods ABI",
                     "WASM methods orchestrator ledger fixture",
+                    "MATLAB/Octave release-matlab gate",
                     "client-side WASM import",
                 },
                 "phase_statuses": {"python_parity": "strict", "wasm_web_reuse": "strict"},
@@ -2723,12 +2766,14 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["evidence_levels"] == {"strict": 11}
     assert report["required_languages"] == {
         "javascript_wasm": 8,
+        "matlab_octave": 1,
         "python": 11,
         "r": 5,
         "web": 5,
     }
     assert report["languages"] == {
         "javascript_wasm": 8,
+        "matlab_octave": 1,
         "native": 6,
         "python": 11,
         "r": 5,
@@ -2757,7 +2802,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["debt_summary"]["non_strict_scenarios"] == []
     assert report["debt_summary"]["contract_parity_check_count"] == 0
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
-        "strict": 31,
+        "strict": 32,
     }
     assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
@@ -3044,7 +3089,7 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
         "scenario_count": 11,
         "verified_count": 11,
         "failed_count": 0,
-        "artifact_count": 70,
+        "artifact_count": 71,
         "failure_count": 0,
         "max_age_seconds": None,
     }
@@ -3547,6 +3592,12 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     assert any(
         check["candidate"] == "WASM methods binding over orchestrator ledger fixture"
         and check["evidence_level"] == "strict"
+        for check in formats_bindings["parity_checks"]
+    )
+    assert any(
+        check["candidate"] == "MATLAB/Octave nirs4all aggregate archive"
+        and check["evidence_level"] == "strict"
+        and "{artifacts_dir}/formats-io-methods/matlab-octave-release-gate.json" in check["artifacts"]
         for check in formats_bindings["parity_checks"]
     )
     assert any(

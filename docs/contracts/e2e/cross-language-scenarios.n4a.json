@@ -705,14 +705,15 @@
         "python_parity": {
           "status": "strict",
           "evidence": [
-        "Native methods ABI outputs are compared with Python/R bindings, and WASM consumes the same nirs4all-methods orchestrator ledger fixture."
+        "Native methods ABI outputs are compared with Python/R bindings, WASM consumes the same nirs4all-methods orchestrator ledger fixture, and the nirs4all-core MATLAB/Octave release gate proves the public aggregate archive is built after strict Octave parity."
           ],
           "artifacts": [
             "{artifacts_dir}/formats-io-methods/binding-parity.json",
-            "{artifacts_dir}/formats-io-methods/predictions-by-language.json"
+            "{artifacts_dir}/formats-io-methods/predictions-by-language.json",
+            "{artifacts_dir}/formats-io-methods/matlab-octave-release-gate.json"
           ],
           "acceptance": [
-        "Native/Python/R method outputs, R method outputs, WASM method outputs, and predictions must match the same methods orchestrator ledger tolerance."
+        "Native/Python/R method outputs, R method outputs, WASM method outputs, and predictions must match the same methods orchestrator ledger tolerance, and the MATLAB/Octave release gate must have passed on the selected public nirs4all-core release."
           ]
         },
         "papers_export": {
@@ -2004,14 +2005,15 @@
     },
     {
       "id": "e2e-formats-io-datasets-methods-language-bindings",
-      "title": "Formats, IO, datasets, and methods parity across native/Python/R/WASM plus Rust archive audit",
-      "objective": "Read heterogeneous file formats, assemble reference datasets, invoke native methods through current release-target language bindings, compare exported predictions, record the archived Rust binding status explicitly, and import the assembled dataset ledger into nirs4all-core's client-side WASM pipeline runtime.",
+      "title": "Formats, IO, datasets, and methods parity across native/Python/R/WASM/MATLAB-Octave plus Rust archive audit",
+      "objective": "Read heterogeneous file formats, assemble reference datasets, invoke native methods through current release-target language bindings, compare exported predictions, verify the public nirs4all-core MATLAB/Octave release parity gate, record the archived Rust binding status explicitly, and import the assembled dataset ledger into nirs4all-core's client-side WASM pipeline runtime.",
       "evidence_level": "strict",
       "strictness_gaps": [],
       "languages": [
         "python",
         "r",
         "javascript_wasm",
+        "matlab_octave",
         "rust_archive",
         "native"
       ],
@@ -2034,6 +2036,7 @@
       "{artifacts_dir}/formats-io-methods/binding-parity.json",
       "{artifacts_dir}/formats-io-methods/predictions-by-language.json",
       "{artifacts_dir}/formats-io-methods/wasm-orchestrator-fixture.json",
+      "{artifacts_dir}/formats-io-methods/matlab-octave-release-gate.json",
       "{artifacts_dir}/formats-io-methods/web-core-pipeline-import.json"
       ],
       "evidence": [
@@ -2042,6 +2045,7 @@
         "Methods binding ABI/version report",
       "Language binding prediction parity",
       "WASM methods orchestrator ledger fixture",
+      "nirs4all-core MATLAB/Octave release-matlab gate succeeded on v0.3.8 and uploaded the nirs4all-matlab-octave archive after strict Octave parity",
       "Archived Rust wrapper is recorded as non-release-target evidence with release_target=false and gate=not_applicable",
       "nirs4all-core client-side WASM import of assembled formats/IO dataset ledger"
       ],
@@ -2065,6 +2069,15 @@
         "{artifacts_dir}/formats-io-methods/binding-parity.json",
         "{artifacts_dir}/formats-io-methods/predictions-by-language.json",
         "{artifacts_dir}/formats-io-methods/wasm-orchestrator-fixture.json"
+          ]
+        },
+        {
+          "oracle": "python nirs4all portable parity fixtures and nirs4all-core release-matlab gate",
+          "candidate": "MATLAB/Octave nirs4all aggregate archive",
+          "metric": "Public release-matlab workflow for v0.3.8 succeeded, declares Octave MEX build plus make test-matlab-parity, and uploaded nirs4all-matlab-octave-0.3.8.zip after the strict parity job",
+          "evidence_level": "strict",
+          "artifacts": [
+            "{artifacts_dir}/formats-io-methods/matlab-octave-release-gate.json"
           ]
         },
         {
@@ -2122,6 +2135,27 @@
         "{artifacts_dir}/formats-io-methods/predictions-by-language.json",
         "{artifacts_dir}/formats-io-methods/wasm-orchestrator-fixture.json"
       ]
+        },
+        {
+          "id": "core-matlab-octave-release-gate",
+          "title": "Verify the public nirs4all-core MATLAB/Octave release parity gate",
+          "kind": "verify",
+          "repo": "nirs4all-core",
+          "requires_tools": [
+            "python3.11"
+          ],
+          "requires_paths": [
+            "{workspace_root}/nirs4all-core/.github/workflows/release-matlab.yml",
+            "{workspace_root}/nirs4all-core/Makefile"
+          ],
+          "command": [
+            "bash",
+            "-lc",
+            "cd {workspace_root}/nirs4all-core && SCRIPT={workspace_root}/scripts/e2e/verify_core_matlab_octave_release_gate.py; if [ ! -f \"$SCRIPT\" ]; then SCRIPT={workspace_root}/nirs4all-ecosystem/scripts/e2e/verify_core_matlab_octave_release_gate.py; fi; python3.11 \"$SCRIPT\" --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}/formats-io-methods"
+          ],
+          "produces": [
+            "{artifacts_dir}/formats-io-methods/matlab-octave-release-gate.json"
+          ]
         },
         {
           "id": "core-web-import-assembled-ledger",
