@@ -812,7 +812,7 @@
         {
           "path": "performance-compare/pipeline-candidate.n4a.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "62704b8ad33989a65b36e0a36c45dba3b5d04e749d9292ffbbc21d69a872e334",
+          "proof_sha256": "6c6050d42dc9ebe8e024c0deac78e474e7f8bf890ca1be39919a55375934828d",
           "requirement_count": 7
         },
         {
@@ -824,13 +824,13 @@
         {
           "path": "performance-compare/python-vs-dagml.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "379ead2c15f8fd2889c482e61d27269c360e16196bedc3cb34f7322e57cc94b4",
+          "proof_sha256": "a6d652ccee1020a7c6265803afafff2a2bdadcacc2267a112efe54c43d39a186",
           "requirement_count": 24
         },
         {
           "path": "performance-compare/web-runtime.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "ce20b030bce1d1a849a194a1a83846cfca2d96724861ae281e1c2c93d0211477",
+          "proof_sha256": "9654d5e535281a67e223f6034eed37ed00400e010b5b00cce75014f46cec211a",
           "requirement_count": 23
         }
       ]
