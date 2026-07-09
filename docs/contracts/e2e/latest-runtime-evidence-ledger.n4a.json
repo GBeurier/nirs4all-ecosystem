@@ -1133,7 +1133,7 @@
   "source": {
     "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
     "manifest_schema_version": "n4a.cross-language-e2e/v1",
-    "manifest_sha256": "2d8890e11bf3e63e7bcbb6b5976f17e88cebfe126d4e83f8e7348a36afb9ae9c",
+    "manifest_sha256": "e010686ff991c15a9312bbc807a8ddcd5cbd63efc07510b8ae7b72c76c066fa4",
     "regenerate": "python3 scripts/n4a_e2e_scenarios.py evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
     "runtime_artifacts_policy": ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; this ledger records the normalized verified artifact inventory and host-stable proof hashes over required evidence fields."
   }
