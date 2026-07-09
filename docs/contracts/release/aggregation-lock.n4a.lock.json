@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:e1543d40fe43b14bdae091a60abf2624add9ddb98734917f40b85eb43a3df87f",
+  "manifest_digest": "sha256:3008552d10e03762b0885ce0242aa2fc69ec387b80a95ba01b5d784d9a6db4ed",
   "members": {
     "core": {
       "availability": {
@@ -1150,8 +1150,7 @@
         },
         "r": {
           "packages": [
-            "nirs4allformats",
-            "nirs4allformatslite"
+            "nirs4allformats"
           ]
         },
         "rust": {
