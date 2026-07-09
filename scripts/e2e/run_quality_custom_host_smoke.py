@@ -113,6 +113,28 @@ def _dist_summary(app_dir: Path) -> dict[str, Any]:
     }
 
 
+def _needs_local_ui_install(ui_root: Path) -> bool:
+    return (ui_root / "package.json").is_file() and not (ui_root / "node_modules/.bin/tsc").is_file()
+
+
+def _ensure_local_ui_build_deps(
+    workspace_root: Path,
+    *,
+    npm: str,
+    env: dict[str, str],
+    install: bool,
+) -> subprocess.CompletedProcess[str] | None:
+    if not install:
+        return None
+    ui_root = workspace_root / "nirs4all-ui"
+    if not _needs_local_ui_install(ui_root):
+        return None
+    result = _run([npm, "ci"], cwd=ui_root, env=env, timeout=240)
+    if result.returncode != 0:
+        raise RuntimeError(f"nirs4all-ui npm ci failed before quality install:\n{result.stdout}")
+    return result
+
+
 def run_quality_smoke(workspace_root: Path, artifacts_dir: Path, *, install: bool) -> dict[str, Any]:
     quality_root = workspace_root / "nirs4all-quality"
     app_dir = quality_root / "app"
@@ -124,6 +146,8 @@ def run_quality_smoke(workspace_root: Path, artifacts_dir: Path, *, install: boo
     npm = shutil.which("npm", path=env["PATH"])
     if npm is None:
         raise RuntimeError("npm not found; install Node 22/24 or set PATH")
+
+    ui_install_result = _ensure_local_ui_build_deps(workspace_root, npm=npm, env=env, install=install)
 
     install_result: subprocess.CompletedProcess[str] | None = None
     if install and not (app_dir / "node_modules").is_dir():
@@ -183,6 +207,7 @@ def run_quality_smoke(workspace_root: Path, artifacts_dir: Path, *, install: boo
             "theme_import": "nirs4all-ui/assets/theme.css" in theme_css,
             "lab_source_declared": "nirs4all-ui/src/lab" in theme_css,
             "brand_assets_present": all((brand_dir / name).is_file() for name in required_brand_assets),
+            "local_build_deps_install_ran": ui_install_result is not None,
         },
         "wasm_smoke": {
             "executed": passed,
