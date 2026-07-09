@@ -16,12 +16,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs" / "contracts" / "e2e" / "cross-language-scenarios.n4a.json"
-ALLOWED_PUBLIC_CHECKOUT_DATA_BLOCKERS = {
-    "nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json",
-}
-ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS = {
-    "e2e-r-dataset-io-pipeline-save",
-}
+ALLOWED_PUBLIC_CHECKOUT_DATA_BLOCKERS: set[str] = set()
+ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS: set[str] = set()
 ALLOWED_ORCHESTRATION_PATH_ROOTS = {
     "nirs4all-ecosystem",
     "scripts",
@@ -3705,18 +3701,9 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     ) == 2
     assert workflow.count("if-no-files-found: warn") == 3
     assert "--allow-blocked" in workflow
-    assert set(re.findall(r"--allowed-blocked-scenario ([a-z0-9-]+)", workflow)) == (
-        ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS
-    )
-    assert workflow.count("--allowed-blocked-scenario ") == 2 * len(ALLOWED_PUBLIC_CHECKOUT_BLOCKED_SCENARIOS)
-    expected_blocked_requirements = {
-        "e2e-r-dataset-io-pipeline-save="
-        "nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json",
-    }
-    assert set(re.findall(r"--allowed-blocked-requirement ([^\s]+)", workflow)) == (
-        expected_blocked_requirements
-    )
-    assert workflow.count("--allowed-blocked-requirement ") == 2 * len(expected_blocked_requirements)
+    assert "--allowed-blocked-scenario " not in workflow
+    assert "--allowed-blocked-requirement " not in workflow
+    assert "nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json" not in workflow
     assert "N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}" in workflow
     assert "N4A_ALLOW_BLOCKED: ${{ github.event.inputs.allow_blocked }}" in workflow
     assert '[[ "$N4A_ALLOW_BLOCKED" == "true" ]]' in workflow

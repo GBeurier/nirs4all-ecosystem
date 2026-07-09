@@ -16,9 +16,9 @@ on:
         default: false
         type: boolean
       allow_blocked:
-        description: "For run-ready execution, allow declared blocked scenarios to remain blocked after ready scenarios pass"
+        description: "Reserved for explicitly declared external blockers; should remain false for RC gates"
         required: true
-        default: true
+        default: false
         type: boolean
 
 jobs:
@@ -111,11 +111,7 @@ jobs:
         run: |
           args=(run-ready --execute)
           if [[ "$N4A_ALLOW_BLOCKED" == "true" ]]; then
-            args+=(
-              --allow-blocked
-              --allowed-blocked-scenario e2e-r-dataset-io-pipeline-save
-              --allowed-blocked-requirement e2e-r-dataset-io-pipeline-save=nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json
-            )
+            args+=(--allow-blocked)
           fi
           python3 scripts/n4a_e2e_scenarios.py "${args[@]}"
       - name: Verify ready scenario artifacts
@@ -137,11 +133,7 @@ jobs:
             --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
           )
           if [[ "$N4A_ALLOW_BLOCKED" == "true" ]]; then
-            args+=(
-              --allow-blocked
-              --allowed-blocked-scenario e2e-r-dataset-io-pipeline-save
-              --allowed-blocked-requirement e2e-r-dataset-io-pipeline-save=nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json
-            )
+            args+=(--allow-blocked)
           fi
           python3 scripts/n4a_e2e_scenarios.py "${args[@]}"
       - name: Plan selected scenario

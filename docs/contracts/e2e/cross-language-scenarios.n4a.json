@@ -873,7 +873,7 @@
       ],
       "evidence": [
         "R session info and package versions",
-        "Dataset card id, provider contract, IO spec, package summary, and IO reshape diff",
+        "Dataset card id, provider contract, IO spec, package summary, IO reshape diff, and public-checkout fixture provenance when canonical bytes are not locally present",
         "Saved pipeline/workspace SHA256",
         "Reopened workspace/pipeline/prediction artifact roundtrip checks",
         "Python reopen/rerun ledger over the R-produced workspace and pipeline",
@@ -915,8 +915,12 @@
             "{workspace_root}/nirs4all-core/scripts/e2e/prepare_r_dataset_io_pipeline.py",
             "{workspace_root}/nirs4all-providers/src/nirs4all_providers/datasets.py",
             "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/__init__.py",
+            "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/bootstrap.py",
+            "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/organize.py",
             "{workspace_root}/nirs4all-io/src/nirs4all_io/__init__.py",
-            "{workspace_root}/nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/canonical/dataset.json"
+            "{workspace_root}/nirs4all-datasets/catalog/datasets/malaria_anopheles_gambiae_sporozoite_nir.yaml",
+            "{workspace_root}/nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/manifest.json",
+            "{workspace_root}/nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/raw/raw_manifest.csv"
           ],
           "command": [
             "bash",
