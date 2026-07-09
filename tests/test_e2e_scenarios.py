@@ -3699,7 +3699,10 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert "n4a-e2e-ready-runtime-evidence-${{ github.run_id }}" in workflow
     assert "n4a-e2e-${{ github.event.inputs.scenario }}-runtime-evidence-${{ github.run_id }}" in workflow
     assert workflow.count("path: nirs4all-ecosystem/.n4a-e2e-artifacts/coverage/**") == 1
-    assert workflow.count("path: nirs4all-ecosystem/.n4a-e2e-artifacts/**") == 2
+    assert workflow.count("nirs4all-ecosystem/.n4a-e2e-artifacts/**") == 2
+    assert workflow.count(
+        "nirs4all-ecosystem/docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json"
+    ) == 2
     assert workflow.count("if-no-files-found: warn") == 3
     assert "--allow-blocked" in workflow
     assert set(re.findall(r"--allowed-blocked-scenario ([a-z0-9-]+)", workflow)) == (

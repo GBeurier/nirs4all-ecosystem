@@ -181,7 +181,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: n4a-e2e-ready-runtime-evidence-${{ github.run_id }}
-          path: nirs4all-ecosystem/.n4a-e2e-artifacts/**
+          path: |
+            nirs4all-ecosystem/.n4a-e2e-artifacts/**
+            nirs4all-ecosystem/docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
           include-hidden-files: true
           if-no-files-found: warn
       - name: Upload selected scenario evidence
@@ -189,6 +191,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: n4a-e2e-${{ github.event.inputs.scenario }}-runtime-evidence-${{ github.run_id }}
-          path: nirs4all-ecosystem/.n4a-e2e-artifacts/**
+          path: |
+            nirs4all-ecosystem/.n4a-e2e-artifacts/**
+            nirs4all-ecosystem/docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
           include-hidden-files: true
           if-no-files-found: warn
