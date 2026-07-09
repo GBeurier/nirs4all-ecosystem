@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:3008552d10e03762b0885ce0242aa2fc69ec387b80a95ba01b5d784d9a6db4ed",
+  "manifest_digest": "sha256:2af2f2010b3c4e5623180f4d1f929965894188a90856138e2bb5b692459a4d2d",
   "members": {
     "core": {
       "availability": {
@@ -716,9 +716,9 @@
       "selected_workspace_path": "nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "db8e42c4207aefd83aa3c3561f191b9765a701bf",
+        "commit": "3b89f5fae5651b61796d5d6e8ac7c6e2ef18c3a6",
         "dirty": false,
-        "exact_tag": "v0.3.7"
+        "exact_tag": "v0.3.8"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -727,25 +727,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.3.7"
+          "value": "0.3.8"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.3.7"
+          "value": "0.3.8"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.3.7"
+          "value": "0.3.8"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.3.7"
+          "value": "0.3.8"
         }
       }
     },
@@ -1017,9 +1017,9 @@
       "selected_workspace_path": "dag-ml-data",
       "state": {
         "branch": "main",
-        "commit": "c3ce2ad58c6402e0080054aadcb4a4b8967125bd",
+        "commit": "b35e1c9a125cf07fb01efcae4a5c68a57e4d7dd5",
         "dirty": false,
-        "exact_tag": "v0.2.8"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1096,9 +1096,9 @@
       "selected_workspace_path": "nirs4all-datasets",
       "state": {
         "branch": "main",
-        "commit": "ed16875162263207b350ec099ba718e8c30cf5c0",
+        "commit": "67d47c557bcb8770506409d2c688cb3b60384c18",
         "dirty": false,
-        "exact_tag": "v0.3.5"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1177,9 +1177,9 @@
       "selected_workspace_path": "nirs4all-formats",
       "state": {
         "branch": "main",
-        "commit": "3bc4fa6efe4415289bfef905cae21a515578e1ca",
+        "commit": "9edd8a58661587562468959d239791afdee1b660",
         "dirty": false,
-        "exact_tag": "v0.2.6"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1354,9 +1354,9 @@
       "selected_workspace_path": "nirs4all-methods",
       "state": {
         "branch": "main",
-        "commit": "6a3f6c15168b834c86a5eaab667f2ae1e42c7ac8",
+        "commit": "f99c78a67524c237435a68f3061ef143db3d3910",
         "dirty": false,
-        "exact_tag": "v1.0.8"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
