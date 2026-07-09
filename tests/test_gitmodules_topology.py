@@ -17,6 +17,7 @@ PUBLIC_SUBMODULES = {
     "nirs4all-cockpit",
     "nirs4all-core",
     "nirs4all-datasets",
+    "nirs4all-device",
     "nirs4all-formats",
     "nirs4all-io",
     "nirs4all-methods",
