@@ -3254,6 +3254,27 @@ def runtime_evidence_ledger(
     }
 
 
+def _evidence_ledger_check_text(ledger: dict[str, Any], current_text: str) -> str:
+    """Return generated ledger text normalized for --check comparison.
+
+    `--max-age-seconds` is an execution-time freshness guard. The committed
+    ledger intentionally keeps its generation threshold stable, so a check run
+    with a stricter freshness threshold must not be reported stale solely
+    because `evidence.max_age_seconds` differs.
+    """
+
+    comparable = dict(ledger)
+    comparable["evidence"] = dict(ledger.get("evidence", {}))
+    try:
+        current = json.loads(current_text)
+    except json.JSONDecodeError:
+        return json.dumps(ledger, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
+    current_evidence = current.get("evidence") if isinstance(current, dict) else None
+    if isinstance(current_evidence, dict):
+        comparable["evidence"]["max_age_seconds"] = current_evidence.get("max_age_seconds")
+    return json.dumps(comparable, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
@@ -3487,7 +3508,7 @@ def main(argv: list[str] | None = None) -> int:
                     current_text = args.out.read_text(encoding="utf-8")
                 except OSError as exc:
                     raise E2EScenarioError(f"cannot read existing evidence ledger {args.out}: {exc}") from exc
-                if current_text != ledger_text:
+                if current_text != _evidence_ledger_check_text(ledger, current_text):
                     raise E2EScenarioError(f"runtime evidence ledger is stale: regenerate {args.out}")
                 print(
                     f"checked {args.out}: {evidence['verified_count']}/{evidence['scenario_count']} "

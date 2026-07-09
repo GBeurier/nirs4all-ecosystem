@@ -3087,6 +3087,32 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
         assert all(".n4a-e2e-artifacts" not in artifact["path"] for artifact in scenario["verified_artifacts"])
 
 
+def test_cross_language_e2e_evidence_ledger_check_treats_max_age_as_runtime_guard() -> None:
+    e2e = _load_e2e_module()
+    current = {
+        "schema_version": e2e.EVIDENCE_LEDGER_SCHEMA_VERSION,
+        "evidence": {
+            "scenario_count": 11,
+            "verified_count": 11,
+            "failed_count": 0,
+            "artifact_count": 70,
+            "failure_count": 0,
+            "max_age_seconds": None,
+        },
+        "scenarios": [],
+    }
+    generated = {
+        **current,
+        "evidence": {
+            **current["evidence"],
+            "max_age_seconds": 14400,
+        },
+    }
+    current_text = json.dumps(current, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
+
+    assert e2e._evidence_ledger_check_text(generated, current_text) == current_text
+
+
 def test_cross_language_e2e_cli_evidence_ledger_fails_on_missing_artifacts(tmp_path: Path) -> None:
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
     report_path = tmp_path / "latest-runtime-evidence-ledger.n4a.json"
