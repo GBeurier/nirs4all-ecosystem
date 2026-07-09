@@ -2675,6 +2675,7 @@ def coverage_report(
     repos: dict[str, int] = {}
     evidence_levels: dict[str, int] = {}
     parity_check_evidence_levels: dict[str, int] = {}
+    contract_parity_check_count = 0
     strictness_gap_count = 0
     non_strict_scenarios: list[str] = []
     scenarios_without_strict_parity_check: list[str] = []
@@ -2712,6 +2713,7 @@ def coverage_report(
                 strict_parity_checks += 1
             elif level == "contract":
                 contract_parity_checks += 1
+                contract_parity_check_count += 1
             parity_check_details.append(
                 {
                     "evidence_level": level,
@@ -2809,6 +2811,8 @@ def coverage_report(
         full_strict_blockers.append(f"strictness_gaps={strictness_gap_count}")
     if strict_non_numeric_check_count:
         full_strict_blockers.append(f"strict_non_numeric_checks={strict_non_numeric_check_count}")
+    if contract_parity_check_count:
+        full_strict_blockers.append(f"contract_parity_checks={contract_parity_check_count}")
     v1_contract_phase_count = sum(counts["contract"] for counts in phase_status_counts.values())
     v1_gap_phase_count = sum(counts["gap"] for counts in phase_status_counts.values())
     if v1_contract_phase_count:
@@ -2855,6 +2859,7 @@ def coverage_report(
             "full_strict_blockers": full_strict_blockers,
             "non_strict_scenarios": non_strict_scenarios,
             "strictness_gap_count": strictness_gap_count,
+            "contract_parity_check_count": contract_parity_check_count,
             "parity_check_evidence_levels": dict(sorted(parity_check_evidence_levels.items())),
             "scenarios_without_strict_parity_check": scenarios_without_strict_parity_check,
             "strict_non_numeric_check_count": strict_non_numeric_check_count,
@@ -2906,6 +2911,7 @@ def render_coverage_markdown(report: dict[str, Any]) -> str:
                 ["evidence levels", ", ".join(f"{k}={v}" for k, v in report["evidence_levels"].items())],
                 ["full strict ready", "yes" if debt["full_strict_ready"] else "no"],
                 ["strictness gaps", str(debt["strictness_gap_count"])],
+                ["contract parity checks", str(debt["contract_parity_check_count"])],
                 ["strict non-numeric checks", str(debt["strict_non_numeric_check_count"])],
                 ["V1 contract phases", str(debt["v1_contract_phase_count"])],
                 ["V1 gap phases", str(debt["v1_gap_phase_count"])],
@@ -3340,6 +3346,7 @@ def runtime_evidence_ledger(
             "full_strict_ready": debt["full_strict_ready"],
             "full_strict_blockers": debt["full_strict_blockers"],
             "strictness_gap_count": debt["strictness_gap_count"],
+            "contract_parity_check_count": debt["contract_parity_check_count"],
             "strict_non_numeric_check_count": debt["strict_non_numeric_check_count"],
             "v1_contract_phase_count": debt["v1_contract_phase_count"],
             "v1_gap_phase_count": debt["v1_gap_phase_count"],
@@ -3638,6 +3645,7 @@ def main(argv: list[str] | None = None) -> int:
                     "debt: "
                     f"full_strict_ready={str(debt['full_strict_ready']).lower()} "
                     f"strictness_gaps={debt['strictness_gap_count']} "
+                    f"contract_parity_checks={debt['contract_parity_check_count']} "
                     f"strict_non_numeric_checks={debt['strict_non_numeric_check_count']} "
                     f"v1_contract_phases={debt['v1_contract_phase_count']} "
                     f"v1_gap_phases={debt['v1_gap_phase_count']} "

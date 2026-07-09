@@ -1,12 +1,15 @@
 {
   "coverage": {
     "blocked_count": 0,
+    "contract_parity_check_count": 3,
     "evidence_levels": {
       "strict": 11
     },
     "expected_scenario_count": 11,
-    "full_strict_blockers": [],
-    "full_strict_ready": true,
+    "full_strict_blockers": [
+      "contract_parity_checks=3"
+    ],
+    "full_strict_ready": false,
     "ready_count": 11,
     "required_languages": {
       "javascript_wasm": 8,
