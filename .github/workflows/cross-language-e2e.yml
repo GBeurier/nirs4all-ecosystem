@@ -90,6 +90,24 @@ jobs:
           npm --prefix bindings/js install --no-audit --no-fund
           npm --prefix bindings/js run build
           npm --prefix bindings/js run stage:wasm
+      - name: Export strict methods Python runtime
+        if: ${{ github.event.inputs.execute == 'true' }}
+        run: |
+          methods_python="$GITHUB_WORKSPACE/nirs4all-ecosystem/nirs4all-methods/bindings/python/src"
+          core_python="$GITHUB_WORKSPACE/nirs4all-ecosystem/nirs4all-core/bindings/python/src"
+          methods_lib="$GITHUB_WORKSPACE/nirs4all-ecosystem/nirs4all-methods/build/dev-release/cpp/src"
+          {
+            echo "PYTHONPATH=$methods_python:$core_python:${PYTHONPATH:-}"
+            echo "N4M_LIB_PATH=$methods_lib/libn4m.so"
+            echo "LD_LIBRARY_PATH=$methods_lib:${LD_LIBRARY_PATH:-}"
+          } >> "$GITHUB_ENV"
+          PYTHONPATH="$methods_python:$core_python:${PYTHONPATH:-}" \
+          N4M_LIB_PATH="$methods_lib/libn4m.so" \
+          LD_LIBRARY_PATH="$methods_lib:${LD_LIBRARY_PATH:-}" \
+          python3 - <<'PY'
+          import n4m  # noqa: F401
+          import pls4all  # noqa: F401
+          PY
       - name: Install strict R runtime dependencies
         if: ${{ github.event.inputs.execute == 'true' }}
         run: Rscript -e 'install.packages(c("jsonlite", "yaml"), repos = "https://cloud.r-project.org")'

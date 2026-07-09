@@ -3694,6 +3694,13 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert workflow.index('-e "nirs4all-methods/bindings/python"') < workflow.index(
         '-e "nirs4all-core/bindings/python"'
     )
+    assert "Export strict methods Python runtime" in workflow
+    assert 'methods_python="$GITHUB_WORKSPACE/nirs4all-ecosystem/nirs4all-methods/bindings/python/src"' in workflow
+    assert 'core_python="$GITHUB_WORKSPACE/nirs4all-ecosystem/nirs4all-core/bindings/python/src"' in workflow
+    assert 'echo "PYTHONPATH=$methods_python:$core_python:${PYTHONPATH:-}"' in workflow
+    assert 'echo "N4M_LIB_PATH=$methods_lib/libn4m.so"' in workflow
+    assert "import n4m" in workflow
+    assert "import pls4all" in workflow
     assert "actions/upload-artifact@v4" in workflow
     assert "n4a-e2e-coverage-debt-${{ github.run_id }}" in workflow
     assert "n4a-e2e-ready-runtime-evidence-${{ github.run_id }}" in workflow
