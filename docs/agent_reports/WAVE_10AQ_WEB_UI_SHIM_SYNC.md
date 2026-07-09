@@ -12,6 +12,7 @@ Date: 2026-07-09
 ## Files changed
 
 - `nirs4all-web/studio-lite/vendor/nirs4all-ui/package.json`
+- `nirs4all-web/studio-lite/package-lock.json`
 - `nirs4all-ecosystem/nirs4all-web` submodule pointer
 
 ## Decision
@@ -19,14 +20,24 @@ Date: 2026-07-09
 The failing CI step was not a runtime parity regression. Python reopen,
 papers export, and repository refit passed; the Web/WASM smoke stopped on
 `npm run check:ui-shim` because the vendored `nirs4all-ui` package metadata
-missed the upstream `@types/node` dev dependency. The vendor shim remains the
-gate: no skip, no xfail, no fallback was added.
+missed the upstream `@types/node` dev dependency. The first Web push exposed the
+paired CI issue: `studio-lite/package-lock.json` also had to be regenerated so
+GitHub `npm ci` installs the same dependency graph. The vendor shim and clean
+install remain the gates: no skip, no xfail, no fallback was added.
 
 ## Tests run
 
 - `cd nirs4all-web/studio-lite && npm run check:ui-shim`
+- `cd nirs4all-web/studio-lite && npm ci --ignore-scripts`
 - `cd nirs4all-web/studio-lite && npm run smoke:shared-ui-contract`
+- `cd nirs4all-web/studio-lite && npm run typecheck`
+- `cd nirs4all-web/studio-lite && npm run test`
+- `cd nirs4all-web/studio-lite && NIRS4ALL_METHODS_ABI_REQUIRED=1 NIRS4ALL_STUDIO_REGISTRY_REQUIRED=1 npm run validate:catalog`
+- `cd nirs4all-web/studio-lite && NIRS4ALL_UI_SHIM_REQUIRED=1 npm run check:ui-shim`
+- `cd nirs4all-web/studio-lite && NIRS4ALL_CORE_SHIM_REQUIRED=1 npm run check:core-shim`
+- `cd nirs4all-web/studio-lite && npm run build:single`
 - `cd nirs4all-web/studio-lite && npm run build`
+- `cd nirs4all-web/studio-lite && npm run smoke -- rt-fallback`
 - `cd nirs4all-web/studio-lite && npm run smoke:repository-best-pipeline`
 - `cd nirs4all-ecosystem && python3.11 scripts/n4a_e2e_scenarios.py validate`
 - `cd nirs4all-ecosystem && python3.11 scripts/n4a_e2e_scenarios.py coverage --require-full-strict`
