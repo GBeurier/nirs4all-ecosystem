@@ -21,6 +21,10 @@ DEFAULT_MANIFEST = Path("docs/contracts/e2e/cross-language-scenarios.n4a.json")
 SCHEMA_VERSION = "n4a.cross-language-e2e/v1"
 DEFAULT_EVIDENCE_LEDGER = Path("docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json")
 EVIDENCE_LEDGER_SCHEMA_VERSION = "n4a.cross-language-e2e-runtime-evidence-ledger/v1"
+RUNTIME_EVIDENCE_COMMAND = (
+    "python3 scripts/n4a_e2e_scenarios.py evidence-ledger "
+    "--out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json"
+)
 EXPECTED_SCENARIO_COUNT = 11
 MIN_STEPS_PER_SCENARIO = 2
 MIN_ARTIFACTS_PER_SCENARIO = 2
@@ -2817,6 +2821,19 @@ def coverage_report(
         )
     return {
         "schema_version": manifest["schema_version"],
+        "gate_scope": {
+            "coverage_gate": "manifest_contract_only",
+            "full_strict_ready_meaning": (
+                "All scenarios, parity checks, and V1 refactor phases are strict in the manifest. "
+                "This does not verify fresh runtime artifacts."
+            ),
+            "runtime_evidence_checked": False,
+            "runtime_evidence_command": RUNTIME_EVIDENCE_COMMAND,
+            "runtime_evidence_policy": (
+                "Use evidence or evidence-ledger, optionally with --max-age-seconds, after large integration "
+                "batches and before Python/Studio production switches."
+            ),
+        },
         "scenario_count": len(scenarios),
         "expected_scenario_count": EXPECTED_SCENARIO_COUNT,
         "ready_count": len(ready),
@@ -2876,7 +2893,7 @@ def render_coverage_markdown(report: dict[str, Any]) -> str:
         "# NIRS4ALL Cross-language E2E Coverage",
         "",
         "This report is generated from the canonical cross-language E2E manifest. "
-        "It is a release audit board, not a claim that every V1 phase is strict.",
+        "It is a release audit board, not fresh runtime parity evidence.",
         "",
         "## Summary",
         "",
@@ -2893,6 +2910,18 @@ def render_coverage_markdown(report: dict[str, Any]) -> str:
                 ["V1 contract phases", str(debt["v1_contract_phase_count"])],
                 ["V1 gap phases", str(debt["v1_gap_phase_count"])],
                 ["V1 not applicable phases", str(debt["v1_not_applicable_phase_count"])],
+            ],
+        ),
+        "",
+        "## Gate Scope",
+        "",
+        *_markdown_table(
+            ["metric", "value"],
+            [
+                ["coverage gate", report["gate_scope"]["coverage_gate"]],
+                ["runtime evidence checked", "yes" if report["gate_scope"]["runtime_evidence_checked"] else "no"],
+                ["runtime evidence command", report["gate_scope"]["runtime_evidence_command"]],
+                ["runtime evidence policy", report["gate_scope"]["runtime_evidence_policy"]],
             ],
         ),
         "",
@@ -3298,10 +3327,7 @@ def runtime_evidence_ledger(
                 "this ledger records the normalized verified artifact inventory and host-stable "
                 "proof hashes over required evidence fields."
             ),
-            "regenerate": (
-                "python3 scripts/n4a_e2e_scenarios.py evidence-ledger "
-                "--out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json"
-            ),
+            "regenerate": RUNTIME_EVIDENCE_COMMAND,
         },
         "coverage": {
             "scenario_count": coverage["scenario_count"],
@@ -3467,7 +3493,10 @@ def main(argv: list[str] | None = None) -> int:
     coverage_parser.add_argument(
         "--require-full-strict",
         action="store_true",
-        help="exit non-zero unless every scenario and V1 refactor phase is strict where applicable",
+        help=(
+            "exit non-zero unless every scenario and V1 refactor phase is strict where applicable "
+            "in the manifest; use evidence-ledger for fresh runtime evidence"
+        ),
     )
 
     evidence_parser = subparsers.add_parser("evidence", help="verify expected post-run artifacts")
@@ -3618,6 +3647,13 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 if debt["full_strict_blockers"]:
                     print("full strict blockers: " + ", ".join(debt["full_strict_blockers"]))
+                gate_scope = report["gate_scope"]
+                print(
+                    "gate scope: "
+                    f"coverage_gate={gate_scope['coverage_gate']} "
+                    f"runtime_evidence_checked={str(gate_scope['runtime_evidence_checked']).lower()} "
+                    f"runtime_evidence_command={gate_scope['runtime_evidence_command']}"
+                )
                 print(
                     "required languages: "
                     + ", ".join(

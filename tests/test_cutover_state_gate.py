@@ -93,6 +93,13 @@ def test_release_non_full_gates_promote_w2s_and_core_evidence() -> None:
     manifest = json.loads((ROOT / "docs" / "contracts" / "cutover" / "drop-gates.n4a.json").read_text(encoding="utf-8"))
     gates = {gate["id"]: gate for gate in manifest["gates"]}
 
+    assert gates["e2e_runtime_evidence_fresh"]["required"] is True
+    assert gates["e2e_runtime_evidence_fresh"]["cwd"] == "_worktrees/RC-v1-ecosystem"
+    fresh_e2e_command = " ".join(gates["e2e_runtime_evidence_fresh"]["command"])
+    assert "scripts/n4a_e2e_scenarios.py evidence-ledger --check" in fresh_e2e_command
+    assert "--max-age-seconds 14400" in fresh_e2e_command
+    assert "latest-runtime-evidence-ledger.n4a.json" in fresh_e2e_command
+
     assert gates["installed_n4m_proof"]["required"] is True
     assert gates["installed_n4m_proof"]["cwd"] == "_worktrees/RC-v1-nirs4all-python"
     installed_command = " ".join(gates["installed_n4m_proof"]["command"])
@@ -146,6 +153,7 @@ def test_readiness_matrix_requires_promoted_release_gates() -> None:
     blockers = {blocker["id"]: blocker for blocker in matrix["blockers"]}
 
     expected = {
+        "LOCK-E2E-FRESH-001": "e2e_runtime_evidence_fresh",
         "W2S-INSTALLED-N4M-001": "installed_n4m_proof",
         "PROV-READ-001": "providers_local_sibling_release",
         "CORE-V1-SURFACE-001": "core_v1_surfaces",
@@ -155,3 +163,8 @@ def test_readiness_matrix_requires_promoted_release_gates() -> None:
         assert blocker["required_for_cutover"] is True
         assert blocker["primary_gate_id"] == gate_id
         assert gate_id in blocker["gate_ids"]
+
+    fresh_e2e = blockers["LOCK-E2E-FRESH-001"]
+    assert fresh_e2e["status"] == "blocked"
+    assert "max_age_seconds is null" in fresh_e2e["missing_contract"]
+    assert "execute=true" in fresh_e2e["next_owner_action"]

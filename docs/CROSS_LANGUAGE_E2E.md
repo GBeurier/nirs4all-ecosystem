@@ -15,7 +15,8 @@ The suite deliberately separates planning from execution:
 - `python3 scripts/n4a_e2e_scenarios.py coverage --json` reports readiness,
   language/tag coverage, V1 strict/contract/gap/not-applicable phase counts,
   and per-scenario `scenario_details` for blocked steps, parity checks, and
-  strictness gaps.
+  strictness gaps. This is a manifest/contract gate; it does not verify fresh
+  runtime artifacts.
 - `python3 scripts/n4a_e2e_scenarios.py coverage --markdown-out <path>`
   writes the same readiness/debt board as a human-readable Markdown artifact,
   including an explicit strictness gap detail table.
@@ -45,16 +46,18 @@ normalized artifact paths plus host-stable proof hashes over required JSON
 evidence fields; it deliberately avoids full-file hashes because generated
 artifacts can contain absolute paths, timestamps, and duration fields.
 
-Coverage output also includes an explicit `debt_summary`. Keep this visible in
-boards and CI logs: it names scenarios without strict parity checks, counts
-strictness gaps, and totals V1 phases that remain `contract`, true `gap`, or
-`not_applicable`. Use `gap` only for missing evidence that belongs to the
-scenario objective. Use `not_applicable` when a phase is deliberately outside
-that lane, with an `applicability` explanation; this keeps the debt board from
-counting unrelated paper/repository/Web phases as missing implementation. A
-green coverage command therefore means the contracts are coherent and
-executable; it does not mean all relevant V1 phases are strict until the
-contract/gap counts reach zero for the relevant cutover gates.
+Coverage output also includes explicit `gate_scope` and `debt_summary` sections.
+Keep them visible in boards and CI logs: `gate_scope` says whether the command
+only checked the manifest or verified runtime evidence, while `debt_summary`
+names scenarios without strict parity checks, counts strictness gaps, and totals
+V1 phases that remain `contract`, true `gap`, or `not_applicable`. Use `gap`
+only for missing evidence that belongs to the scenario objective. Use
+`not_applicable` when a phase is deliberately outside that lane, with an
+`applicability` explanation; this keeps the debt board from counting unrelated
+paper/repository/Web phases as missing implementation. A green coverage command
+therefore means the contracts are coherent and executable; it is not a full
+runtime parity claim. Fresh runtime proof requires `evidence` or
+`evidence-ledger`, preferably with `--max-age-seconds`, after an executed batch.
 The JSON `scenario_details` and Markdown strictness detail table are the audit
 surface to review before any production switch: they expose what remains hybrid
 without relying on skipped or xfailed tests.

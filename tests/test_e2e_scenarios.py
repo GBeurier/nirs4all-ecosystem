@@ -2707,6 +2707,22 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
 
     assert report["scenario_count"] == 11
     assert report["expected_scenario_count"] == 11
+    assert report["gate_scope"] == {
+        "coverage_gate": "manifest_contract_only",
+        "full_strict_ready_meaning": (
+            "All scenarios, parity checks, and V1 refactor phases are strict in the manifest. "
+            "This does not verify fresh runtime artifacts."
+        ),
+        "runtime_evidence_checked": False,
+        "runtime_evidence_command": (
+            "python3 scripts/n4a_e2e_scenarios.py evidence-ledger "
+            "--out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json"
+        ),
+        "runtime_evidence_policy": (
+            "Use evidence or evidence-ledger, optionally with --max-age-seconds, after large integration "
+            "batches and before Python/Studio production switches."
+        ),
+    }
     assert report["evidence_levels"] == {"strict": 11}
     assert report["required_languages"] == {
         "javascript_wasm": 8,
@@ -2933,6 +2949,11 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
         "v1_gap_phases=0 v1_not_applicable_phases=25"
     ) in covered.stdout
     assert "full strict blockers:" not in covered.stdout
+    assert (
+        "gate scope: coverage_gate=manifest_contract_only runtime_evidence_checked=false "
+        "runtime_evidence_command=python3 scripts/n4a_e2e_scenarios.py evidence-ledger "
+        "--out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json"
+    ) in covered.stdout
     assert "without_strict_parity=" in covered.stdout
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
 
@@ -3275,6 +3296,10 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     report = report_path.read_text(encoding="utf-8")
 
     assert "# NIRS4ALL Cross-language E2E Coverage" in report
+    assert "## Gate Scope" in report
+    assert "| coverage gate | manifest_contract_only |" in report
+    assert "| runtime evidence checked | no |" in report
+    assert "evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json" in report
     assert "| full strict ready | yes |" in report
     assert "## Full Strict Gate" in report
     assert "| pass | - |" in report

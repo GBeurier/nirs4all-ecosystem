@@ -28,6 +28,25 @@
       "next_owner_action": "Keep this gate green whenever cutover docs or runner code changes."
     },
     {
+      "id": "LOCK-E2E-FRESH-001",
+      "title": "Fresh cross-language runtime evidence exists before production cutover",
+      "lane": "LOCK-E2E/V1",
+      "owner_repo": "nirs4all-ecosystem",
+      "status": "blocked",
+      "required_for_cutover": true,
+      "primary_gate_id": "e2e_runtime_evidence_fresh",
+      "gate_ids": [
+        "e2e_runtime_evidence_fresh"
+      ],
+      "expected_evidence": [
+        "Cross-language E2E workflow is manually dispatched with execute=true after the selected heads are in place",
+        "evidence-ledger --check --max-age-seconds 14400 passes against docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
+        "coverage gate still reports runtime_evidence_checked=false unless paired with the runtime evidence ledger"
+      ],
+      "missing_contract": "Fresh runtime evidence has not been regenerated in the current cutover window. The committed ledger verifies 11/11 scenarios and 70 artifacts, but max_age_seconds is null and does not prove a fresh executed batch.",
+      "next_owner_action": "After the next large integration batch, dispatch Cross-language E2E scenarios with execute=true, regenerate/check the runtime evidence ledger with --max-age-seconds, then mark this row ready or passed."
+    },
+    {
       "id": "B-010-FALLBACK-ZERO",
       "title": "Full Python reference fallback ledger is empty",
       "lane": "B-010/L19",
