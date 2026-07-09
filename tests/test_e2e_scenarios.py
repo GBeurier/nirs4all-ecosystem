@@ -3752,7 +3752,7 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert 'echo "N4M_LIB_PATH=$methods_lib/libn4m.so"' in workflow
     assert "import n4m" in workflow
     assert "import pls4all" in workflow
-    assert "actions/upload-artifact@v4" in workflow
+    assert "actions/upload-artifact@v6" in workflow
     assert "n4a-e2e-coverage-debt-${{ github.run_id }}" in workflow
     assert "n4a-e2e-ready-runtime-evidence-${{ github.run_id }}" in workflow
     assert "n4a-e2e-${{ github.event.inputs.scenario }}-runtime-evidence-${{ github.run_id }}" in workflow

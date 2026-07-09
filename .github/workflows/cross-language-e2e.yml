@@ -33,14 +33,14 @@ jobs:
         working-directory: nirs4all-ecosystem
     steps:
       - name: Checkout ecosystem contract runner
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: nirs4all-ecosystem
           submodules: recursive
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "22"
       - name: Disable flaky preinstalled Microsoft apt feeds
@@ -182,14 +182,14 @@ jobs:
           --json-out .n4a-e2e-artifacts/evidence-summary.json
       - name: Upload coverage debt board
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: n4a-e2e-coverage-debt-${{ github.run_id }}
           path: nirs4all-ecosystem/.n4a-e2e-artifacts/coverage/**
           if-no-files-found: warn
       - name: Upload ready scenario evidence
         if: ${{ always() && !github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: n4a-e2e-ready-runtime-evidence-${{ github.run_id }}
           path: |
@@ -199,7 +199,7 @@ jobs:
           if-no-files-found: warn
       - name: Upload selected scenario evidence
         if: ${{ always() && github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: n4a-e2e-${{ github.event.inputs.scenario }}-runtime-evidence-${{ github.run_id }}
           path: |

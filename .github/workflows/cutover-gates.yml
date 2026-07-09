@@ -42,10 +42,10 @@ jobs:
   tooling:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: nirs4all-ecosystem
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Validate cutover gate tooling
@@ -56,7 +56,7 @@ jobs:
           python scripts/n4a_cutover_gates.py --workspace-root "$GITHUB_WORKSPACE" validate
           python scripts/n4a_cutover_gates.py --workspace-root "$GITHUB_WORKSPACE" list --json > cutover-gates-list.json
       - name: Upload gate inventory
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: cutover-gates-list
           path: nirs4all-ecosystem/cutover-gates-list.json
@@ -66,10 +66,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: tooling
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: nirs4all-ecosystem
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Build gate arguments
@@ -107,7 +107,7 @@ jobs:
           fi
       - name: Upload gate report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: cutover-gate-report-${{ inputs.mode }}
           path: nirs4all-ecosystem/cutover-gate-report.json
