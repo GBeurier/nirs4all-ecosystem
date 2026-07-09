@@ -75,6 +75,7 @@ jobs:
             -e "nirs4all-tools[dev,duckdb,parquet]" \
             -e "nirs4all-cluster[dev]" \
             -e "nirs4all-core/bindings/python"
+          npm --prefix nirs4all-core/bindings/wasm ci --no-audit --no-fund
           npm --prefix nirs4all-web/studio-lite ci --no-audit --no-fund
       - name: Build strict methods runtime artifacts
         if: ${{ github.event.inputs.execute == 'true' }}
