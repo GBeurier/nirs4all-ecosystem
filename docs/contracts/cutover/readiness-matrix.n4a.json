@@ -32,7 +32,7 @@
       "title": "Fresh cross-language runtime evidence exists before production cutover",
       "lane": "LOCK-E2E/V1",
       "owner_repo": "nirs4all-ecosystem",
-      "status": "blocked",
+      "status": "passed",
       "required_for_cutover": true,
       "primary_gate_id": "e2e_runtime_evidence_fresh",
       "gate_ids": [
@@ -41,10 +41,11 @@
       "expected_evidence": [
         "Cross-language E2E workflow is manually dispatched with execute=true after the selected heads are in place",
         "evidence-ledger --check --max-age-seconds 14400 passes against docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
-        "coverage gate still reports runtime_evidence_checked=false unless paired with the runtime evidence ledger"
+        "coverage gate still reports runtime_evidence_checked=false unless paired with the runtime evidence ledger",
+        "GitHub Actions Cross-language E2E scenarios run 28997162538 completed successfully on ecosystem head 042e11ac785f26643c8c09f970a21a60eed532e3 with execute=true and allow_blocked=true"
       ],
-      "missing_contract": "Fresh runtime evidence has not been regenerated in the current cutover window. The committed ledger verifies 11/11 scenarios and 70 artifacts, but max_age_seconds is null and does not prove a fresh executed batch.",
-      "next_owner_action": "After the next large integration batch, dispatch Cross-language E2E scenarios with execute=true, regenerate/check the runtime evidence ledger with --max-age-seconds, then mark this row ready or passed."
+      "missing_contract": "None for the current cutover window. GitHub Actions run 28997162538 on 2026-07-09 executed the ready cross-language scenarios, verified runtime artifacts, and passed the committed runtime evidence ledger freshness check with --max-age-seconds 14400.",
+      "next_owner_action": "Repeat the execute=true Cross-language E2E workflow after the next large integration batch or selected-head change; do not treat coverage-only full_strict_ready as production parity evidence."
     },
     {
       "id": "B-010-FALLBACK-ZERO",

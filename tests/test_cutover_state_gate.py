@@ -165,6 +165,7 @@ def test_readiness_matrix_requires_promoted_release_gates() -> None:
         assert gate_id in blocker["gate_ids"]
 
     fresh_e2e = blockers["LOCK-E2E-FRESH-001"]
-    assert fresh_e2e["status"] == "blocked"
-    assert "max_age_seconds is null" in fresh_e2e["missing_contract"]
+    assert fresh_e2e["status"] == "passed"
+    assert "28997162538" in fresh_e2e["missing_contract"]
+    assert "max-age-seconds 14400" in fresh_e2e["missing_contract"]
     assert "execute=true" in fresh_e2e["next_owner_action"]
