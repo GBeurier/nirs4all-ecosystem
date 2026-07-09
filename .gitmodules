@@ -82,3 +82,7 @@
 	path = nirs4all-quality
 	url = https://github.com/GBeurier/nirs4all-quality.git
 	branch = main
+[submodule "nirs4all-device"]
+	path = nirs4all-device
+	url = https://github.com/GBeurier/nirs4all-device.git
+	branch = main

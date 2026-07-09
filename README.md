@@ -19,6 +19,7 @@
 | `nirs4all-studio` | `main` | public |
 | `nirs4all-web` | `main` | public client-side-only browser/WASM app |
 | `nirs4all-quality` | `main` | public client-side-only NIRS lab quality app |
+| `nirs4all-device` | `main` | public phone/tablet spectrometer workbench |
 | `nirs4all-core` | `main` | public canonical V1 RC portable aggregate |
 | `nirs4all-providers` | `main` | public provider/client contracts and Python client |
 | `nirs4all-tools` | `main` | public migration/conversion tools |
@@ -46,6 +47,7 @@
 - For RC V1, submodule gitlinks in this parent repository are **not** the release authority. Use `docs/contracts/release/aggregation-lock.n4a.lock.json` plus each manifest `selected_workspace_path` for aggregate members, and the surface matrix / agent reports for product surfaces outside the lock.
 - `nirs4all-web` is the **client-side-only** browser/WASM product surface. Its release surface must not imply a Python server or Python parity proof by itself.
 - `nirs4all-quality` is a **client-side-only** browser/WASM quality workflow surface built from the same core/UI direction; it is tracked publicly because the cockpit links and monitors it.
+- `nirs4all-device` is a **phone/tablet spectrometer workbench** surface. The cockpit tracks its public Pages app; Android debug APKs remain CI artifacts rather than registry or production-store release targets.
 - `nirs4all-ui` is a shared React component and pure TypeScript view-model package consumed by product surfaces such as Studio/Web. It is accounted for as a public release surface outside the aggregation lock, not as a backend, parser, persistence, ML, or parity-proof surface.
 - `nirs4all-providers` is a separately published Python client (`GBeurier/nirs4all-providers`), but the canonical provider surface for core/R/WASM/native consumers remains the neutral contracts under `docs/contracts/providers/`.
 - `nirs4all-org` and `nirs4all-cockpit` are publication surfaces outside the aggregation lock. They should be accounted for as public release surfaces, not as aggregate-core lock members.
