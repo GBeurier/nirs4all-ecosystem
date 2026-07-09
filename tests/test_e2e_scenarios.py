@@ -48,6 +48,7 @@ TAG_EVIDENCE_FRAGMENTS = {
     "multisource": ("multisource", "branch", "stacking"),
     "pipeline_generation": ("generated", "generate", "pipeline-family", "stacking"),
     "web_results": ("web-results", "web results", "web-runtime", "result panel", "screenshot", ".png"),
+    "custom_app_host": ("custom app host", "custom-app", "standalone downstream", "nirs4all-quality"),
 }
 STRICT_PARITY_METRIC_FRAGMENTS = (
     "prediction",
@@ -2740,6 +2741,7 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "web": 5,
     }
     assert report["required_tags"] == {
+        "custom_app_host": 1,
         "datasets": 5,
         "io": 4,
         "multimodal": 1,

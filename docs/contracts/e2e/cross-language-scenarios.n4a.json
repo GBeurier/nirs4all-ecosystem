@@ -2165,7 +2165,8 @@
         "pipeline",
         "predictions",
         "parity",
-        "web_results"
+        "web_results",
+        "custom_app_host"
       ],
       "artifacts": [
         "{artifacts_dir}/custom-app-host/custom-host-r-parity.json",

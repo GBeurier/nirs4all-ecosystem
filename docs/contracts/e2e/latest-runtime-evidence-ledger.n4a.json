@@ -16,6 +16,7 @@
       "web": 5
     },
     "required_tags": {
+      "custom_app_host": 1,
       "datasets": 5,
       "io": 4,
       "multimodal": 1,
@@ -1038,7 +1039,8 @@
         "pipeline",
         "predictions",
         "parity",
-        "web_results"
+        "web_results",
+        "custom_app_host"
       ],
       "title": "Custom Web host composes nirs4all-core runtime with reusable nirs4all-ui components",
       "v1_refactor_summary": {
@@ -1122,7 +1124,7 @@
   "source": {
     "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
     "manifest_schema_version": "n4a.cross-language-e2e/v1",
-    "manifest_sha256": "3552554255a294e96f5332a0c6a2ff45acc567f15b5c561bd1fd1d256acfc3a7",
+    "manifest_sha256": "b9734f1198fde51a1cc00a4b4c3f2a74e58f3fa70f1c2cbfb48219be07371647",
     "regenerate": "python3 scripts/n4a_e2e_scenarios.py evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
     "runtime_artifacts_policy": ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; this ledger records the normalized verified artifact inventory and host-stable proof hashes over required evidence fields."
   }

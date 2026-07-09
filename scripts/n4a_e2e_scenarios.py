@@ -55,12 +55,13 @@ REQUIRED_TAGS = {
     "multisource",
     "pipeline_generation",
     "web_results",
+    "custom_app_host",
 }
 REQUIRED_SUITE_WORKFLOW_SURFACES = {
     "core_ui_web_custom_app": {
         "languages": {"python", "r", "javascript_wasm", "web"},
         "repos": {"nirs4all-core", "nirs4all-quality", "nirs4all-ui", "nirs4all-web"},
-        "tags": {"pipeline", "predictions", "parity", "web_results"},
+        "tags": {"pipeline", "predictions", "parity", "web_results", "custom_app_host"},
     },
     "r_python_wasm_roundtrip": {
         "languages": {"python", "r", "javascript_wasm"},
