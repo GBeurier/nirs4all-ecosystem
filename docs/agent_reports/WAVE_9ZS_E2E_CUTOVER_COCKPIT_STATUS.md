@@ -35,6 +35,11 @@ Date: 2026-07-10
   Downloaded run artifacts confirm `11/11` verified scenarios, `70` runtime artifacts, and `0` failures; the artifact ledger SHA-256 matches the committed `docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json` exactly (`2798192f1ecd6a33b166189020cdb588cbd3c0031947c143aedf1d2507e90620`).
 - GitHub cutover tooling:
   workflow `cutover-gates` validate run `29089122983` passed on `2880712ffae326022f846a96effbbe1fe239ada2`.
+- Release-lock proof after the datasets/cockpit release batch:
+  local `python3.11 scripts/n4a_release_lock.py audit-fetchability --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json --fail-on-unfetchable` passed with `7/7` member commits checked out and `0` unfetchable.
+  Live sibling validation against `/home/delete/nirs4all` failed as expected because several sibling checkouts have advanced past the selected lock train.
+  A clean selected-member checkout in `/tmp/n4a-release-lock-selected` validated `docs/contracts/release/aggregation-lock.n4a.lock.json`: core `59d54c9`, dag-ml `366ca8b`, dag-ml-data `9fe27cd`, datasets `67d47c5`, formats `9ddb8f5`, io `16c1efd`, methods `f69a2ec`.
+  Conclusion: the current release lock is healthy for the selected RC train; do not regenerate it merely because the live workspace contains newer post-lock publication heads.
 - Local contract checks:
   `python3.11 -m pytest -q tests/test_e2e_scenarios.py tests/test_cutover_state_gate.py` passed (`141 passed`).
   `python3.11 scripts/n4a_e2e_scenarios.py validate` passed (`OK: 11 cross-language E2E scenarios`).
