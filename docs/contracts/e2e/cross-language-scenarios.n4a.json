@@ -2045,7 +2045,7 @@
         "Methods binding ABI/version report",
       "Language binding prediction parity",
       "WASM methods orchestrator ledger fixture",
-      "nirs4all-core MATLAB/Octave release-matlab gate succeeded on v0.3.10 and uploaded the nirs4all-matlab-octave archive after strict Octave parity",
+      "nirs4all-core MATLAB/Octave release-matlab gate succeeded on v0.3.11 and uploaded the nirs4all-matlab-octave archive after strict Octave parity",
       "Archived Rust wrapper is recorded as non-release-target evidence with release_target=false and gate=not_applicable",
       "nirs4all-core client-side WASM import of assembled formats/IO dataset ledger"
       ],
@@ -2074,7 +2074,7 @@
         {
           "oracle": "python nirs4all portable parity fixtures and nirs4all-core release-matlab gate",
           "candidate": "MATLAB/Octave nirs4all aggregate archive",
-          "metric": "Public release-matlab workflow for v0.3.10 succeeded, declares Octave MEX build plus make test-matlab-parity, and uploaded nirs4all-matlab-octave-0.3.10.zip after the strict parity job",
+          "metric": "Public release-matlab workflow for v0.3.11 succeeded, declares Octave MEX build plus make test-matlab-parity, and uploaded nirs4all-matlab-octave-0.3.11.zip after the strict parity job",
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/formats-io-methods/matlab-octave-release-gate.json"
@@ -2404,7 +2404,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.10 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.11 N4A_PUBLISHED_METHODS_VERSION=1.0.9 npm run smoke:published-custom-host"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.11 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.11 N4A_PUBLISHED_METHODS_VERSION=1.0.9 npm run smoke:published-custom-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/published-custom-host.json"

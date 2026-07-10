@@ -18,8 +18,8 @@ SCHEMA_VERSION = "n4a.e2e.matlab_octave_release_gate.v1"
 SCENARIO_ID = "e2e-formats-io-datasets-methods-language-bindings"
 REPO = "GBeurier/nirs4all-core"
 WORKFLOW = "release-matlab.yml"
-TAG = "v0.3.10"
-CORE_VERSION = "0.3.10"
+TAG = "v0.3.11"
+CORE_VERSION = "0.3.11"
 ASSET_NAME = f"nirs4all-matlab-octave-{CORE_VERSION}.zip"
 
 
