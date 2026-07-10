@@ -29,7 +29,6 @@ jobs:
     env:
       N4A_WORKSPACE_ROOT: ${{ github.workspace }}/nirs4all-ecosystem
       N4A_E2E_MAX_ARTIFACT_AGE_SECONDS: "14400"
-      N4A_SCHEDULED_SMOKE_SCENARIO: e2e-cluster-dag-rights-client-core
       PYTHONDONTWRITEBYTECODE: "1"
     defaults:
       run:
@@ -55,8 +54,9 @@ jobs:
         working-directory: ${{ github.workspace }}
       - uses: r-lib/actions/setup-r@v2
       - uses: dtolnay/rust-toolchain@stable
-      - uses: mymindstorm/setup-emsdk@v14
-        if: ${{ github.event.inputs.execute == 'true' }}
+      - name: Set up Emscripten SDK
+        uses: mymindstorm/setup-emsdk@v14
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.execute == 'true' }}
         with:
           version: 3.1.74
       - name: Install system E2E tool shims
@@ -64,15 +64,8 @@ jobs:
         working-directory: ${{ github.workspace }}
       - name: Install test dependencies
         run: python3 -m pip install pytest
-      - name: Install scheduled runtime smoke dependencies
-        if: ${{ github.event_name == 'schedule' }}
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install \
-            -e "nirs4all[dev]" \
-            -e "nirs4all-cluster[dev]"
       - name: Install executed E2E package dependencies
-        if: ${{ github.event.inputs.execute == 'true' }}
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.execute == 'true' }}
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install \
@@ -89,7 +82,7 @@ jobs:
           npm --prefix nirs4all-core/bindings/wasm ci --no-audit --no-fund
           npm --prefix nirs4all-web/web-app ci --no-audit --no-fund
       - name: Build strict methods runtime artifacts
-        if: ${{ github.event.inputs.execute == 'true' }}
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.execute == 'true' }}
         run: |
           cd nirs4all-methods
           cmake --preset ci-linux-gcc12-release
@@ -101,7 +94,7 @@ jobs:
           npm --prefix bindings/js run build
           npm --prefix bindings/js run stage:wasm
       - name: Export strict methods Python runtime
-        if: ${{ github.event.inputs.execute == 'true' }}
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.execute == 'true' }}
         run: |
           methods_python="$GITHUB_WORKSPACE/nirs4all-ecosystem/nirs4all-methods/bindings/python/src"
           core_python="$GITHUB_WORKSPACE/nirs4all-ecosystem/nirs4all-core/bindings/python/src"
@@ -119,7 +112,7 @@ jobs:
           import pls4all  # noqa: F401
           PY
       - name: Install strict R runtime dependencies
-        if: ${{ github.event.inputs.execute == 'true' }}
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.execute == 'true' }}
         run: Rscript -e 'install.packages(c("jsonlite", "yaml"), repos = "https://cloud.r-project.org")'
       - name: Validate scenario contract
         run: python3 scripts/n4a_e2e_scenarios.py validate
@@ -133,20 +126,23 @@ jobs:
       - name: Plan all scenarios
         if: ${{ github.event_name != 'schedule' && !github.event.inputs.scenario && github.event.inputs.execute != 'true' }}
         run: python3 scripts/n4a_e2e_scenarios.py plan
-      - name: Execute scheduled runtime smoke scenario
+      - name: Execute scheduled ready runtime scenarios
         if: ${{ github.event_name == 'schedule' }}
-        env:
-          N4A_E2E_SCENARIO: ${{ env.N4A_SCHEDULED_SMOKE_SCENARIO }}
-        run: python3 scripts/n4a_e2e_scenarios.py run "$N4A_E2E_SCENARIO" --execute
-      - name: Verify scheduled runtime smoke artifacts
+        run: python3 scripts/n4a_e2e_scenarios.py run-ready --execute
+      - name: Verify scheduled ready runtime artifacts
         if: ${{ github.event_name == 'schedule' }}
-        env:
-          N4A_E2E_SCENARIO: ${{ env.N4A_SCHEDULED_SMOKE_SCENARIO }}
         run: >
           python3 scripts/n4a_e2e_scenarios.py evidence
-          --scenario "$N4A_E2E_SCENARIO"
+          --ready-only
           --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
           --json-out .n4a-e2e-artifacts/evidence-summary.json
+      - name: Check scheduled runtime evidence ledger
+        if: ${{ github.event_name == 'schedule' }}
+        run: >
+          python3 scripts/n4a_e2e_scenarios.py evidence-ledger
+          --check
+          --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
+          --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
       - name: Execute ready scenarios
         if: ${{ !github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
         env:
@@ -231,11 +227,13 @@ jobs:
             nirs4all-ecosystem/docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
           include-hidden-files: true
           if-no-files-found: warn
-      - name: Upload scheduled runtime smoke evidence
+      - name: Upload scheduled ready runtime evidence
         if: ${{ always() && github.event_name == 'schedule' }}
         uses: actions/upload-artifact@v7
         with:
-          name: n4a-e2e-${{ env.N4A_SCHEDULED_SMOKE_SCENARIO }}-scheduled-runtime-evidence-${{ github.run_id }}
-          path: nirs4all-ecosystem/.n4a-e2e-artifacts/**
+          name: n4a-e2e-ready-scheduled-runtime-evidence-${{ github.run_id }}
+          path: |
+            nirs4all-ecosystem/.n4a-e2e-artifacts/**
+            nirs4all-ecosystem/docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
           include-hidden-files: true
           if-no-files-found: warn
