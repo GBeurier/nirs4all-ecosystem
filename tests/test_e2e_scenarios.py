@@ -582,7 +582,7 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "bundled_downstream_app": True,
             "public_imports_only": True,
             "nirs4all_version": "0.3.9",
-            "nirs4all_ui_version": "0.1.10",
+            "nirs4all_ui_version": "0.1.11",
             "nirs4all_methods_version": "1.0.9",
             "upstream_methods_installed": True,
             "controller_count": 5,
