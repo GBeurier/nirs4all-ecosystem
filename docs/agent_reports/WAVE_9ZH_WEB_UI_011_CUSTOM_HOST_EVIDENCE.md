@@ -21,6 +21,9 @@ Date: 2026-07-10
   - Updated `scripts/n4a_e2e_scenarios.py` and `tests/test_e2e_scenarios.py` required evidence fields for `published-custom-host.json`.
   - Regenerated `docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json`.
   - Updated the `nirs4all-web` submodule pointer.
+- `nirs4all-cockpit`
+  - Snapshot commit: `7c4dfa6 chore(collect): refresh data/current.json`
+  - The post-web collect sees `nirs4all-web` commit `b62d408` and `nirs4all-ecosystem` commit `10bd4de` with green rollups.
 
 ## Validation
 
@@ -41,6 +44,9 @@ Date: 2026-07-10
   - `python3 scripts/n4a_e2e_scenarios.py validate`
   - `python3 scripts/n4a_e2e_scenarios.py coverage --require-full-strict`
   - `python3 scripts/n4a_e2e_scenarios.py evidence-ledger --check --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json`
+- `nirs4all-cockpit`
+  - Manual `collect` workflow succeeded after the web/ecosystem push.
+  - Pages deployment for snapshot `7c4dfa6` succeeded.
 
 ## Runtime evidence refreshed
 
