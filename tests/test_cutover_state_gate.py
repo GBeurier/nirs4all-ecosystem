@@ -126,6 +126,7 @@ def test_release_non_full_gates_promote_w2s_and_core_evidence() -> None:
 def test_cutover_gates_target_selected_rc_worktrees() -> None:
     manifest = json.loads((ROOT / "docs" / "contracts" / "cutover" / "drop-gates.n4a.json").read_text(encoding="utf-8"))
     serialized = json.dumps(manifest, sort_keys=True)
+    gates = {gate["id"]: gate for gate in manifest["gates"]}
 
     assert "_worktrees/INT-" not in serialized
     assert "{workspace_root}/dag-ml" not in serialized
@@ -146,6 +147,10 @@ def test_cutover_gates_target_selected_rc_worktrees() -> None:
         "_worktrees/RC-v1-ecosystem",
     ):
         assert expected in serialized
+
+    assert "studio-lite" not in serialized
+    assert gates["web_runtime_contract"]["cwd"] == "_worktrees/RC-v1-web/web-app"
+    assert "npm run check:ui-shim" in " ".join(gates["web_runtime_contract"]["command"])
 
 
 def test_readiness_matrix_requires_promoted_release_gates() -> None:

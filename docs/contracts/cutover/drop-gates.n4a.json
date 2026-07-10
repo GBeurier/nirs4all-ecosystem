@@ -178,11 +178,11 @@
       "title": "Web runtime contract and browser smoke",
       "lane": "B-018",
       "required": true,
-      "cwd": "_worktrees/RC-v1-web/studio-lite",
+      "cwd": "_worktrees/RC-v1-web/web-app",
       "command": [
         "bash",
         "-lc",
-        "export PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH; npm run typecheck && npm run test -- dagml-engine.rt-fallback.test.ts && npm run build && npm run build:single && node scripts/run-smokes.mjs rt-fallback"
+        "export PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH; npm run check:ui-shim && npm run typecheck && npm run test -- dagml-engine.rt-fallback.test.ts && npm run build && npm run build:single && node scripts/run-smokes.mjs rt-fallback"
       ],
       "evidence": [
         "allowFallback=false is observable in Web runtime errors",
