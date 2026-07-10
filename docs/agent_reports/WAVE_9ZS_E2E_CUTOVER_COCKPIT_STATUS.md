@@ -7,7 +7,7 @@ Date: 2026-07-10
 - Closed the CI regression that made the Web/WASM repository-refit scenario fail on a vendored `nirs4all-ui` shim drift.
 - Re-ran the selected Web/Python/native scenario and then the full ready cross-language E2E suite.
 - Updated cutover gate metadata to target the current `nirs4all-web/web-app` layout instead of the retired `studio-lite` path.
-- Rechecked the public cockpit and R-universe state after the datasets 0.3.6 release, diagnosed the R-universe failure, and published the datasets 0.3.7 fix.
+- Rechecked the public cockpit and R-universe state after the datasets 0.3.6 release, diagnosed the R-universe failures, and published the datasets 0.3.7 then 0.3.8 fixes.
 
 ## Files changed
 
@@ -61,14 +61,21 @@ Date: 2026-07-10
 - Cockpit manual action metadata was refreshed in `nirs4all-cockpit` commit `cc6ec1d`: `runiverse-datasets-rebuild` now points at `nirs4all-datasets@784c2872662204e820c8cf6b58d01bc4788148c0` and `GBeurier/GBeurier.r-universe.dev@743ebe47da7e3b9be16a7c4f1216ce4125a6c3a0`; GitHub `ci` `29093186189`, `pages` `29093186188`, and `version-guard` `29093187017` passed.
 - Cockpit manual action metadata was refreshed again in `nirs4all-cockpit` commit `d3636e2`: `runiverse-datasets-rebuild` now points at `GBeurier/GBeurier.r-universe.dev@bca4cdb0a5084abe09a88a86a3856233805dfcdc`; local `pytest -q` passed (`146 passed`) and `ruff check .` passed.
 - Cockpit snapshot/manual actions were refreshed in `nirs4all-cockpit` commit `35c7635`: `nirs4all-datasets` rollup is now `green`, R-universe `nirs4alldatasets` is `0.3.7`, global stale count is `0`, and `runiverse-datasets-rebuild` is auto-resolved. Local cockpit validation passed with `pytest -q` (`146 passed`) and `ruff check .`.
+- `nirs4all-datasets` commit `2b074472` and tag `v0.3.8` fix the R-universe WebAssembly failure by accepting `rwasm` Cargo/rustc wrappers only during Wasm configure/build contexts; native source installs still require readable Cargo/rustc versions.
+- Datasets 0.3.8 local validation passed with `scripts/bump_version.sh --check`, `ruff check .`, `python3.11 -m pytest -q` (`234 passed, 3 skipped`), `cargo fmt --all --check`, `cargo test --workspace --offline`, targeted R Wasm configure tests (`3 passed`), `sh -n bindings/r/nirs4alldatasets/configure`, and a Unix `Makevars` clean dry-run.
+- Datasets 0.3.8 release validation is green on GitHub: `CI`, `ABI Surface`, `version-sync`, `version-guard`, `Site`, `release-python`, `release-npm`, `release-crates`, `release-r`, `release-matlab`, and `release-source` completed successfully. The `release-r` matrix passed Linux release/devel, macOS arm64 release, Windows release, built `nirs4alldatasets_0.3.8.tar.gz`, and attached it to GitHub Release `v0.3.8`.
+- Published datasets registries report `0.3.8` for PyPI, npm, `nirs4all-datasets-core`, `nirs4all-datasets-capi`, and `nirs4all-datasets-cli`; GitHub Release `v0.3.8` includes the R tarball, source archives, C-ABI artifacts, Python wheels/sdist, MATLAB/Octave zip, SBOM, and checksums.
+- `GBeurier/GBeurier.r-universe.dev` commit `9d7341a` pins `nirs4alldatasets` to tag `v0.3.8`, but R-universe has not yet triggered the 0.3.8 rebuild; the public API still serves `0.3.7`.
+- Cockpit snapshot/manual actions were refreshed after the 0.3.8 release: `nirs4all-datasets` source/tag/release/PyPI/npm/crates/GitHub Release are `0.3.8`, the R-universe target is honestly `stale` at `0.3.7`, the CRAN target remains manual `pending`, and global summary is `green=96`, `stale=1`, `pending=5`, `excluded=1`. Local cockpit validation passed with `pytest -q` (`146 passed`), `ruff check .`, and `validate-targets`.
 - `nirs4all-org` was refreshed in commit `0520cbd` to make the offline fallback badge for `nirs4all-ui` match `v0.1.12`; GitHub `version-guard` `29092357404` and Pages deployment `29092355995` passed.
 
 ## CRAN submission kit
 
 - Prepared a local CRAN submission kit at `/home/delete/nirs4all/cran-submission-kit/2026-07-10` without committing binary tarballs to Git.
-- Included release tarballs, SHA-256 checksums, release metadata, and copy/paste CRAN form text for `n4m` `1.0.9`, `pls4all` `1.0.9`, `nirs4allio` `0.1.11`, `nirs4alldatasets` `0.3.7`, and the aggregate `nirs4all` `0.3.11`; `nirs4allformats` is intentionally excluded.
+- Included release tarballs, SHA-256 checksums, release metadata, and copy/paste CRAN form text for `n4m` `1.0.9`, `pls4all` `1.0.9`, `nirs4allio` `0.1.11`, `nirs4alldatasets` `0.3.8`, and the aggregate `nirs4all` `0.3.11`; `nirs4allformats` is intentionally excluded.
 - The kit records that this WSL host has no local `R` binary, so no local `R CMD check --as-cran` was run here; it provides the exact commands to run before upload.
-- CRAN currently reports `nirs4alldatasets` as removed/archived on `2026-07-04` because issues were not corrected in time. The archived `2026-07-03` checks show macOS installation errors for `0.2.0`, with the visible BDR log reporting missing `cargo`. The kit flags macOS Cargo/rustc availability as a pre-upload blocker for `nirs4alldatasets` `0.3.7`.
+- CRAN currently reports `nirs4alldatasets` as removed/archived on `2026-07-04` because issues were not corrected in time. The archived `2026-07-03` checks show macOS installation errors for `0.2.0`, with the visible BDR log reporting missing `cargo`. The kit flags macOS Cargo/rustc availability as a pre-upload blocker for `nirs4alldatasets` `0.3.8`.
+- The kit now contains `nirs4alldatasets_0.3.8.tar.gz` from GitHub Release `v0.3.8`; `sha256sum -c checksums/SHA256SUMS` passes for all five tarballs.
 
 ## Decisions
 
@@ -78,6 +85,6 @@ Date: 2026-07-10
 
 ## Risks / follow-up
 
-- R-universe serves `nirs4alldatasets` `0.3.7`, but its Wasm binary leg still fails because the R-universe `rwasm` cargo wrapper does not report a version compatible with the package configure check.
+- R-universe still serves `nirs4alldatasets` `0.3.7` while the config repo is pinned to `v0.3.8`; wait for the generated universe rebuild and then refresh the cockpit when the public API serves `0.3.8`.
 - If a production cutover decision is requested, run the strict cutover gate in a prepared RC workspace or update the cutover manifest to a new release workspace topology before treating strict GitHub execution as authoritative.
 - Studio Windows RC manual smoke, CRAN submissions, and a fresh selected-head strict cutover run remain outside the automated proof set.
