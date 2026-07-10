@@ -26,6 +26,9 @@ Date: 2026-07-10
 - GitHub full ready runtime suite:
   workflow `Cross-language E2E scenarios` run `29088345220` passed on `2880712ffae326022f846a96effbbe1fe239ada2`.
   The run executed ready scenarios, verified ready scenario artifacts, and checked the committed runtime evidence ledger.
+- Fresh GitHub workflow-dispatch ready runtime suite:
+  workflow `Cross-language E2E scenarios` run `29093521760` passed on `2d86bc8acfb4c1424b43e48e57d91b8b6239ca0f`.
+  The run installed executed E2E dependencies, built strict methods runtime artifacts, installed strict R runtime dependencies, executed ready scenarios, verified ready artifacts, and checked the committed runtime evidence ledger.
 - GitHub cutover tooling:
   workflow `cutover-gates` validate run `29089122983` passed on `2880712ffae326022f846a96effbbe1fe239ada2`.
 - Local contract checks:
@@ -64,7 +67,7 @@ Date: 2026-07-10
 
 ## Decisions
 
-- The failed older E2E runs are superseded by run `29088345220` on the current head.
+- The failed older E2E runs are superseded by run `29093521760`; the only newer ecosystem commit after that run is report-only (`36b8e82`), with push validation green.
 - The full Python-reference parity batch was not relaunched in this wave; the user asked to reserve full parity for large batches, and the current batch's runtime gate is the cross-language E2E layer.
 - Strict cutover execution remains a prepared-workspace gate. GitHub `validate` proves the runner/manifest contract, while `strict` still requires the selected RC worktrees to exist at the expected release workspace paths.
 
