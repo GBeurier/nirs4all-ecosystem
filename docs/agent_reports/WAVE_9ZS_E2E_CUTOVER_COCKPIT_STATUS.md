@@ -65,7 +65,8 @@ Date: 2026-07-10
 - Datasets 0.3.8 local validation passed with `scripts/bump_version.sh --check`, `ruff check .`, `python3.11 -m pytest -q` (`234 passed, 3 skipped`), `cargo fmt --all --check`, `cargo test --workspace --offline`, targeted R Wasm configure tests (`3 passed`), `sh -n bindings/r/nirs4alldatasets/configure`, and a Unix `Makevars` clean dry-run.
 - Datasets 0.3.8 release validation is green on GitHub: `CI`, `ABI Surface`, `version-sync`, `version-guard`, `Site`, `release-python`, `release-npm`, `release-crates`, `release-r`, `release-matlab`, and `release-source` completed successfully. The `release-r` matrix passed Linux release/devel, macOS arm64 release, Windows release, built `nirs4alldatasets_0.3.8.tar.gz`, and attached it to GitHub Release `v0.3.8`.
 - Published datasets registries report `0.3.8` for PyPI, npm, `nirs4all-datasets-core`, `nirs4all-datasets-capi`, and `nirs4all-datasets-cli`; GitHub Release `v0.3.8` includes the R tarball, source archives, C-ABI artifacts, Python wheels/sdist, MATLAB/Octave zip, SBOM, and checksums.
-- `GBeurier/GBeurier.r-universe.dev` commit `9d7341a` pins `nirs4alldatasets` to tag `v0.3.8`, but R-universe has not yet triggered the 0.3.8 rebuild; the public API still serves `0.3.7`.
+- `GBeurier/GBeurier.r-universe.dev` commit `9d7341a` pins `nirs4alldatasets` to tag `v0.3.8`. Empty retrigger commit `5511c44` was also pushed after no generated R-universe 0.3.8 run appeared; direct dispatch of `r-universe/gbeurier` `Update universe` still returns GitHub `403 Resource not accessible by personal access token`.
+- R-universe has not yet triggered the 0.3.8 rebuild; the public API still serves `RemoteRef` `v0.3.7`, `RemoteSha` `784c2872662204e820c8cf6b58d01bc4788148c0`, and version `0.3.7`.
 - Cockpit snapshot/manual actions were refreshed after the 0.3.8 release: `nirs4all-datasets` source/tag/release/PyPI/npm/crates/GitHub Release are `0.3.8`, the R-universe target is honestly `stale` at `0.3.7`, the CRAN target remains manual `pending`, and global summary is `green=96`, `stale=1`, `pending=5`, `excluded=1`. Local cockpit validation passed with `pytest -q` (`146 passed`), `ruff check .`, and `validate-targets`.
 - `nirs4all-org` was refreshed in commit `0520cbd` to make the offline fallback badge for `nirs4all-ui` match `v0.1.12`; GitHub `version-guard` `29092357404` and Pages deployment `29092355995` passed.
 
@@ -85,6 +86,6 @@ Date: 2026-07-10
 
 ## Risks / follow-up
 
-- R-universe still serves `nirs4alldatasets` `0.3.7` while the config repo is pinned to `v0.3.8`; wait for the generated universe rebuild and then refresh the cockpit when the public API serves `0.3.8`.
+- R-universe still serves `nirs4alldatasets` `0.3.7` while the config repo is pinned to `v0.3.8` and retriggered at `5511c44`; wait for the generated universe rebuild and then refresh the cockpit when the public API serves `0.3.8`.
 - If a production cutover decision is requested, run the strict cutover gate in a prepared RC workspace or update the cutover manifest to a new release workspace topology before treating strict GitHub execution as authoritative.
 - Studio Windows RC manual smoke, CRAN submissions, and a fresh selected-head strict cutover run remain outside the automated proof set.
