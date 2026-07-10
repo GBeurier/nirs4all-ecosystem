@@ -22,7 +22,10 @@ No changes were made to `nirs4all-drafts`, `nirs4all-lab`, or `nirs4all-ui`.
 
 ### `nirs4all`
 
-Commit: `102c20760efb7dab422004780a2678ff47729aea`
+Commits:
+
+- `102c20760efb7dab422004780a2678ff47729aea`
+- `12bb829ee8e54e7dd050802328bf9c0d64a76f3e`
 
 Files changed:
 
@@ -32,12 +35,15 @@ Files changed:
 - `nirs4all/pipeline/bundle/loader.py`
 - `tests/unit/cli/test_main.py`
 - `tests/unit/pipeline/bundle/test_bundle.py`
+- `docs/source/migration/duckdb_to_sqlite.md`
+- `docs/source/user_guide/troubleshooting/migration.md`
 
 Decisions:
 
 - `nirs4all[transition]` now installs `nirs4all-tools[duckdb,parquet]>=0.0.5`, so the documented converter command can handle real legacy workspace inputs.
 - Bundle format version is centralized in `nirs4all.pipeline.bundle.constants`.
 - `BundleLoader` now refuses future `.n4a` bundle format versions with an explicit upgrade error instead of loading silently.
+- Migration docs now mention the non-mutating transition converter path while preserving the existing Python auto-migration behavior.
 
 Validation:
 
@@ -46,6 +52,7 @@ Validation:
 - `.venv/bin/python -m pytest -q tests/unit/pipeline/bundle/test_bundle.py tests/unit/cli/test_main.py tests/unit/workspace/test_workspace_compat.py`
 - `.venv/bin/python -m build --sdist --wheel --outdir /tmp/n4a-transition-build2`
 - Wheel metadata checked: `Requires-Dist: nirs4all-tools[duckdb,parquet]>=0.0.5; extra == "transition"`
+- Docs build attempted with `.venv/bin/python -m sphinx ...`; not run because Sphinx is not installed in this venv.
 
 Result: local targeted validation green. The repository is clean after push. A new Pre-Publish workflow was not auto-triggered by this push; previous Pre-Publish was green on `1bc3dcad`.
 
@@ -75,7 +82,7 @@ Result: local targeted validation green. GitHub Studio checks were triggered on 
 
 - `nirs4all` still scopes `engine="dag-ml"` to `run()`. `predict`, `explain`, `retrain`, session and generate APIs intentionally reject non-legacy engines today.
 - `nirs4all` still contains transition-era in-place DuckDB auto-migration in `WorkspaceStore`, while `nirs4all-tools` documents a no-in-place converter policy. This needs either a documented transition exception or a later removal with migration tests adjusted.
-- Python docs still mention transparent DuckDB migration through `nirs4all[migration]`; they should be reconciled before the final transition release notes.
+- Python docs now include the offline converter path, but the full release notes still need to state the exact transition policy and legacy-removal plan.
 - Studio backend selection is per-run only. There is no global engine preference in Settings.
 - Studio legacy warning is currently visible in Settings / Workspace Statistics, not as a workspace-open banner.
 - Studio conversion writes a sibling `*-workspace-v2` directory and does not automatically re-link the active workspace.
