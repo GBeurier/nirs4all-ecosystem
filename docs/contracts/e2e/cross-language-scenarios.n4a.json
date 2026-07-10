@@ -1137,12 +1137,12 @@
             "python3.11"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-web/studio-lite/tests/repository-best-pipeline-smoke.mjs"
+            "{workspace_root}/nirs4all-web/web-app/tests/repository-best-pipeline-smoke.mjs"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_EVIDENCE={artifacts_dir}/python-paper-repository/repository-best-pipeline.json N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/python-paper-repository N4A_REPOSITORY_DATASET_EXPECTED_BADGE='130 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/python-paper-repository npm run smoke:repository-best-pipeline"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_EVIDENCE={artifacts_dir}/python-paper-repository/repository-best-pipeline.json N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/python-paper-repository N4A_REPOSITORY_DATASET_EXPECTED_BADGE='130 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/python-paper-repository npm run smoke:repository-best-pipeline"
           ],
           "produces": [
             "{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json",
@@ -1263,10 +1263,10 @@
             "python3.11"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
-            "{workspace_root}/nirs4all-web/studio-lite/tests/pipeline-repository-smoke.mjs",
-            "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/manifest.json",
-            "{workspace_root}/nirs4all-web/studio-lite/tests/fixtures/pipeline-repository/repository-forced-best-refit.n4a.json",
+            "{workspace_root}/nirs4all-web/web-app/src/app/shared-ui-contract.test.ts",
+            "{workspace_root}/nirs4all-web/web-app/tests/pipeline-repository-smoke.mjs",
+            "{workspace_root}/nirs4all-web/web-app/tests/fixtures/pipeline-repository/manifest.json",
+            "{workspace_root}/nirs4all-web/web-app/tests/fixtures/pipeline-repository/repository-forced-best-refit.n4a.json",
             "{workspace_root}/nirs4all-providers/src/nirs4all_providers/datasets.py",
             "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/bootstrap.py",
             "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/organize.py",
@@ -1275,7 +1275,7 @@
           "command": [
             "bash",
             "-lc",
-            "python3.11 {ecosystem_root}/scripts/export_repository_dataset_fixture.py --workspace-root {workspace_root} --out-dir {artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset --build-synthetic-catalog-fixture && cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset N4A_REPOSITORY_DATASET_EXPECTED_BADGE='48 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
+            "python3.11 {ecosystem_root}/scripts/export_repository_dataset_fixture.py --workspace-root {workspace_root} --out-dir {artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset --build-synthetic-catalog-fixture && cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset N4A_REPOSITORY_DATASET_EXPECTED_BADGE='48 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
           ],
           "produces": [
             "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
@@ -1292,13 +1292,13 @@
             "npm"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
-            "{workspace_root}/nirs4all-web/studio-lite/tests/n4a-roundtrip-smoke.mjs"
+            "{workspace_root}/nirs4all-web/web-app/src/app/shared-ui-contract.test.ts",
+            "{workspace_root}/nirs4all-web/web-app/tests/n4a-roundtrip-smoke.mjs"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"
           ],
           "produces": [
             "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"
@@ -1638,13 +1638,13 @@
             "npm"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-web/studio-lite/src/app/shared-ui-contract.test.ts",
-            "{workspace_root}/nirs4all-web/studio-lite/tests/converted-predictions-render-smoke.mjs"
+            "{workspace_root}/nirs4all-web/web-app/src/app/shared-ui-contract.test.ts",
+            "{workspace_root}/nirs4all-web/web-app/tests/converted-predictions-render-smoke.mjs"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"
           ],
           "produces": [
             "{artifacts_dir}/legacy-converter/web-results-panels.json",
@@ -1886,12 +1886,12 @@
             "google-chrome"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-web/studio-lite/tests/performance-compare-smoke.mjs"
+            "{workspace_root}/nirs4all-web/web-app/tests/performance-compare-smoke.mjs"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/performance-compare npm run smoke:performance-compare"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/performance-compare npm run smoke:performance-compare"
           ],
           "produces": [
             "{artifacts_dir}/performance-compare/python-vs-dagml.json",
@@ -2353,14 +2353,14 @@
             "npm"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-web/studio-lite/src/app/custom-app-host.contract.test.ts",
+            "{workspace_root}/nirs4all-web/web-app/src/app/custom-app-host.contract.test.ts",
             "{workspace_root}/nirs4all-core/tests/parity/expected/portable_python_oracle.json",
-            "{workspace_root}/nirs4all-web/studio-lite/vendor/nirs4all-ui/dist/components/index.js"
+            "{workspace_root}/nirs4all-web/web-app/vendor/nirs4all-ui/dist/components/index.js"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-run.json",
@@ -2377,14 +2377,14 @@
             "npm"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-web/studio-lite/src/app/custom-app-host.contract.test.ts",
-            "{workspace_root}/nirs4all-web/studio-lite/package.json",
+            "{workspace_root}/nirs4all-web/web-app/src/app/custom-app-host.contract.test.ts",
+            "{workspace_root}/nirs4all-web/web-app/package.json",
             "{workspace_root}/nirs4all-ui/src/components/index.ts"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-ui.json"
@@ -2399,12 +2399,12 @@
             "npm"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-web/studio-lite/scripts/smoke-published-custom-host.mjs"
+            "{workspace_root}/nirs4all-web/web-app/scripts/smoke-published-custom-host.mjs"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.9 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.11 N4A_PUBLISHED_METHODS_VERSION=1.0.9 npm run smoke:published-custom-host"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.9 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.11 N4A_PUBLISHED_METHODS_VERSION=1.0.9 npm run smoke:published-custom-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/published-custom-host.json"

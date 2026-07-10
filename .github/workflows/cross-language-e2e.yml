@@ -87,7 +87,7 @@ jobs:
             -e "nirs4all-methods/bindings/python" \
             -e "nirs4all-core/bindings/python"
           npm --prefix nirs4all-core/bindings/wasm ci --no-audit --no-fund
-          npm --prefix nirs4all-web/studio-lite ci --no-audit --no-fund
+          npm --prefix nirs4all-web/web-app ci --no-audit --no-fund
       - name: Build strict methods runtime artifacts
         if: ${{ github.event.inputs.execute == 'true' }}
         run: |
