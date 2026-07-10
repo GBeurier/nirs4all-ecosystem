@@ -129,6 +129,64 @@ Additional validation:
 - GitHub `Playwright E2E Tests` green on `fc7925d` with `63 passed`.
 - GitHub `version-guard` green on `fc7925d`.
 
+Follow-up commit: `c88508e27376229101ea3a95e99d1f68f7fd0e7b`
+
+Additional files changed:
+
+- `src/lib/runtimeBackendPreference.ts`
+- `src/lib/runtimeBackendPreference.test.ts`
+- `src/components/settings/RuntimeBackendPreference.tsx`
+- `src/pages/SettingsSections.tsx`
+- `src/pages/NewExperiment.tsx`
+- `src/components/pipeline-editor/PipelineExecutionDialog.tsx`
+
+Additional decisions:
+
+- Studio now exposes a global runtime backend preference in Settings.
+- New experiments and pipeline-editor executions consume the same persisted preference.
+- `dag-ml` fallback is persisted only when the selected backend is `dag-ml`; legacy/default selections cannot retain a stale fallback flag.
+
+Additional validation:
+
+- Linux Node direct Vitest run for `src/lib/runtimeBackendPreference.test.ts` and `src/components/runtime/RuntimeComponents.test.tsx` (`9 passed`)
+- Linux Node direct `tsc --noEmit`
+- Linux Node direct ESLint on touched frontend files
+- GitHub `CI` green on `c88508e`.
+- GitHub `Playwright E2E Tests` green on `c88508e` with `63 passed`.
+- GitHub `version-guard` green on `c88508e`.
+
+Follow-up commit: `c35b98207891da1beddff6ca26081d5d74173dc6`
+
+Additional files changed:
+
+- `scripts/python-runtime-config.cjs`
+- `requirements.txt`
+- `requirements-cpu.txt`
+- `api/workspace/models.py`
+- `api/workspace/router_maintenance.py`
+- `api/workspace/services.py`
+- `src/types/storage.ts`
+- `src/components/settings/WorkspaceStats.tsx`
+- `tests/test_workspace_transition.py`
+
+Additional decisions:
+
+- Studio runtime requirements now install `nirs4all-tools[duckdb,parquet]>=0.0.5`, matching the legacy workspace converter extras required for real DuckDB/Parquet inputs.
+- A converter exit code `10` is treated as best-effort success, but Studio no longer auto-links or activates that output.
+- The conversion response now reports `best_effort` and `activation_skipped`, so the UI can distinguish a clean conversion from a preserved/manual-review output.
+
+Additional validation:
+
+- `rtk pytest tests/test_workspace_transition.py -q` (`7 passed`)
+- `rtk ruff check api/workspace/models.py api/workspace/router_maintenance.py api/workspace/services.py tests/test_workspace_transition.py`
+- `node scripts/check-dep-sync.cjs`
+- Linux Node direct `tsc --noEmit`
+- Linux Node direct ESLint on touched frontend files
+- Linux Node direct Vitest run for `src/components/settings/__tests__/WorkspaceStats.test.tsx` and `src/lib/runtimeBackendPreference.test.ts` (`5 passed`)
+- GitHub `CI` green on `c35b982`.
+- GitHub `Playwright E2E Tests` green on `c35b982` with `63 passed`.
+- GitHub `version-guard` green on `c35b982`.
+
 ### `nirs4all-cockpit`
 
 Commit: `7a78202`
@@ -184,7 +242,8 @@ Validation:
 - `nirs4all` still scopes `engine="dag-ml"` to `run()`. `predict`, `explain`, `retrain`, session and generate APIs intentionally reject non-legacy engines today.
 - `nirs4all` still contains transition-era in-place DuckDB auto-migration in `WorkspaceStore`, while `nirs4all-tools` documents a no-in-place converter policy. This needs either a documented transition exception or a later removal with migration tests adjusted.
 - Python docs now include the offline converter path, but the full release notes still need to state the exact transition policy and legacy-removal plan.
-- Studio backend selection is per-run only. There is no global engine preference in Settings.
+- Studio backend selection now has a global Settings preference for the new-experiment and pipeline-editor execution paths. Secondary backend routes still need review.
 - Studio legacy warning is currently visible in Settings / Workspace Statistics, not as a workspace-open banner.
-- Studio conversion writes a sibling `*-workspace-v2` directory and now attempts to automatically link and activate that converted workspace.
+- Studio conversion writes a sibling `*-workspace-v2` directory, links and activates clean conversions, and deliberately skips automatic activation for best-effort conversions.
+- Studio packaged release metadata still pins the current Python library line until the held `nirs4all` transition release is cut.
 - Full parity and fresh cross-language e2e evidence were not launched in this small batch; run them after the next larger stabilization batch.
