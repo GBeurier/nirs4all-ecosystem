@@ -36,7 +36,7 @@ def _github_json(url: str) -> dict[str, Any]:
         "User-Agent": "nirs4all-ecosystem-e2e",
         "X-GitHub-Api-Version": "2022-11-28",
     }
-    token = os.environ.get("GITHUB_TOKEN")
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if token:
         headers["Authorization"] = f"Bearer {token}"
     req = urllib.request.Request(url, headers=headers)
