@@ -29,6 +29,10 @@ Date: 2026-07-10
 - Fresh GitHub workflow-dispatch ready runtime suite:
   workflow `Cross-language E2E scenarios` run `29093521760` passed on `2d86bc8acfb4c1424b43e48e57d91b8b6239ca0f`.
   The run installed executed E2E dependencies, built strict methods runtime artifacts, installed strict R runtime dependencies, executed ready scenarios, verified ready artifacts, and checked the committed runtime evidence ledger.
+- Fresh GitHub workflow-dispatch ready runtime suite after the datasets/cockpit release batch:
+  workflow `Cross-language E2E scenarios` run `29099632842` passed on `12e0db1ae9436e1c2dc60ae8eb84c7066ea13552`.
+  The run installed executed E2E package dependencies, built strict native/WASM methods runtime artifacts, installed strict R runtime dependencies, executed all ready scenarios, verified ready artifacts, and checked the committed runtime evidence ledger.
+  Downloaded run artifacts confirm `11/11` verified scenarios, `70` runtime artifacts, and `0` failures; the artifact ledger SHA-256 matches the committed `docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json` exactly (`2798192f1ecd6a33b166189020cdb588cbd3c0031947c143aedf1d2507e90620`).
 - GitHub cutover tooling:
   workflow `cutover-gates` validate run `29089122983` passed on `2880712ffae326022f846a96effbbe1fe239ada2`.
 - Local contract checks:
