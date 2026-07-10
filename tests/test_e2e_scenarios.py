@@ -3076,13 +3076,13 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
         "v1_refactor_phase_status_counts": coverage["v1_refactor_phase_status_counts"],
     }
     assert ledger["evidence"] == {
-            "scenario_count": 11,
-            "verified_count": 11,
-            "failed_count": 0,
-            "artifact_count": 70,
-            "failure_count": 0,
-            "max_age_seconds": None,
-        }
+        "scenario_count": 11,
+        "verified_count": 11,
+        "failed_count": 0,
+        "artifact_count": 70,
+        "failure_count": 0,
+        "max_age_seconds": 14400,
+    }
     assert str(ROOT.parent) not in ledger_text
     assert "created_at" not in ledger_text
     assert "elapsed_seconds" not in ledger_text
