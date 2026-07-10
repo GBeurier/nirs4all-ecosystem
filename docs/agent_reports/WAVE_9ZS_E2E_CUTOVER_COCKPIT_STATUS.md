@@ -50,6 +50,7 @@ Date: 2026-07-10
 - A second config change was pushed to `GBeurier/GBeurier.r-universe.dev` (`743ebe4`) to track `nirs4alldatasets` from the latest GitHub Release via `branch: "*release"` instead of the floating `main` branch.
 - The cockpit was refreshed in `nirs4all-cockpit` commit `fdc13a9`: `nirs4all-datasets` now shows source/tag/release/PyPI/npm/crates/GitHub Release at `0.3.7`, while the R-universe target remains honestly `stale` at `0.3.5` and the CRAN target remains manual `pending`.
 - Cockpit validation for `fdc13a9` is green: local `pytest -q` (`146 passed`), `ruff check .`, Chrome dashboard smoke, plus GitHub `ci` `29091568141`, `pages` `29091568648`, and `version-guard` `29091567452`.
+- Cockpit manual action metadata was refreshed in `nirs4all-cockpit` commit `cc6ec1d`: `runiverse-datasets-rebuild` now points at `nirs4all-datasets@784c2872662204e820c8cf6b58d01bc4788148c0` and `GBeurier/GBeurier.r-universe.dev@743ebe47da7e3b9be16a7c4f1216ce4125a6c3a0`; GitHub `ci` `29093186189`, `pages` `29093186188`, and `version-guard` `29093187017` passed.
 - `nirs4all-org` was refreshed in commit `0520cbd` to make the offline fallback badge for `nirs4all-ui` match `v0.1.12`; GitHub `version-guard` `29092357404` and Pages deployment `29092355995` passed.
 
 ## Decisions
