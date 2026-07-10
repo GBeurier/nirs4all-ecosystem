@@ -44,6 +44,7 @@ Date: 2026-07-10
 - Published datasets registries now report `0.3.7` for PyPI, npm, `nirs4all-datasets-core`, `nirs4all-datasets-capi`, and `nirs4all-datasets-cli`; GitHub Release `v0.3.7` includes source, C-ABI, Python wheels/sdist, R tarball, MATLAB/Octave zip, SBOM, and checksums.
 - R-universe still serves `nirs4alldatasets` `0.3.5` at `RemoteSha` `67d47c557bcb8770506409d2c688cb3b60384c18` until its generated universe repo resynchronizes.
 - A config-repo trigger commit was pushed to `GBeurier/GBeurier.r-universe.dev` (`c230d53`), but direct `r-universe/gbeurier` workflow dispatch is not available with the current auth.
+- A second config change was pushed to `GBeurier/GBeurier.r-universe.dev` (`743ebe4`) to track `nirs4alldatasets` from the latest GitHub Release via `branch: "*release"` instead of the floating `main` branch.
 - The cockpit was refreshed in `nirs4all-cockpit` commit `fdc13a9`: `nirs4all-datasets` now shows source/tag/release/PyPI/npm/crates/GitHub Release at `0.3.7`, while the R-universe target remains honestly `stale` at `0.3.5` and the CRAN target remains manual `pending`.
 - Cockpit validation for `fdc13a9` is green: local `pytest -q` (`146 passed`), `ruff check .`, Chrome dashboard smoke, plus GitHub `ci` `29091568141`, `pages` `29091568648`, and `version-guard` `29091567452`.
 
