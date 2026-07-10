@@ -7,7 +7,7 @@ Date: 2026-07-10
 - Closed the CI regression that made the Web/WASM repository-refit scenario fail on a vendored `nirs4all-ui` shim drift.
 - Re-ran the selected Web/Python/native scenario and then the full ready cross-language E2E suite.
 - Updated cutover gate metadata to target the current `nirs4all-web/web-app` layout instead of the retired `studio-lite` path.
-- Rechecked the public cockpit and R-universe state after the datasets 0.3.6 release.
+- Rechecked the public cockpit and R-universe state after the datasets 0.3.6 release, diagnosed the R-universe failure, and published the datasets 0.3.7 fix.
 
 ## Files changed
 
@@ -36,9 +36,14 @@ Date: 2026-07-10
 
 - Public cockpit snapshot timestamp: `2026-07-10T10:03:45.403130+00:00`.
 - Public cockpit still reports `nirs4all-datasets` rollup `stale`.
-- Published datasets evidence is otherwise current: source manifest/tag/release are `0.3.6`, PyPI is `0.3.6`, crates are `0.3.6`, npm is `0.3.6`, GitHub release is `0.3.6`, Pages is green.
-- R-universe still serves `nirs4alldatasets` `0.3.5` at `RemoteSha` `67d47c557bcb8770506409d2c688cb3b60384c18`.
-- The cockpit manual action for `runiverse-datasets-rebuild` remains valid; no cockpit refresh was pushed because the external registry state did not change.
+- R-universe build run `29085264823` failed for `nirs4alldatasets 0.3.6` because `bindings/r/nirs4alldatasets/src/Makevars` assumed `TMPDIR` was always set by R:
+  `nirs4alldatasets: ERROR - TMPDIR is not set by R; cannot create build-local Cargo directories`.
+- `nirs4all-datasets` commit `784c2872` and tag `v0.3.7` fix the Unix Makevars temp root fallback (`TMPDIR` -> `TEMP` -> `TMP` -> `/tmp`) and bump every synced manifest to `0.3.7`.
+- Datasets 0.3.7 release validation is green:
+  `CI` `29089671011`, `ABI Surface` `29089671013`, `version-sync` `29089670940`, `version-guard` `29089671001`, `Site` `29089670999`, `release-python` `29089672317`, `release-npm` `29089672354`, `release-crates` `29089672766`, `release-r` `29089672465`, `release-matlab` `29089673448`, and `release-source` `29089673333`.
+- Published datasets registries now report `0.3.7` for PyPI, npm, `nirs4all-datasets-core`, `nirs4all-datasets-capi`, and `nirs4all-datasets-cli`; GitHub Release `v0.3.7` includes source, C-ABI, Python wheels/sdist, R tarball, MATLAB/Octave zip, SBOM, and checksums.
+- R-universe still serves `nirs4alldatasets` `0.3.5` at `RemoteSha` `67d47c557bcb8770506409d2c688cb3b60384c18` until its generated universe repo resynchronizes.
+- A config-repo trigger commit was pushed to `GBeurier/GBeurier.r-universe.dev` (`c230d53`), but direct `r-universe/gbeurier` workflow dispatch is not available with the current auth. The cockpit manual action for `runiverse-datasets-rebuild` remains valid; no cockpit refresh was pushed because R-universe still has not changed.
 
 ## Decisions
 
@@ -48,5 +53,5 @@ Date: 2026-07-10
 
 ## Risks / follow-up
 
-- R-universe is the only observed external publication lag for `nirs4all-datasets`; recheck and refresh cockpit once it serves `0.3.6`.
+- R-universe is the only observed external publication lag for `nirs4all-datasets`; recheck and refresh cockpit once it serves `0.3.7`.
 - If a production cutover decision is requested, run the strict cutover gate in a prepared RC workspace or update the cutover manifest to a new release workspace topology before treating strict GitHub execution as authoritative.
