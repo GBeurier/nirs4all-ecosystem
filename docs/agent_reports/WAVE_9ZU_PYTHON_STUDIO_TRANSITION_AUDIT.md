@@ -56,6 +56,23 @@ Validation:
 
 Result: local targeted validation green. The repository is clean after push. A new Pre-Publish workflow was not auto-triggered by this push; previous Pre-Publish was green on `1bc3dcad`.
 
+Follow-up commit: `e32bfe5a`
+
+Additional files changed:
+
+- `tests/unit/workspace/test_workspace_compat.py`
+
+Additional decisions:
+
+- Added direct coverage for the legacy DuckDB workspace warning before migration.
+- Verified that the warning gives the user the `nirs4all workspace convert` command before the compatibility path migrates to SQLite.
+
+Additional validation:
+
+- `.venv/bin/python -m pytest -q tests/unit/workspace/test_workspace_compat.py tests/unit/api/test_engine_transition.py tests/unit/pipeline/test_engine_selector.py` (`21 passed`)
+- `.venv/bin/ruff check tests/unit/workspace/test_workspace_compat.py`
+- No full Pre-Publish rerun for this test-only follow-up; reserve the long gate for the next larger parity batch.
+
 ### `nirs4all-studio`
 
 Commit: `ae5b4eba15a8b48695498efac066f9971e12a75b`
@@ -83,26 +100,60 @@ Result:
 - GitHub `Playwright E2E Tests` green on `ae5b4eb` with `63 passed`.
 - GitHub `version-guard` green on `ae5b4eb`.
 
+Follow-up commit: `fc7925d297dcd628d8cffb6d81e3bd318d00aa0d`
+
+Additional files changed:
+
+- `api/workspace/models.py`
+- `api/workspace/router_maintenance.py`
+- `src/api/workspace.ts`
+- `src/components/settings/WorkspaceStats.tsx`
+- `src/components/settings/__tests__/WorkspaceStats.test.tsx`
+- `src/types/storage.ts`
+- `tests/test_workspace_transition.py`
+
+Additional decisions:
+
+- Legacy workspace conversion now links and activates the converted workspace after a successful conversion by default.
+- Conversion remains successful if linking fails; the response records `link_error` so the UI can show the manual fallback.
+- The frontend now requests `link_converted_workspace: true` from Workspace Statistics conversion.
+
+Additional validation:
+
+- `rtk pytest tests/test_workspace_transition.py -q` (`6 passed`)
+- `rtk ruff check api/workspace/models.py api/workspace/router_maintenance.py tests/test_workspace_transition.py`
+- Linux Node direct Vitest run for `src/components/settings/__tests__/WorkspaceStats.test.tsx` (`1 passed`)
+- Linux Node direct `tsc --noEmit`
+- Linux Node direct ESLint on touched frontend files
+- GitHub `CI` green on `fc7925d`.
+- GitHub `Playwright E2E Tests` green on `fc7925d` with `63 passed`.
+- GitHub `version-guard` green on `fc7925d`.
+
 ### `nirs4all-cockpit`
 
 Commit: `7a78202`
 
+Follow-up commit: `725ebcd`
+
 Files changed:
 
 - `data/current.json`
+- `data/manual-actions.json`
 
 Decisions:
 
 - Refreshed public cockpit snapshot after the Python/Studio/ecosystem pushes.
+- Refreshed public cockpit snapshot again after the Studio conversion-linking follow-up.
 
 Validation:
 
 - `n4a-cockpit collect`
 - `pytest -q` (`146 passed`)
 - `ruff check .`
-- GitHub `ci` green on `7a78202`.
-- GitHub `pages` green on `7a78202`.
-- GitHub `version-guard` green on `7a78202`.
+- `n4a-cockpit validate-targets ops/targets.yaml`
+- GitHub `ci` green on `725ebcd`.
+- GitHub `pages` green on `725ebcd`.
+- GitHub `version-guard` green on `725ebcd`.
 
 Snapshot summary:
 
@@ -135,5 +186,5 @@ Validation:
 - Python docs now include the offline converter path, but the full release notes still need to state the exact transition policy and legacy-removal plan.
 - Studio backend selection is per-run only. There is no global engine preference in Settings.
 - Studio legacy warning is currently visible in Settings / Workspace Statistics, not as a workspace-open banner.
-- Studio conversion writes a sibling `*-workspace-v2` directory and does not automatically re-link the active workspace.
+- Studio conversion writes a sibling `*-workspace-v2` directory and now attempts to automatically link and activate that converted workspace.
 - Full parity and fresh cross-language e2e evidence were not launched in this small batch; run them after the next larger stabilization batch.
