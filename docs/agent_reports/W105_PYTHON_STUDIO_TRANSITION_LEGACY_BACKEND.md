@@ -49,6 +49,8 @@ Transition-release hardening for the two held production projects:
 - `src/lib/__tests__/pipelineExecutionContract.test.ts`
 - `src/pages/NewExperiment.tsx`
 - `api/pipelines.py`
+- `backend.spec`
+- `scripts/python-runtime-config.cjs`
 - `requirements.txt`
 - `requirements-cpu.txt`
 - `tests/test_workspace_transition.py`
@@ -70,6 +72,7 @@ Transition-release hardening for the two held production projects:
 - `python3 -m ruff check api/pipelines.py tests/test_runtime_engine.py tests/test_runs_engine_routing.py tests/test_workspace_transition.py tests/test_pipeline_execute_runtime_request.py`
 - `.venv/bin/python -m pytest tests/test_runtime_engine.py tests/test_runs_engine_routing.py tests/test_workspace_transition.py tests/test_pipeline_execute_runtime_request.py`
 - `source ~/.nvm/nvm.sh && nvm use 24 && npm run lint:tsc`
+- `source ~/.nvm/nvm.sh && nvm use 24 && npm run lint:deps`
 - `source ~/.nvm/nvm.sh && nvm use 24 && npx vitest run src/lib/__tests__/pipelineExecutionContract.test.ts src/lib/__tests__/experimentLaunchConfig.test.ts src/lib/__tests__/experimentLaunchPayload.test.ts`
 - `source ~/.nvm/nvm.sh && nvm use 24 && npx vitest run src/components/experiments/NewExperimentReviewStep.test.tsx src/components/experiments/NewExperimentStepContent.test.tsx`
 - Result: backend 39 passed, 7 expected warning-capture warnings; frontend tsc passed; frontend Vitest 26 passed.
