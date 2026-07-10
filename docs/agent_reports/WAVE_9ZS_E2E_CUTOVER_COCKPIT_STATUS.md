@@ -33,6 +33,7 @@ Date: 2026-07-10
   `python3.11 scripts/n4a_e2e_scenarios.py validate` passed (`OK: 11 cross-language E2E scenarios`).
 - Read-only E2E audit confirmed 11 strict/ready scenarios in `docs/contracts/e2e/cross-language-scenarios.n4a.json` and `latest-runtime-evidence-ledger.n4a.json`; the committed ledger records `11/11` scenarios, `70` artifacts, and `0` failures. Current local artifact freshness is weaker (`2/11` still within the 4-hour window), so the authoritative runtime proof remains CI run `29088345220` until a fresh local execute batch is run.
 - Read-only UI audit confirmed `nirs4all-ui` `v0.1.12` exports shared `score`, `runtime`, `dataset`, `components`, `brand`, `styles`, `lab`, `datasetBuilder`, and `assets/*` surfaces; public Pages serves the component/assets site and brand/style/motion assets. `nirs4all-web` and `nirs4all-studio` consume the shared UI without importing the quality/lab surfaces used by `nirs4all-quality`.
+- Read-only core/lite audit confirmed `nirs4all-core` is canonical across repo metadata, submodules, cockpit, PyPI, npm, crates, R-universe, and GitHub Release `v0.3.11`; `nirs4all-lite` remains public only as retired audit/history. The audit found stale ReadTheDocs content, so RTD build `33530873` was triggered and completed successfully on core commit `325f6b9`; the refreshed public HTML no longer contains `nirs4all_lite` or `nirs4all-lite`.
 
 ## Cockpit and R-universe status
 
