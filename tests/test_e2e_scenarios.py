@@ -3843,10 +3843,18 @@ def test_cross_language_e2e_workflow_scheduled_ready_runtime_contract() -> None:
         "Set up Emscripten SDK",
         "Build strict methods runtime artifacts",
         "Export strict methods Python runtime",
-        "Install strict R runtime dependencies",
     ):
         step = _workflow_step_block(workflow, step_name)
         assert "if: ${{ github.event_name == 'schedule' || github.event.inputs.execute == 'true' }}" in step
+
+    r_deps = _workflow_step_block(workflow, "Install strict R runtime dependencies")
+    assert "github.event_name == 'schedule'" in r_deps
+    assert "github.event.inputs.execute == 'true'" in r_deps
+    assert "e2e-r-dataset-io-pipeline-save" in r_deps
+    assert "e2e-multimodal-python-r-wasm-roundtrip" in r_deps
+    assert "e2e-dataset-provider-repository-roundtrip" in r_deps
+    assert "e2e-formats-io-datasets-methods-language-bindings" in r_deps
+    assert "e2e-core-ui-custom-app-host" in r_deps
 
     execute = _workflow_step_block(workflow, "Execute scheduled ready runtime scenarios")
     assert "if: ${{ github.event_name == 'schedule' }}" in execute
