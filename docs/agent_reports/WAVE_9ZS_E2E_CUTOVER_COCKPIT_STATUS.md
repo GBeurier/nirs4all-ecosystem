@@ -34,8 +34,8 @@ Date: 2026-07-10
 
 ## Cockpit and R-universe status
 
-- Public cockpit snapshot timestamp: `2026-07-10T10:03:45.403130+00:00`.
-- Public cockpit still reports `nirs4all-datasets` rollup `stale`.
+- Public cockpit snapshot timestamp: `2026-07-10T12:02:58.271015+00:00`.
+- Public cockpit still reports `nirs4all-datasets` rollup `stale`, specifically because R-universe still serves `0.3.5`.
 - R-universe build run `29085264823` failed for `nirs4alldatasets 0.3.6` because `bindings/r/nirs4alldatasets/src/Makevars` assumed `TMPDIR` was always set by R:
   `nirs4alldatasets: ERROR - TMPDIR is not set by R; cannot create build-local Cargo directories`.
 - `nirs4all-datasets` commit `784c2872` and tag `v0.3.7` fix the Unix Makevars temp root fallback (`TMPDIR` -> `TEMP` -> `TMP` -> `/tmp`) and bump every synced manifest to `0.3.7`.
@@ -43,7 +43,9 @@ Date: 2026-07-10
   `CI` `29089671011`, `ABI Surface` `29089671013`, `version-sync` `29089670940`, `version-guard` `29089671001`, `Site` `29089670999`, `release-python` `29089672317`, `release-npm` `29089672354`, `release-crates` `29089672766`, `release-r` `29089672465`, `release-matlab` `29089673448`, and `release-source` `29089673333`.
 - Published datasets registries now report `0.3.7` for PyPI, npm, `nirs4all-datasets-core`, `nirs4all-datasets-capi`, and `nirs4all-datasets-cli`; GitHub Release `v0.3.7` includes source, C-ABI, Python wheels/sdist, R tarball, MATLAB/Octave zip, SBOM, and checksums.
 - R-universe still serves `nirs4alldatasets` `0.3.5` at `RemoteSha` `67d47c557bcb8770506409d2c688cb3b60384c18` until its generated universe repo resynchronizes.
-- A config-repo trigger commit was pushed to `GBeurier/GBeurier.r-universe.dev` (`c230d53`), but direct `r-universe/gbeurier` workflow dispatch is not available with the current auth. The cockpit manual action for `runiverse-datasets-rebuild` remains valid; no cockpit refresh was pushed because R-universe still has not changed.
+- A config-repo trigger commit was pushed to `GBeurier/GBeurier.r-universe.dev` (`c230d53`), but direct `r-universe/gbeurier` workflow dispatch is not available with the current auth.
+- The cockpit was refreshed in `nirs4all-cockpit` commit `fdc13a9`: `nirs4all-datasets` now shows source/tag/release/PyPI/npm/crates/GitHub Release at `0.3.7`, while the R-universe target remains honestly `stale` at `0.3.5` and the CRAN target remains manual `pending`.
+- Cockpit validation for `fdc13a9` is green: local `pytest -q` (`146 passed`), `ruff check .`, Chrome dashboard smoke, plus GitHub `ci` `29091568141`, `pages` `29091568648`, and `version-guard` `29091567452`.
 
 ## Decisions
 
