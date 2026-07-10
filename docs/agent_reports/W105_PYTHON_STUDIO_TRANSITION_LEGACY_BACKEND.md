@@ -49,6 +49,7 @@ Transition-release hardening for the two held production projects:
 - `src/lib/__tests__/pipelineExecutionContract.test.ts`
 - `src/pages/NewExperiment.tsx`
 - `api/pipelines.py`
+- `electron/env-manager.test.ts`
 - `backend.spec`
 - `scripts/python-runtime-config.cjs`
 - `requirements.txt`
@@ -75,7 +76,9 @@ Transition-release hardening for the two held production projects:
 - `source ~/.nvm/nvm.sh && nvm use 24 && npm run lint:deps`
 - `source ~/.nvm/nvm.sh && nvm use 24 && npx vitest run src/lib/__tests__/pipelineExecutionContract.test.ts src/lib/__tests__/experimentLaunchConfig.test.ts src/lib/__tests__/experimentLaunchPayload.test.ts`
 - `source ~/.nvm/nvm.sh && nvm use 24 && npx vitest run src/components/experiments/NewExperimentReviewStep.test.tsx src/components/experiments/NewExperimentStepContent.test.tsx`
-- Result: backend 39 passed, 7 expected warning-capture warnings; frontend tsc passed; frontend Vitest 26 passed.
+- `source ~/.nvm/nvm.sh && nvm use 24 && npx vitest run electron/env-manager.test.ts --reporter verbose`
+- `source ~/.nvm/nvm.sh && nvm use 24 && npm run test:frontend`
+- Result: backend 39 passed, 7 expected warning-capture warnings; frontend tsc passed; targeted frontend Vitest 45 passed; full frontend Vitest 3699 passed, 1 skipped.
 
 ## Risks / Follow-up
 
