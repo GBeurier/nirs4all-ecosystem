@@ -54,10 +54,13 @@ Date: 2026-07-10
 - A second config change was pushed to `GBeurier/GBeurier.r-universe.dev` (`743ebe4`) to track `nirs4alldatasets` from the latest GitHub Release via `branch: "*release"` instead of the floating `main` branch.
 - Manual dispatch attempts against both `r-universe/gbeurier` `Update universe` and `r-universe-org/control-room` `Sync all universes` returned GitHub `403 Resource not accessible by personal access token`; the remaining path is R-universe's own scheduled sync or an authorized maintainer dispatch.
 - A third config change was pushed to `GBeurier/GBeurier.r-universe.dev` (`bca4cdb`) to pin `nirs4alldatasets` directly to tag `v0.3.7`; R-universe supports branch/tag names in the `branch` field, so this removes the `*release` lookup as a possible source of delay.
+- R-universe run `29094507046` was triggered from that explicit tag pin and published `nirs4alldatasets` `0.3.7` at `RemoteSha` `784c2872662204e820c8cf6b58d01bc4788148c0`; the public API now serves `0.3.7`.
+- The same R-universe run ended with global `failure` because the `Build R-release for Wasm` matrix leg failed. Source, Linux x86_64/arm64, macOS arm64, macOS x86_64, and Windows legs completed successfully; the Wasm log shows `configure` found `/opt/R/4.6.0/lib/R/library/rwasm/bin/cargo` but could not read its version, then rejected the build as missing `Cargo >= 1.85.0`.
 - The cockpit was refreshed in `nirs4all-cockpit` commit `fdc13a9`: `nirs4all-datasets` now shows source/tag/release/PyPI/npm/crates/GitHub Release at `0.3.7`, while the R-universe target remains honestly `stale` at `0.3.5` and the CRAN target remains manual `pending`.
 - Cockpit validation for `fdc13a9` is green: local `pytest -q` (`146 passed`), `ruff check .`, Chrome dashboard smoke, plus GitHub `ci` `29091568141`, `pages` `29091568648`, and `version-guard` `29091567452`.
 - Cockpit manual action metadata was refreshed in `nirs4all-cockpit` commit `cc6ec1d`: `runiverse-datasets-rebuild` now points at `nirs4all-datasets@784c2872662204e820c8cf6b58d01bc4788148c0` and `GBeurier/GBeurier.r-universe.dev@743ebe47da7e3b9be16a7c4f1216ce4125a6c3a0`; GitHub `ci` `29093186189`, `pages` `29093186188`, and `version-guard` `29093187017` passed.
 - Cockpit manual action metadata was refreshed again in `nirs4all-cockpit` commit `d3636e2`: `runiverse-datasets-rebuild` now points at `GBeurier/GBeurier.r-universe.dev@bca4cdb0a5084abe09a88a86a3856233805dfcdc`; local `pytest -q` passed (`146 passed`) and `ruff check .` passed.
+- Cockpit snapshot/manual actions were refreshed in `nirs4all-cockpit` commit `35c7635`: `nirs4all-datasets` rollup is now `green`, R-universe `nirs4alldatasets` is `0.3.7`, global stale count is `0`, and `runiverse-datasets-rebuild` is auto-resolved. Local cockpit validation passed with `pytest -q` (`146 passed`) and `ruff check .`.
 - `nirs4all-org` was refreshed in commit `0520cbd` to make the offline fallback badge for `nirs4all-ui` match `v0.1.12`; GitHub `version-guard` `29092357404` and Pages deployment `29092355995` passed.
 
 ## CRAN submission kit
@@ -75,6 +78,6 @@ Date: 2026-07-10
 
 ## Risks / follow-up
 
-- R-universe is the only observed external publication lag for `nirs4all-datasets`; recheck and refresh cockpit once it serves `0.3.7`.
+- R-universe serves `nirs4alldatasets` `0.3.7`, but its Wasm binary leg still fails because the R-universe `rwasm` cargo wrapper does not report a version compatible with the package configure check.
 - If a production cutover decision is requested, run the strict cutover gate in a prepared RC workspace or update the cutover manifest to a new release workspace topology before treating strict GitHub execution as authoritative.
 - Studio Windows RC manual smoke, CRAN submissions, and a fresh selected-head strict cutover run remain outside the automated proof set.
