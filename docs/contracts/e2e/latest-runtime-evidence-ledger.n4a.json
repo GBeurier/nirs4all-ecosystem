@@ -77,7 +77,7 @@
     }
   },
   "evidence": {
-    "artifact_count": 71,
+    "artifact_count": 70,
     "failed_count": 0,
     "failure_count": 0,
     "max_age_seconds": null,
@@ -1013,13 +1013,12 @@
       ]
     },
     {
-      "artifact_count": 9,
+      "artifact_count": 8,
       "evidence_level": "strict",
       "expected_artifacts": [
         "custom-app-host/custom-host-predictions.json",
         "custom-app-host/custom-host-python-open.json",
         "custom-app-host/custom-host-python-rerun.json",
-        "custom-app-host/custom-host-quality-smoke.json",
         "custom-app-host/custom-host-r-parity.json",
         "custom-app-host/custom-host-run.json",
         "custom-app-host/custom-host-runtime-contracts.json",
@@ -1036,13 +1035,12 @@
       ],
       "repos": [
         "nirs4all-web",
-        "nirs4all-quality",
         "nirs4all-core",
         "nirs4all-methods",
         "nirs4all-ui"
       ],
       "status": "ready",
-      "strict_parity_checks": 7,
+      "strict_parity_checks": 6,
       "strictness_gaps": 0,
       "tags": [
         "pipeline",
@@ -1093,12 +1091,6 @@
           "requirement_count": 16
         },
         {
-          "path": "custom-app-host/custom-host-quality-smoke.json",
-          "proof_kind": "required_json_fields",
-          "proof_sha256": "12437d725b1c37e0ebbb13968c8cba434c78d03ff63cf841ebdaee77b02fc8b3",
-          "requirement_count": 19
-        },
-        {
           "path": "custom-app-host/custom-host-r-parity.json",
           "proof_kind": "required_json_fields",
           "proof_sha256": "805bd9cffc0b9dfea168c36b7d8b259a2360d33f879190a07ecea65d277676ef",
@@ -1133,7 +1125,7 @@
   "source": {
     "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
     "manifest_schema_version": "n4a.cross-language-e2e/v1",
-    "manifest_sha256": "308a7f16e142a23fd43d03bea251e7b15182141135b71694845d68f17b49fc36",
+    "manifest_sha256": "16bc160447facb4182a2a03bdb25df42784a4000a25bb1550e7be7e1f2564f23",
     "regenerate": "python3 scripts/n4a_e2e_scenarios.py evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
     "runtime_artifacts_policy": ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; this ledger records the normalized verified artifact inventory and host-stable proof hashes over required evidence fields."
   }

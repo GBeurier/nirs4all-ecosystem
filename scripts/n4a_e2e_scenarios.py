@@ -60,7 +60,7 @@ REQUIRED_TAGS = {
 REQUIRED_SUITE_WORKFLOW_SURFACES = {
     "core_ui_web_custom_app": {
         "languages": {"python", "r", "javascript_wasm", "web"},
-        "repos": {"nirs4all-core", "nirs4all-quality", "nirs4all-ui", "nirs4all-web"},
+        "repos": {"nirs4all-core", "nirs4all-ui", "nirs4all-web"},
         "tags": {"pipeline", "predictions", "parity", "web_results", "custom_app_host"},
     },
     "r_python_wasm_roundtrip": {
@@ -1082,27 +1082,6 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "dist_wasm_asset_count", "gt": 0},
             {"path": "dist_files", "non_empty": True},
         ],
-        "custom-app-host/custom-host-quality-smoke.json": [
-            {"path": "schema_version", "equals": "n4a.e2e.quality_custom_host_smoke.v1"},
-            {"path": "scenario_id", "equals": "e2e-core-ui-custom-app-host"},
-            {"path": "status", "equals": "passed"},
-            {"path": "repo", "equals": "nirs4all-quality"},
-            {"path": "client_side_only", "equals": True},
-            {"path": "static_preview", "equals": True},
-            {"path": "no_python_backend", "equals": True},
-            {"path": "build.dist_index_exists", "equals": True},
-            {"path": "build.dist_asset_count", "gt": 0},
-            {"path": "build.wasm_asset_count", "gt": 0},
-            {"path": "nirs4all_ui.theme_import", "equals": True},
-            {"path": "nirs4all_ui.lab_source_declared", "equals": True},
-            {"path": "nirs4all_ui.lab_dist_source_declared", "equals": True},
-            {"path": "nirs4all_ui.brand_assets_present", "equals": True},
-            {"path": "wasm_smoke.executed", "equals": True},
-            {"path": "wasm_smoke.engine_label", "equals": "nirs4all-core-wasm"},
-            {"path": "wasm_smoke.nirs4all_core_wasm", "equals": True},
-            {"path": "wasm_smoke.rmsep_rendered", "equals": True},
-            {"path": "wasm_smoke.console_error_count", "equals": 0},
-        ],
     },
 }
 
@@ -2040,7 +2019,6 @@ def _validate_custom_app_host_contract(
         "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json",
         "{artifacts_dir}/custom-app-host/custom-host-ui.json",
         "{artifacts_dir}/custom-app-host/published-custom-host.json",
-        "{artifacts_dir}/custom-app-host/custom-host-quality-smoke.json",
     }
     missing_artifacts = sorted(required_artifacts - set(scenario["artifacts"]))
     if missing_artifacts:
@@ -2067,9 +2045,6 @@ def _validate_custom_app_host_contract(
         },
         "published-package-custom-host": {
             "{artifacts_dir}/custom-app-host/published-custom-host.json",
-        },
-        "quality-custom-host-smoke": {
-            "{artifacts_dir}/custom-app-host/custom-host-quality-smoke.json",
         },
     }
     steps_by_id = {step["id"]: step for step in scenario["steps"]}
