@@ -1,7 +1,8 @@
 # Vision and strategy - nirs4all ecosystem
 
 **Date:** 2026-06-29
-**Status:** strategic target, not a release promise
+**Status:** strategic target, not a release promise; refreshed after the
+`nirs4all-lite` -> `nirs4all-core` cutover
 **Audience:** maintainers, agents, reviewers, future contributors
 
 This document supersedes the earlier NIRS-only framing. NIRS remains the first
@@ -41,10 +42,10 @@ The architecture has five product layers:
    `nirs4all-formats`, and optionally peripheral clients such as datasets,
    repository, benchmarks, cluster and papers. It must expose and package the
    upstream domains; it must not reimplement parsers, numerical kernels,
-   dataset inference or DAG execution. The current local directory named
-   `nirs4all-core` is a temporary integration clone of the Python `nirs4all`
-   repository where the `dag-ml` / `dag-ml-data` convergence is being finished;
-   it is not the final aggregate repository design by itself.
+   dataset inference or DAG execution. The canonical repository for this
+   aggregate is now `nirs4all-core`; the historical `nirs4all-lite` line is
+   retained only as legacy/audit context and must not be published as a new
+   compatibility alias.
 
 3. **`nirs4all` is the full Python library above core.**
    The historical repository name `nirs4all` means the Python product for
@@ -364,10 +365,9 @@ What is already credible:
 
 - `dag-ml` and `dag-ml-data` have advanced contracts, validation gates and
   release-hardening docs.
-- The main `nirs4all` backend convergence is actively being finished in the
-  temporary local `nirs4all-core` clone. If this work lands cleanly, the
-  remaining effort moves from "prove the entire cutover" to hardening,
-  contract completion, release and product reassembly.
+- The portable aggregate now lives in the canonical `nirs4all-core` repository
+  and publishes Python as `nirs4all-core` while Rust, npm/WASM and R use the
+  idiomatic `nirs4all` package name where the target ecosystem allows it.
 - `dag-ml-data` has already moved toward the multimodal representation
   catalogue needed by the target design.
 - `nirs4all-io` has an explicit multimodal backlog and is the next planned
@@ -393,10 +393,11 @@ What is not yet solved:
 - release-grade rebuild/version-lock tooling for aggregate packages;
 - complete `nirs4all-methods` release hardening across platforms and ABI
   matrices;
-- a clean final `nirs4all-core` naming/repo/package transition after the
-  temporary integration clone has served its purpose;
+- complete downstream adoption of the `nirs4all-core` aggregate by the full
+  Python product, Studio/Web runtimes and language-specific controllers;
 - a runtime API contract shared by Studio/Web/CLI/language clients;
-- a shared React UI package;
+- complete adoption of the shared `nirs4all-ui` React package by Studio/Web and
+  downstream apps;
 - full multimodal `nirs4all-io` v2 package support for images, cubes, time
   series and genotype/omics;
 - cross-runtime bundle replay for anything beyond declared portable artifacts;
@@ -411,10 +412,9 @@ exist. It is not cheap because it turns a set of strong repositories into a
 coherent multi-language product platform.
 
 Counting rule: the old migration backlog remains useful as **total work
-already identified**, but it should not be read as the remaining effort if the
-temporary `nirs4all-core` integration clone lands cleanly. The active work
-changes the plan from "start the cutover" to "finish, harden, release and
-package the cutover".
+already identified**, but it should not be read as the remaining effort after
+the `nirs4all-core` cutover. The active work changes the plan from "start the
+cutover" to "finish, harden, release and package the cutover".
 
 | Workstream | Total design estimate | Remaining if current integration lands |
 |---|---:|---:|
@@ -431,13 +431,13 @@ package the cutover".
 
 Practical framing:
 
-- **If the temporary `nirs4all-core` integration is accepted as mostly done:**
+- **After the canonical `nirs4all-core` integration is accepted as mostly done:**
   remaining MVP effort is roughly **105-190 person-weeks**, mainly hardening,
   `nirs4all-io` multimodal v2, aggregate release tooling, runtimes and UI.
 - **If the integration has to be redone from the documented baseline:** fall
   back to the earlier **180-260 person-week** MVP range.
 - **Production multi-language platform from here:** roughly **160-280
-  person-weeks** after the active integration lands, excluding any serious
+  person-weeks** after the active integration, excluding any serious
   multi-tenant cluster service.
 - **Calendar:** 2-4 quarters with a small focused team; longer if one maintainer
   remains the only strategic reviewer.
@@ -452,12 +452,10 @@ claims aligned with real runtime support.
 
 ### P0 - Decisions and source of truth
 
-- Record that the current local `nirs4all-core` is a temporary integration clone
-  of Python `nirs4all`, not the final aggregate repository.
 - Record the completed `nirs4all-lite` -> `nirs4all-core` naming decision,
   including the no-legacy-alias rule.
 - Keep the final aggregate lineage documented in the source-of-truth table as
-  the integration clone is hardened.
+  the canonical `nirs4all-core` release line is hardened.
 - Define public naming: repositories, packages, imports, runtimes.
 - Define the capability vocabulary and unsupported diagnostics.
 - Freeze cross-repo compatibility matrix: `dag-ml`, `dag-ml-data`, `io`,
@@ -569,7 +567,7 @@ Exit: the architecture is not only built; it is scientifically defensible.
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Naming confusion between `nirs4all`, `nirs4all-core`, historical `nirs4all-lite`, `nirs4all-web` | Users and packages cannot understand what to install. | ADR, one source-of-truth table, historical note only for `nirs4all-lite`, no public legacy alias. |
-| Confusion between the temporary local `nirs4all-core` integration clone and the final aggregate product | Wrong repository lineage or premature public naming. | Document the temporary status; merge or retire it before freezing the final aggregate repository. |
+| Confusion between old integration-clone wording and the canonical `nirs4all-core` aggregate | Wrong repository lineage or premature alias publication. | Keep docs and cockpit pointing to `nirs4all-core`; keep `nirs4all-lite` historical only, with no new alias release. |
 | `nirs4all-core` becomes a second implementation | Maintenance collapse and divergent results. | Core may aggregate and expose; all fixes go upstream. |
 | Aggregate rebuilds and version bumps remain manual | Broken releases, ABI skew and unreproducible Studio/Web/Core bundles. | Add manifests, lockfiles, dry-run release checks and rebuild commands, likely first in `nirs4all-ecosystem`; Cockpit monitors the result. |
 | `dag-ml` remains a validator rather than actual runtime | Multimodal claim stays architectural only. | Prioritize executable host-controller path and conformance fixtures. |

@@ -10,6 +10,11 @@ Ce document est le point de synchronisation operationnel des agents. Il est
 fait pour etre modifie pendant le chantier. La roadmap change rarement; ce
 fichier change souvent.
 
+> **Historical board note (2026-07-10):** this file records the parallel-agent
+> cutover history. For current release status, use the cockpit, release
+> contracts, and agent reports. Historical lines that mention `nirs4all-lite`,
+> absent `n4a`, or pre-cutover integration clones are not active instructions.
+
 ## Regles d'edition
 
 1. Chaque agent modifie uniquement sa ligne de lane, les blockers qui le
@@ -63,7 +68,7 @@ fichier change souvent.
 | `L1` Governance/naming/ADR | landed | A0 | `nirs4all-ecosystem` | `LOCK-GOV` signe; appliquer `nirs4all-lite -> nirs4all-core`, facade `n4a.*` additive, R packages explicites, puis `GOV-003`/`GOV-005`. | none |
 | `L2` Capabilities/conformance | review | TBD | ecosystem + core/runtime/product repos | Implementer le ledger/capability view depuis `CAP_spec.md`; consommer `nirs4all/docs/compatibility.json` comme autorite PYREF. Representation IDs ne bloquent plus depuis W5/W6. | none |
 | `L3` Aggregation/release tooling | review | SW3/Codex | `nirs4all-ecosystem` | Generator/validator + checkout pinned-members + validation CI multi-repo livres localement. Etendre les gates quand de nouveaux packs apparaissent. | none |
-| `L4` Core aggregate | review | TBD | `nirs4all-lite` | Implementer l'ADR `lite -> nirs4all-core` contre `LOCK-GOV` + `LOCK-REL`. | none |
+| `L4` Core aggregate | landed | Codex | `nirs4all-core` | Canonical aggregate repo in place; `nirs4all-lite` retained only as historical/audit checkout with no new alias release. Continue hardening through cockpit/release contracts. | none |
 | `L5` dag-ml runtime | review | W1/W2/W3/W31-W35/W41-W43/W82-W83 | `dag-ml`, `nirs4all/pipeline/dagml` | Fallback meter et boundary gates livres; Wave-2J verifie `coverage_meter.fallback=0` sur `refactor/integration-nirs4all`, fait de `dag-ml` le default, et rend les chemins legacy explicites seulement. Next = garder les gates verts et verifier les contrats frais avec W91/W92/W93 avant release. | `LOCK-PYREF`, `LOCK-RT`, `L16`, strict full-gate release run |
 | `L6` dag-ml-data providers | review | IMP-L6 | `dag-ml-data` (`refactor/L6-dmd-registry`) | Representation registry v1 livre et staged: les 26 IDs existants sont publies/frozen via API+CLI+JSON+drift test; prochaine tranche = wiring lockstep conformance-pack avec `dag-ml` et `data_requirements` L16. | `LOCK-IO`, `LOCK-LOCKSTEP` |
 | `L7` nirs4all-io multimodal | review | Codex/L7 | `nirs4all-io` (`refactor/L7-io-dagml-sibling`) | Gate sibling `dag-ml-data` livre localement pour `nirs4all-io-dagml`; prochaine etape = spec V2 `DatasetPackage`. | `LOCK-IO` |

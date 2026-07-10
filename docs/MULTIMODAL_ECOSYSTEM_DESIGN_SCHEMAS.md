@@ -92,7 +92,7 @@ Recommendation:
 - Packages idiomatiques par langage pour l'aggregate:
   - Python: `nirs4all-core`;
   - Rust crate: `nirs4all`;
-  - npm/WASM: `@nirs4all/core` ou `nirs4all` selon politique;
+  - npm/WASM: `nirs4all`;
   - R: `nirs4all`;
   - MATLAB/Octave: `+nirs4all`.
 - Runtimes nommes par target:
