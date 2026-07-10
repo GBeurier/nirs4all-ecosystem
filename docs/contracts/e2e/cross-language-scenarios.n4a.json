@@ -926,7 +926,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH PYTHONPATH={workspace_root}/nirs4all-providers/src:{workspace_root}/nirs4all-datasets/src:{workspace_root}/nirs4all-io/src:${{PYTHONPATH:-}} Rscript bindings/r/tests/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"
+            "cd {workspace_root}/nirs4all-core && PATH={r_bin_dir}:$PATH PYTHONPATH={workspace_root}/nirs4all-providers/src:{workspace_root}/nirs4all-datasets/src:{workspace_root}/nirs4all-io/src:${{PYTHONPATH:-}} Rscript bindings/r/tests/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"
           ],
           "produces": [
             "{artifacts_dir}/r-dataset-io-pipeline/dataset-card.json",
@@ -950,7 +950,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH NIRS4ALL_CORE_R_PARITY_LEDGER={artifacts_dir}/r-dataset-io-pipeline/r-parity-ledger.json NIRS4ALL_CORE_R_PARITY_SCENARIO_ID=e2e-r-dataset-io-pipeline-save make test-r-parity && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"
+            "cd {workspace_root}/nirs4all-core && PATH={r_bin_dir}:$PATH NIRS4ALL_CORE_R_PARITY_LEDGER={artifacts_dir}/r-dataset-io-pipeline/r-parity-ledger.json NIRS4ALL_CORE_R_PARITY_SCENARIO_ID=e2e-r-dataset-io-pipeline-save make test-r-parity && PATH={r_bin_dir}:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"
           ],
           "produces": [
             "{artifacts_dir}/r-dataset-io-pipeline/r-parity-ledger.json",
@@ -1142,7 +1142,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_EVIDENCE={artifacts_dir}/python-paper-repository/repository-best-pipeline.json N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/python-paper-repository N4A_REPOSITORY_DATASET_EXPECTED_BADGE='130 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/python-paper-repository npm run smoke:repository-best-pipeline"
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_EVIDENCE={artifacts_dir}/python-paper-repository/repository-best-pipeline.json N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/python-paper-repository N4A_REPOSITORY_DATASET_EXPECTED_BADGE='130 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/python-paper-repository npm run smoke:repository-best-pipeline"
           ],
           "produces": [
             "{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json",
@@ -1275,7 +1275,7 @@
           "command": [
             "bash",
             "-lc",
-            "python3.11 {ecosystem_root}/scripts/export_repository_dataset_fixture.py --workspace-root {workspace_root} --out-dir {artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset --build-synthetic-catalog-fixture && cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset N4A_REPOSITORY_DATASET_EXPECTED_BADGE='48 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
+            "python3.11 {ecosystem_root}/scripts/export_repository_dataset_fixture.py --workspace-root {workspace_root} --out-dir {artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset --build-synthetic-catalog-fixture && cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset N4A_REPOSITORY_DATASET_EXPECTED_BADGE='48 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
           ],
           "produces": [
             "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
@@ -1298,7 +1298,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"
           ],
           "produces": [
             "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"
@@ -1411,7 +1411,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH Rscript --version >/dev/null && LD_LIBRARY_PATH={workspace_root}/nirs4all-methods/build/dev-release/cpp/src:$LD_LIBRARY_PATH PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_multimodal_roundtrip.py --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}/multimodal-roundtrip"
+            "cd {workspace_root}/nirs4all-core && PATH={r_bin_dir}:{node24_bin_dir}:$PATH Rscript --version >/dev/null && LD_LIBRARY_PATH={workspace_root}/nirs4all-methods/build/dev-release/cpp/src:$LD_LIBRARY_PATH PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/run_multimodal_roundtrip.py --workspace-root {workspace_root} --artifacts-dir {artifacts_dir}/multimodal-roundtrip"
           ],
           "produces": [
             "{artifacts_dir}/multimodal-roundtrip/r-predictions.parquet",
@@ -1644,7 +1644,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run smoke:shared-ui-contract && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run build && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"
           ],
           "produces": [
             "{artifacts_dir}/legacy-converter/web-results-panels.json",
@@ -1784,7 +1784,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH Rscript --version >/dev/null && PATH=/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH npm --prefix bindings/wasm ci --ignore-scripts --no-audit --no-fund && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:/home/delete/.nvm/versions/node/v24.16.0/bin:$PATH LD_LIBRARY_PATH={workspace_root}/nirs4all-methods/build/dev-release/cpp/src:${{LD_LIBRARY_PATH:-}} python3.11 scripts/e2e/consume_repository_descriptor.py --artifacts-dir {artifacts_dir}/provider-repository-roundtrip"
+            "cd {workspace_root}/nirs4all-core && PATH={r_bin_dir}:{node24_bin_dir}:$PATH Rscript --version >/dev/null && PATH={node24_bin_dir}:$PATH npm --prefix bindings/wasm ci --ignore-scripts --no-audit --no-fund && PATH={r_bin_dir}:{node24_bin_dir}:$PATH LD_LIBRARY_PATH={workspace_root}/nirs4all-methods/build/dev-release/cpp/src:${{LD_LIBRARY_PATH:-}} python3.11 scripts/e2e/consume_repository_descriptor.py --artifacts-dir {artifacts_dir}/provider-repository-roundtrip"
           ],
           "produces": [
             "{artifacts_dir}/provider-repository-roundtrip/cross-language-consumption.json"
@@ -1891,7 +1891,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && NODE_BIN=${{N4A_NODE_BIN:-$HOME/.nvm/versions/node/v22.21.1/bin}} && if [ -d \"$NODE_BIN\" ]; then export PATH=\"$NODE_BIN:$PATH\"; fi && npm run build && ARTIFACTS_DIR={artifacts_dir}/performance-compare npm run smoke:performance-compare"
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/performance-compare npm run smoke:performance-compare"
           ],
           "produces": [
             "{artifacts_dir}/performance-compare/python-vs-dagml.json",
@@ -2128,7 +2128,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-methods && PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH Rscript --version >/dev/null && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"
+            "cd {workspace_root}/nirs4all-methods && PATH={r_bin_dir}:$PATH Rscript --version >/dev/null && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"
           ],
       "produces": [
         "{artifacts_dir}/formats-io-methods/binding-parity.json",
@@ -2314,7 +2314,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && export PATH=/home/delete/miniconda3/envs/pls4all_r/bin:$PATH && Rscript --version >/dev/null && NIRS4ALL_CORE_R_PARITY_LEDGER={artifacts_dir}/custom-app-host/custom-host-r-parity.json NIRS4ALL_CORE_R_PARITY_SCENARIO_ID=e2e-core-ui-custom-app-host make test-r-parity PYTHON=python3.11"
+            "cd {workspace_root}/nirs4all-core && export PATH={r_bin_dir}:$PATH && Rscript --version >/dev/null && NIRS4ALL_CORE_R_PARITY_LEDGER={artifacts_dir}/custom-app-host/custom-host-r-parity.json NIRS4ALL_CORE_R_PARITY_SCENARIO_ID=e2e-core-ui-custom-app-host make test-r-parity PYTHON=python3.11"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-r-parity.json"
@@ -2360,7 +2360,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-run.json",
@@ -2384,7 +2384,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH npm run check:ui-shim && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-ui.json"
@@ -2404,7 +2404,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/studio-lite && PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.9 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.10 N4A_PUBLISHED_METHODS_VERSION=1.0.9 npm run smoke:published-custom-host"
+            "cd {workspace_root}/nirs4all-web/studio-lite && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.9 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.10 N4A_PUBLISHED_METHODS_VERSION=1.0.9 npm run smoke:published-custom-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/published-custom-host.json"

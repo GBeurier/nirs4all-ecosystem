@@ -53,6 +53,11 @@ normalized artifact paths plus host-stable proof hashes over required JSON
 evidence fields; it deliberately avoids full-file hashes because generated
 artifacts can contain absolute paths, timestamps, and duration fields.
 
+The scenario manifest must not pin developer-home tool paths. Runtime commands
+use portable placeholders resolved by `scripts/n4a_e2e_scenarios.py`: set
+`N4A_R_BIN_DIR`, `N4A_NODE22_BIN_DIR`, or `N4A_NODE24_BIN_DIR` when R or Node
+live outside the default `$HOME/miniconda3/...` and `$HOME/.nvm/...` locations.
+
 Coverage output also includes explicit `gate_scope` and `debt_summary` sections.
 Keep them visible in boards and CI logs: `gate_scope` says whether the command
 only checked the manifest or verified runtime evidence, while `debt_summary`

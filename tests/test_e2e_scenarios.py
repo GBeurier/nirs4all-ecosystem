@@ -3715,6 +3715,36 @@ def test_cross_language_e2e_python311_steps_use_python311_command() -> None:
                 assert any("python3.11" in part for part in step["command"]), f"{scenario['id']}.{step['id']}"
 
 
+def test_cross_language_e2e_commands_do_not_pin_local_home_paths() -> None:
+    manifest = _read_manifest()
+
+    rendered_placeholders = {
+        "{r_bin_dir}",
+        "{node22_bin_dir}",
+        "{node24_bin_dir}",
+    }
+    commands = [
+        (scenario["id"], step["id"], " ".join(step.get("command", [])))
+        for scenario in manifest["scenarios"]
+        for step in scenario["steps"]
+    ]
+
+    for scenario_id, step_id, command in commands:
+        assert "/home/delete" not in command, f"{scenario_id}.{step_id}"
+        assert "$HOME/.nvm/versions/node" not in command, f"{scenario_id}.{step_id}"
+        assert "miniconda3/envs/pls4all_r" not in command, f"{scenario_id}.{step_id}"
+        assert "N4A_NODE_BIN" not in command, f"{scenario_id}.{step_id}"
+    assert any("{r_bin_dir}" in command for _, _, command in commands)
+    assert any("{node22_bin_dir}" in command for _, _, command in commands)
+    assert any("{node24_bin_dir}" in command for _, _, command in commands)
+    assert rendered_placeholders <= {
+        fragment
+        for _, _, command in commands
+        for fragment in rendered_placeholders
+        if fragment in command
+    }
+
+
 def _workflow_step_block(workflow: str, name: str) -> str:
     marker = f"      - name: {name}\n"
     start = workflow.index(marker)

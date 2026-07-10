@@ -145,14 +145,22 @@ ALLOWED_V1_REFACTOR_STATUSES = {
     "gap",
     "not_applicable",
 }
+DEFAULT_R_BIN_DIR = Path(os.environ.get("N4A_R_BIN_DIR", str(Path.home() / "miniconda3/envs/pls4all_r/bin")))
+DEFAULT_NODE22_BIN_DIR = Path(
+    os.environ.get("N4A_NODE22_BIN_DIR", str(Path.home() / ".nvm/versions/node/v22.21.1/bin"))
+)
+DEFAULT_NODE24_BIN_DIR = Path(
+    os.environ.get("N4A_NODE24_BIN_DIR", str(Path.home() / ".nvm/versions/node/v24.16.0/bin"))
+)
+
 TOOL_FALLBACKS = {
-    "R": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/R")],
-    "Rscript": [Path("/home/delete/miniconda3/envs/pls4all_r/bin/Rscript")],
+    "R": [DEFAULT_R_BIN_DIR / "R"],
+    "Rscript": [DEFAULT_R_BIN_DIR / "Rscript"],
     "node": [
-        Path.home() / ".nvm/versions/node/v24.16.0/bin/node",
-        Path.home() / ".nvm/versions/node/v22.21.1/bin/node",
+        DEFAULT_NODE24_BIN_DIR / "node",
+        DEFAULT_NODE22_BIN_DIR / "node",
     ],
-    "npm": [Path.home() / ".nvm/versions/node/v22.21.1/bin/npm"],
+    "npm": [DEFAULT_NODE22_BIN_DIR / "npm"],
     "google-chrome": [Path("/usr/bin/google-chrome"), Path("/usr/bin/chromium"), Path("/usr/bin/chromium-browser")],
 }
 ALLOWED_STEP_KINDS = {
@@ -1146,6 +1154,9 @@ def _format_value(value: Any, workspace_root: Path, artifacts_dir: Path) -> Any:
             workspace_root=str(workspace_root),
             ecosystem_root=str(repo_root()),
             artifacts_dir=str(artifacts_dir),
+            r_bin_dir=str(DEFAULT_R_BIN_DIR),
+            node22_bin_dir=str(DEFAULT_NODE22_BIN_DIR),
+            node24_bin_dir=str(DEFAULT_NODE24_BIN_DIR),
         )
     if isinstance(value, list):
         return [_format_value(item, workspace_root, artifacts_dir) for item in value]
