@@ -581,7 +581,7 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "published_package_install": True,
             "bundled_downstream_app": True,
             "public_imports_only": True,
-            "nirs4all_version": "0.3.9",
+            "nirs4all_version": "0.3.10",
             "nirs4all_ui_version": "0.1.11",
             "nirs4all_methods_version": "1.0.9",
             "upstream_methods_installed": True,
@@ -863,8 +863,8 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "scenario_id": "e2e-formats-io-datasets-methods-language-bindings",
             "status": "passed",
             "release": {
-                "tag": "v0.3.9",
-                "asset_name": "nirs4all-matlab-octave-0.3.9.zip",
+                "tag": "v0.3.10",
+                "asset_name": "nirs4all-matlab-octave-0.3.10.zip",
                 "asset_present": True,
                 "asset_digest": "sha256:" + "m" * 64,
                 "asset_size": 22987,
@@ -872,7 +872,7 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "workflow_run": {
                 "workflow": "release-matlab.yml",
                 "event": "push",
-                "head_branch": "v0.3.9",
+                "head_branch": "v0.3.10",
                 "conclusion": "success",
             },
             "local_workflow": {

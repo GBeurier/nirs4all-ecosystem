@@ -989,7 +989,7 @@
         {
           "path": "formats-io-methods/matlab-octave-release-gate.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "a1e94811c5e648f86712dccd1534b3abc7b4672df5577ec7a215f28e2fc643b5",
+          "proof_sha256": "bc862e02f42cb12e814a59fadc9e58418def5138bfe7e22706e07f1cd10d53fb",
           "requirement_count": 25
         },
         {
@@ -1123,7 +1123,7 @@
         {
           "path": "custom-app-host/published-custom-host.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "b1dc4a1749ea6b64ea935eadf21502d3e124253a1ac4f977ddc01f57268438c5",
+          "proof_sha256": "ab3a270809bd28abb9e289208f311f9d0b3967fade2ef0e9062c1d74d73d1230",
           "requirement_count": 26
         }
       ]
@@ -1133,7 +1133,7 @@
   "source": {
     "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
     "manifest_schema_version": "n4a.cross-language-e2e/v1",
-    "manifest_sha256": "1af27cb0605cf6e55dfd4679f714cbb5797dc4b6117b7d5a235451a1b1788bb7",
+    "manifest_sha256": "73b9b85dc8cbd4e3762d1266cf95c69db11aac0c985703c0fe0e4e2a084df2dc",
     "regenerate": "python3 scripts/n4a_e2e_scenarios.py evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
     "runtime_artifacts_policy": ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; this ledger records the normalized verified artifact inventory and host-stable proof hashes over required evidence fields."
   }
