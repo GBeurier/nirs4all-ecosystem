@@ -119,17 +119,27 @@ jobs:
         run: python3 scripts/n4a_e2e_scenarios.py validate
       - name: Run pytest validation
         env:
+          N4A_E2E_EVENT_NAME: ${{ github.event_name }}
+          N4A_E2E_EXECUTE: ${{ github.event.inputs.execute }}
           N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}
         run: |
+          full_workspace_checks=0
+          if [[ "$N4A_E2E_EVENT_NAME" == "schedule" ]]; then
+            full_workspace_checks=1
+          elif [[ "$N4A_E2E_EXECUTE" == "true" && -z "$N4A_E2E_SCENARIO" ]]; then
+            full_workspace_checks=1
+          fi
           case "$N4A_E2E_SCENARIO" in
-            ""|e2e-r-dataset-io-pipeline-save|e2e-multimodal-python-r-wasm-roundtrip|e2e-dataset-provider-repository-roundtrip|e2e-formats-io-datasets-methods-language-bindings|e2e-core-ui-custom-app-host)
-              python3 -m pytest -q tests/test_e2e_scenarios.py
-              ;;
-            *)
-              python3 -m pytest -q tests/test_e2e_scenarios.py \
-                -k "not current_workspace_plans_all_complex_workflows_ready and not cli_coverage_json_exposes_readiness_and_gaps and not cli_run_ready_dry_run_lists_ready_and_blocked"
+            e2e-r-dataset-io-pipeline-save|e2e-multimodal-python-r-wasm-roundtrip|e2e-dataset-provider-repository-roundtrip|e2e-formats-io-datasets-methods-language-bindings|e2e-core-ui-custom-app-host)
+              full_workspace_checks=1
               ;;
           esac
+          if [[ "$full_workspace_checks" == "1" ]]; then
+            python3 -m pytest -q tests/test_e2e_scenarios.py
+          else
+            python3 -m pytest -q tests/test_e2e_scenarios.py \
+              -k "not current_workspace_plans_all_complex_workflows_ready and not cli_coverage_json_exposes_readiness_and_gaps and not cli_run_ready_dry_run_lists_ready_and_blocked"
+          fi
       - name: Write coverage debt board
         run: >
           python3 scripts/n4a_e2e_scenarios.py coverage
