@@ -76,7 +76,57 @@ Validation:
 - `rtk pytest tests/test_workspace_transition.py -q`
 - `rtk ruff check tests/test_workspace_transition.py`
 
-Result: local targeted validation green. GitHub Studio checks were triggered on push and were still running at report creation.
+Result:
+
+- Local targeted validation green.
+- GitHub `CI` green on `ae5b4eb`.
+- GitHub `Playwright E2E Tests` green on `ae5b4eb` with `63 passed`.
+- GitHub `version-guard` green on `ae5b4eb`.
+
+### `nirs4all-cockpit`
+
+Commit: `7a78202`
+
+Files changed:
+
+- `data/current.json`
+
+Decisions:
+
+- Refreshed public cockpit snapshot after the Python/Studio/ecosystem pushes.
+
+Validation:
+
+- `n4a-cockpit collect`
+- `pytest -q` (`146 passed`)
+- `ruff check .`
+- GitHub `ci` green on `7a78202`.
+- GitHub `pages` green on `7a78202`.
+- GitHub `version-guard` green on `7a78202`.
+
+Snapshot summary:
+
+- `green=97`
+- `stale=0`
+- `pending=5`
+- `broken=0`
+- `excluded=1`
+
+### `nirs4all-ecosystem`
+
+Commits:
+
+- `70b6b46`
+- `051a0e2`
+
+Files changed:
+
+- `docs/agent_reports/WAVE_9ZU_PYTHON_STUDIO_TRANSITION_AUDIT.md`
+
+Validation:
+
+- GitHub `version-guard` green.
+- GitHub `Cross-language E2E scenarios` green for the report-only push.
 
 ## Remaining Risks / Follow-Up
 
