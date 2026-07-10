@@ -34,6 +34,7 @@ Date: 2026-07-10
 - Read-only E2E audit confirmed 11 strict/ready scenarios in `docs/contracts/e2e/cross-language-scenarios.n4a.json` and `latest-runtime-evidence-ledger.n4a.json`; the committed ledger records `11/11` scenarios, `70` artifacts, and `0` failures. Current local artifact freshness is weaker (`2/11` still within the 4-hour window), so the authoritative runtime proof remains CI run `29088345220` until a fresh local execute batch is run.
 - Read-only UI audit confirmed `nirs4all-ui` `v0.1.12` exports shared `score`, `runtime`, `dataset`, `components`, `brand`, `styles`, `lab`, `datasetBuilder`, and `assets/*` surfaces; public Pages serves the component/assets site and brand/style/motion assets. `nirs4all-web` and `nirs4all-studio` consume the shared UI without importing the quality/lab surfaces used by `nirs4all-quality`.
 - Read-only core/lite audit confirmed `nirs4all-core` is canonical across repo metadata, submodules, cockpit, PyPI, npm, crates, R-universe, and GitHub Release `v0.3.11`; `nirs4all-lite` remains public only as retired audit/history. The audit found stale ReadTheDocs content, so RTD build `33530873` was triggered and completed successfully on core commit `325f6b9`; the refreshed public HTML no longer contains `nirs4all_lite` or `nirs4all-lite`.
+- `nirs4all-lite` local guidance was tightened in commit `2448915`: `AGENTS.md` now describes the checkout as retired audit material only and removes the previous alias/transition wording. GitHub `version-guard` `29093498347` and full `CI` `29093498304` passed, including strict parity, Rust, Python 3.11/3.12, R package, npm/WASM, and Octave/MATLAB smoke jobs.
 
 ## Cockpit and R-universe status
 
@@ -48,10 +49,18 @@ Date: 2026-07-10
 - R-universe still serves `nirs4alldatasets` `0.3.5` at `RemoteSha` `67d47c557bcb8770506409d2c688cb3b60384c18` until its generated universe repo resynchronizes.
 - A config-repo trigger commit was pushed to `GBeurier/GBeurier.r-universe.dev` (`c230d53`), but direct `r-universe/gbeurier` workflow dispatch is not available with the current auth.
 - A second config change was pushed to `GBeurier/GBeurier.r-universe.dev` (`743ebe4`) to track `nirs4alldatasets` from the latest GitHub Release via `branch: "*release"` instead of the floating `main` branch.
+- Manual dispatch attempts against both `r-universe/gbeurier` `Update universe` and `r-universe-org/control-room` `Sync all universes` returned GitHub `403 Resource not accessible by personal access token`; the remaining path is R-universe's own scheduled sync or an authorized maintainer dispatch.
 - The cockpit was refreshed in `nirs4all-cockpit` commit `fdc13a9`: `nirs4all-datasets` now shows source/tag/release/PyPI/npm/crates/GitHub Release at `0.3.7`, while the R-universe target remains honestly `stale` at `0.3.5` and the CRAN target remains manual `pending`.
 - Cockpit validation for `fdc13a9` is green: local `pytest -q` (`146 passed`), `ruff check .`, Chrome dashboard smoke, plus GitHub `ci` `29091568141`, `pages` `29091568648`, and `version-guard` `29091567452`.
 - Cockpit manual action metadata was refreshed in `nirs4all-cockpit` commit `cc6ec1d`: `runiverse-datasets-rebuild` now points at `nirs4all-datasets@784c2872662204e820c8cf6b58d01bc4788148c0` and `GBeurier/GBeurier.r-universe.dev@743ebe47da7e3b9be16a7c4f1216ce4125a6c3a0`; GitHub `ci` `29093186189`, `pages` `29093186188`, and `version-guard` `29093187017` passed.
 - `nirs4all-org` was refreshed in commit `0520cbd` to make the offline fallback badge for `nirs4all-ui` match `v0.1.12`; GitHub `version-guard` `29092357404` and Pages deployment `29092355995` passed.
+
+## CRAN submission kit
+
+- Prepared a local CRAN submission kit at `/home/delete/nirs4all/cran-submission-kit/2026-07-10` without committing binary tarballs to Git.
+- Included release tarballs, SHA-256 checksums, release metadata, and copy/paste CRAN form text for `n4m` `1.0.9`, `pls4all` `1.0.9`, `nirs4allio` `0.1.11`, `nirs4alldatasets` `0.3.7`, and the aggregate `nirs4all` `0.3.11`; `nirs4allformats` is intentionally excluded.
+- The kit records that this WSL host has no local `R` binary, so no local `R CMD check --as-cran` was run here; it provides the exact commands to run before upload.
+- CRAN currently reports `nirs4alldatasets` as removed/archived on `2026-07-04` because issues were not corrected in time. The archived `2026-07-03` checks show macOS installation errors for `0.2.0`, with the visible BDR log reporting missing `cargo`. The kit flags macOS Cargo/rustc availability as a pre-upload blocker for `nirs4alldatasets` `0.3.7`.
 
 ## Decisions
 
