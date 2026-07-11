@@ -324,6 +324,24 @@ Triggered after the Studio training and AutoML runtime-route hardening batch, wi
 - `nirs4all-ecosystem` `Cross-language E2E scenarios` with `execute=true`, `allow_blocked=false`: GitHub run `29136909868`, green in 13m34s. Executed ready scenarios, verified ready artifacts, and checked the committed runtime evidence ledger.
 - `nirs4all-ecosystem` `cutover-gates` in advisory mode with `timeout=1800`: GitHub run `29136909884`, green. Validated gate tooling and produced the advisory gate report artifact.
 
+## Studio RC Installer Artifacts
+
+Triggered a non-publishing Studio RC installer build after the latest Studio
+transition hardening batch.
+
+- `nirs4all-studio` `Release` workflow on `main` / `514ebe1` with manual
+  input `tag=1.0.0-rc.2`, `skip_all_in_one=true`, `skip_docker=true`: GitHub
+  run `29138360308`, green.
+- Built and uploaded unsigned installer artifacts:
+  - `installer-windows-x64` (250,862,344 bytes)
+  - `installer-linux-x64` (277,582,596 bytes)
+  - `installer-macos-x64` (158,203,036 bytes)
+  - `installer-macos-arm64` (153,478,971 bytes)
+- The workflow dispatch did not create a GitHub Release. The release job
+  downloaded and prepared assets, but `Create GitHub Release` was skipped.
+- All-in-one bundles and Docker images were intentionally skipped for this RC
+  artifact gate.
+
 ### `nirs4all-ecosystem`
 
 Commits:
@@ -350,3 +368,6 @@ Validation:
 - Studio conversion writes a sibling `*-workspace-v2` directory, links and activates clean conversions, and deliberately skips automatic activation for best-effort conversions.
 - Studio packaged release metadata still pins the current Python library line until the held `nirs4all` transition release is cut.
 - Fresh full Python Pre-Publish, cross-language executed E2E and cutover advisory gates are green after this batch. These are transition readiness gates, not a production switch for the held `nirs4all` and `nirs4all-studio` releases.
+- Studio RC installers now build from current `main` in GitHub Actions, including
+  Windows x64, but the Windows installer still needs manual smoke validation on
+  a native Windows machine before any production Studio switch.
