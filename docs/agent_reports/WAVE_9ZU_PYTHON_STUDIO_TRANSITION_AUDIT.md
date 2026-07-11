@@ -329,14 +329,14 @@ Triggered after the Studio training and AutoML runtime-route hardening batch, wi
 Triggered a non-publishing Studio RC installer build after the latest Studio
 transition hardening batch.
 
-- `nirs4all-studio` `Release` workflow on `main` / `3bbd471` with manual
-  input `tag=1.0.0-rc.3`, `skip_all_in_one=true`, `skip_docker=true`: GitHub
-  run `29141166400`, green.
+- `nirs4all-studio` `Release` workflow on `main` / `b7f4105` with manual
+  input `tag=1.0.0-rc.4`, `skip_all_in_one=true`, `skip_docker=true`: GitHub
+  run `29145157945`, green.
 - Built and uploaded unsigned installer artifacts:
-  - `installer-windows-x64` (250,861,251 bytes)
-  - `installer-linux-x64` (277,583,041 bytes)
-  - `installer-macos-x64` (158,203,248 bytes)
-  - `installer-macos-arm64` (153,478,978 bytes)
+  - `installer-windows-x64` (250,856,040 bytes)
+  - `installer-linux-x64` (277,579,649 bytes)
+  - `installer-macos-x64` (158,199,829 bytes)
+  - `installer-macos-arm64` (153,480,031 bytes)
 - The workflow dispatch did not create a GitHub Release. The release job
   downloaded and prepared assets, but `Create GitHub Release` was skipped.
 - All-in-one bundles and Docker images were intentionally skipped for this RC
@@ -453,11 +453,17 @@ Validation:
 
 ### `nirs4all-studio`
 
-Commit: `b7f4105`
+Commits:
+
+- `b7f4105`
+- `8654e4d`
 
 Files changed:
 
 - `tests/test_workspace_transition.py`
+- `CHANGELOG.md`
+- `docs/PACKAGING.md`
+- `docs/PUBLISHING_GUIDE.md`
 
 Decisions:
 
@@ -465,6 +471,8 @@ Decisions:
   against the TypeScript `WorkspaceTransitionStatus` interface.
 - Added a backend/frontend contract test for `LegacyWorkspaceConversionResponse`
   against the TypeScript `LegacyWorkspaceConversionResult` interface.
+- Refreshed the Studio release docs to point at the current `1.0.0-rc.4`
+  artifact-only installer run.
 - No Studio runtime code was changed in this closure batch.
 
 Validation:
@@ -475,6 +483,12 @@ Validation:
 - GitHub `version-guard` green on `b7f4105`.
 - GitHub `CI` green on `b7f4105`.
 - GitHub `Playwright E2E Tests` green on `b7f4105`.
+- GitHub `Release` artifact-only dispatch on `b7f4105`: run `29145157945`, green.
+  It built Windows x64, Linux x64, macOS x64 and macOS arm64 installer artifacts,
+  skipped all-in-one bundles and Docker images, and did not create a GitHub
+  Release because `Create GitHub Release` was skipped.
+- GitHub `version-guard`, `CI`, and `Playwright E2E Tests` green on the
+  docs-only RC4 pointer commit `8654e4d`.
 
 ### `nirs4all-ecosystem`
 
