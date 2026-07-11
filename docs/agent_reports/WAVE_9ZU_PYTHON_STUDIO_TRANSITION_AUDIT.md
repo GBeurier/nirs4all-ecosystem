@@ -369,6 +369,10 @@ Decisions:
 Validation:
 
 - `git diff --check`
+- GitHub `Pre-Publish Check` on `4f11d68e`: run `29139711271`, green. Covered
+  Ruff, mypy, strict docs, package build/wheel install, user/developer/reference
+  examples, and full pytest+coverage on Ubuntu 3.11/3.13, Windows 3.11/3.13 and
+  macOS 3.13.
 
 ### `nirs4all-studio`
 
