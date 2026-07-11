@@ -21,6 +21,12 @@
   - Result: `7 passed in 3.47s`
 - `python3.11 -m pytest -q tests/test_release_lock.py tests/test_release_surface_matrix.py tests/test_held_transition_readiness.py`
   - Result: `24 passed in 0.35s`
+- `PATH=/home/delete/.nvm/versions/node/v22.21.1/bin:/home/delete/.cargo/bin:$PATH ARTIFACTS_DIR=/home/delete/nirs4all/nirs4all-ecosystem/.n4a-e2e-artifacts/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.11 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.12 N4A_PUBLISHED_METHODS_VERSION=1.0.9 npm run smoke:published-custom-host`
+  - Result: passed; refreshed `custom-app-host/published-custom-host.json` with `nirs4all-ui@0.1.12`
+- `python3.11 scripts/n4a_e2e_scenarios.py evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json`
+  - Result: `11/11 scenarios verified; artifacts=70 failures=0`
+- `python3.11 -m pytest -q tests/test_e2e_scenarios.py tests/test_gitmodules_topology.py tests/test_submodule_repin_plan.py tests/test_release_lock.py tests/test_release_surface_matrix.py tests/test_held_transition_readiness.py tests/test_monitor_github_run.py`
+  - Result: `169 passed in 12.44s`
 - `git diff --check`
   - Result: passed
 
