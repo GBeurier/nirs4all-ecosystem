@@ -257,6 +257,31 @@ Additional validation:
 - GitHub `Playwright E2E Tests` green on `1970b88` with `63 passed`.
 - GitHub `version-guard` green on `1970b88`.
 
+Follow-up commit: `514ebe171124c2d01417cb84b44ce770c9643b53`
+
+Additional files changed:
+
+- `api/automl.py`
+- `api/execution_driver.py`
+- `tests/test_analysis_execution_metadata.py`
+- `tests/test_automl_runtime_engine.py`
+
+Additional decisions:
+
+- The legacy `/automl/start` Studio route now accepts `engine` and `allow_fallback`, records them in analysis execution metadata, and forwards them to `nirs4all.run`.
+- Analysis execution metadata now exposes the same fallback policy envelope used by normal run execution requests.
+- AutoML results now persist requested/actual runtime engine metadata, diagnostics source, fallback policy and native result references when available.
+
+Additional validation:
+
+- `rtk pytest tests/test_analysis_execution_metadata.py tests/test_automl_runtime_engine.py tests/test_runtime_engine.py -q` (`26 passed`)
+- `rtk pytest tests/test_execution_driver.py tests/test_runs_execution_backend.py tests/test_training_runtime_engine.py tests/test_automl_runtime_engine.py tests/test_analysis_execution_metadata.py -q` (`59 passed`)
+- `PYTHONPATH=/home/delete/nirs4all/nirs4all rtk pytest tests/test_runtime_engine.py tests/test_runs_engine_routing.py tests/test_training_runtime_engine.py tests/test_automl_runtime_engine.py tests/test_analysis_execution_metadata.py -q` (`50 passed`)
+- `rtk ruff check api/automl.py api/execution_driver.py tests/test_analysis_execution_metadata.py tests/test_automl_runtime_engine.py`
+- GitHub `CI` green on `514ebe1`.
+- GitHub `Playwright E2E Tests` green on `514ebe1` with `63 passed`.
+- GitHub `version-guard` green on `514ebe1`.
+
 ### `nirs4all-cockpit`
 
 Commit: `7a78202`
@@ -312,7 +337,7 @@ Validation:
 - `nirs4all` still scopes explicit `engine="dag-ml"` to `run()`. `predict`, `explain`, `retrain`, session and generate APIs intentionally reject explicit non-legacy engines today, but inherited `N4A_ENGINE=dag-ml` no longer breaks those helpers.
 - `nirs4all` still contains transition-era in-place DuckDB auto-migration in `WorkspaceStore`, while `nirs4all-tools` documents a no-in-place converter policy. This needs either a documented transition exception or a later removal with migration tests adjusted.
 - Python docs now include the offline converter path, but the full release notes still need to state the exact transition policy and legacy-removal plan.
-- Studio backend selection now has a global Settings preference for the new-experiment and pipeline-editor execution paths, and the legacy `/training/start` execution route accepts and records the same engine/fallback contract. Other secondary analysis routes still need review.
+- Studio backend selection now has a global Settings preference for the new-experiment and pipeline-editor execution paths, and the legacy `/training/start` and `/automl/start` execution routes accept and record the same engine/fallback contract. Remaining secondary analysis routes were reviewed as legacy-only or non-`nirs4all.run` paths in this batch.
 - Studio legacy warning is visible both in Settings / Workspace Statistics and as a workspace-open banner in the main layout.
 - Studio conversion writes a sibling `*-workspace-v2` directory, links and activates clean conversions, and deliberately skips automatic activation for best-effort conversions.
 - Studio packaged release metadata still pins the current Python library line until the held `nirs4all` transition release is cut.
