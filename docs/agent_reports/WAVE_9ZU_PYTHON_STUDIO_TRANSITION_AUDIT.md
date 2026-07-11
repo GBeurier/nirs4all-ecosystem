@@ -342,6 +342,58 @@ transition hardening batch.
 - All-in-one bundles and Docker images were intentionally skipped for this RC
   artifact gate.
 
+## Transition Release Notes Closeout
+
+Closed the remaining transition-policy documentation gap before cutting the held
+Python/Studio transition releases.
+
+### `nirs4all`
+
+Commit: `4f11d68e`
+
+Files changed:
+
+- `CHANGELOG.md`
+
+Decisions:
+
+- The release notes now explicitly state that the Python transition line remains
+  compatible with legacy workspaces and the V1 SQLite workspace format.
+- The release notes document the non-mutating converter command, the
+  `nirs4all[transition]` extra, and the boundary that legacy reader/converter
+  support is limited to Python and Studio during the transition window.
+- No full parity run was forced for this changelog-only push; the previous
+  `Pre-Publish Check` on `8b003429` remains the latest functional full gate for
+  the transition branch.
+
+Validation:
+
+- `git diff --check`
+
+### `nirs4all-studio`
+
+Commit: `3bbd471`
+
+Files changed:
+
+- `CHANGELOG.md`
+- `docs/PUBLISHING_GUIDE.md`
+- `docs/PACKAGING.md`
+
+Decisions:
+
+- Studio release notes now document backend preference, legacy workspace warning
+  and conversion UX, the RC installer artifacts, and the held-production policy.
+- Publishing/packaging docs now point at the current `1.0.0-rc.2` installer
+  artifact path and workflow run `29138360308`, not the superseded RC1 example.
+
+Validation:
+
+- `git diff --check`
+- GitHub `version-guard` on `3bbd471`: green.
+- GitHub `CI` on `3bbd471`: green.
+- GitHub `Playwright E2E Tests` on `3bbd471`: green.
+
 ### `nirs4all-ecosystem`
 
 Commits:
