@@ -235,6 +235,28 @@ Additional validation:
 - GitHub `Playwright E2E Tests` green on `08328d3` with `63 passed`.
 - GitHub `version-guard` green on `08328d3`.
 
+Follow-up commit: `1970b885822368602e4fcd54b211a0b9b2a9d71b`
+
+Additional files changed:
+
+- `api/training.py`
+- `tests/test_training_runtime_engine.py`
+
+Additional decisions:
+
+- The legacy `/training/start` Studio route now accepts `engine` and `allow_fallback`, persists them in the background job config, and forwards them to `nirs4all.run`.
+- Training jobs now use the same `engine_run_kwargs`, `observe_engine`, and `fallback_policy_record` helpers as the main runs backend, so completed training results preserve requested/actual runtime metadata.
+- This closes one secondary execution route that previously ignored the global backend preference and could silently run with the library default.
+
+Additional validation:
+
+- `rtk pytest tests/test_training_runtime_engine.py -q` (`3 passed`)
+- `rtk pytest tests/test_training_runtime_engine.py tests/test_runtime_engine.py tests/test_runs_engine_routing.py -q` (`40 passed`)
+- `rtk ruff check api/training.py tests/test_training_runtime_engine.py`
+- GitHub `CI` green on `1970b88`.
+- GitHub `Playwright E2E Tests` green on `1970b88` with `63 passed`.
+- GitHub `version-guard` green on `1970b88`.
+
 ### `nirs4all-cockpit`
 
 Commit: `7a78202`
@@ -290,7 +312,7 @@ Validation:
 - `nirs4all` still scopes explicit `engine="dag-ml"` to `run()`. `predict`, `explain`, `retrain`, session and generate APIs intentionally reject explicit non-legacy engines today, but inherited `N4A_ENGINE=dag-ml` no longer breaks those helpers.
 - `nirs4all` still contains transition-era in-place DuckDB auto-migration in `WorkspaceStore`, while `nirs4all-tools` documents a no-in-place converter policy. This needs either a documented transition exception or a later removal with migration tests adjusted.
 - Python docs now include the offline converter path, but the full release notes still need to state the exact transition policy and legacy-removal plan.
-- Studio backend selection now has a global Settings preference for the new-experiment and pipeline-editor execution paths. Secondary backend routes still need review.
+- Studio backend selection now has a global Settings preference for the new-experiment and pipeline-editor execution paths, and the legacy `/training/start` execution route accepts and records the same engine/fallback contract. Other secondary analysis routes still need review.
 - Studio legacy warning is visible both in Settings / Workspace Statistics and as a workspace-open banner in the main layout.
 - Studio conversion writes a sibling `*-workspace-v2` directory, links and activates clean conversions, and deliberately skips automatic activation for best-effort conversions.
 - Studio packaged release metadata still pins the current Python library line until the held `nirs4all` transition release is cut.
