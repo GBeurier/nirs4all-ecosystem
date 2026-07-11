@@ -73,6 +73,24 @@ Additional validation:
 - `.venv/bin/ruff check tests/unit/workspace/test_workspace_compat.py`
 - No full Pre-Publish rerun for this test-only follow-up; reserve the long gate for the next larger parity batch.
 
+Follow-up commit: `8b003429`
+
+Additional files changed:
+
+- `nirs4all/pipeline/engine.py`
+- `tests/unit/api/test_engine_transition.py`
+
+Additional decisions:
+
+- Public helper APIs that are still legacy-only (`predict`, `explain`, `retrain`) now tolerate an inherited `N4A_ENGINE=dag-ml` environment variable.
+- Explicit `engine="dag-ml"` on those helpers still fails fast with `NotImplementedError`, preserving the transition boundary.
+- The inherited environment case now emits a `RuntimeWarning` and uses `engine="legacy"`, which keeps old scripts working under a process-wide dag-ml preference.
+
+Additional validation:
+
+- `.venv/bin/python -m pytest -q tests/unit/api/test_engine_transition.py tests/unit/pipeline/test_engine_selector.py` (`15 passed`)
+- `.venv/bin/ruff check nirs4all/pipeline/engine.py tests/unit/api/test_engine_transition.py`
+
 ### `nirs4all-studio`
 
 Commit: `ae5b4eba15a8b48695498efac066f9971e12a75b`
@@ -187,6 +205,29 @@ Additional validation:
 - GitHub `Playwright E2E Tests` green on `c35b982` with `63 passed`.
 - GitHub `version-guard` green on `c35b982`.
 
+Follow-up commit: `08328d3640dd1274b0c16e6e6a46e41a813fffdd`
+
+Additional files changed:
+
+- `src/components/layout/AppLayout.tsx`
+- `src/components/layout/LegacyWorkspaceBanner.tsx`
+- `src/components/layout/__tests__/LegacyWorkspaceBanner.test.tsx`
+
+Additional decisions:
+
+- Studio now checks the active workspace transition status from the main layout.
+- If a legacy workspace is active, Studio shows a top-level warning immediately after startup and links to `Settings > Workspaces` for conversion.
+- V1 workspaces and unavailable transition-status calls keep the banner hidden.
+
+Additional validation:
+
+- Linux Node direct Vitest run for `src/components/layout/__tests__/LegacyWorkspaceBanner.test.tsx` (`2 passed`)
+- Linux Node direct `tsc --noEmit`
+- Linux Node direct ESLint on touched frontend files
+- GitHub `CI` green on `08328d3`.
+- GitHub `Playwright E2E Tests` green on `08328d3` with `63 passed`.
+- GitHub `version-guard` green on `08328d3`.
+
 ### `nirs4all-cockpit`
 
 Commit: `7a78202`
@@ -239,11 +280,11 @@ Validation:
 
 ## Remaining Risks / Follow-Up
 
-- `nirs4all` still scopes `engine="dag-ml"` to `run()`. `predict`, `explain`, `retrain`, session and generate APIs intentionally reject non-legacy engines today.
+- `nirs4all` still scopes explicit `engine="dag-ml"` to `run()`. `predict`, `explain`, `retrain`, session and generate APIs intentionally reject explicit non-legacy engines today, but inherited `N4A_ENGINE=dag-ml` no longer breaks those helpers.
 - `nirs4all` still contains transition-era in-place DuckDB auto-migration in `WorkspaceStore`, while `nirs4all-tools` documents a no-in-place converter policy. This needs either a documented transition exception or a later removal with migration tests adjusted.
 - Python docs now include the offline converter path, but the full release notes still need to state the exact transition policy and legacy-removal plan.
 - Studio backend selection now has a global Settings preference for the new-experiment and pipeline-editor execution paths. Secondary backend routes still need review.
-- Studio legacy warning is currently visible in Settings / Workspace Statistics, not as a workspace-open banner.
+- Studio legacy warning is visible both in Settings / Workspace Statistics and as a workspace-open banner in the main layout.
 - Studio conversion writes a sibling `*-workspace-v2` directory, links and activates clean conversions, and deliberately skips automatic activation for best-effort conversions.
 - Studio packaged release metadata still pins the current Python library line until the held `nirs4all` transition release is cut.
 - Full parity and fresh cross-language e2e evidence were not launched in this small batch; run them after the next larger stabilization batch.
