@@ -1,0 +1,219 @@
+{
+  "schema_version": "n4a.held-transition-readiness/v1",
+  "generated_at": "2026-07-11T08:25:00Z",
+  "description": "Release-readiness ledger for the two production-held transition projects: nirs4all Python and nirs4all Studio.",
+  "policy": {
+    "production_switch_allowed": false,
+    "held_projects": [
+      "nirs4all",
+      "nirs4all-studio"
+    ],
+    "manual_gates_must_pass_before_production_switch": true,
+    "legacy_reader_scope": "Only the Python nirs4all transition line and nirs4all Studio carry legacy workspace/artifact reader and converter support. Other V1 language/package surfaces consume the new workspace format only.",
+    "full_parity_policy": "Fresh full parity gates are required after large selected-head changes; do not rerun them for documentation-only changes unless a gate selects those docs as release evidence."
+  },
+  "automated_gates": [
+    {
+      "id": "PYTHON-PREPUBLISH-TRANSITION",
+      "project": "nirs4all",
+      "status": "passed",
+      "workflow": "Pre-Publish Check",
+      "run_id": 29143740229,
+      "url": "https://github.com/GBeurier/nirs4all/actions/runs/29143740229",
+      "head": {
+        "branch": "refactor/L17-pyref",
+        "sha": "f6c201153b3921c0f214cd63a992beb29e10b7bc"
+      },
+      "covers": [
+        "ruff",
+        "mypy",
+        "strict docs build",
+        "package build and wheel install",
+        "user examples",
+        "developer examples",
+        "reference examples",
+        "full pytest plus coverage on Ubuntu 3.11 and 3.13",
+        "full pytest plus coverage on Windows 3.11 and 3.13",
+        "full pytest plus coverage on macOS 3.13"
+      ]
+    },
+    {
+      "id": "STUDIO-CI-TRANSITION-DOCS",
+      "project": "nirs4all-studio",
+      "status": "passed",
+      "workflow": "CI",
+      "run_id": 29145358143,
+      "url": "https://github.com/GBeurier/nirs4all-studio/actions/runs/29145358143",
+      "head": {
+        "branch": "main",
+        "sha": "8654e4d24c22553717e08d6f646f423c02bf4667"
+      },
+      "covers": [
+        "Studio CI gate on current main after RC4 documentation refresh"
+      ]
+    },
+    {
+      "id": "STUDIO-PLAYWRIGHT-TRANSITION-DOCS",
+      "project": "nirs4all-studio",
+      "status": "passed",
+      "workflow": "Playwright E2E Tests",
+      "run_id": 29145358171,
+      "url": "https://github.com/GBeurier/nirs4all-studio/actions/runs/29145358171",
+      "head": {
+        "branch": "main",
+        "sha": "8654e4d24c22553717e08d6f646f423c02bf4667"
+      },
+      "covers": [
+        "Studio browser E2E gate on current main after RC4 documentation refresh"
+      ]
+    },
+    {
+      "id": "STUDIO-RC4-INSTALLERS",
+      "project": "nirs4all-studio",
+      "status": "passed",
+      "workflow": "Release",
+      "run_id": 29145157945,
+      "url": "https://github.com/GBeurier/nirs4all-studio/actions/runs/29145157945",
+      "head": {
+        "branch": "main",
+        "sha": "b7f4105ebaf0bae9be3f09cdc97e2992f4c2921e"
+      },
+      "inputs": {
+        "tag": "1.0.0-rc.4",
+        "skip_all_in_one": true,
+        "skip_docker": true
+      },
+      "release_created": false,
+      "release_step": "Create GitHub Release skipped",
+      "artifacts": [
+        {
+          "name": "installer-windows-x64",
+          "artifact_id": 8246535760,
+          "size_bytes": 250856040
+        },
+        {
+          "name": "installer-linux-x64",
+          "artifact_id": 8246531103,
+          "size_bytes": 277579649
+        },
+        {
+          "name": "installer-macos-x64",
+          "artifact_id": 8246538603,
+          "size_bytes": 158199829
+        },
+        {
+          "name": "installer-macos-arm64",
+          "artifact_id": 8246519245,
+          "size_bytes": 153480031
+        }
+      ]
+    },
+    {
+      "id": "ECOSYSTEM-E2E-RUNTIME-FRESH",
+      "project": "nirs4all-ecosystem",
+      "status": "passed",
+      "workflow": "Cross-language E2E scenarios",
+      "run_id": 29142291683,
+      "url": "https://github.com/GBeurier/nirs4all-ecosystem/actions/runs/29142291683",
+      "head": {
+        "branch": "main",
+        "sha": "8d7144f782d0218747d2d5bf24e31367b51cf7cd"
+      },
+      "covers": [
+        "11/11 cross-language runtime scenarios verified",
+        "70 runtime artifacts verified",
+        "0 scenario failures"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "nirs4all",
+      "kind": "python-library",
+      "production_status": "held",
+      "current_production_version": "0.10.3",
+      "transition_branch": "refactor/L17-pyref",
+      "transition_head": "f6c201153b3921c0f214cd63a992beb29e10b7bc",
+      "planned_transition_bump": "next 0.x.0 transition version",
+      "automated_gate_ids": [
+        "PYTHON-PREPUBLISH-TRANSITION",
+        "ECOSYSTEM-E2E-RUNTIME-FRESH"
+      ],
+      "required_capabilities": [
+        "public backend option can request legacy or dag-ml execution where implemented",
+        "legacy and V1 workspace formats are detected",
+        "legacy workspace/artifact warnings include the concrete conversion command",
+        "nirs4all[transition] pulls the converter dependencies needed for legacy DuckDB/Parquet inputs",
+        "old scripts remain compatible during the transition window"
+      ],
+      "manual_release_steps": [
+        "choose and stamp the transition version",
+        "merge or fast-forward the selected transition branch only after reviewing the held-project policy",
+        "publish the transition package after confirming the current automated gate evidence is still selected"
+      ]
+    },
+    {
+      "id": "nirs4all-studio",
+      "kind": "desktop-and-web-studio",
+      "production_status": "held",
+      "current_production_version": "0.9.1",
+      "current_main_head": "8654e4d24c22553717e08d6f646f423c02bf4667",
+      "current_rc_installer_version": "1.0.0-rc.4",
+      "current_rc_installer_build_head": "b7f4105ebaf0bae9be3f09cdc97e2992f4c2921e",
+      "automated_gate_ids": [
+        "STUDIO-CI-TRANSITION-DOCS",
+        "STUDIO-PLAYWRIGHT-TRANSITION-DOCS",
+        "STUDIO-RC4-INSTALLERS",
+        "ECOSYSTEM-E2E-RUNTIME-FRESH"
+      ],
+      "required_capabilities": [
+        "global backend preference is visible in Studio settings",
+        "experiment, pipeline-editor, training, and AutoML paths preserve requested and actual runtime metadata",
+        "legacy workspace warning is visible at workspace open and in workspace settings",
+        "clean conversions can link and activate the converted workspace",
+        "best-effort conversions are not auto-activated",
+        "installer artifacts are available for manual Windows smoke testing"
+      ],
+      "manual_release_steps": [
+        "run native Windows smoke against the RC4 installer artifacts",
+        "confirm user workspace conversion behavior manually on a legacy workspace copy",
+        "only then decide whether to cut a production Studio transition release"
+      ]
+    }
+  ],
+  "manual_gates": [
+    {
+      "id": "STUDIO-WINDOWS-RC4-SMOKE",
+      "project": "nirs4all-studio",
+      "status": "pending",
+      "owner": "human/windows-host",
+      "required_before_production_switch": true,
+      "evidence_required": [
+        "installer launches on native Windows",
+        "backend starts and reports health",
+        "backend preference can be changed",
+        "legacy workspace warning appears for a copied legacy workspace",
+        "conversion action writes a sibling V1 workspace without deleting the source"
+      ]
+    },
+    {
+      "id": "HELD-PROJECT-PUBLISH-DECISION",
+      "project": "nirs4all+nirs4all-studio",
+      "status": "pending",
+      "owner": "release-owner",
+      "required_before_production_switch": true,
+      "evidence_required": [
+        "selected Python transition version is chosen",
+        "selected Studio transition version is chosen",
+        "Python branch and Studio main are explicitly approved as release heads",
+        "manual Windows RC smoke evidence is attached or waived with a recorded rationale"
+      ]
+    }
+  ],
+  "completion_state": {
+    "automated_readiness": "passed",
+    "manual_readiness": "pending",
+    "production_switch_allowed": false,
+    "reason": "Automated gates are green, but held-project manual gates remain pending."
+  }
+}
