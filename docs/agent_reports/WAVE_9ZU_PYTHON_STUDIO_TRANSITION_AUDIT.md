@@ -414,16 +414,94 @@ Validation:
 - GitHub `version-guard` green.
 - GitHub `Cross-language E2E scenarios` green for the report-only push.
 
+## Final Transition Audit Closure
+
+Date: 2026-07-11
+
+Closed the last audit gaps found after the Python/Studio transition hardening
+batch, then reran the long gates with extended monitoring.
+
+### `nirs4all`
+
+Commits:
+
+- `246844ee`
+- `f6c20115`
+
+Files changed:
+
+- `tests/unit/workspace/test_workspace_compat.py`
+- `tests/unit/cli/test_main.py`
+
+Decisions:
+
+- Added direct coverage for inspecting a legacy `.n4a` artifact and returning the
+  concrete `nirs4all workspace convert ... --verify` command.
+- Added CLI coverage proving `nirs4all workspace inspect <legacy-artifact>` prints
+  the same conversion command users need before switching V1 runtimes.
+- Made the CLI assertion compare against `build_conversion_command()` so the test
+  stays strict while matching Windows path quoting.
+
+Validation:
+
+- `PYTHONDONTWRITEBYTECODE=1 rtk pytest -q -p no:cacheprovider --basetemp=/tmp/n4a-py-transition-cli tests/unit/workspace/test_workspace_compat.py tests/unit/cli/test_main.py` (`37 passed`)
+- `rtk ruff check tests/unit/cli/test_main.py tests/unit/workspace/test_workspace_compat.py`
+- GitHub `Pre-Publish Check` on `refactor/L17-pyref` / `f6c20115`: run
+  `29143740229`, green. Covered Ruff, mypy, strict docs, package build/wheel
+  install, user/developer/reference examples, and full pytest+coverage on Ubuntu
+  3.11/3.13, Windows 3.11/3.13 and macOS 3.13.
+
+### `nirs4all-studio`
+
+Commit: `b7f4105`
+
+Files changed:
+
+- `tests/test_workspace_transition.py`
+
+Decisions:
+
+- Added a backend/frontend contract test for `WorkspaceTransitionStatusResponse`
+  against the TypeScript `WorkspaceTransitionStatus` interface.
+- Added a backend/frontend contract test for `LegacyWorkspaceConversionResponse`
+  against the TypeScript `LegacyWorkspaceConversionResult` interface.
+- No Studio runtime code was changed in this closure batch.
+
+Validation:
+
+- `.venv/bin/python -m pytest tests/test_workspace_transition.py -q` (`9 passed`)
+- `.venv/bin/python -m ruff ...` was attempted but Ruff is not installed in the
+  Studio `.venv`.
+- GitHub `version-guard` green on `b7f4105`.
+- GitHub `CI` green on `b7f4105`.
+- GitHub `Playwright E2E Tests` green on `b7f4105`.
+
+### `nirs4all-ecosystem`
+
+Validation:
+
+- `python3.11 scripts/n4a_e2e_scenarios.py validate` (`OK: 11 scenario(s) valid`)
+- `python3.11 scripts/n4a_e2e_scenarios.py coverage --require-full-strict --json`
+  (`ready=11`, `blocked=0`, `full_strict_ready=true`, `strictness_gap_count=0`)
+- `python3.11 -m pytest -q tests/test_e2e_scenarios.py tests/test_cutover_state_gate.py` (`141 passed`)
+- GitHub `Cross-language E2E scenarios` with `execute=true`, `allow_blocked=false`:
+  run `29142291683`, green. It executed the ready scenarios, verified ready
+  artifacts, and checked the committed runtime evidence ledger (`11/11`
+  scenarios verified; `70` artifacts; `0` failures).
+
 ## Remaining Risks / Follow-Up
 
 - `nirs4all` still scopes explicit `engine="dag-ml"` to `run()`. `predict`, `explain`, `retrain`, session and generate APIs intentionally reject explicit non-legacy engines today, but inherited `N4A_ENGINE=dag-ml` no longer breaks those helpers.
 - `nirs4all` still contains transition-era in-place DuckDB auto-migration in `WorkspaceStore`, while `nirs4all-tools` documents a no-in-place converter policy. This needs either a documented transition exception or a later removal with migration tests adjusted.
-- Python docs now include the offline converter path, but the full release notes still need to state the exact transition policy and legacy-removal plan.
+- Python docs and release notes now include the offline converter path, the
+  transition policy and the later legacy-removal boundary.
 - Studio backend selection now has a global Settings preference for the new-experiment and pipeline-editor execution paths, and the legacy `/training/start` and `/automl/start` execution routes accept and record the same engine/fallback contract. Remaining secondary analysis routes were reviewed as legacy-only or non-`nirs4all.run` paths in this batch.
 - Studio legacy warning is visible both in Settings / Workspace Statistics and as a workspace-open banner in the main layout.
 - Studio conversion writes a sibling `*-workspace-v2` directory, links and activates clean conversions, and deliberately skips automatic activation for best-effort conversions.
 - Studio packaged release metadata still pins the current Python library line until the held `nirs4all` transition release is cut.
-- Fresh full Python Pre-Publish, cross-language executed E2E and cutover advisory gates are green after this batch. These are transition readiness gates, not a production switch for the held `nirs4all` and `nirs4all-studio` releases.
+- Fresh full Python Pre-Publish and cross-language executed E2E are green after
+  the final closure batch. These are transition readiness gates, not a production
+  switch for the held `nirs4all` and `nirs4all-studio` releases.
 - Studio RC installers now build from current `main` in GitHub Actions, including
   Windows x64, but the Windows installer still needs manual smoke validation on
   a native Windows machine before any production Studio switch.
