@@ -90,6 +90,13 @@ Additional validation:
 
 - `.venv/bin/python -m pytest -q tests/unit/api/test_engine_transition.py tests/unit/pipeline/test_engine_selector.py` (`15 passed`)
 - `.venv/bin/ruff check nirs4all/pipeline/engine.py tests/unit/api/test_engine_transition.py`
+- GitHub `Pre-Publish Check` green on `8b003429`:
+  - Ruff
+  - mypy
+  - docs strict build
+  - package build and wheel install
+  - user, developer and reference examples
+  - full pytest + coverage on Windows 3.11, Windows 3.13, Ubuntu 3.11, Ubuntu 3.13 and macOS 3.13
 
 ### `nirs4all-studio`
 
