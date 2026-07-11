@@ -2389,7 +2389,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.11 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.11 N4A_PUBLISHED_METHODS_VERSION=1.0.9 npm run smoke:published-custom-host"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.3.11 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.12 N4A_PUBLISHED_METHODS_VERSION=1.0.9 npm run smoke:published-custom-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/published-custom-host.json"
