@@ -329,14 +329,14 @@ Triggered after the Studio training and AutoML runtime-route hardening batch, wi
 Triggered a non-publishing Studio RC installer build after the latest Studio
 transition hardening batch.
 
-- `nirs4all-studio` `Release` workflow on `main` / `514ebe1` with manual
-  input `tag=1.0.0-rc.2`, `skip_all_in_one=true`, `skip_docker=true`: GitHub
-  run `29138360308`, green.
+- `nirs4all-studio` `Release` workflow on `main` / `3bbd471` with manual
+  input `tag=1.0.0-rc.3`, `skip_all_in_one=true`, `skip_docker=true`: GitHub
+  run `29141166400`, green.
 - Built and uploaded unsigned installer artifacts:
-  - `installer-windows-x64` (250,862,344 bytes)
-  - `installer-linux-x64` (277,582,596 bytes)
-  - `installer-macos-x64` (158,203,036 bytes)
-  - `installer-macos-arm64` (153,478,971 bytes)
+  - `installer-windows-x64` (250,861,251 bytes)
+  - `installer-linux-x64` (277,583,041 bytes)
+  - `installer-macos-x64` (158,203,248 bytes)
+  - `installer-macos-arm64` (153,478,978 bytes)
 - The workflow dispatch did not create a GitHub Release. The release job
   downloaded and prepared assets, but `Create GitHub Release` was skipped.
 - All-in-one bundles and Docker images were intentionally skipped for this RC
@@ -388,8 +388,8 @@ Decisions:
 
 - Studio release notes now document backend preference, legacy workspace warning
   and conversion UX, the RC installer artifacts, and the held-production policy.
-- Publishing/packaging docs now point at the current `1.0.0-rc.2` installer
-  artifact path and workflow run `29138360308`, not the superseded RC1 example.
+- Publishing/packaging docs now point at the current `1.0.0-rc.3` installer
+  artifact path and workflow run `29141166400`, not the superseded RC examples.
 
 Validation:
 
