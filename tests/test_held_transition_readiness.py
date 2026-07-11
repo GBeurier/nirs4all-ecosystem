@@ -36,7 +36,7 @@ def test_automated_gates_are_green_but_manual_gates_block_prod_switch() -> None:
 
     automated = {gate["id"]: gate for gate in data["automated_gates"]}
     assert {gate["status"] for gate in automated.values()} == {"passed"}
-    assert automated["PYTHON-PREPUBLISH-TRANSITION"]["run_id"] == 29143740229
+    assert automated["PYTHON-PREPUBLISH-TRANSITION"]["run_id"] == 29146982675
     assert automated["PYTHON-PREPUBLISH-TRANSITION"]["head"]["sha"] == "f6c201153b3921c0f214cd63a992beb29e10b7bc"
     assert automated["STUDIO-RC4-INSTALLERS"]["run_id"] == 29145157945
     assert automated["STUDIO-RC4-INSTALLERS"]["release_created"] is False
