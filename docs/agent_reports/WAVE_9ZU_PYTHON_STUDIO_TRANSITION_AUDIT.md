@@ -316,6 +316,14 @@ Snapshot summary:
 - `broken=0`
 - `excluded=1`
 
+## Post-Batch Full Gates
+
+Triggered after the Studio training and AutoML runtime-route hardening batch, with long-job monitoring left to completion.
+
+- `nirs4all` Python `Pre-Publish Check` on `refactor/L17-pyref` / `8b003429`: GitHub run `29136909881`, green. Covered Ruff, mypy, strict docs build, package build/wheel install, user/developer/reference examples, and full pytest+coverage on Ubuntu 3.11/3.13, Windows 3.11/3.13 and macOS 3.13.
+- `nirs4all-ecosystem` `Cross-language E2E scenarios` with `execute=true`, `allow_blocked=false`: GitHub run `29136909868`, green in 13m34s. Executed ready scenarios, verified ready artifacts, and checked the committed runtime evidence ledger.
+- `nirs4all-ecosystem` `cutover-gates` in advisory mode with `timeout=1800`: GitHub run `29136909884`, green. Validated gate tooling and produced the advisory gate report artifact.
+
 ### `nirs4all-ecosystem`
 
 Commits:
@@ -341,4 +349,4 @@ Validation:
 - Studio legacy warning is visible both in Settings / Workspace Statistics and as a workspace-open banner in the main layout.
 - Studio conversion writes a sibling `*-workspace-v2` directory, links and activates clean conversions, and deliberately skips automatic activation for best-effort conversions.
 - Studio packaged release metadata still pins the current Python library line until the held `nirs4all` transition release is cut.
-- Full parity and fresh cross-language e2e evidence were not launched in this small batch; run them after the next larger stabilization batch.
+- Fresh full Python Pre-Publish, cross-language executed E2E and cutover advisory gates are green after this batch. These are transition readiness gates, not a production switch for the held `nirs4all` and `nirs4all-studio` releases.
