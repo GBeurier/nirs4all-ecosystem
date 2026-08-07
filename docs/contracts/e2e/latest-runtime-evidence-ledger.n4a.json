@@ -80,7 +80,7 @@
     "artifact_count": 70,
     "failed_count": 0,
     "failure_count": 0,
-    "max_age_seconds": 900,
+    "max_age_seconds": 14400,
     "scenario_count": 11,
     "verified_count": 11
   },
