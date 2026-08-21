@@ -816,19 +816,19 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:7a5f38702a2861642c60ac8588eea0451de7d88b5220f0e30cb13c781a322d12",
+          "canonical_json_sha256": "sha256:5fdb7cb0022c19aaced475bec28126e3cccb35b25bab1e59f594fab34f1b8004",
           "crate": "dag-ml",
           "headers": [
             {
               "path": "crates/dag-ml-capi/include/dag_ml.h",
-              "sha256": "49e4c54cac3e0ea416537feb94e68fdb3bf6049ea424c26d407ef46d68ab8e36"
+              "sha256": "8a047091ec381258d69e7511c7f219047a01f6e785e6ace3bfb2984dea940787"
             }
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
           "package_version": "0.3.0",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:46fecc867064ac6715583ce728080b11bca20269db1384b757983d9fe3690f3c"
+          "raw_sha256": "sha256:5a2c89935c226d42ad565195d28d297aa4a7352ff3a413fc43de8cd319159fe8"
         }
       ],
       "default_inclusion": "base",
@@ -877,7 +877,7 @@
       "selected_workspace_path": "dag-ml",
       "state": {
         "branch": "main",
-        "commit": "5f004fa0bc2a56b31cdbedc332312d5dd7eb96bc",
+        "commit": "fdf7931af5407afb091654dfa0f9e48c89cfbde5",
         "dirty": false,
         "exact_tag": null
       },
@@ -1106,7 +1106,7 @@
       "selected_workspace_path": "nirs4all-datasets",
       "state": {
         "branch": "main",
-        "commit": "60a0b6073bd3842bdd0b2e3439ffcbda0ad4615d",
+        "commit": "a650d54432b1367bf80d8d5320d163ba93bdf40d",
         "dirty": false,
         "exact_tag": null
       },
@@ -1187,9 +1187,9 @@
       "selected_workspace_path": "nirs4all-formats",
       "state": {
         "branch": "main",
-        "commit": "9ddb8f5851b37b03e57736ea06198991eff0c109",
+        "commit": "7f384bbf6e4ccf70af8ab3da288078fc5caea7be",
         "dirty": false,
-        "exact_tag": "v0.2.7"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
