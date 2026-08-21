@@ -1268,9 +1268,9 @@
       "selected_workspace_path": "nirs4all-io",
       "state": {
         "branch": "main",
-        "commit": "16c1efdfcd98b3861c550b6609a69a9995793301",
+        "commit": "98aca515d83369f1b61538ce31a5d2b1f519d4e9",
         "dirty": false,
-        "exact_tag": "v0.1.11"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
