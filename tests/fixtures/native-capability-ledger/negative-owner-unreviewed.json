@@ -1,0 +1,10 @@
+{
+  "base": "docs/contracts/release/native-capability-ledger.v1.json",
+  "patch": [
+    {
+      "op": "add",
+      "path": ["capabilities", 0, "owner", "unreviewed"],
+      "value": true
+    }
+  ]
+}

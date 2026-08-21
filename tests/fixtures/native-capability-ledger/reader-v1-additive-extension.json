@@ -1,0 +1,10 @@
+{
+  "base": "docs/contracts/release/native-capability-ledger.v1.json",
+  "patch": [
+    {
+      "op": "add",
+      "path": ["extensions", "org.reader"],
+      "value": {"future_optional_field": "a V1 reader must not require this."}
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "base": "docs/contracts/release/native-capability-ledger.v1.json",
+  "patch": [
+    {
+      "op": "add",
+      "path": ["extensions", "org.example"],
+      "value": {"optional_note": "V1 readers ignore namespaced optional extensions."}
+    },
+    {
+      "op": "add",
+      "path": ["capabilities", 1, "extensions", "org.example"],
+      "value": {"native_alias_review": "kept outside the V1 core."}
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "base": "docs/contracts/release/native-capability-ledger.v1.json",
+  "patch": [
+    {
+      "op": "replace",
+      "path": ["release_context", "inputs", "aggregation_manifest", "canonical_json_sha256"],
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

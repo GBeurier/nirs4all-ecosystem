@@ -24,5 +24,7 @@ REVIEW_VISION.md
 !/docs/agent_reports/WAVE_10*.md
 !/docs/contracts/
 /docs/contracts/*
+!/docs/contracts/release/
+!/docs/contracts/release/migration-work-ledger.yaml
 !/docs/contracts/e2e/
 !/docs/contracts/e2e/**

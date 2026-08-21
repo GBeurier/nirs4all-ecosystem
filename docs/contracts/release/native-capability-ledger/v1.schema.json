@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nirs4all.org/contracts/release/native-capability-ledger/v1.schema.json",
+  "title": "nirs4all native capability ledger V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "scope",
+    "strict_profile",
+    "rollback_profile",
+    "evolution_policy",
+    "release_context",
+    "capabilities",
+    "release_surface_crosswalk",
+    "extensions"
+  ],
+  "properties": {
+    "schema_version": { "const": "n4a.native-capability-ledger/v1" },
+    "status": { "const": "baseline" },
+    "scope": { "$ref": "#/$defs/scope" },
+    "strict_profile": { "$ref": "#/$defs/strictProfile" },
+    "rollback_profile": { "$ref": "#/$defs/rollbackProfile" },
+    "evolution_policy": { "$ref": "#/$defs/evolutionPolicy" },
+    "release_context": { "$ref": "#/$defs/releaseContext" },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/capability" }
+    },
+    "release_surface_crosswalk": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/crosswalk" }
+    },
+    "extensions": { "$ref": "#/$defs/extensions" }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": { "type": "object" },
+      "propertyNames": { "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)+$" }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority", "coverage", "exhaustive"],
+      "properties": {
+        "authority": { "$ref": "#/$defs/nonEmptyString" },
+        "coverage": { "$ref": "#/$defs/nonEmptyString" },
+        "exhaustive": { "const": false }
+      }
+    },
+    "strictProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "unknown_entry", "no_implicit_executable_default"],
+      "properties": {
+        "name": { "const": "strict" },
+        "no_implicit_executable_default": { "const": true },
+        "unknown_entry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["disposition", "decision", "error_code", "before"],
+          "properties": {
+            "disposition": { "const": "refused" },
+            "decision": { "const": "refuse" },
+            "error_code": { "const": "unknown" },
+            "before": { "$ref": "#/$defs/boundaries" }
+          }
+        }
+      }
+    },
+    "rollbackProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "backend", "native_default_release", "retention_releases"],
+      "properties": {
+        "name": { "const": "rollback-capable" },
+        "backend": { "const": "legacy" },
+        "native_default_release": { "const": true },
+        "retention_releases": { "const": 2 }
+      }
+    },
+    "evolutionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["governed_by", "v1_extension_mode", "unknown_core_fields", "future_major_dual_read", "legacy_prediction_readable_releases"],
+      "properties": {
+        "governed_by": { "const": "ADR-02" },
+        "v1_extension_mode": { "const": "namespaced_optional_reader_ignore" },
+        "unknown_core_fields": { "const": "refuse" },
+        "future_major_dual_read": { "const": 1 },
+        "legacy_prediction_readable_releases": { "const": 2 }
+      }
+    },
+    "releaseContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["release_train", "inputs"],
+      "properties": {
+        "release_train": { "$ref": "#/$defs/nonEmptyString" },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["aggregation_manifest", "aggregation_lock", "surface_matrix"],
+          "properties": {
+            "aggregation_manifest": { "$ref": "#/$defs/digestInput" },
+            "aggregation_lock": { "$ref": "#/$defs/digestInput" },
+            "surface_matrix": { "$ref": "#/$defs/digestInput" }
+          }
+        }
+      }
+    },
+    "digestInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "canonical_json_sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/nonEmptyString" },
+        "canonical_json_sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "boundaries": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "enum": ["scientific_data_access", "result_write", "meaningful_compute"] }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "aliases", "language", "runtime", "disposition", "owner", "evidence", "runtime_assertions", "required_gates", "preflight", "disposition_scope", "extensions"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*(?:\\.[a-z][a-z0-9_-]*)+$" },
+        "kind": { "enum": ["api", "model", "operator", "format"] },
+        "aliases": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "language": { "$ref": "#/$defs/nonEmptyString" },
+        "runtime": { "$ref": "#/$defs/nonEmptyString" },
+        "disposition": { "enum": ["native", "plugin", "refused", "not-promised"] },
+        "owner": { "$ref": "#/$defs/owner" },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "runtime_assertions": { "$ref": "#/$defs/runtimeAssertions" },
+        "required_gates": { "$ref": "#/$defs/requiredGates" },
+        "preflight": { "$ref": "#/$defs/preflight" },
+        "disposition_scope": { "$ref": "#/$defs/dispositionScope" },
+        "extensions": { "$ref": "#/$defs/extensions" },
+        "legacy_retention": { "$ref": "#/$defs/legacyRetention" }
+      },
+      "allOf": [
+        {"if": {"properties": {"disposition": {"const": "native"}}}, "then": {"properties": {"preflight": {"properties": {"decision": {"const": "allow_native"}}, "required": ["profile", "decision", "before"], "not": {"required": ["plugin"]}}}}},
+        {"if": {"properties": {"disposition": {"const": "plugin"}}}, "then": {"properties": {"preflight": {"properties": {"decision": {"const": "require_plugin"}}, "required": ["profile", "decision", "before", "plugin"]}}}},
+        {"if": {"properties": {"disposition": {"enum": ["refused", "not-promised"]}}}, "then": {"properties": {"preflight": {"properties": {"decision": {"const": "refuse"}}, "required": ["profile", "decision", "before"], "not": {"required": ["plugin"]}}}}}
+      ]
+    },
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "component"],
+      "properties": { "repository": { "$ref": "#/$defs/nonEmptyString" }, "component": { "$ref": "#/$defs/nonEmptyString" } }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["component_key", "source", "claim"],
+            "properties": { "component_key": { "$ref": "#/$defs/nonEmptyString" }, "source": { "$ref": "#/$defs/nonEmptyString" }, "claim": { "$ref": "#/$defs/nonEmptyString" } }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["outside_lock_surface_id", "commit", "source", "claim"],
+            "properties": {
+              "outside_lock_surface_id": { "$ref": "#/$defs/nonEmptyString" },
+              "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+              "source": { "$ref": "#/$defs/nonEmptyString" },
+              "claim": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          }
+        ]
+      }
+    },
+    "runtimeAssertions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["runtime", "availability", "evidence_sources"],
+        "properties": {
+          "runtime": { "$ref": "#/$defs/nonEmptyString" },
+          "availability": { "enum": ["executable", "metadata"] },
+          "evidence_sources": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/nonEmptyString" } }
+        }
+      }
+    },
+    "requiredGates": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "core": { "$ref": "#/$defs/gateList" },
+        "dag_ml": { "$ref": "#/$defs/gateList" },
+        "dag_ml_data": { "$ref": "#/$defs/gateList" },
+        "datasets": { "$ref": "#/$defs/gateList" },
+        "formats": { "$ref": "#/$defs/gateList" },
+        "io": { "$ref": "#/$defs/gateList" },
+        "methods": { "$ref": "#/$defs/gateList" }
+      }
+    },
+    "gateList": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "preflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "decision", "before"],
+      "properties": {
+        "profile": { "const": "strict" },
+        "decision": { "enum": ["allow_native", "require_plugin", "refuse"] },
+        "before": { "$ref": "#/$defs/boundaries" },
+        "plugin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "required", "on_missing_plugin"],
+          "properties": { "id": { "$ref": "#/$defs/nonEmptyString" }, "required": { "const": true }, "on_missing_plugin": { "const": "refuse" } }
+        }
+      }
+    },
+    "legacyRetention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "decision", "runtime", "before", "native"],
+      "properties": {
+        "profile": { "const": "rollback-capable" },
+        "decision": { "const": "allow_legacy_retention" },
+        "runtime": { "$ref": "#/$defs/nonEmptyString" },
+        "before": { "$ref": "#/$defs/boundaries" },
+        "native": { "const": false }
+      }
+    },
+    "dispositionScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "runtime", "surface_ids"],
+      "properties": { "profile": { "const": "strict" }, "runtime": { "$ref": "#/$defs/nonEmptyString" }, "surface_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/nonEmptyString" } } }
+    },
+    "crosswalk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_id", "surface_ids", "component_keys", "relation", "does_not_imply"],
+      "properties": {
+        "capability_id": { "$ref": "#/$defs/nonEmptyString" },
+        "surface_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "component_keys": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "relation": { "const": "release_accounting_only" },
+        "does_not_imply": { "type": "array", "uniqueItems": true, "minItems": 3, "maxItems": 3, "items": { "enum": ["execution", "availability", "parity"] } }
+      }
+    }
+  }
+}

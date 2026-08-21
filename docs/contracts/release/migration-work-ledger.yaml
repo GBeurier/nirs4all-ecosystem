@@ -1,0 +1,532 @@
+schema_version: n4a.migration-work-ledger/v1
+program: nirs4all-native-backend-v1
+authoritative_sources:
+  audit: /home/delete/nirs4all/AUDIT_MIGRATION_BACKEND_RUST_V1.md
+  roadmap: /home/delete/nirs4all/ROADMAP_BACKEND_NATIF_V1.md
+  release_lock: docs/contracts/release/aggregation-lock.n4a.lock.json
+  release_manifest: docs/contracts/release/aggregation-manifest.n4a.json
+  public_surface_matrix: docs/contracts/release/public-v1-surface-matrix.n4a.json
+release_train:
+  shape: unresolved_pending_adr17_governance
+  reason: >-
+    ADR-17-cutover-rollback requires retention of backend=legacy for two releases
+    after the native-default flip and rollback without reinstall. The roadmap's
+    five-release contingency has not yet shown how it satisfies the literal
+    two-post-flip requirement; no accepted amendment or counting interpretation
+    was found at initialization.
+initialization:
+  timestamp_utc: 2026-08-20T13:52:58Z
+  workspace: /home/delete/nirs4all
+  ecosystem_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
+  release_lock_validation:
+    status: blocked
+    command: >-
+      python3 scripts/n4a_release_lock.py validate --manifest
+      docs/contracts/release/aggregation-manifest.n4a.json --lock
+      docs/contracts/release/aggregation-lock.n4a.lock.json
+    evidence: >-
+      dag_ml selected workspace dag-ml is on branch agent/dagml-completed-handoff,
+      which does not match selected_branch_patterns=[main].
+  surface_matrix_validation:
+    status: passed
+    command: >-
+      python3 scripts/n4a_release_surface_matrix.py --manifest
+      docs/contracts/release/aggregation-manifest.n4a.json --lock
+      docs/contracts/release/aggregation-lock.n4a.lock.json --matrix
+      docs/contracts/release/public-v1-surface-matrix.n4a.json validate
+  control_tests:
+    status: passed
+    command: >-
+      python3 -m pytest -q tests/test_release_lock.py
+      tests/test_release_surface_matrix.py tests/test_cutover_state_gate.py
+    result: 27 passed
+  dagml_data_lockstep_validation:
+    status: blocked
+    command: >-
+      DAG_ML_DATA_REPO=/home/delete/nirs4all/dag-ml-data
+      python3 scripts/validate_contracts.py
+    evidence: W1 training pack artifact[7].sha256 does not match file bytes
+locks:
+  LOCK-ARCH: pending
+  LOCK-REF: pending
+  LOCK-METHODS: pending
+  LOCK-DATA: pending
+  LOCK-SAVE: pending
+  LOCK-API: pending
+  LOCK-STUDIO: pending
+  LOCK-DROP: pending
+  LOCK-RELEASE: blocked
+  LOCK-SOAK: pending
+  LOCK-DOCS: pending
+work_items:
+  - id: ARCH-001
+    owner: A
+    dependencies: []
+    state: complete
+    input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
+    owned_files:
+      - docs/contracts/release/migration-work-ledger.yaml
+    acceptance_tests:
+      - dag-ml/docs/adr/ADR-22-native-backend-v1-scope.md accepted
+      - sphinx-build -W --keep-going -b html docs docs/_build/html
+    review: Sol-xhigh ACCEPT after corrective re-review
+    rollback: remove only the new Phase-0 control record; do not alter component contracts
+  - id: ARCH-002
+    owner: release-captain
+    dependencies:
+      - ARCH-001
+    state: governance_resolution_required
+    input_sha: 3097da5658d0
+    owned_files:
+      - docs/contracts/release/migration-work-ledger.yaml
+    acceptance_tests:
+      - dag-ml/docs/adr/ADR-17-cutover-rollback.md inspected
+    review: pending
+    rollback: restore four-release planning only after an accepted ADR amendment is evidenced
+  - id: REL-001
+    owner: G
+    dependencies:
+      - ARCH-001
+    state: inventory_complete_pending_integration_review
+    input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
+    owned_files:
+      - docs/contracts/release/migration-work-ledger.yaml
+    acceptance_tests: []
+    review: pending
+    rollback: none; inventory is additive
+  - id: REL-002
+    owner: G
+    dependencies:
+      - REL-001
+    state: corrections_required
+    input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
+    owned_files:
+      - docs/contracts/release/aggregation-lock.n4a.lock.json
+    acceptance_tests:
+      - release_lock_validation
+      - release_surface_matrix_validation
+    review: pending
+    rollback: retain current immutable lock; create a new validated lock only from selected release heads
+  - id: PAR-001
+    owner: G
+    dependencies:
+      - ARCH-001
+    state: complete
+    input_sha: bd7fba454f5f
+    owned_files: []
+    acceptance_tests:
+      - nirs4all pytest -q tests/unit/api/test_dual_run_oracle.py
+      - native real-probe checks finite CV/fold OOF metrics before temporary legacy execution
+      - wheel-installed compatibility ledger resolves outside the checkout
+    review: >-
+      Sol-xhigh ACCEPT: strict native-first orchestration dual-run compares ledger-bounded
+      CV/fold metrics, winner/splits/OOF evidence and fails closed on missing/non-finite data.
+      Legacy output is isolated in a temporary workspace. The exposed PLS operator remains
+      Python sklearn-hosted; this item proves orchestration parity only, not Methods/libn4m
+      numerical execution, which remains tracked by HPO/native API integration.
+    rollback: remove only the dual-run surface/tests/docs; preserve Python 0.12.0 oracle and existing fixtures
+  - id: CAP-001
+    owner: capability-ledger
+    dependencies:
+      - ARCH-001
+      - PAR-001
+    state: complete
+    input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
+    owned_files:
+      - docs/contracts/release/native-capability-ledger.v1.json
+      - docs/contracts/release/native-capability-ledger/v1.schema.json
+      - scripts/n4a_native_capability_ledger.py
+      - tests/test_native_capability_ledger.py
+      - tests/fixtures/native-capability-ledger/
+      - .github/workflows/native-capability-ledger.yml
+      - docs/contracts/release/migration-work-ledger.yaml
+    acceptance_tests:
+      - python3 -m pytest -q tests/test_release_lock.py tests/test_native_capability_ledger.py
+      - python3 scripts/n4a_release_lock.py --workspace-root <selected-release-members> validate --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json
+      - python3 scripts/n4a_native_capability_ledger.py --workspace-root <selected-release-members> validate
+      - native-capability-ledger GitHub Actions workflow checks out lock-pinned selected members before validation
+    review: "Sol-xhigh ACCEPT (CAP R7): lock-pinned workspace simulation passed 60 tests; local structural suite passed 59 with one selected-workspace skip. Global remote-SHA fetchability audit remains unproven and is not credited by this item."
+    rollback: remove only CAP-owned ledger/schema/validator/tests/fixtures/CI additions; do not alter the immutable lock, manifest, or surface matrix
+  - id: DATA-001
+    owner: C
+    dependencies:
+      - ARCH-001
+      - CAP-001
+    state: complete
+    input_sha: 16c1efdfcd98b3861c550b6609a69a9995793301
+    owned_files:
+      - nirs4all-io/crates/nirs4all-io-core/src/materialize/
+      - nirs4all-io/crates/nirs4all-io-dagml/src/lib.rs
+      - nirs4all-io/bindings/python/
+      - nirs4all-io/bindings/wasm/
+      - nirs4all-io/docs/VERSIONING.md
+      - nirs4all-io/docs/DATASET_CONFIGURATIONS.md
+    acceptance_tests:
+      - cargo fmt --all --check; cargo clippy --workspace --all-targets -- -D warnings; cargo test --workspace
+      - Python 3.11 MVP 235 passed, binding wheel 33 passed, ruff and mypy passed
+      - Python and WASM metadata/test/build run locked and offline; wasm-pack release-style build passed
+      - cross-language DatasetPackage v3 golden and fold sample-leakage preflight/emission probes passed
+    review: Sol-xhigh ACCEPT. Node WASM smoke is not proven locally because Node is absent; CI retains that smoke as a platform gate.
+    rollback: revert the IO-owned v2 assembled/v3 package wire changes and their readers/goldens together; no source data is mutated.
+  - id: MTH-001
+    owner: B
+    dependencies:
+      - ARCH-001
+      - CAP-001
+    state: complete
+    input_sha: 4d0cc0a9ac0348bca8a81db150b38417a9e410f3
+    owned_files:
+      - nirs4all-methods/Cargo.toml
+      - nirs4all-methods/Cargo.lock
+      - nirs4all-methods/bindings/rust/n4m/
+      - nirs4all-methods/.github/workflows/rust-binding.yml
+    acceptance_tests:
+      - C ABI dev-debug build and CTest passed
+      - Rust stable and MSRV 1.77 locked test/clippy/fmt passed; N4MM/N4MOPT corruption, ownership and ABI layout probes passed
+      - Linux binding link/runtime behavior passed; macOS and Windows remain CI platform gates, not local evidence
+    review: Sol-xhigh ACCEPT technical (Linux); follow-up Sol-high ACCEPT reconciled README status and scopes prediction parity to the committed four-backend matrix. macOS/Windows remain CI platform gates, not local evidence.
+    rollback: remove the new Rust crate/CI only; preserve the C ABI and archived bindings.
+  - id: MTH-003
+    owner: B + G
+    dependencies:
+      - ARCH-001
+      - MTH-001
+    state: complete
+    input_sha: 4d0cc0a9ac0348bca8a81db150b38417a9e410f3
+    owned_files:
+      - nirs4all-methods/docs/_extras/generate_v1_capability_matrix.py
+      - nirs4all-methods/docs/_extras/test_v1_capability_matrix.py
+      - nirs4all-methods/docs/architecture/v1_estimator_stateful_preprocessor_matrix.schema.json
+      - nirs4all-methods/docs/architecture/v1_estimator_stateful_preprocessor_matrix.json
+      - nirs4all-methods/docs/architecture/v1_estimator_stateful_preprocessor_matrix.md
+    acceptance_tests:
+      - deterministic matrix regeneration/check and focused tests passed (9 matrix + 3 doc-lint)
+      - Draft 2020-12 schema independently validates the generated matrix
+      - 37 catalog models (36 native plus moment_stack adapter), generic n4m_model_fit routes, and all fitted stateful preprocessor symbols are fail-closed against Linux/macOS/Windows ABI snapshots
+    review: Sol-high ACCEPT. This is a code-surface capability proof, not numerical/runtime parity; stateless components and n4m_pipeline are explicitly out of the selected fitted-preprocessor scope.
+    rollback: remove only the generated matrix, schema, generator and targeted tests; never alter C ABI symbols, catalog sources, or the Rust binding.
+  - id: MTH-002
+    owner: B
+    dependencies:
+      - MTH-001
+      - MTH-003
+    state: complete
+    input_sha: 4d0cc0a9ac0348bca8a81db150b38417a9e410f3
+    owned_files:
+      - nirs4all-methods/Cargo.toml
+      - nirs4all-methods/Cargo.lock
+      - nirs4all-methods/bindings/rust/n4m/
+      - nirs4all-methods/.github/workflows/rust-binding.yml
+      - nirs4all-methods/docs/about.md
+      - nirs4all-methods/docs/dev/DISTRIBUTION.md
+    acceptance_tests:
+      - Rust exposes C-ABI backed model fit/predict/N4MM and safe HPO ask/batch/tell/intermediate/best/trials/N4MOPT replay plus selection-only finetune
+      - stable and MSRV 1.77 Rust gates, CTest and exhaustive ABI probe passed; package contains the two canonical license texts
+      - sanitizer and Windows MSVC workflow paths are concrete and guarded in CI
+    review: Sol-xhigh ACCEPT. macOS/Windows and sanitizer execution are CI gates not locally run; Rust remains official pre-release and outside cross-language prediction parity until a committed fixture exists.
+    rollback: remove only the Rust binding/CI/docs additions and retain the C ABI, native test suite and archived bindings.
+  - id: HPO-001
+    owner: B + E
+    dependencies:
+      - MTH-002
+      - DATA-001
+      - PROV-001
+    state: corrections_required
+    input_sha: 3097da5658d0abca575d36db1f6a82f1f5d55490
+    owned_files:
+      - dag-ml/crates/dag-ml-core/src/hpo.rs
+      - dag-ml/crates/dag-ml-core/src/training_runtime.rs
+      - dag-ml/crates/dag-ml-core/src/runtime/
+      - dag-ml/crates/dag-ml-core/src/bundle.rs
+      - dag-ml/crates/dag-ml-core/src/replay.rs
+      - dag-ml/docs/HPO_METHODS_ADAPTER.md
+    acceptance_tests:
+      - native Methods ask/batch/tell/intermediate/best/trials/failure/prune with TPE and pruner
+      - N4MOPT durable checkpoint/restart trajectory and archive persistence/replay
+      - controller-owned execution with attested DataBinding/identity, DAG folds/OOF/selection/refit
+      - N4MM package reload into a fresh controller followed by predict without labels
+      - extracted default dag-ml package has no sibling dependency; any local Methods overlay is explicit and fail-closed
+    review: >-
+      Sol-xhigh BLOCKER (post-corrective final): no-sentinel controller/session routing,
+      typed atomic resume evidence, strict schemas/readers, N4MM replay and native
+      TPE/Median Completed/Completed/Pruned/Failed package-resume E2E are accepted
+      locally. W1/replay closure was regenerated and accepted separately. Remaining
+      release blocker is reproducibility: the official Methods Rust binding/workflow is
+      still untracked at Methods HEAD, so a clean CI checkout cannot obtain a pinned,
+      immutable binding SHA. Commit/publish the binding, pin its SHA in dag-ml CI and
+      aggregation evidence, then rerun a clean-checkout Sol-xhigh review.
+    rollback: remove only the uncommitted dag-ml HPO adapter/runtime additions; preserve Methods ABI and existing DAG contracts.
+  - id: CONF-001
+    owner: E + F
+    dependencies:
+      - DATA-001
+      - PROV-001
+      - STORE-001
+    state: runtime_v2_complete_pending_cross_component_e2e
+    input_sha: 3097da5658d0abca575d36db1f6a82f1f5d55490
+    owned_files:
+      - dag-ml/crates/dag-ml-core/src/conformal.rs
+      - dag-ml/crates/dag-ml-core/src/bundle.rs
+      - dag-ml/crates/dag-ml-core/src/replay.rs
+      - dag-ml/crates/dag-ml-core/src/training_runtime.rs
+      - nirs4all-core/bindings/rust/nirs4all/src/archive_v1.rs
+      - nirs4all-ui/src/conformal/
+      - nirs4all-studio/src/components/predictions/viewer/conformalChartData.ts
+    acceptance_tests:
+      - native split-conformal calibration, coverage artifact and interval application preserve Rust goldens and sample identity
+      - native calibration to archive to process-close to Core load to predictor replay to interval E2E passes without importing Python conformal runtime
+      - public ABI/binding exposes native calibration/apply/load and archive persistence is integrity checked
+      - UI consumes the stored artifact and refuses sample_id ordering mismatch without any statistical recalculation
+    review: >-
+      Two independent Sol-xhigh reviews ACCEPT the DAG-ML V2 runtime: calibration is
+      PREDICT-only, relation-authoritative, distinct and identity-disjoint from development;
+      Package/Replay/Outcome V2 schemas are closed, V1 fields (including raw null) refuse,
+      and loaded-package replay recomputes exact interval bounds. Re-signed relation,
+      origin, source/replay, output, interval deletion/injection and transplant probes refuse.
+      W1 closure also pins conformal.rs and conformal_runtime.rs. The bounded Core archive-view
+      remains ACCEPT metadata-only. A separate Sol-xhigh review ACCEPTS the Studio chart gate:
+      stored intervals attach only when explicit wire sample IDs match exact row order; numeric
+      positional indices never impersonate stable IDs. Native archive execution and the shared
+      Core-to-UI artifact transport E2E required by this cross-component item are still pending.
+    rollback: disable the additive native conformal capability and retain the R1 legacy engine; never rewrite legacy archives.
+  - id: DOC-WEB-001
+    owner: H + F + G
+    dependencies:
+      - REL-002
+      - STU-001
+      - MTH-DOC-003
+    state: pending
+    input_sha: 0520cbd58540
+    owned_files:
+      - nirs4all-org/
+      - nirs4all-cockpit/data/current.json
+      - nirs4all-web/
+      - nirs4all-studio/.github/workflows/
+      - nirs4all-methods/.github/workflows/docs.yml
+    acceptance_tests:
+      - canonical versions, SHAs and artifacts are generated from the selected validated aggregation lock
+      - strict HTML/link/accessibility/SEO and Web smoke gates pass from clean builds
+      - Studio contract verifier is committed and run by CI; documentation claims only capabilities proven by the same release lock
+    review: >-
+      Inventory found Core version divergence (org/manifests 0.3.11 versus Cockpit 0.3.12),
+      untracked local contract/bibliography work, and no strict link/HTML/accessibility/SEO gate.
+      No R1 public message is eligible until corrected and independently reviewed.
+    rollback: revert generated public content and deployment manifests atomically; no release, site deployment or public announcement without authorization.
+  - id: MTH-DOC-001
+    owner: H + B
+    dependencies:
+      - MTH-003
+    state: complete
+    input_sha: f69a2ec7634f3e0b08d1b6ec01ceceaae368967a
+    owned_files:
+      - nirs4all-methods/catalog/bibliography/
+      - nirs4all-methods/catalog/scripts/*bibliography*.py
+      - nirs4all-methods/catalog/tests/test_bibliography_catalog.py
+      - nirs4all-methods/docs/bibliography.md
+      - nirs4all-methods/docs/_static/bibliography.*
+    acceptance_tests:
+      - 73 legacy citations remain byte-exact and 15 reviewed finetuning entries are proven from Git-pinned blobs
+      - 14 bibliography tests, reproducible migration/generation, strict catalog checks and scientific provenance validation passed
+    review: Sol-xhigh ACCEPT. No structured fact was inferred for legacy citations; reviewed records are source/digest-bound.
+    rollback: remove bibliography v1 additions and generated artifacts together; retain legacy methods_bibliography.py and existing reader behavior.
+  - id: MTH-DOC-002
+    owner: H + B
+    dependencies:
+      - MTH-DOC-001
+    state: complete
+    input_sha: fe5c077ba7ddccacb3befce6dbc9e398458b20d3
+    owned_files:
+      - nirs4all-methods/catalog/schema/bibliography_v1.json
+      - nirs4all-methods/catalog/scripts/migrate_bibliography.py
+      - nirs4all-methods/catalog/scripts/validate_bibliography.py
+    acceptance_tests:
+      - v1 branches unstructured legacy and reviewed structured records with closed Draft 2020-12 validation
+      - Git-revision/blob/entry-digest tampering and shallow-history diagnostics refuse fail-closed
+    review: Sol-xhigh ACCEPT.
+    rollback: reverse schema/migration/validation and generated v1 catalog as one unit; do not modify source bibliography facts.
+  - id: MTH-DOC-003
+    owner: H + B + G
+    dependencies:
+      - MTH-DOC-002
+    state: complete
+    input_sha: fe5c077ba7ddccacb3befce6dbc9e398458b20d3
+    owned_files:
+      - nirs4all-methods/docs/bibliography.md
+      - nirs4all-methods/docs/_static/bibliography.bib
+      - nirs4all-methods/docs/_static/bibliography.links.json
+      - nirs4all-methods/docs/_static/nirs4all-methods.cff
+      - nirs4all-methods/.github/workflows/catalog-validate.yml
+    acceptance_tests:
+      - generated BibTeX has 88 valid entries and passes bibtex; reviewed provenance/conditional DOI-URL links render in Sphinx
+      - CI triggers on CFF and finetuning source and installs parser gate
+    review: Sol-xhigh ACCEPT. Existing non-bibliography Sphinx warnings remain outside this lot.
+    rollback: reverse generated documents/CI wiring with their generator; retain catalog source until a replacement migration is accepted.
+  - id: STU-001
+    owner: A + F
+    dependencies:
+      - ARCH-001
+      - CAP-001
+    state: complete
+    input_sha: c0cbae31d1387b5332f3793dcdf5bab1f4d1e6f3
+    owned_files:
+      - nirs4all-studio/docs/contracts/studio-v1/
+      - nirs4all-studio/scripts/verify-studio-v1-contract.py
+      - nirs4all-studio/tests/test_studio_v1_contract.py
+      - nirs4all-studio/package.json
+    acceptance_tests:
+      - physical route/OpenAPI/WS/readiness/jobs/cancellation/error/workspace snapshots validate in project FastAPI 0.128 and system FastAPI 0.139
+      - focused contract suite passed 32/32; alternate runtime passed 31 with one expected portability skip
+      - direct full backend equivalent passed 2334 with 59 skips; privacy scanner, exception ledger and schema mutation tests fail closed
+    review: Sol-xhigh ACCEPT. This freezes the legacy FastAPI compatibility baseline only; it does not provide a Rust sidecar or selectable native Studio runtime. npm runner is unavailable in WSL UNC mode, while the equivalent direct pytest gate passed.
+    rollback: remove only Studio contract fixtures/schemas/verifier/tests and package script; no route, Electron package, workspace or user-data migration was changed.
+  - id: STU-002
+    owner: F
+    dependencies:
+      - STU-001
+    state: complete
+    input_sha: c0cbae31d1387b5332f3793dcdf5bab1f4d1e6f3
+    owned_files:
+      - nirs4all-studio/sidecar/
+    acceptance_tests:
+      - Rust sidecar health/readiness/job/cancellation/WS protocol tests passed (15), including fragmented HTTP, bounded resources, WS upgrade validation and fixture correlations
+      - release build and loopback readiness smoke passed; STU-001 frozen-contract verifier and targeted pytest passed
+    review: Sol-xhigh ACCEPT. This is an opt-in R1 skeleton with no Python backend, scientific/store implementation, Electron switch, legacy route serving, or full-parity claim; legacy_route_parity is explicitly not_started.
+    rollback: remove the standalone sidecar directory only; Studio legacy FastAPI/Electron paths and user workspaces are untouched.
+  - id: SAVE-001
+    owner: D
+    dependencies:
+      - ARCH-001
+      - CAP-001
+    state: complete
+    input_sha: 3097da5658d0abca575d36db1f6a82f1f5d55490
+    owned_files:
+      - dag-ml/docs/contracts/archive-v1/
+      - dag-ml/scripts/validate_archive_v1_contract.py
+      - dag-ml/tests/test_archive_v1_contract.py
+      - dag-ml/.github/workflows/ci.yml
+    acceptance_tests:
+      - Archive V2 replay refs and producer_port contract tests passed
+      - 24 frozen refusals each materialized as isolated ZIP and passed to validate_archive_zip
+      - Real SQLite DB/WAL/SHM/rollback journal sidecars were generated in temporary storage and refused
+      - Python 3.11 archive suite 11 passed against exact pinned legacy loader oracle
+    review: Sol-xhigh ACCEPT. W1 pack mismatch and missing paired dag-ml-data branch make the global CI/oracle path unproven and are separate release blockers.
+    rollback: revert only the archive contract/validator/tests/CI oracle block; do not modify historical archives, W1 packs, or user data.
+  - id: STORE-001
+    owner: D + E
+    dependencies:
+      - SAVE-001
+      - MTH-002
+    state: complete
+    input_sha: 83c246cff77b37ed321f14abf058564fccf17daa
+    owned_files:
+      - nirs4all-core/bindings/rust/nirs4all/src/archive_v1.rs
+      - nirs4all-core/bindings/rust/nirs4all/Cargo.toml
+      - nirs4all-core/Cargo.lock
+      - nirs4all-core/bindings/rust/nirs4all/tests/parity/
+      - nirs4all-core/bindings/rust/nirs4all/LICENSES/
+    acceptance_tests:
+      - public reader/writer strictly validate stored archive V1 ZIP/manifest/inventory/reference/workspace rules before payload materialization and never replace an existing output
+      - two normative positives and all 24 frozen refusals are materialized through the public reader from a local hash-provenance mirror
+      - source and extracted packages both passed 31 Rust tests; archive dag-ml validator/unittests and full validate_contracts passed
+    review: Sol-xhigh ACCEPT. Scope is a strict stored-ZIP native archive reader/writer; it has no native execution engine, so predict returns UnsupportedCapability and this does not satisfy SAVE-002 run-save-load-predict.
+    rollback: remove only Core archive/store package additions and mirrored synthetic contract corpus; retain dag-ml contract, legacy source archives and user data unchanged.
+  - id: W1-001
+    owner: G
+    dependencies:
+      - SAVE-001
+    state: complete
+    input_sha: 3097da5658d0abca575d36db1f6a82f1f5d55490
+    owned_files:
+      - dag-ml/docs/contracts/training_contract_conformance_pack.v1.json
+      - dag-ml/docs/contracts/training_replay_contract_conformance_pack.v1.json
+      - dag-ml/parity/training/generate_training_replay_fixtures.py
+      - dag-ml/parity/training/tests/test_training_replay_contracts.py
+      - dag-ml/scripts/validate_training_replay_contracts.py
+    acceptance_tests:
+      - Base/replay/conformal generators are byte deterministic and both validators passed
+      - Base/replay/conformal packs reconstruct exactly with 92/140/53 leaves and replay pins derived from the base output
+      - single-byte tamper of Cargo.toml, runtime/mod.rs, conformal.rs, conformal_runtime.rs and covered HPO documentation is rejected by both validators
+    review: >-
+      Two independent Sol-xhigh reviews ACCEPT the refreshed HPO/Conformal closure:
+      base=92 (705a6a0224dde31805d8acba39864992ed1b58c2ed8e67806a5c6b67c8d4a9ec,
+      9fc9d2f10abe57132ff44fc97fb755e61bf4c9ee3cf4ee4ead822bcb786a3874), replay=140
+      (7354f69c53b8abd578e493191fe49ec8460c372d2755d71f2040f7cd49f54dcf,
+      2038edaea7b576493cd46ef965679841ef8889d78e57b6da1d64cb8dca8ac1ab), conformal=53
+      unchanged. Two canonical passes produce closure SHA ef7d73e3b577183e773314cfd0b12cac301abc6a4749b96a0d3b55389251c938;
+      both validators and 221 parity tests pass. Packs remain local/uncommitted and still require the selected dag-ml-data CI topology before a release claim.
+    rollback: reverse only generator-derived pack/pin/test changes as one unit; never patch leaf hashes manually.
+  - id: TOOLS-001
+    owner: D
+    dependencies:
+      - SAVE-001
+    state: complete
+    input_sha: 3ad7e83da57e517a035d56407bd3bab824083230
+    owned_files:
+      - nirs4all-tools/src/nirs4all_tools/cli.py
+      - nirs4all-tools/src/nirs4all_tools/commands.py
+      - nirs4all-tools/src/nirs4all_tools/policy.py
+      - nirs4all-tools/README.md
+      - nirs4all-tools/CONTRIBUTING.md
+      - nirs4all-tools/tests/
+    acceptance_tests:
+      - semantic workspace-v2 conversion refuses exit 20 before output/checkpoint
+      - copy-only snapshot/resume owns the complete output inventory; custom contract names and profile changes are covered
+      - full suite 88 passed with only explicit TOOL-SEM-001 skip; ruff and mypy passed
+    review: Sol-xhigh ACCEPT. This item proves preservation copy-only or fail-closed refusal, not a semantic archive V1 writer or convert-load-predict migration.
+    rollback: reverse only the Tools-owned files; never delete converted user output automatically.
+  - id: PAR-002
+    owner: G
+    dependencies:
+      - CAP-001
+      - DATA-001
+      - MTH-001
+    state: complete
+    input_sha: bd7fba454f5f5a5e644941061b98d2c45f15fafd
+    owned_files:
+      - nirs4all/nirs4all/api/run.py
+      - nirs4all/nirs4all/api/result.py
+      - nirs4all/nirs4all/pipeline/engine.py
+      - nirs4all/nirs4all/compatibility_ledger.json
+      - nirs4all/nirs4all/pipeline/keyword_registry.py
+      - nirs4all/docs/source/
+      - nirs4all/tests/unit/api/test_dual_run_oracle.py
+    acceptance_tests:
+      - installed-wheel ledger resource is byte-synchronized with docs and resolved outside checkout
+      - real native PLS/KFold dual probe passed with exact OOF coverage, winner/split/y_pred and ledger bands
+      - unsupported capabilities, calibration/tuning, non-exact types/data and native result environment refuse before legacy fallback
+    review: "Sol-xhigh ACCEPT. Scope is explicitly partial: NumPy regression tuple, exact KFold(shuffle=False), exact PLSRegression and strict no-artifact options only."
+    rollback: remove only the dual-run implementation/resource/docs/tests; preserve engine=legacy and native single-run behavior.
+  - id: PROV-001
+    owner: C
+    dependencies:
+      - DATA-001
+    state: complete
+    input_sha: 91302fdbc38474e94750184469923f9b2bbb0e9d
+    owned_files:
+      - dag-ml-data/crates/dag-ml-data-core/src/coordinator.rs
+      - dag-ml-data/crates/dag-ml-data-core/src/handle.rs
+      - dag-ml-data/crates/dag-ml-data-provider/src/json.rs
+      - dag-ml-data/crates/dag-ml-data-capi/src/lib.rs
+      - dag-ml-data/docs/
+    acceptance_tests:
+      - real JsonInMemoryProvider by_filter route preserves supplied identity/relations/weights/partition-source provenance
+      - unknown/null/empty/mixed selector predicates refuse pre-projection as typed validation, including C ABI
+      - workspace fmt/clippy/tests, contracts and schema fingerprint passed (274 tests, 2 ignored perf probes)
+    review: Sol-xhigh ACCEPT. Fold declarations remain envelope provenance only; Arrow C ABI is documented as IDs/is_augmented only, while full relation metadata/tags remain core/JSON.
+    rollback: reverse only the nine dag-ml-data provider/docs files; do not alter IO bridge or global release lock.
+  - id: GOV-001
+    owner: release-captain
+    dependencies:
+      - ARCH-001
+    state: pending
+    input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
+    owned_files:
+      - docs/contracts/release/migration-work-ledger.yaml
+    acceptance_tests: []
+    review: pending
+    rollback: ownership records are additive and reversible
+next_batch:
+  gate: phase-0-inventory-and-contract-review
+  condition: >-
+    Integrate independent inventories; assign a Sol review; then freeze only
+    contracts proved by code, tests, and a validated selected-workspace lock.

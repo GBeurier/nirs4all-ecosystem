@@ -26,14 +26,14 @@
           "canonical_json_equal": true,
           "members": [
             {
-              "canonical_json_sha256": "sha256:00e0308214732c34938be72968cafb9e6ee11d0e33a9060c20533fd7335a4239",
+              "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
               "member": "dag_ml",
-              "raw_sha256": "sha256:1ebd3e8ec3c257aaaddcba753072a85a48293742f2afc4a7e43434d9e1bbc187"
+              "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
             },
             {
-              "canonical_json_sha256": "sha256:00e0308214732c34938be72968cafb9e6ee11d0e33a9060c20533fd7335a4239",
+              "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
               "member": "dag_ml_data",
-              "raw_sha256": "sha256:1ebd3e8ec3c257aaaddcba753072a85a48293742f2afc4a7e43434d9e1bbc187"
+              "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
             }
           ],
           "raw_equal": true
@@ -70,7 +70,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:466a522d9a186ad960553157f239439b53ad8ab121d53cfe900cf6215da36330",
+          "canonical_json_sha256": "sha256:50aec67fd3120b2a33b0b06c0a21f7005364ccb661cef04dfe278135a93c7ca5",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -98,6 +98,7 @@
                 "PipelineDefinition",
                 "Upstream",
                 "available_upstreams",
+                "artifact_contracts",
                 "capability_manifest",
                 "controller_capabilities",
                 "dag_ml",
@@ -107,9 +108,11 @@
                 "import_upstream",
                 "io",
                 "load_pipeline_definition",
+                "local_implementation_registry",
                 "methods",
                 "portable_class_names",
                 "require_upstream",
+                "required_keyword_registry_entries",
                 "runtime_contracts",
                 "runtime_surfaces",
                 "upstream_status",
@@ -128,6 +131,7 @@
                 "PipelineDefinition",
                 "Upstream",
                 "available_upstreams",
+                "artifact_contracts",
                 "capability_manifest",
                 "controller_capabilities",
                 "dag_ml",
@@ -137,9 +141,11 @@
                 "import_upstream",
                 "io",
                 "load_pipeline_definition",
+                "local_implementation_registry",
                 "methods",
                 "portable_class_names",
                 "require_upstream",
+                "required_keyword_registry_entries",
                 "runtime_contracts",
                 "runtime_surfaces",
                 "upstream_status",
@@ -414,11 +420,15 @@
                 "owner_boundary": "control",
                 "packages": {
                   "c_abi": [],
-                  "matlab": [],
+                  "matlab": [
+                    "+dagml"
+                  ],
                   "npm": [
                     "dag-ml-wasm"
                   ],
-                  "r": [],
+                  "r": [
+                    "dagml"
+                  ],
                   "rust": [
                     "dag-ml"
                   ]
@@ -659,7 +669,7 @@
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_core/_topology.py",
-          "raw_sha256": "sha256:8744f63c31d728ad2f1e373a4c9aa7e7b9feb83fec8a6e16c584fd578beaf198",
+          "raw_sha256": "sha256:01dbb35bad4ae33549d6ce20dff927ebe2816111621c7b41039315c22067e22a",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -716,9 +726,9 @@
       "selected_workspace_path": "nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "59d54c97399a43eb53665d236f5ab01b5972fe16",
-        "dirty": false,
-        "exact_tag": "v0.3.11"
+        "commit": "172e00f826859963f183d3539a1b67b7ecb00044",
+        "dirty": true,
+        "exact_tag": null
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -727,25 +737,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.3.11"
+          "value": "0.3.12"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.3.11"
+          "value": "0.3.12"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.3.11"
+          "value": "0.3.12"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.3.11"
+          "value": "0.3.12"
         }
       }
     },
@@ -759,13 +769,13 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:00e0308214732c34938be72968cafb9e6ee11d0e33a9060c20533fd7335a4239",
+          "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
           "contracts": {
             "coordinator_branch_view.v1": {
               "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
             },
             "coordinator_data_plan_envelope.v1": {
-              "normalized_sha256": "63b0d862bbbf0fd677a59426053a10e0350876943dc437b4a9e16b915956c584"
+              "normalized_sha256": "f3719abdba9b178c4d939d6173adecf32bf3a7a3e7a7f903baaf699f852ce368"
             },
             "data_output_provenance.v1": {
               "normalized_sha256": "d90533a9ae7d5a9415a1f8239ea24fbb1e1c37203eba255023e1caadc43494d7"
@@ -787,7 +797,7 @@
           "kind": "conformance_pack",
           "pack_id": "dag-ml.shared.conformance.v1",
           "path": "docs/contracts/conformance_pack.v1.json",
-          "raw_sha256": "sha256:1ebd3e8ec3c257aaaddcba753072a85a48293742f2afc4a7e43434d9e1bbc187"
+          "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
         },
         {
           "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
@@ -806,19 +816,19 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:a037e4740b5e7fe42a9bb893d477a2682275e04780c0b3b2dd850837813dbdac",
+          "canonical_json_sha256": "sha256:7a5f38702a2861642c60ac8588eea0451de7d88b5220f0e30cb13c781a322d12",
           "crate": "dag-ml",
           "headers": [
             {
               "path": "crates/dag-ml-capi/include/dag_ml.h",
-              "sha256": "96914365a099fdced0cfb44177dc9a50244f6b545a03ecb89dce35d95855be8e"
+              "sha256": "49e4c54cac3e0ea416537feb94e68fdb3bf6049ea424c26d407ef46d68ab8e36"
             }
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.2.7",
+          "package_version": "0.3.0",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:97f4a2261d316d8230b82a34b68fa931173a9e922504fb0ad4efe4211c4709de"
+          "raw_sha256": "sha256:46fecc867064ac6715583ce728080b11bca20269db1384b757983d9fe3690f3c"
         }
       ],
       "default_inclusion": "base",
@@ -867,9 +877,9 @@
       "selected_workspace_path": "dag-ml",
       "state": {
         "branch": "main",
-        "commit": "366ca8bd09d558855055daa57199d923f51abb6d",
-        "dirty": false,
-        "exact_tag": "n4a-v1-rc17-2026.07-refactor"
+        "commit": "5f004fa0bc2a56b31cdbedc332312d5dd7eb96bc",
+        "dirty": true,
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -878,19 +888,19 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.2.7"
+          "value": "0.3.0"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-py/pyproject.toml",
-          "value": "0.2.7"
+          "value": "0.3.0"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.2.7"
+          "value": "0.3.0"
         }
       }
     },
@@ -904,13 +914,13 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:00e0308214732c34938be72968cafb9e6ee11d0e33a9060c20533fd7335a4239",
+          "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
           "contracts": {
             "coordinator_branch_view.v1": {
               "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
             },
             "coordinator_data_plan_envelope.v1": {
-              "normalized_sha256": "63b0d862bbbf0fd677a59426053a10e0350876943dc437b4a9e16b915956c584"
+              "normalized_sha256": "f3719abdba9b178c4d939d6173adecf32bf3a7a3e7a7f903baaf699f852ce368"
             },
             "data_output_provenance.v1": {
               "normalized_sha256": "d90533a9ae7d5a9415a1f8239ea24fbb1e1c37203eba255023e1caadc43494d7"
@@ -932,7 +942,7 @@
           "kind": "conformance_pack",
           "pack_id": "dag-ml.shared.conformance.v1",
           "path": "docs/contracts/conformance_pack.v1.json",
-          "raw_sha256": "sha256:1ebd3e8ec3c257aaaddcba753072a85a48293742f2afc4a7e43434d9e1bbc187"
+          "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
         },
         {
           "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
@@ -1017,9 +1027,9 @@
       "selected_workspace_path": "dag-ml-data",
       "state": {
         "branch": "main",
-        "commit": "9fe27cd8577f7660c4a4117d17dab7379c0fa7e4",
+        "commit": "f896e9885fa3f9d103e279836e366094e7bad9b6",
         "dirty": false,
-        "exact_tag": "v0.2.9"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1096,9 +1106,9 @@
       "selected_workspace_path": "nirs4all-datasets",
       "state": {
         "branch": "main",
-        "commit": "67d47c557bcb8770506409d2c688cb3b60384c18",
+        "commit": "60a0b6073bd3842bdd0b2e3439ffcbda0ad4615d",
         "dirty": false,
-        "exact_tag": "n4a-v1-rc17-2026.07-refactor"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1107,19 +1117,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "pyproject.toml",
-          "value": "0.3.5"
+          "value": "0.3.8"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/nirs4alldatasets/DESCRIPTION",
-          "value": "0.3.5"
+          "value": "0.3.8"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.3.5"
+          "value": "0.3.8"
         }
       }
     },
@@ -1259,7 +1269,7 @@
       "state": {
         "branch": "main",
         "commit": "16c1efdfcd98b3861c550b6609a69a9995793301",
-        "dirty": false,
+        "dirty": true,
         "exact_tag": "v0.1.11"
       },
       "target_repo_path": null,
@@ -1298,15 +1308,15 @@
           "id": "n4m_version_header",
           "kind": "text",
           "path": "cpp/include/n4m/n4m_version.h",
-          "raw_sha256": "sha256:210043e864337d604a19d7525bf4df7d5043059b55a5d96c741b4c447eba9e59"
+          "raw_sha256": "sha256:615566c8be77892e595a1873cbd9f0c16bcec5939954ccc1dbed44ed4b8f91d9"
         }
       ],
       "default_inclusion": "aggregate-extra",
       "glob_artifacts": {
         "expected_symbols": {
-          "cpp/abi/expected_symbols_linux.txt": "sha256:ba68da77cc18f2a757fa94ea31549d0469aae0d9039cde2c3c367a0ba63912d9",
-          "cpp/abi/expected_symbols_macos.txt": "sha256:167fe8b328c4a149932da70a6e0afe60539431d195204b9b1ccda31071b797a1",
-          "cpp/abi/expected_symbols_windows.txt": "sha256:167fe8b328c4a149932da70a6e0afe60539431d195204b9b1ccda31071b797a1"
+          "cpp/abi/expected_symbols_linux.txt": "sha256:452ae3b4ea4f22582839d80676d8e423744aa9a62e67854326fffd5ff88ee34c",
+          "cpp/abi/expected_symbols_macos.txt": "sha256:6ed4e1021c59918f7b20b9c7010bfbfd85ca7265f342612ef7c740cbd6606875",
+          "cpp/abi/expected_symbols_windows.txt": "sha256:6ed4e1021c59918f7b20b9c7010bfbfd85ca7265f342612ef7c740cbd6606875"
         }
       },
       "license_expression": "CECILL-2.1",
@@ -1354,9 +1364,9 @@
       "selected_workspace_path": "nirs4all-methods",
       "state": {
         "branch": "main",
-        "commit": "f69a2ec7634f3e0b08d1b6ec01ceceaae368967a",
+        "commit": "0ef355e6f74573ed07a6920bdeed1a052a6e8312",
         "dirty": false,
-        "exact_tag": "v1.0.9"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1366,12 +1376,12 @@
           "read_from": "tracked_worktree",
           "source": "cpp/include/n4m/n4m_version.h",
           "value": {
-            "abi_version": "2.0.0",
+            "abi_version": "2.2.0",
             "abi_version_int": null,
             "project_version": "1.0.9",
             "serialization_format_version": 1,
             "serialization_magic": "N4MM",
-            "source_sha256": "sha256:210043e864337d604a19d7525bf4df7d5043059b55a5d96c741b4c447eba9e59"
+            "source_sha256": "sha256:615566c8be77892e595a1873cbd9f0c16bcec5939954ccc1dbed44ed4b8f91d9"
           }
         },
         "python_nirs4all_methods": {

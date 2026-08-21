@@ -1,0 +1,105 @@
+name: Native capability release gate
+
+on:
+  pull_request:
+    branches: [main, rc/**]
+    paths:
+      - ".github/workflows/native-capability-ledger.yml"
+      - ".gitmodules"
+      - "nirs4all"
+      - "scripts/n4a_native_capability_ledger.py"
+      - "scripts/n4a_release_lock.py"
+      - "docs/contracts/release/native-capability-ledger.v1.json"
+      - "docs/contracts/release/native-capability-ledger/**"
+      - "docs/contracts/release/aggregation-manifest.n4a.json"
+      - "docs/contracts/release/aggregation-lock.n4a.lock.json"
+      - "docs/contracts/release/public-v1-surface-matrix.n4a.json"
+      - "docs/contracts/release/migration-work-ledger.yaml"
+      - "tests/test_native_capability_ledger.py"
+      - "tests/fixtures/native-capability-ledger/**"
+      - "tests/test_release_lock.py"
+  push:
+    branches: [main, rc/**]
+    paths:
+      - ".github/workflows/native-capability-ledger.yml"
+      - ".gitmodules"
+      - "nirs4all"
+      - "scripts/n4a_native_capability_ledger.py"
+      - "scripts/n4a_release_lock.py"
+      - "docs/contracts/release/native-capability-ledger.v1.json"
+      - "docs/contracts/release/native-capability-ledger/**"
+      - "docs/contracts/release/aggregation-manifest.n4a.json"
+      - "docs/contracts/release/aggregation-lock.n4a.lock.json"
+      - "docs/contracts/release/public-v1-surface-matrix.n4a.json"
+      - "docs/contracts/release/migration-work-ledger.yaml"
+      - "tests/test_native_capability_ledger.py"
+      - "tests/fixtures/native-capability-ledger/**"
+      - "tests/test_release_lock.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-selected-release-topology:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nirs4all-ecosystem
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: nirs4all-ecosystem
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: Install release-gate test dependency
+        run: python3 -m pip install pytest jsonschema
+      - name: Materialize the ledger-pinned outside-lock Python oracle
+        run: |
+          oracle_commit="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          ledger = json.loads(Path("docs/contracts/release/native-capability-ledger.v1.json").read_text(encoding="utf-8"))
+          entries = [
+              evidence["commit"]
+              for capability in ledger["capabilities"]
+              for evidence in capability["evidence"]
+              if evidence.get("outside_lock_surface_id") == "nirs4all.python.oracle"
+          ]
+          if not entries or len(set(entries)) != 1:
+              raise SystemExit("ledger must declare exactly one outside-lock Python oracle commit")
+          print(entries[0])
+          PY
+          )"
+          oracle_gitlink="$(git rev-parse HEAD:nirs4all)"
+          test "$oracle_gitlink" = "$oracle_commit"
+          git submodule update --init --checkout nirs4all
+          oracle_head="$(git -C nirs4all rev-parse HEAD)"
+          test "$oracle_head" = "$oracle_commit"
+          test -z "$(git -C nirs4all status --porcelain)"
+      - name: Checkout lock-pinned selected members
+        env:
+          N4A_RELEASE_WORKSPACE_ROOT: ${{ runner.temp }}/n4a-selected-release-members
+        run: |
+          python3 scripts/n4a_release_lock.py checkout-members \
+            --manifest docs/contracts/release/aggregation-manifest.n4a.json \
+            --lock docs/contracts/release/aggregation-lock.n4a.lock.json \
+            --output "$N4A_RELEASE_WORKSPACE_ROOT"
+      - name: Validate release lock and capability ledger against selected members
+        env:
+          N4A_RELEASE_WORKSPACE_ROOT: ${{ runner.temp }}/n4a-selected-release-members
+        run: |
+          python3 scripts/n4a_release_lock.py \
+            --workspace-root "$N4A_RELEASE_WORKSPACE_ROOT" \
+            validate \
+            --manifest docs/contracts/release/aggregation-manifest.n4a.json \
+            --lock docs/contracts/release/aggregation-lock.n4a.lock.json
+          python3 scripts/n4a_native_capability_ledger.py \
+            --workspace-root "$N4A_RELEASE_WORKSPACE_ROOT" \
+            validate
+      - name: Test structural semantics and the selected-workspace integration path
+        env:
+          N4A_RELEASE_WORKSPACE_ROOT: ${{ runner.temp }}/n4a-selected-release-members
+        run: python3 -m pytest -q tests/test_release_lock.py tests/test_native_capability_ledger.py
