@@ -58,7 +58,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:af80fc300b2be57004bdd58af16cbeeacad234fbc5629f6a58ed01d2034d214f",
+  "manifest_digest": "sha256:27595d11c3ac9f1219e405e2888931ec9122f55fdd4c3968a2535615802ee34e",
   "members": {
     "core": {
       "availability": {
@@ -70,7 +70,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:50aec67fd3120b2a33b0b06c0a21f7005364ccb661cef04dfe278135a93c7ca5",
+          "canonical_json_sha256": "sha256:86f6c221f113031b91f3a6fba6d7150f15d6651c5402737707bc4214281d8828",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -94,6 +94,7 @@
               "backing_import": "nirs4all_core",
               "core_exports": [
                 "LazyUpstream",
+                "NativeArchiveUnavailableError",
                 "PORTABLE_OPERATOR_CLASSES",
                 "PipelineDefinition",
                 "Upstream",
@@ -112,6 +113,7 @@
                 "methods",
                 "portable_class_names",
                 "require_upstream",
+                "read_portable_predictor_package_v2",
                 "required_keyword_registry_entries",
                 "runtime_contracts",
                 "runtime_surfaces",
@@ -127,6 +129,7 @@
               "import": "nirs4all_core",
               "public_exports": [
                 "LazyUpstream",
+                "NativeArchiveUnavailableError",
                 "PORTABLE_OPERATOR_CLASSES",
                 "PipelineDefinition",
                 "Upstream",
@@ -145,6 +148,7 @@
                 "methods",
                 "portable_class_names",
                 "require_upstream",
+                "read_portable_predictor_package_v2",
                 "required_keyword_registry_entries",
                 "runtime_contracts",
                 "runtime_surfaces",
@@ -669,7 +673,7 @@
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_core/_topology.py",
-          "raw_sha256": "sha256:01dbb35bad4ae33549d6ce20dff927ebe2816111621c7b41039315c22067e22a",
+          "raw_sha256": "sha256:8aeb66a0c20440d0bc0bdeaf526ecdda8913cd35acabd869b721976391d0e634",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -726,9 +730,9 @@
       "selected_workspace_path": "nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "290ae4c5b05b05fba2187ccac7ee2d1aff8b9ac6",
+        "commit": "983ad05e8174b799c7b1578e37401f542c6772d3",
         "dirty": false,
-        "exact_tag": "v0.3.13"
+        "exact_tag": "v0.3.14"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -737,25 +741,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.3.13"
+          "value": "0.3.14"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.3.13"
+          "value": "0.3.14"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.3.13"
+          "value": "0.3.14"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.3.13"
+          "value": "0.3.14"
         }
       }
     },
