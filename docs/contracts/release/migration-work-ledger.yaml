@@ -7,13 +7,12 @@ authoritative_sources:
   release_manifest: docs/contracts/release/aggregation-manifest.n4a.json
   public_surface_matrix: docs/contracts/release/public-v1-surface-matrix.n4a.json
 release_train:
-  shape: unresolved_pending_adr17_governance
+  shape: four_release_v1_with_explicit_rollback_profile
   reason: >-
-    ADR-17-cutover-rollback requires retention of backend=legacy for two releases
-    after the native-default flip and rollback without reinstall. The roadmap's
-    five-release contingency has not yet shown how it satisfies the literal
-    two-post-flip requirement; no accepted amendment or counting interpretation
-    was found at initialization.
+    ADR-24 maps R2 as the native-default flip and R3/R4 as the two complete
+    post-flip rollback-retention releases. Studio and the default native path
+    are strict in R3/R4; the separately selected Python engine=legacy profile
+    remains installed through R4, without implicit fallback or reinstall.
 initialization:
   timestamp_utc: 2026-08-20T13:52:58Z
   workspace: /home/delete/nirs4all
@@ -75,14 +74,15 @@ work_items:
     owner: release-captain
     dependencies:
       - ARCH-001
-    state: governance_resolution_required
-    input_sha: 3097da5658d0
+    state: accepted_four_release_mapping
+    input_sha: 02529a7ee8c72ef1aae0fed65defb93d18cf1160
     owned_files:
       - docs/contracts/release/migration-work-ledger.yaml
     acceptance_tests:
       - dag-ml/docs/adr/ADR-17-cutover-rollback.md inspected
-    review: pending
-    rollback: restore four-release planning only after an accepted ADR amendment is evidenced
+      - dag-ml/docs/adr/ADR-24-v1-four-release-rollback-mapping.md accepted
+    review: user-authorized governance decision; independent release review pending
+    rollback: supersede ADR-24 with an explicit release-count and rollback-policy replacement
   - id: REL-001
     owner: G
     dependencies:
