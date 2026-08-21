@@ -98,14 +98,19 @@ work_items:
     owner: G
     dependencies:
       - REL-001
-    state: corrections_required
+    state: acceptance_validated_pending_independent_review
     input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
     owned_files:
       - docs/contracts/release/aggregation-lock.n4a.lock.json
     acceptance_tests:
       - release_lock_validation
       - release_surface_matrix_validation
-    review: pending
+    review: >-
+      Clean selected-member validation passed after regeneration from the pinned,
+      clean Core, DAG-ML, DAG-ML-data, Formats, IO, Datasets and Methods heads:
+      release lock validation, native capability-ledger validation, and public
+      surface-matrix validation all passed; structural release/ledger/surface
+      tests passed 68 with 1 skip. Independent release review remains pending.
     rollback: retain current immutable lock; create a new validated lock only from selected release heads
   - id: PAR-001
     owner: G

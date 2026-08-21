@@ -727,7 +727,7 @@
       "state": {
         "branch": "main",
         "commit": "172e00f826859963f183d3539a1b67b7ecb00044",
-        "dirty": true,
+        "dirty": false,
         "exact_tag": null
       },
       "target_repo_path": "nirs4all-core",
@@ -878,7 +878,7 @@
       "state": {
         "branch": "main",
         "commit": "5f004fa0bc2a56b31cdbedc332312d5dd7eb96bc",
-        "dirty": true,
+        "dirty": false,
         "exact_tag": null
       },
       "target_repo_path": null,
@@ -1269,7 +1269,7 @@
       "state": {
         "branch": "main",
         "commit": "16c1efdfcd98b3861c550b6609a69a9995793301",
-        "dirty": true,
+        "dirty": false,
         "exact_tag": "v0.1.11"
       },
       "target_repo_path": null,
