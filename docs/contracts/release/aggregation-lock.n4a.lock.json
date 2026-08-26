@@ -70,7 +70,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:75282b9cee8fdbb92fe11cbce5ee94ee326526e9f168baf909efd5d65e92371a",
+          "canonical_json_sha256": "sha256:5c99c5b30c48788efc7dc92ebba962029d6a60449765ce6646fc88a61c47e1e1",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -116,6 +116,7 @@
                 "read_portable_predictor_package_v2",
                 "read_portable_refit_package_v3",
                 "write_archive_v2_from_native_payloads",
+                "write_archive_v3_from_native_payloads",
                 "required_keyword_registry_entries",
                 "runtime_contracts",
                 "runtime_surfaces",
@@ -153,6 +154,7 @@
                 "read_portable_predictor_package_v2",
                 "read_portable_refit_package_v3",
                 "write_archive_v2_from_native_payloads",
+                "write_archive_v3_from_native_payloads",
                 "required_keyword_registry_entries",
                 "runtime_contracts",
                 "runtime_surfaces",
@@ -677,7 +679,7 @@
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_core/_topology.py",
-          "raw_sha256": "sha256:20eee6613bd6a3e494fed6e2c046038b5bd895f5b7ca44ee937b4a9167eb282e",
+          "raw_sha256": "sha256:cd5bc67706f4462dfcddab8ec3410bbb5e59e144bff2615c7fca1b72ab4ff399",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -734,9 +736,9 @@
       "selected_workspace_path": "nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "4de843b480b8cd788f9f936b6930ec7a43b5ac31",
+        "commit": "ef5f29d2094c21307a0c9411f7421c27a5e96558",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "v0.3.21"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -745,25 +747,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.3.20"
+          "value": "0.3.21"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.3.20"
+          "value": "0.3.21"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.3.20"
+          "value": "0.3.21"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.3.20"
+          "value": "0.3.21"
         }
       }
     },
@@ -824,7 +826,7 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:f698fbf788c9d97d6e79aa12ec8b22fe0d81115e2737b7b48933449b9f7c9d43",
+          "canonical_json_sha256": "sha256:3048904b6f8308b14952782020127ac16d592af1a543594a4c398fe198c029f0",
           "crate": "dag-ml",
           "headers": [
             {
@@ -834,9 +836,9 @@
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.3.11",
+          "package_version": "0.3.14",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:841f7b590944ef726fe496aa37448ccc4825439335d166926f4b9fcb94e309b1"
+          "raw_sha256": "sha256:c6f052c5b7c6a5b60a266848c0bc0b99714aa2ecdeb5d85519ebac6e3b6d5c9e"
         }
       ],
       "default_inclusion": "base",
@@ -885,7 +887,7 @@
       "selected_workspace_path": "dag-ml",
       "state": {
         "branch": "main",
-        "commit": "86057df31781418d4d03e9f15b586cbb0b9b1f73",
+        "commit": "6250b6a0cf97f3a8de5876255783e990f9b68182",
         "dirty": false,
         "exact_tag": null
       },
@@ -896,19 +898,19 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.3.11"
+          "value": "0.3.14"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-py/pyproject.toml",
-          "value": "0.3.11"
+          "value": "0.3.14"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.3.11"
+          "value": "0.3.14"
         }
       }
     },
