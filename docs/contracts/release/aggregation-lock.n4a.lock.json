@@ -70,7 +70,7 @@
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:86f6c221f113031b91f3a6fba6d7150f15d6651c5402737707bc4214281d8828",
+          "canonical_json_sha256": "sha256:75282b9cee8fdbb92fe11cbce5ee94ee326526e9f168baf909efd5d65e92371a",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -114,6 +114,8 @@
                 "portable_class_names",
                 "require_upstream",
                 "read_portable_predictor_package_v2",
+                "read_portable_refit_package_v3",
+                "write_archive_v2_from_native_payloads",
                 "required_keyword_registry_entries",
                 "runtime_contracts",
                 "runtime_surfaces",
@@ -149,6 +151,8 @@
                 "portable_class_names",
                 "require_upstream",
                 "read_portable_predictor_package_v2",
+                "read_portable_refit_package_v3",
+                "write_archive_v2_from_native_payloads",
                 "required_keyword_registry_entries",
                 "runtime_contracts",
                 "runtime_surfaces",
@@ -673,7 +677,7 @@
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_core/_topology.py",
-          "raw_sha256": "sha256:8aeb66a0c20440d0bc0bdeaf526ecdda8913cd35acabd869b721976391d0e634",
+          "raw_sha256": "sha256:20eee6613bd6a3e494fed6e2c046038b5bd895f5b7ca44ee937b4a9167eb282e",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -730,9 +734,9 @@
       "selected_workspace_path": "nirs4all-core",
       "state": {
         "branch": "main",
-        "commit": "983ad05e8174b799c7b1578e37401f542c6772d3",
+        "commit": "4de843b480b8cd788f9f936b6930ec7a43b5ac31",
         "dirty": false,
-        "exact_tag": "v0.3.14"
+        "exact_tag": null
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -741,25 +745,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.3.14"
+          "value": "0.3.20"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.3.14"
+          "value": "0.3.20"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.3.14"
+          "value": "0.3.20"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.3.14"
+          "value": "0.3.20"
         }
       }
     },
@@ -820,19 +824,19 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:c5d7b37f3af1867d61a1a03526fbe25292f1d560f68ef45f4129aa5e4266105d",
+          "canonical_json_sha256": "sha256:f698fbf788c9d97d6e79aa12ec8b22fe0d81115e2737b7b48933449b9f7c9d43",
           "crate": "dag-ml",
           "headers": [
             {
               "path": "crates/dag-ml-capi/include/dag_ml.h",
-              "sha256": "8a047091ec381258d69e7511c7f219047a01f6e785e6ace3bfb2984dea940787"
+              "sha256": "49e4c54cac3e0ea416537feb94e68fdb3bf6049ea424c26d407ef46d68ab8e36"
             }
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.3.1",
+          "package_version": "0.3.11",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:431c5a4beb6b19faa63d6bc45562bd1b216fc5cd769c0789d70e34a2bbb08987"
+          "raw_sha256": "sha256:841f7b590944ef726fe496aa37448ccc4825439335d166926f4b9fcb94e309b1"
         }
       ],
       "default_inclusion": "base",
@@ -881,9 +885,9 @@
       "selected_workspace_path": "dag-ml",
       "state": {
         "branch": "main",
-        "commit": "3bedd72059c92f99a58ae18765a2dc2bd52193e2",
+        "commit": "86057df31781418d4d03e9f15b586cbb0b9b1f73",
         "dirty": false,
-        "exact_tag": "v0.3.1"
+        "exact_tag": null
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -892,19 +896,19 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.3.1"
+          "value": "0.3.11"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-py/pyproject.toml",
-          "value": "0.3.1"
+          "value": "0.3.11"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.3.1"
+          "value": "0.3.11"
         }
       }
     },
@@ -1312,15 +1316,15 @@
           "id": "n4m_version_header",
           "kind": "text",
           "path": "cpp/include/n4m/n4m_version.h",
-          "raw_sha256": "sha256:615566c8be77892e595a1873cbd9f0c16bcec5939954ccc1dbed44ed4b8f91d9"
+          "raw_sha256": "sha256:c53aab410b04510371013102c21ae1988a00eac46b5ccddaae0c262debfac914"
         }
       ],
       "default_inclusion": "aggregate-extra",
       "glob_artifacts": {
         "expected_symbols": {
-          "cpp/abi/expected_symbols_linux.txt": "sha256:452ae3b4ea4f22582839d80676d8e423744aa9a62e67854326fffd5ff88ee34c",
-          "cpp/abi/expected_symbols_macos.txt": "sha256:6ed4e1021c59918f7b20b9c7010bfbfd85ca7265f342612ef7c740cbd6606875",
-          "cpp/abi/expected_symbols_windows.txt": "sha256:6ed4e1021c59918f7b20b9c7010bfbfd85ca7265f342612ef7c740cbd6606875"
+          "cpp/abi/expected_symbols_linux.txt": "sha256:3720f4c7a16eb6fd1a7df12ff3258b1454a3183e752e23f59a6ad64100ef1396",
+          "cpp/abi/expected_symbols_macos.txt": "sha256:b9b3c785cd09a4c3f875f843e97dbc1a2ce0112e8aceb1d0e7e986dc033a992a",
+          "cpp/abi/expected_symbols_windows.txt": "sha256:b9b3c785cd09a4c3f875f843e97dbc1a2ce0112e8aceb1d0e7e986dc033a992a"
         }
       },
       "license_expression": "CECILL-2.1",
@@ -1368,7 +1372,7 @@
       "selected_workspace_path": "nirs4all-methods",
       "state": {
         "branch": "main",
-        "commit": "0ef355e6f74573ed07a6920bdeed1a052a6e8312",
+        "commit": "2767b3a9e75dfaf30615d57593d6ed7eba160274",
         "dirty": false,
         "exact_tag": null
       },
@@ -1380,12 +1384,12 @@
           "read_from": "tracked_worktree",
           "source": "cpp/include/n4m/n4m_version.h",
           "value": {
-            "abi_version": "2.2.0",
+            "abi_version": "2.3.0",
             "abi_version_int": null,
-            "project_version": "1.0.9",
+            "project_version": "1.0.13",
             "serialization_format_version": 1,
             "serialization_magic": "N4MM",
-            "source_sha256": "sha256:615566c8be77892e595a1873cbd9f0c16bcec5939954ccc1dbed44ed4b8f91d9"
+            "source_sha256": "sha256:c53aab410b04510371013102c21ae1988a00eac46b5ccddaae0c262debfac914"
           }
         },
         "python_nirs4all_methods": {
@@ -1397,7 +1401,7 @@
           "module": "n4m",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "1.0.9"
+          "value": "1.0.13"
         },
         "python_pls4all": {
           "distribution": "pls4all",
@@ -1408,13 +1412,13 @@
           "module": "pls4all",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "1.0.9"
+          "value": "1.0.13"
         },
         "r_n4m": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/n4m/DESCRIPTION",
-          "value": "1.0.9"
+          "value": "1.0.13"
         }
       }
     }
