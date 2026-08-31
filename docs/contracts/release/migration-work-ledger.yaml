@@ -18,14 +18,21 @@ initialization:
   workspace: /home/delete/nirs4all
   ecosystem_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
   release_lock_validation:
-    status: blocked
+    status: passed_selected_workspace
     command: >-
-      python3 scripts/n4a_release_lock.py validate --manifest
+      python3 scripts/n4a_release_lock.py checkout-members --manifest
+      docs/contracts/release/aggregation-manifest.n4a.json --lock
+      docs/contracts/release/aggregation-lock.n4a.lock.json --output
+      <selected-release-members> && python3 scripts/n4a_release_lock.py
+      --workspace-root <selected-release-members> validate --manifest
       docs/contracts/release/aggregation-manifest.n4a.json --lock
       docs/contracts/release/aggregation-lock.n4a.lock.json
     evidence: >-
-      dag_ml selected workspace dag-ml is on branch agent/dagml-completed-handoff,
-      which does not match selected_branch_patterns=[main].
+      On 2026-08-31, checkout-members reconstructed the lock-pinned root and
+      the release-lock, native-capability-ledger and public-surface-matrix
+      validators all succeeded against it. The developer sibling root remains
+      intentionally unsuitable as release evidence whenever a selected member
+      is on an active non-main branch; CI must use the reconstructed root.
   surface_matrix_validation:
     status: passed
     command: >-
@@ -36,9 +43,10 @@ initialization:
   control_tests:
     status: passed
     command: >-
-      python3 -m pytest -q tests/test_release_lock.py
-      tests/test_release_surface_matrix.py tests/test_cutover_state_gate.py
-    result: 27 passed
+      python3.11 -m pytest -q tests/test_release_lock.py
+      tests/test_native_capability_ledger.py tests/test_release_surface_matrix.py
+      tests/test_cutover_state_gate.py
+    result: 73 passed, 1 skipped (2026-08-31)
   dagml_data_lockstep_validation:
     status: blocked
     command: >-
@@ -54,7 +62,7 @@ locks:
   LOCK-API: pending
   LOCK-STUDIO: pending
   LOCK-DROP: pending
-  LOCK-RELEASE: blocked
+  LOCK-RELEASE: selected_workspace_validated_pending_publication
   LOCK-SOAK: pending
   LOCK-DOCS: pending
 work_items:
@@ -114,7 +122,9 @@ work_items:
       `python3.11 -m pytest -q tests/test_release_lock.py
       tests/test_native_capability_ledger.py tests/test_release_surface_matrix.py`
       on the published lock; the structural release/ledger/surface suite passed
-      68 with 1 skip.
+      68 with 1 skip. On 2026-08-31, the lock-pinned reconstructed-root
+      validators were repeated and the expanded structural suite including
+      `tests/test_cutover_state_gate.py` passed 73 with 1 skip.
     rollback: retain current immutable lock; create a new validated lock only from selected release heads
   - id: PAR-001
     owner: G

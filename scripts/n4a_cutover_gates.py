@@ -449,12 +449,12 @@ def check_post_w2j_state(workspace_root: Path) -> dict[str, Any]:
             workspace_root / "_worktrees" / "RC-v1-web",
             "rc/v1-full-refactor",
             {
-                "studio-lite/src/engine/main-engine.runtime-v1.test.ts": [
+                "web-app/src/engine/main-engine.runtime-v1.test.ts": [
                     "without silently running the direct pipeline",
                     "RtErrorException",
                 ],
-                "studio-lite/src/engine/worker.ts": ["rtResult", "rtErrorToWire"],
-                "studio-lite/tests/rt-fallback-smoke.mjs": ["allowFallback:false", "typed RtErrorException"],
+                "web-app/src/engine/worker.ts": ["rtResult", "rtErrorToWire"],
+                "web-app/tests/rt-fallback-smoke.mjs": ["allowFallback:false", "typed RtErrorException"],
             },
         ),
         (

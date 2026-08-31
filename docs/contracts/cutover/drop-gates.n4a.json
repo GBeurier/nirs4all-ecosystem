@@ -59,10 +59,12 @@
       "command": [
         "python3",
         "scripts/n4a_e2e_scenarios.py",
-        "evidence",
+        "evidence-ledger",
+        "--check",
         "--max-age-seconds",
         "14400",
-        "--json"
+        "--out",
+        "docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json"
       ],
       "evidence": [
         "runtime artifacts match the selected manifest",
@@ -177,7 +179,7 @@
       "title": "Web runtime contract and browser smoke",
       "lane": "B-018",
       "required": true,
-      "cwd": "_worktrees/RC-v1-web/studio-lite",
+      "cwd": "_worktrees/RC-v1-web/web-app",
       "command": [
         "bash",
         "-lc",
