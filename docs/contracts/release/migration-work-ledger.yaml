@@ -285,6 +285,7 @@ work_items:
       - nirs4all-core/bindings/rust/nirs4all/src/archive_v1.rs
       - nirs4all-ui/src/conformal/
       - nirs4all-studio/src/components/predictions/viewer/conformalChartData.ts
+      - nirs4all-studio/sidecar/src/conformal_store.rs
     acceptance_tests:
       - native split-conformal calibration, coverage artifact and interval application preserve Rust goldens and sample identity
       - native calibration to archive to process-close to Core load to predictor replay to interval E2E passes without importing Python conformal runtime
@@ -301,6 +302,11 @@ work_items:
       stored intervals attach only when explicit wire sample IDs match exact row order; numeric
       positional indices never impersonate stable IDs. Native archive execution and the shared
       Core-to-UI artifact transport E2E required by this cross-component item are still pending.
+      RC Studio commit `8ce8357` adds a dependency on the published `nirs4all 0.3.22` aggregate
+      and a library-only `ConformalPresentationStore`: it atomically persists a self-validating
+      `ConformalPresentationV1` by fingerprint, and refuses tampered bytes or malformed keys on
+      re-read. This is persistence evidence only: no HTTP ingestion route, data-envelope adapter,
+      native Core replay invocation, or Core-to-UI E2E claim has been added.
     rollback: disable the additive native conformal capability and retain the R1 legacy engine; never rewrite legacy archives.
   - id: DOC-WEB-001
     owner: H + F + G
