@@ -437,7 +437,13 @@ work_items:
       an HTTP backend or scientific-job fallback. Sidecar unit/contract tests, the Studio native
       gate (30 tests), TypeScript/lint gates, and 3,726 frontend tests passed; the 2,335-case
       backend pytest equivalent also passed directly. The npm backend runner remains unavailable
-      in this WSL UNC shell before pytest starts, so it is not release evidence.
+      in this WSL UNC shell before pytest starts, so it is not release evidence. Follow-up RC
+      commit `267ffde` moves the already-linked workspace catalogue, `POST
+      /api/workspaces/:id/activate`, and `DELETE /api/workspaces/:id` to Rust. The Electron
+      transport routes only those exact state mutations to the sidecar; linking, pruning,
+      scanning, result discovery, and all workspace/scientific-store access remain legacy until
+      their native scanner/store contracts are available. Rust tests (26 unit + 5 contracts),
+      the native Studio gate (31 tests), lint and 3,727 frontend tests passed.
     rollback: remove the standalone sidecar directory only; Studio legacy FastAPI/Electron paths and user workspaces are untouched.
   - id: SAVE-001
     owner: D
