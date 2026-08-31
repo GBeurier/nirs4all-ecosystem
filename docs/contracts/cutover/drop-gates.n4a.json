@@ -59,15 +59,13 @@
       "command": [
         "python3",
         "scripts/n4a_e2e_scenarios.py",
-        "evidence-ledger",
-        "--check",
+        "evidence",
         "--max-age-seconds",
         "14400",
-        "--out",
-        "docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json"
+        "--json"
       ],
       "evidence": [
-        "latest-runtime-evidence-ledger.n4a.json matches the selected manifest",
+        "runtime artifacts match the selected manifest",
         "all 11 cross-language scenarios have verified runtime artifacts",
         "runtime artifacts are fresh enough for the cutover window",
         "coverage-only full_strict_ready is not accepted as production parity evidence"

@@ -32,7 +32,7 @@
       "title": "Fresh cross-language runtime evidence exists before production cutover",
       "lane": "LOCK-E2E/V1",
       "owner_repo": "nirs4all-ecosystem",
-      "status": "passed",
+      "status": "blocked",
       "required_for_cutover": true,
       "primary_gate_id": "e2e_runtime_evidence_fresh",
       "gate_ids": [
@@ -40,12 +40,12 @@
       ],
       "expected_evidence": [
         "Cross-language E2E workflow is manually dispatched with execute=true after the selected heads are in place",
-        "evidence-ledger --check --max-age-seconds 14400 passes against docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
-        "coverage gate still reports runtime_evidence_checked=false unless paired with the runtime evidence ledger",
-        "GitHub Actions Cross-language E2E scenarios run 28997162538 completed successfully on ecosystem head 042e11ac785f26643c8c09f970a21a60eed532e3 with execute=true and allow_blocked=true"
+        "n4a_e2e_scenarios.py evidence --max-age-seconds 14400 --json passes against the selected RC workspace",
+        "coverage gate still reports runtime_evidence_checked=false unless paired with fresh runtime artifacts",
+        "the executed Cross-language E2E workflow publishes all selected-head runtime artifacts before cutover"
       ],
-      "missing_contract": "None for the current cutover window. GitHub Actions run 28997162538 on 2026-07-09 executed the ready cross-language scenarios, verified runtime artifacts, and passed the committed runtime evidence ledger freshness check with --max-age-seconds 14400.",
-      "next_owner_action": "Repeat the execute=true Cross-language E2E workflow after the next large integration batch or selected-head change; do not treat coverage-only full_strict_ready as production parity evidence."
+      "missing_contract": "The selected RC ecosystem checkout has no fresh .n4a-e2e-artifacts; the historical evidence-ledger command is no longer provided by n4a_e2e_scenarios.py and cannot certify this selected head.",
+      "next_owner_action": "Run the selected-head Cross-language E2E workflow with execute=true, collect its artifacts into the RC workspace, then rerun the evidence gate within the 14,400-second cutover window. Do not treat coverage-only full_strict_ready as production parity evidence."
     },
     {
       "id": "B-010-FALLBACK-ZERO",
