@@ -152,7 +152,7 @@
       "evidence": [
         "requested engine, actual engine, fallback status, and RtError metadata survive route retries",
         "remaining Studio compute paths are either runtime-backed or explicitly listed as blockers",
-        "the Rust sidecar is explicitly configured, restricted to loopback, and stopped with Electron before the control-plane contract reports explicit non-parity readiness"
+        "the Rust sidecar packaging contract places the native binary beside the bundled Python runtime; Electron still requires explicit configuration, restricts it to loopback, and stops it before the control-plane contract reports explicit non-parity readiness"
       ]
     },
     {
