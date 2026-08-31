@@ -240,8 +240,8 @@ work_items:
       - MTH-002
       - DATA-001
       - PROV-001
-    state: corrections_required
-    input_sha: 3097da5658d0abca575d36db1f6a82f1f5d55490
+    state: reproducibility_reverified_pending_independent_review
+    input_sha: e560a8ffc2da5fd489f65c010746492d1ef1b39b
     owned_files:
       - dag-ml/crates/dag-ml-core/src/hpo.rs
       - dag-ml/crates/dag-ml-core/src/training_runtime.rs
@@ -256,14 +256,18 @@ work_items:
       - N4MM package reload into a fresh controller followed by predict without labels
       - extracted default dag-ml package has no sibling dependency; any local Methods overlay is explicit and fail-closed
     review: >-
-      Sol-xhigh BLOCKER (post-corrective final): no-sentinel controller/session routing,
-      typed atomic resume evidence, strict schemas/readers, N4MM replay and native
-      TPE/Median Completed/Completed/Pruned/Failed package-resume E2E are accepted
-      locally. W1/replay closure was regenerated and accepted separately. Remaining
-      release blocker is reproducibility: the official Methods Rust binding/workflow is
-      still untracked at Methods HEAD, so a clean CI checkout cannot obtain a pinned,
-      immutable binding SHA. Commit/publish the binding, pin its SHA in dag-ml CI and
-      aggregation evidence, then rerun a clean-checkout Sol-xhigh review.
+      The prior reproducibility blocker is superseded by current direct evidence:
+      the published dynamic n4m 0.1.1 binding and immutable Methods source
+      aabdecfdd76d1a4d12cfbbade4eeee0d30a6ea47 are pinned in Dag-ML CI.
+      From clean detached worktrees at Dag-ML
+      e560a8ffc2da5fd489f65c010746492d1ef1b39b and that Methods SHA, the
+      documented FITPACK-free local build produced libn4m.so and
+      `CARGO_PROFILE_DEV_DEBUG=0 CARGO_INCREMENTAL=0 N4M_LIBRARY_PATH=<absolute-lib>
+      scripts/test_methods_optimizer_local.sh --test training_runtime_operation
+      native_methods_hpo_tpe_median_operation_preserves_terminal_ledger_through_package_resume`
+      passed after the script's feature-local clippy gate. The script restored
+      Cargo.toml and Cargo.lock byte-for-byte. A clean-checkout independent
+      Sol-xhigh review of the full HPO acceptance matrix remains required.
     rollback: remove only the uncommitted dag-ml HPO adapter/runtime additions; preserve Methods ABI and existing DAG contracts.
   - id: CONF-001
     owner: E + F
