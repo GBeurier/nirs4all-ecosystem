@@ -456,6 +456,14 @@ work_items:
       native and needs neither an interpreter nor mutable product state; the native Studio gate
       (33 tests), lint, and 3,729 frontend tests passed. This makes no readiness, WebSocket,
       scientific-route, scanner, or store parity claim.
+      Follow-up RC commit `16a988e` moves `GET /api/updates/version` to the Rust sidecar.
+      Electron supplies the product version at launch; the configured CPython library host runs a
+      bounded isolated inspection solely for the installed `nirs4all` version plus interpreter and
+      platform facts. The HTTP route rejects an absent or failed plugin host rather than launching
+      FastAPI or falling back to scientific execution. Rust format/clippy, 29 unit tests, 5
+      contracts, and a Windows GNU target compile passed, alongside the native Studio gate (34
+      tests), lint, and 3,730 frontend tests. Update checking, settings, downloads, runtime
+      mutation, scanner/store, and all scientific routes remain legacy.
     rollback: remove the standalone sidecar directory only; Studio legacy FastAPI/Electron paths and user workspaces are untouched.
   - id: SAVE-001
     owner: D
