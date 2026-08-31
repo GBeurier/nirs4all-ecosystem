@@ -178,7 +178,7 @@
       "title": "Web runtime contract and browser smoke",
       "lane": "B-018",
       "required": true,
-      "cwd": "_worktrees/RC-v1-web/web-app",
+      "cwd": "_worktrees/RC-v1-web/studio-lite",
       "command": [
         "bash",
         "-lc",
