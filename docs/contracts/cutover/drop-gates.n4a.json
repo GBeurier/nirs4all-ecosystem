@@ -147,11 +147,12 @@
       "command": [
         "bash",
         "-lc",
-        "PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m pytest -q tests/test_runs_engine_routing.py tests/test_runs_execution_backend.py tests/test_runtime_errors.py tests/test_spectra_perf.py tests/test_playground.py::TestStatisticsAndPCA::test_statistics_computation && PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m compileall -q api && ruff check api tests/test_runs_engine_routing.py tests/test_runs_execution_backend.py tests/test_runtime_errors.py tests/test_spectra_perf.py"
+        "PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m pytest -q tests/test_runs_engine_routing.py tests/test_runs_execution_backend.py tests/test_runtime_errors.py tests/test_spectra_perf.py tests/test_playground.py::TestStatisticsAndPCA::test_statistics_computation && PYTHONPATH=. /home/delete/nirs4all/nirs4all-studio/.venv/bin/python -m compileall -q api && ruff check api tests/test_runs_engine_routing.py tests/test_runs_execution_backend.py tests/test_runtime_errors.py tests/test_spectra_perf.py && (cd sidecar && cargo fmt --all --check && cargo clippy --all-targets -- -D warnings && cargo test && cargo build --release && ./target/release/studio-sidecar --smoke-readiness)"
       ],
       "evidence": [
         "requested engine, actual engine, fallback status, and RtError metadata survive route retries",
-        "remaining Studio compute paths are either runtime-backed or explicitly listed as blockers"
+        "remaining Studio compute paths are either runtime-backed or explicitly listed as blockers",
+        "the Rust sidecar control-plane contract builds and reports explicit non-parity readiness"
       ]
     },
     {
