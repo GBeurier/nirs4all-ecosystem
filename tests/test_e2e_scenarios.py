@@ -27,6 +27,7 @@ LANGUAGE_EVIDENCE_FRAGMENTS = {
     "r": ("rscript", "r-predictions", "python/r", "r and wasm", "python/r bindings"),
     "rust": ("cargo", "rust"),
     "rust_archive": ("archived rust", "rust status"),
+    "rust_pre_release": ("rust pre-release", "rust binding", "rust"),
     "javascript_wasm": ("wasm", "javascript/wasm", "node", "npm"),
     "web": ("web", "nirs4all-web", "screenshot", ".png"),
     "matlab_octave": ("matlab", "octave", "release-matlab", "matlab-octave"),
@@ -46,6 +47,7 @@ TAG_EVIDENCE_FRAGMENTS = {
     "pipeline_generation": ("generated", "generate", "pipeline-family", "stacking"),
     "web_results": ("web-results", "web results", "web-runtime", "result panel", "screenshot", ".png"),
     "custom_app_host": ("custom app host", "custom-app", "standalone downstream"),
+    "migration_safety": ("refusal", "refused_before_write", "fail-closed", "no output"),
 }
 STRICT_PARITY_METRIC_FRAGMENTS = (
     "prediction",
@@ -806,9 +808,13 @@ def _synthetic_evidence_payload(path: Path) -> dict:
                 "metrics_max_rmse_rel": 0,
                 "fixture": "wasm-orchestrator-fixture.json",
             },
-            "rust_archive": {
-                "release_target": False,
-                "legacy_symbol_present": False,
+            "rust_pre_release": {
+                "backend": "rust_n4m_pre_release",
+                "kind": "official_pre_release_binding",
+                "release_status": "not_published",
+                "gate": "outside_prediction_parity_matrix",
+                "parity_claim": False,
+                "prediction_fixture": None,
             },
         }
     if key == "formats-io-methods/predictions-by-language.json":
@@ -827,7 +833,13 @@ def _synthetic_evidence_payload(path: Path) -> dict:
                 "metrics_max_rmse_rel": 0,
                 "fixture": "wasm-orchestrator-fixture.json",
             },
-            "rust_archive": {"release_target": False},
+            "rust_pre_release": {
+                "backend": "rust_n4m_pre_release",
+                "release_status": "not_published",
+                "gate": "outside_prediction_parity_matrix",
+                "parity_claim": False,
+                "prediction_fixture": None,
+            },
         }
     if key == "formats-io-methods/wasm-orchestrator-fixture.json":
         return {
@@ -1086,9 +1098,9 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
             "tags": {"multisource", "pipeline", "parity", "pipeline_generation"},
         },
         "e2e-converter-legacy-save-predictions-web": {
-            "languages": {"python", "web"},
-            "repos": {"nirs4all-tools", "nirs4all-web"},
-            "tags": {"workspace_save", "predictions", "web_results"},
+            "languages": {"python"},
+            "repos": {"nirs4all-tools", "nirs4all-ecosystem"},
+            "tags": {"workspace_save", "migration_safety"},
         },
         "e2e-dataset-provider-repository-roundtrip": {
             "languages": {"python", "r", "javascript_wasm"},
@@ -1106,7 +1118,7 @@ def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
             "tags": {"pipeline", "workspace_save", "parity"},
         },
         "e2e-formats-io-datasets-methods-language-bindings": {
-            "languages": {"python", "r", "javascript_wasm", "matlab_octave", "rust_archive", "native"},
+            "languages": {"python", "r", "javascript_wasm", "matlab_octave", "rust_pre_release", "native"},
             "repos": {"nirs4all-formats", "nirs4all-io", "nirs4all-datasets", "nirs4all-methods", "nirs4all-core"},
             "tags": {"datasets", "io", "predictions", "parity", "pipeline"},
         },
@@ -1163,10 +1175,10 @@ def test_cross_language_e2e_suite_spans_requested_surface_families() -> None:
             tags={"pipeline", "predictions", "web_results"},
             repos={"nirs4all-core", "nirs4all-ui", "nirs4all-web"},
         ),
-        "converter_save_predictions": _match(
-            languages={"python", "web"},
-            tags={"workspace_save", "predictions", "web_results"},
-            repos={"nirs4all-tools", "nirs4all-web"},
+        "converter_refuses_unowned_semantics": _match(
+            languages={"python"},
+            tags={"workspace_save", "migration_safety"},
+            repos={"nirs4all-tools", "nirs4all-ecosystem"},
         ),
         "multimodal_roundtrip": _match(
             languages={"python", "r", "javascript_wasm"},
@@ -1270,6 +1282,10 @@ def test_cross_language_e2e_strict_parity_checks_assert_real_oracle_comparisons(
         strict_checks = [
             check for check in scenario["parity_checks"] if check["evidence_level"] == "strict"
         ]
+        if "migration_safety" in scenario["tags"]:
+            assert strict_checks == [], scenario["id"]
+            assert scenario["v1_refactor_contract"]["python_open_pipeline"]["status"] == "contract"
+            continue
         assert strict_checks, scenario["id"]
         for check in strict_checks:
             metric = check["metric"].lower()
@@ -1581,33 +1597,29 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
         (
             "e2e-converter-legacy-save-predictions-web",
             {
-                "steps": ["convert-legacy-save", "python-rerun-converted-pipeline", "web-open-predictions"],
-                "languages": {"python", "javascript_wasm", "web"},
-                "tags": {"workspace_save", "predictions", "web_results", "pipeline", "parity"},
-                "tools": {"python3.11", "npm"},
+                "steps": ["inspect-lowerable-legacy-input", "refuse-unowned-semantic-conversion"],
+                "languages": {"python"},
+                "tags": {"workspace_save", "migration_safety"},
+                "tools": {"python3.11"},
                 "produces": {
-                    "converted-workspace.n4a.json",
-                    "predictions.rt_result.json",
-                    "python-open-pipeline.json",
-                    "python-rerun-pipeline.json",
-                    "web-results-panels.json",
+                    "legacy-input.json",
+                    "conversion-refusal.json",
+                    "output-absence.json",
                 },
                 "commands": {
-                    "test_legacy_save_predictions_web.py",
-                    "test_python_rerun_converted_pipeline",
-                    "smoke:converted-predictions",
+                    "verify_legacy_conversion_refusal.py",
+                    "--verify-refusal",
                 },
                 "evidence": {
-                    "legacy fixture values",
-                    "Python reopened converted workspace/pipeline metadata ledger",
-                    "Python rerun converted workspace",
-                    "Web opens converted predictions",
+                    "UNSUPPORTED_INPUT",
+                    "refused_before_write",
+                    "independent Python rerun",
                 },
                 "phase_statuses": {
-                    "python_open_pipeline": "strict",
-                    "python_rerun_pipeline": "strict",
-                    "python_parity": "strict",
-                    "wasm_web_reuse": "strict",
+                    "python_open_pipeline": "contract",
+                    "python_rerun_pipeline": "not_applicable",
+                    "python_parity": "not_applicable",
+                    "wasm_web_reuse": "not_applicable",
                 },
             },
         ),
@@ -1674,7 +1686,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "core-matlab-octave-release-gate",
                     "core-web-import-assembled-ledger",
                 ],
-                "languages": {"python", "r", "javascript_wasm", "matlab_octave", "rust_archive", "native"},
+                "languages": {"python", "r", "javascript_wasm", "matlab_octave", "rust_pre_release", "native"},
                 "tags": {"datasets", "io", "predictions", "parity", "pipeline"},
                 "tools": {"python3.11", "Rscript", "cmake", "ninja", "node"},
                 "produces": {
@@ -1743,7 +1755,7 @@ def test_cross_language_e2e_each_scenario_keeps_complex_cross_runtime_shape() ->
         repos = set(scenario["repos"])
         produced_artifacts = {path for step in scenario["steps"] for path in step.get("produces", [])}
         assert e2e.REQUIRED_SCENARIO_LANGUAGE in languages, scenario_id
-        assert len(languages) >= 2, scenario_id
+        assert len(languages) >= 2 or scenario["tags"] == ["workspace_save", "migration_safety"], scenario_id
         assert len(repos) >= e2e.MIN_REPOS_PER_SCENARIO, scenario_id
         assert len({step["kind"] for step in scenario["steps"]}) >= e2e.MIN_STEP_KINDS_PER_SCENARIO, scenario_id
         assert len(produced_artifacts) >= e2e.MIN_PRODUCED_ARTIFACTS_PER_SCENARIO, scenario_id
@@ -2234,6 +2246,14 @@ def test_cross_language_e2e_strict_artifacts_have_scenario_field_requirements() 
             if check["evidence_level"] == "strict"
             for artifact in check["artifacts"]
         }
+        if "migration_safety" in scenario["tags"]:
+            assert strict_artifacts == set(), scenario["id"]
+            assert requirements == {
+                "legacy-converter/legacy-input.json": requirements["legacy-converter/legacy-input.json"],
+                "legacy-converter/conversion-refusal.json": requirements["legacy-converter/conversion-refusal.json"],
+                "legacy-converter/output-absence.json": requirements["legacy-converter/output-absence.json"],
+            }
+            continue
         assert strict_artifacts, scenario["id"]
         for artifact in strict_artifacts:
             requirement_key = e2e._artifact_requirement_key(artifact)
@@ -2756,21 +2776,21 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert report["evidence_levels"] == {"strict": 11}
     assert report["required_languages"] == {
-        "javascript_wasm": 8,
+        "javascript_wasm": 7,
         "matlab_octave": 1,
         "python": 11,
         "r": 5,
-        "web": 5,
+        "web": 4,
     }
     assert report["languages"] == {
-        "javascript_wasm": 8,
+        "javascript_wasm": 7,
         "matlab_octave": 1,
         "native": 6,
         "python": 11,
         "r": 5,
         "rust": 1,
-        "rust_archive": 1,
-        "web": 5,
+        "rust_pre_release": 1,
+        "web": 4,
     }
     assert report["required_tags"] == {
         "custom_app_host": 1,
@@ -2779,28 +2799,33 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "multimodal": 1,
         "multisource": 1,
         "papers": 1,
-        "parity": 11,
-        "pipeline": 11,
+        "parity": 10,
+        "pipeline": 10,
         "pipeline_generation": 2,
-        "predictions": 6,
+        "predictions": 5,
         "repository": 3,
-        "web_results": 5,
+        "web_results": 4,
         "workspace_save": 6,
     }
     assert report["debt_summary"]["strictness_gap_count"] == 0
-    assert report["debt_summary"]["full_strict_ready"] is True
-    assert report["debt_summary"]["full_strict_blockers"] == []
+    assert report["debt_summary"]["full_strict_ready"] is False
+    assert report["debt_summary"]["full_strict_blockers"] == [
+        "v1_contract_phases=1",
+        "without_strict_parity=e2e-converter-legacy-save-predictions-web",
+    ]
     assert report["debt_summary"]["non_strict_scenarios"] == []
     assert report["debt_summary"]["contract_parity_check_count"] == 0
     assert report["debt_summary"]["parity_check_evidence_levels"] == {
-        "strict": 31,
+        "strict": 30,
     }
-    assert report["debt_summary"]["scenarios_without_strict_parity_check"] == []
+    assert report["debt_summary"]["scenarios_without_strict_parity_check"] == [
+        "e2e-converter-legacy-save-predictions-web"
+    ]
     assert report["debt_summary"]["strict_non_numeric_check_count"] == 0
     assert report["debt_summary"]["strict_non_numeric_checks"] == {}
-    assert report["debt_summary"]["v1_contract_phase_count"] == 0
+    assert report["debt_summary"]["v1_contract_phase_count"] == 1
     assert report["debt_summary"]["v1_gap_phase_count"] == 0
-    assert report["debt_summary"]["v1_not_applicable_phase_count"] == 25
+    assert report["debt_summary"]["v1_not_applicable_phase_count"] == 28
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-r-dataset-io-pipeline-save"] == {
         "strictness_gaps": 0,
         "contract_phases": [],
@@ -2848,11 +2873,17 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-converter-legacy-save-predictions-web"] == {
         "strictness_gaps": 0,
-        "contract_phases": [],
+        "contract_phases": ["python_open_pipeline"],
         "gap_phases": [],
-        "not_applicable_phases": ["papers_export", "repository_forced_best_refit"],
+        "not_applicable_phases": [
+            "python_rerun_pipeline",
+            "python_parity",
+            "papers_export",
+            "repository_forced_best_refit",
+            "wasm_web_reuse",
+        ],
         "contract_parity_checks": 0,
-        "strict_parity_checks": 1,
+        "strict_parity_checks": 0,
         "strict_non_numeric_checks": 0,
     }
     assert report["debt_summary"]["scenario_phase_debt"]["e2e-dataset-provider-repository-roundtrip"] == {
@@ -2901,10 +2932,11 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     assert report["repos"] == {
         "dag-ml": 4,
         "dag-ml-data": 2,
-        "nirs4all": 6,
+        "nirs4all": 5,
         "nirs4all-cluster": 1,
         "nirs4all-core": 9,
         "nirs4all-datasets": 4,
+        "nirs4all-ecosystem": 1,
         "nirs4all-formats": 1,
         "nirs4all-io": 3,
         "nirs4all-methods": 6,
@@ -2912,8 +2944,8 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "nirs4all-providers": 3,
         "nirs4all-repository": 3,
         "nirs4all-tools": 1,
-        "nirs4all-ui": 3,
-        "nirs4all-web": 5,
+        "nirs4all-ui": 2,
+        "nirs4all-web": 4,
     }
     assert report["ready_count"] + report["blocked_count"] == 11
     assert set(report["v1_refactor_phase_status_counts"]) == {
@@ -2925,12 +2957,12 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
         "wasm_web_reuse",
     }
     expected_phase_counts = {
-        "python_open_pipeline": {"strict": 9, "contract": 0, "gap": 0, "not_applicable": 2},
-        "python_rerun_pipeline": {"strict": 10, "contract": 0, "gap": 0, "not_applicable": 1},
-        "python_parity": {"strict": 11, "contract": 0, "gap": 0, "not_applicable": 0},
+        "python_open_pipeline": {"strict": 8, "contract": 1, "gap": 0, "not_applicable": 2},
+        "python_rerun_pipeline": {"strict": 9, "contract": 0, "gap": 0, "not_applicable": 2},
+        "python_parity": {"strict": 10, "contract": 0, "gap": 0, "not_applicable": 1},
         "papers_export": {"strict": 1, "contract": 0, "gap": 0, "not_applicable": 10},
         "repository_forced_best_refit": {"strict": 2, "contract": 0, "gap": 0, "not_applicable": 9},
-        "wasm_web_reuse": {"strict": 8, "contract": 0, "gap": 0, "not_applicable": 3},
+        "wasm_web_reuse": {"strict": 7, "contract": 0, "gap": 0, "not_applicable": 4},
     }
     assert report["v1_refactor_phase_status_counts"] == expected_phase_counts
     scenario_ids_by_phase = report["v1_refactor_phase_scenario_ids"]
@@ -2947,7 +2979,6 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     }
     assert set(scenario_ids_by_phase["wasm_web_reuse"]["strict"]) == {
         "e2e-core-ui-custom-app-host",
-        "e2e-converter-legacy-save-predictions-web",
         "e2e-dataset-provider-repository-roundtrip",
         "e2e-pipeline-generation-performance-compare",
         "e2e-formats-io-datasets-methods-language-bindings",
@@ -2961,7 +2992,8 @@ def test_cross_language_e2e_cli_coverage_json_exposes_readiness_and_gaps() -> No
     for scenario_id, summary in report["scenario_summaries"].items():
         assert summary["steps"] >= 2
         assert summary["artifacts"] >= 2
-        assert summary["strict_parity_checks"] >= 1
+        if "migration_safety" not in summary["tags"]:
+            assert summary["strict_parity_checks"] >= 1
         assert summary["v1_refactor_summary"]["non_gap"] >= 1
 
 
@@ -2978,21 +3010,24 @@ def test_cross_language_e2e_cli_coverage_text_prints_debt_summary() -> None:
     )
 
     assert (
-        "debt: full_strict_ready=true strictness_gaps=0 contract_parity_checks=0 "
-        "strict_non_numeric_checks=0 v1_contract_phases=0 "
-        "v1_gap_phases=0 v1_not_applicable_phases=25"
+        "debt: full_strict_ready=false strictness_gaps=0 contract_parity_checks=0 "
+        "strict_non_numeric_checks=0 v1_contract_phases=1 "
+        "v1_gap_phases=0 v1_not_applicable_phases=28"
     ) in covered.stdout
-    assert "full strict blockers:" not in covered.stdout
+    assert (
+        "full strict blockers: v1_contract_phases=1, "
+        "without_strict_parity=e2e-converter-legacy-save-predictions-web"
+    ) in covered.stdout
     assert (
         "gate scope: coverage_gate=manifest_contract_only runtime_evidence_checked=false "
         "runtime_evidence_command=python3 scripts/n4a_e2e_scenarios.py evidence-ledger "
         "--out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json"
     ) in covered.stdout
-    assert "without_strict_parity=" in covered.stdout
+    assert "without_strict_parity=e2e-converter-legacy-save-predictions-web" in covered.stdout
     assert "without_strict_parity=e2e-multimodal-python-r-wasm-roundtrip" not in covered.stdout
 
 
-def test_cross_language_e2e_cli_coverage_full_strict_gate_passes() -> None:
+def test_cross_language_e2e_cli_coverage_full_strict_gate_reports_unowned_conversion() -> None:
     script = ROOT / "scripts" / "n4a_e2e_scenarios.py"
 
     covered = subprocess.run(
@@ -3004,8 +3039,13 @@ def test_cross_language_e2e_cli_coverage_full_strict_gate_passes() -> None:
         check=False,
     )
 
-    assert covered.returncode == 0
-    assert covered.stderr == ""
+    assert covered.returncode == 1
+    assert "11/11 scenarios; ready=11 blocked=0" in covered.stdout
+    assert "full strict blockers: v1_contract_phases=1" in covered.stdout
+    assert covered.stderr == (
+        "full strict gate failed: v1_contract_phases=1, "
+        "without_strict_parity=e2e-converter-legacy-save-predictions-web\n"
+    )
 
 
 def test_cross_language_e2e_cli_coverage_json_out_writes_report(tmp_path: Path) -> None:
@@ -3079,7 +3119,7 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
         "scenario_count": 11,
         "verified_count": 11,
         "failed_count": 0,
-        "artifact_count": 70,
+        "artifact_count": 67,
         "failure_count": 0,
         "max_age_seconds": 14400,
     }
@@ -3152,7 +3192,7 @@ def test_cross_language_e2e_evidence_ledger_check_treats_max_age_as_runtime_guar
             "scenario_count": 11,
             "verified_count": 11,
             "failed_count": 0,
-            "artifact_count": 70,
+            "artifact_count": 67,
             "failure_count": 0,
             "max_age_seconds": None,
         },
@@ -3336,14 +3376,18 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     assert "| coverage gate | manifest_contract_only |" in report
     assert "| runtime evidence checked | no |" in report
     assert "evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json" in report
-    assert "| full strict ready | yes |" in report
+    assert "| full strict ready | no |" in report
     assert "| contract parity checks | 0 |" in report
     assert "## Full Strict Gate" in report
-    assert "| pass | - |" in report
+    assert (
+        "| fail | v1_contract_phases=1, without_strict_parity=e2e-converter-legacy-save-predictions-web |"
+        in report
+    )
     assert "| strictness gaps | 0 |" in report
     assert "| strict non-numeric checks | 0 |" in report
+    assert "| V1 contract phases | 1 |" in report
     assert "| V1 gap phases | 0 |" in report
-    assert "| V1 not applicable phases | 25 |" in report
+    assert "| V1 not applicable phases | 28 |" in report
     assert "## Strict Numeric Proof Exceptions" in report
     assert "method outputs and predictions match tolerance ledger" not in report
     assert "## Strictness Gap Detail" in report
@@ -3351,6 +3395,8 @@ def test_cross_language_e2e_cli_coverage_markdown_out_writes_debt_board(tmp_path
     assert "e2e-core-ui-custom-app-host" in report
     assert "repository_forced_best_refit" in report
     assert "javascript_wasm" in report
+    assert "## Missing Strict Parity Checks" in report
+    assert "e2e-converter-legacy-save-predictions-web" in report
 
 
 def test_cross_language_e2e_semantic_tags_require_matching_runtime_steps(tmp_path: Path) -> None:
@@ -3536,10 +3582,14 @@ def test_cross_language_e2e_manifest_declares_known_semantic_gaps() -> None:
     converter = _scenario_by_id(manifest, "e2e-converter-legacy-save-predictions-web")
     assert converter["evidence_level"] == "strict"
     assert converter["strictness_gaps"] == []
-    assert flow["e2e-converter-legacy-save-predictions-web"]["python_open_pipeline"]["status"] == "strict"
-    assert flow["e2e-converter-legacy-save-predictions-web"]["python_rerun_pipeline"]["status"] == "strict"
-    assert flow["e2e-converter-legacy-save-predictions-web"]["python_parity"]["status"] == "strict"
-    assert flow["e2e-converter-legacy-save-predictions-web"]["wasm_web_reuse"]["status"] == "strict"
+    assert converter["parity_checks"] == []
+    assert flow["e2e-converter-legacy-save-predictions-web"]["python_open_pipeline"]["status"] == "contract"
+    assert "UNSUPPORTED_INPUT" in json.dumps(
+        flow["e2e-converter-legacy-save-predictions-web"]["python_open_pipeline"], sort_keys=True
+    )
+    assert flow["e2e-converter-legacy-save-predictions-web"]["python_rerun_pipeline"]["status"] == "not_applicable"
+    assert flow["e2e-converter-legacy-save-predictions-web"]["python_parity"]["status"] == "not_applicable"
+    assert flow["e2e-converter-legacy-save-predictions-web"]["wasm_web_reuse"]["status"] == "not_applicable"
     assert (
         flow["e2e-converter-legacy-save-predictions-web"]["papers_export"]["status"]
         == "not_applicable"
@@ -3819,7 +3869,7 @@ def test_cross_language_e2e_workflow_checks_out_declared_repos() -> None:
     assert "submodules: recursive" in workflow
     assert "nirs4all-drafts" not in workflow
     assert "nirs4all-lab" not in workflow
-    for repo in sorted(declared_repos):
+    for repo in sorted(declared_repos - {"nirs4all-ecosystem"}):
         assert f'path = {repo}' in gitmodules
         assert f"url = https://github.com/GBeurier/{repo}.git" in gitmodules
 

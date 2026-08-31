@@ -395,44 +395,37 @@
       },
       "e2e-converter-legacy-save-predictions-web": {
         "python_open_pipeline": {
-          "status": "strict",
+          "status": "contract",
           "evidence": [
-            "Python converter opens a legacy save/workspace fixture, emits a V1 workspace plus lowered prediction artifact, then reopens the converted SQLite workspace, pipeline/chain/prediction metadata, runtime result, and array sidecar with read-only SQLite, FK, checksum, and row-count checks."
+            "The public Python CLI receives a lowerable legacy save shape, returns UNSUPPORTED_INPUT with a structured error, and confirms no V1 output exists."
           ],
           "artifacts": [
-            "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
-            "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
-            "{artifacts_dir}/legacy-converter/python-open-pipeline.json"
+            "{artifacts_dir}/legacy-converter/conversion-refusal.json",
+            "{artifacts_dir}/legacy-converter/output-absence.json"
           ],
           "acceptance": [
-            "python-open-pipeline.json must report status=passed, converted_workspace_reopened=true, store_reopened_read_only=true, sqlite_integrity_ok=true, pipeline_metadata_reopened=true, FK identity matches, store/array hash matches against the migration manifest, and prediction_rows>0."
+            "conversion-refusal.json must report UNSUPPORTED_INPUT and refused_before_write; output-absence.json must confirm that no migration artifact was created."
           ]
         },
         "python_rerun_pipeline": {
-          "status": "strict",
+          "status": "not_applicable",
           "evidence": [
-            "Python reopens the converted workspace metadata, reruns the converted legacy PLS pipeline through the Python nirs4all oracle, records finite predictions, and compares the rerun output against the lowered legacy prediction artifact."
-          ],
-          "artifacts": [
-            "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json"
+            "There is no converted pipeline to rerun because semantic lowering is refused before output."
           ],
           "acceptance": [
-            "python-rerun-pipeline.json must report status=passed, converted_workspace_reopened=true, pipeline_reopened=true, python_rerun_executed=true, finite_predictions=true, prediction_rows>0, and prediction/RMSE deltas within tolerance."
-          ]
+            "Add a rerun only after an owned writer/runtime contract produces a converted pipeline."
+          ],
+          "applicability": "A pipeline rerun would be an independent reconstruction, not conversion proof, while the CLI correctly creates no output."
         },
         "python_parity": {
-          "status": "strict",
+          "status": "not_applicable",
           "evidence": [
-            "Converted V1 workspace, lowered runtime result, and Python rerun evidence are checked against legacy fixture values and checksums."
-          ],
-          "artifacts": [
-            "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
-            "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
-            "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json"
+            "No V1 prediction result exists to compare while conversion is fail-closed."
           ],
           "acceptance": [
-            "Fixture prediction vectors, scores, row counts, checksums, rerun deltas, and result contract validation must match expected values."
-          ]
+            "Add numeric parity after a converted runtime result is emitted by the owned writer/runtime contract."
+          ],
+          "applicability": "Claiming prediction parity without a converted result would misrepresent an independent Python execution as conversion evidence."
         },
         "papers_export": {
           "status": "not_applicable",
@@ -442,30 +435,27 @@
           "acceptance": [
             "Add a paper export only if the converted fixture becomes a deposited reproducibility artifact."
           ],
-          "applicability": "This migration lane is scoped to converting legacy saves and rendering predictions in Web; paper export is outside the scenario."
+          "applicability": "This safety lane does not create an output suitable for a paper export."
         },
         "repository_forced_best_refit": {
           "status": "not_applicable",
           "evidence": [
-            "The converted workspace is not published as a repository forced-refit pipeline."
+            "The refusal path creates no workspace that could be published as a repository forced-refit pipeline."
           ],
           "acceptance": [
             "Add a repository descriptor with force_best_refit=true if converted saves become repository recipes."
           ],
-          "applicability": "This converter lane does not publish converted saves as repository best-refit recipes; repository forced-refit coverage remains in the repository/papers lane."
+          "applicability": "This safety lane creates no converted workspace or repository recipe."
         },
         "wasm_web_reuse": {
-          "status": "strict",
+          "status": "not_applicable",
           "evidence": [
-            "Web opens converted predictions and verifies every result panel renders."
-          ],
-          "artifacts": [
-            "{artifacts_dir}/legacy-converter/web-results-panels.json",
-            "{artifacts_dir}/legacy-converter/web-results.png"
+            "No Web result artifact is created when semantic lowering refuses before output."
           ],
           "acceptance": [
-            "The served Web app must render all result panels over the converted prediction artifact and produce screenshot/index evidence."
-          ]
+            "Add Web/WASM reuse only after a converted portable result is produced."
+          ],
+          "applicability": "Rendering an absent converted result in Web would be fabricated evidence."
         }
       },
       "e2e-dataset-provider-repository-roundtrip": {
@@ -1528,124 +1518,75 @@
     },
     {
       "id": "e2e-converter-legacy-save-predictions-web",
-      "title": "Legacy save conversion, prediction lowering, and Web results rendering",
-      "objective": "Convert a legacy workspace/save fixture, lower predictions into the V1 result contract, prove deterministic converter preservation against fixture values and checksums, open the output in Web, and verify every result panel renders.",
+      "title": "Legacy semantic conversion refuses before output",
+      "objective": "Exercise the public legacy migration command against a lowerable save shape and prove that unavailable semantic V1 lowering fails closed before creating a workspace, prediction result, or Web artifact.",
       "evidence_level": "strict",
       "strictness_gaps": [],
       "languages": [
-        "python",
-        "javascript_wasm",
-        "web"
+        "python"
       ],
       "repos": [
         "nirs4all-tools",
-        "nirs4all",
-        "nirs4all-web",
-        "nirs4all-ui"
+        "nirs4all-ecosystem"
       ],
       "tags": [
         "workspace_save",
-        "predictions",
-        "web_results",
-        "pipeline",
-        "parity"
+        "migration_safety"
       ],
       "artifacts": [
-        "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
-        "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
-        "{artifacts_dir}/legacy-converter/python-open-pipeline.json",
-        "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json",
-        "{artifacts_dir}/legacy-converter/web-results-panels.json",
-        "{artifacts_dir}/legacy-converter/web-results.png"
+        "{artifacts_dir}/legacy-converter/legacy-input.json",
+        "{artifacts_dir}/legacy-converter/conversion-refusal.json",
+        "{artifacts_dir}/legacy-converter/output-absence.json"
       ],
       "evidence": [
-        "Legacy input fixture hash and converter checksum manifest",
-        "Converter migration report",
-        "Python reopened converted workspace/pipeline metadata ledger",
-        "Python rerun converted workspace pipeline",
-        "Prediction result contract validation",
-        "Web panel coverage screenshot/index",
-        "Client-only served-app React ResultsList/ResultsVisualization rendering"
+        "Lowerable legacy fixture inventory with SHA-256 hashes",
+        "Public CLI structured UNSUPPORTED_INPUT refusal",
+        "Confirmed absence of a workspace, prediction result, or other migration artifact",
+        "Explicit statement that no independent Python rerun is conversion proof"
       ],
-      "parity_checks": [
-        {
-          "oracle": "legacy fixture values and converter checksum manifest",
-          "candidate": "converted V1 workspace and lowered runtime result contract",
-          "metric": "fixture prediction vectors, scores, row counts, checksums, Python rerun deltas, and Web result panels match expected contract",
-          "evidence_level": "strict",
-          "artifacts": [
-            "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
-            "{artifacts_dir}/legacy-converter/predictions.rt_result.json",
-            "{artifacts_dir}/legacy-converter/python-open-pipeline.json",
-            "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json",
-            "{artifacts_dir}/legacy-converter/web-results-panels.json"
-          ]
-        }
-      ],
+      "parity_checks": [],
       "steps": [
         {
-          "id": "convert-legacy-save",
-          "title": "Convert legacy workspace and lower predictions",
-          "kind": "export",
-          "repo": "nirs4all-tools",
+          "id": "inspect-lowerable-legacy-input",
+          "title": "Inventory the lowerable legacy save input",
+          "kind": "prepare",
+          "repo": "nirs4all-ecosystem",
           "requires_tools": [
             "python3.11"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-tools/tests/e2e/test_legacy_save_predictions_web.py"
+            "{workspace_root}/nirs4all-ecosystem/scripts/e2e/verify_legacy_conversion_refusal.py",
+            "{workspace_root}/nirs4all-tools/tests/fixtures/legacy/old_workspace_mixed/run_predictions.json"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-tools && PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_legacy_save_predictions_web.py::test_convert_legacy_save --artifacts-dir={artifacts_dir}/legacy-converter"
+            "cd {workspace_root}/nirs4all-ecosystem && PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/verify_legacy_conversion_refusal.py --tools-root {workspace_root}/nirs4all-tools --artifacts-dir {artifacts_dir}/legacy-converter --inspect-input"
           ],
           "produces": [
-            "{artifacts_dir}/legacy-converter/converted-workspace.n4a.json",
-            "{artifacts_dir}/legacy-converter/predictions.rt_result.json"
+            "{artifacts_dir}/legacy-converter/legacy-input.json"
           ]
         },
         {
-          "id": "python-rerun-converted-pipeline",
-          "title": "Rerun converted workspace pipeline in Python",
-          "kind": "execute",
-          "repo": "nirs4all-tools",
+          "id": "refuse-unowned-semantic-conversion",
+          "title": "Refuse unowned semantic conversion before writing output",
+          "kind": "verify",
+          "repo": "nirs4all-ecosystem",
           "requires_tools": [
             "python3.11"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-tools/tests/e2e/test_legacy_save_predictions_web.py",
-            "{workspace_root}/nirs4all/nirs4all/__init__.py"
+            "{workspace_root}/nirs4all-ecosystem/scripts/e2e/verify_legacy_conversion_refusal.py",
+            "{workspace_root}/nirs4all-tools/src/nirs4all_tools/cli.py"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-tools && PYTHONPATH={workspace_root}/nirs4all:$PYTHONPATH PYTHONDONTWRITEBYTECODE=1 python3.11 -m pytest tests/e2e/test_legacy_save_predictions_web.py::test_python_rerun_converted_pipeline --artifacts-dir={artifacts_dir}/legacy-converter"
+            "cd {workspace_root}/nirs4all-ecosystem && PYTHONDONTWRITEBYTECODE=1 python3.11 scripts/e2e/verify_legacy_conversion_refusal.py --tools-root {workspace_root}/nirs4all-tools --artifacts-dir {artifacts_dir}/legacy-converter --verify-refusal"
           ],
           "produces": [
-            "{artifacts_dir}/legacy-converter/python-open-pipeline.json",
-            "{artifacts_dir}/legacy-converter/python-rerun-pipeline.json"
-          ]
-        },
-        {
-          "id": "web-open-predictions",
-          "title": "Render converted predictions in Web result panels",
-          "kind": "ui",
-          "repo": "nirs4all-web",
-          "requires_tools": [
-            "npm"
-          ],
-          "requires_paths": [
-            "{workspace_root}/nirs4all-web/web-app/src/app/shared-ui-contract.test.ts",
-            "{workspace_root}/nirs4all-web/web-app/tests/converted-predictions-render-smoke.mjs"
-          ],
-          "command": [
-            "bash",
-            "-lc",
-            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"
-          ],
-          "produces": [
-            "{artifacts_dir}/legacy-converter/web-results-panels.json",
-            "{artifacts_dir}/legacy-converter/web-results.png"
+            "{artifacts_dir}/legacy-converter/conversion-refusal.json",
+            "{artifacts_dir}/legacy-converter/output-absence.json"
           ]
         }
       ]
@@ -2002,8 +1943,8 @@
     },
     {
       "id": "e2e-formats-io-datasets-methods-language-bindings",
-      "title": "Formats, IO, datasets, and methods parity across native/Python/R/WASM/MATLAB-Octave plus Rust archive audit",
-      "objective": "Read heterogeneous file formats, assemble reference datasets, invoke native methods through current release-target language bindings, compare exported predictions, verify the public nirs4all-core MATLAB/Octave release parity gate, record the archived Rust binding status explicitly, and import the assembled dataset ledger into nirs4all-core's client-side WASM pipeline runtime.",
+      "title": "Formats, IO, datasets, and methods parity across native/Python/R/WASM/MATLAB-Octave plus Rust pre-release audit",
+      "objective": "Read heterogeneous file formats, assemble reference datasets, invoke native methods through current release-target language bindings, compare exported predictions, verify the public nirs4all-core MATLAB/Octave release parity gate, record the official Rust pre-release binding without claiming prediction parity, and import the assembled dataset ledger into nirs4all-core's client-side WASM pipeline runtime.",
       "evidence_level": "strict",
       "strictness_gaps": [],
       "languages": [
@@ -2011,7 +1952,7 @@
         "r",
         "javascript_wasm",
         "matlab_octave",
-        "rust_archive",
+        "rust_pre_release",
         "native"
       ],
       "repos": [
@@ -2043,7 +1984,7 @@
       "Language binding prediction parity",
       "WASM methods orchestrator ledger fixture",
       "nirs4all-core MATLAB/Octave release-matlab gate succeeded on v0.3.11 and uploaded the nirs4all-matlab-octave archive after strict Octave parity",
-      "Archived Rust wrapper is recorded as non-release-target evidence with release_target=false and gate=not_applicable",
+      "Official Rust pre-release binding is recorded as not published and outside the prediction parity matrix with parity_claim=false",
       "nirs4all-core client-side WASM import of assembled formats/IO dataset ledger"
       ],
       "parity_checks": [
@@ -2110,7 +2051,7 @@
         },
         {
           "id": "cross-binding-methods-parity",
-          "title": "Invoke methods through native/Python/R/WASM and audit archived Rust",
+          "title": "Invoke methods through native/Python/R/WASM and audit the Rust pre-release binding",
           "kind": "verify",
           "repo": "nirs4all-methods",
           "requires_tools": [

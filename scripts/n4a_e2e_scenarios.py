@@ -37,6 +37,7 @@ ALLOWED_LANGUAGES = {
     "r",
     "rust",
     "rust_archive",
+    "rust_pre_release",
     "javascript_wasm",
     "web",
     "matlab_octave",
@@ -643,84 +644,33 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
         ],
     },
     "e2e-converter-legacy-save-predictions-web": {
-        "legacy-converter/converted-workspace.n4a.json": [
-            {"path": "status", "equals": "passed"},
-            {"path": "converter.exit_code", "equals": 0},
-            {"path": "converter.verification_passed", "equals": True},
-            {"path": "parity.status", "equals": "passed"},
-            {"path": "parity.checks.runtime_array_preserved", "equals": True},
-            {"path": "workspace.row_counts.predictions", "gt": 0},
-        ],
-        "legacy-converter/predictions.rt_result.json": [
-            {"path": "status", "equals": "passed"},
-            {"path": "parity.status", "equals": "passed"},
-            {"path": "parity.within_tolerance", "equals": True},
-            {"path": "parity.prediction_rows", "gt": 0},
-            {"path": "predictions", "non_empty": True},
-        ],
-        "legacy-converter/python-open-pipeline.json": [
-            {"path": "schema_version", "equals": "n4a.e2e.python_open_pipeline.v1"},
+        "legacy-converter/legacy-input.json": [
+            {"path": "schema", "equals": "n4a.e2e.legacy_conversion_input.v1"},
             {"path": "scenario_id", "equals": "e2e-converter-legacy-save-predictions-web"},
             {"path": "status", "equals": "passed"},
-            {"path": "legacy_workspace_opened", "equals": True},
-            {"path": "converted_workspace_reopened", "equals": True},
-            {"path": "store_reopened_read_only", "equals": True},
-            {"path": "sqlite_integrity_ok", "equals": True},
-            {"path": "sqlite_foreign_key_check_ok", "equals": True},
-            {"path": "required_tables_present", "equals": True},
-            {"path": "runtime_result_reopened", "equals": True},
-            {"path": "pipeline_metadata_reopened", "equals": True},
-            {"path": "chain_metadata_reopened", "equals": True},
-            {"path": "prediction_metadata_reopened", "equals": True},
-            {"path": "store_hash_match", "equals": True},
-            {"path": "array_hash_match", "equals": True},
-            {"path": "manifest_source_fingerprint_match", "equals": True},
-            {"path": "report_verification_summary_match", "equals": True},
-            {"path": "store_user_version", "equals_path": "expected_store_user_version"},
-            {"path": "store_user_version_match", "equals": True},
-            {"path": "row_counts_match_report", "equals": True},
-            {"path": "workspace_artifact_counts_match_store", "equals": True},
-            {"path": "run_pipeline_fk_match", "equals": True},
-            {"path": "chain_pipeline_fk_match", "equals": True},
-            {"path": "prediction_pipeline_fk_match", "equals": True},
-            {"path": "prediction_chain_fk_match", "equals": True},
-            {"path": "pipeline_dataset_match", "equals": True},
-            {"path": "chain_dataset_match", "equals": True},
-            {"path": "chain_model_class_match", "equals": True},
-            {"path": "chain_model_name_match", "equals": True},
-            {"path": "runtime_result_pipeline_id_match", "equals": True},
-            {"path": "runtime_result_prediction_id_match", "equals": True},
-            {"path": "runtime_result_rows_match", "equals": True},
-            {"path": "array_prediction_id_match", "equals": True},
-            {"path": "array_rows_match", "equals": True},
-            {"path": "pipeline_step_count", "gt": 0},
-            {"path": "pipeline_classes", "non_empty": True},
-            {"path": "prediction_rows", "gt": 0},
-            {"path": "converted.pipeline_id", "non_empty": True},
-            {"path": "converted.chain_id", "non_empty": True},
-            {"path": "converted.prediction_id", "non_empty": True},
-            {"path": "converted.model_class", "non_empty": True},
-            {"path": "workspace_row_counts.predictions", "gt": 0},
-            {"path": "fingerprints.store_sha256", "non_empty": True},
-            {"path": "fingerprints.runtime_array_sha256", "non_empty": True},
+            {"path": "input_files", "non_empty": True},
+            {"path": "input_file_count", "gt": 0},
+            {"path": "semantic_execution_claimed", "equals": False},
         ],
-        "legacy-converter/python-rerun-pipeline.json": [
-            {"path": "schema_version", "equals": "n4a.e2e.python_rerun_pipeline.v1"},
+        "legacy-converter/conversion-refusal.json": [
+            {"path": "schema", "equals": "n4a.e2e.legacy_conversion_refusal.v1"},
             {"path": "scenario_id", "equals": "e2e-converter-legacy-save-predictions-web"},
             {"path": "status", "equals": "passed"},
-            {"path": "converted_workspace_reopened", "equals": True},
-            {"path": "pipeline_reopened", "equals": True},
-            {"path": "python_rerun_executed", "equals": True},
-            {"path": "finite_predictions", "equals": True},
-            {"path": "prediction_rows", "gt": 0},
-            {"path": "prediction_max_abs_delta", "lte_path": "prediction_tolerance"},
-            {"path": "rmse_delta", "lte_path": "rmse_tolerance"},
+            {"path": "result", "equals": "refused_before_write"},
+            {"path": "exit_code", "equals": 20},
+            {"path": "expected_exit_code", "equals": 20},
+            {"path": "error.code", "equals": "UNSUPPORTED_INPUT"},
+            {"path": "error.exit_code", "equals": 20},
+            {"path": "semantic_execution_claimed", "equals": False},
         ],
-        "legacy-converter/web-results-panels.json": [
+        "legacy-converter/output-absence.json": [
+            {"path": "schema", "equals": "n4a.e2e.legacy_conversion_output_absence.v1"},
+            {"path": "scenario_id", "equals": "e2e-converter-legacy-save-predictions-web"},
             {"path": "status", "equals": "passed"},
-            {"path": "prediction_count", "gt": 0},
-            {"path": "total_prediction_rows", "gt": 0},
-            {"path": "console_errors", "empty": True},
+            {"path": "output_created", "equals": False},
+            {"path": "migration_artifact_count", "equals": 0},
+            {"path": "semantic_execution_claimed", "equals": False},
+            {"path": "result", "equals": "no_output_after_refusal"},
         ],
     },
     "e2e-dataset-provider-repository-roundtrip": {
@@ -887,8 +837,12 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "wasm.metrics", "non_empty": True},
             {"path": "wasm.metrics_max_rmse_rel", "lte_path": "tolerances.wasm_rmse_rel"},
             {"path": "wasm.fixture", "non_empty": True},
-            {"path": "rust_archive.release_target", "equals": False},
-            {"path": "rust_archive.legacy_symbol_present", "equals": False},
+            {"path": "rust_pre_release.backend", "equals": "rust_n4m_pre_release"},
+            {"path": "rust_pre_release.kind", "equals": "official_pre_release_binding"},
+            {"path": "rust_pre_release.release_status", "equals": "not_published"},
+            {"path": "rust_pre_release.gate", "equals": "outside_prediction_parity_matrix"},
+            {"path": "rust_pre_release.parity_claim", "equals": False},
+            {"path": "rust_pre_release.prediction_fixture", "equals": None},
         ],
         "formats-io-methods/predictions-by-language.json": [
             {"path": "schema", "equals": "n4a.methods.predictions_by_language.v1"},
@@ -900,7 +854,11 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "wasm.metrics", "non_empty": True},
             {"path": "wasm.metrics_max_rmse_rel", "lte_path": "tolerances.wasm_rmse_rel"},
             {"path": "wasm.fixture", "non_empty": True},
-            {"path": "rust_archive.release_target", "equals": False},
+            {"path": "rust_pre_release.backend", "equals": "rust_n4m_pre_release"},
+            {"path": "rust_pre_release.release_status", "equals": "not_published"},
+            {"path": "rust_pre_release.gate", "equals": "outside_prediction_parity_matrix"},
+            {"path": "rust_pre_release.parity_claim", "equals": False},
+            {"path": "rust_pre_release.prediction_fixture", "equals": None},
         ],
         "formats-io-methods/wasm-orchestrator-fixture.json": [
             {"path": "schema", "equals": "n4a.methods.wasm_orchestrator_fixture.v1"},
@@ -2354,10 +2312,15 @@ def validate_scenarios(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
         unknown_languages = languages - ALLOWED_LANGUAGES
         if unknown_languages:
             raise E2EScenarioError(f"{scenario_id}: unsupported language(s): {', '.join(sorted(unknown_languages))}")
-        if len(languages) < 2:
-            raise E2EScenarioError(f"{scenario_id}: must cover at least two language/runtime surfaces")
-        covered_languages.update(languages)
         tags = set(_strings(scenario.get("tags"), f"{scenario_id}.tags"))
+        migration_safety_only = "migration_safety" in tags
+        if len(languages) < 2 and not migration_safety_only:
+            raise E2EScenarioError(f"{scenario_id}: must cover at least two language/runtime surfaces")
+        if migration_safety_only and languages != {"python"}:
+            raise E2EScenarioError(
+                f"{scenario_id}: migration_safety scenarios must declare only the Python CLI surface"
+            )
+        covered_languages.update(languages)
         covered_tags.update(tags)
         repos = set(_strings(scenario.get("repos"), f"{scenario_id}.repos"))
         if len(repos) < MIN_REPOS_PER_SCENARIO:
