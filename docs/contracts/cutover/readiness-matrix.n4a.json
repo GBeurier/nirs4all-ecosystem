@@ -166,7 +166,7 @@
         "route retries preserve requested engine, actual engine, fallback status, and RtError metadata",
         "remaining compute paths are runtime-backed or listed as explicit blockers",
         "bypass parity tests fail if legacy is called silently",
-        "the standalone Rust sidecar is packaged beside the embedded Python runtime, proves that host imports nirs4all without enabling scientific execution, reports a versioned control-plane readiness contract, starts only with explicit configuration on loopback, and does not claim legacy route parity"
+        "the standalone Rust sidecar is packaged beside the embedded Python runtime, proves that host imports nirs4all without enabling scientific execution, serves the first UI-backed system-capabilities route through the Rust bridge, reports a versioned control-plane readiness contract, starts only with explicit configuration on loopback, and does not claim legacy route parity"
       ],
       "missing_contract": "No remaining W55 route-bypass blocker. Strict release validation must still run the Studio gate in the prepared cutover workspace.",
       "next_owner_action": "Keep W55 route-level parity in the cutover gate and add new bypass cases only when new routes are introduced."
