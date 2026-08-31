@@ -473,6 +473,16 @@ work_items:
       contracts, the configured-host integration test, and a Windows GNU target compile passed,
       alongside the native Studio gate (35 tests), lint, and 3,731 frontend tests. This does not
       add update mutation, scanner/store, or scientific-route parity; those remain legacy.
+      Follow-up RC commit `d84d612` moves `GET` / `PUT /api/updates/settings` to the Rust
+      sidecar without requiring a CPython host. Rust parses and atomically replaces the bounded
+      legacy-compatible YAML preference file, preserves the PATCH merge shape, and rejects
+      malformed values. Because update checking remains FastAPI during this transition, its
+      manager detects an external atomic replacement and invalidates its cached GitHub release
+      when the prerelease channel changes; the Rust-to-Python handoff test confirms an update
+      takes effect without restart. Rust format/clippy, 31 unit tests, 5 contracts, the configured
+      host integration test, a Windows GNU target compile, the handoff pytest, the native Studio
+      gate (36 tests), lint, and 3,732 frontend tests passed. Checking, downloads, runtime
+      mutation, dependencies, snapshots, scanner/store, and scientific routes remain legacy.
     rollback: remove the standalone sidecar directory only; Studio legacy FastAPI/Electron paths and user workspaces are untouched.
   - id: SAVE-001
     owner: D
