@@ -444,6 +444,13 @@ work_items:
       scanning, result discovery, and all workspace/scientific-store access remain legacy until
       their native scanner/store contracts are available. Rust tests (26 unit + 5 contracts),
       the native Studio gate (31 tests), lint and 3,727 frontend tests passed.
+      Follow-up RC commit `964facc` routes `GET /api/system/network` to Rust without a Python
+      plugin host. It derives the established `online`, `forced`, `mode`, and `env_forced`
+      response solely from `NIRS4ALL_OFFLINE` and the bounded legacy-compatible
+      `update_settings.yaml` preference location; missing, malformed, or oversized preferences
+      safely resolve to `auto`. It neither performs a network probe nor starts a Python backend.
+      Rust format/clippy, 28 unit tests, 5 contracts, and a Windows GNU target compile passed,
+      alongside the native Studio gate (32 tests), lint, and 3,728 frontend tests.
     rollback: remove the standalone sidecar directory only; Studio legacy FastAPI/Electron paths and user workspaces are untouched.
   - id: SAVE-001
     owner: D
