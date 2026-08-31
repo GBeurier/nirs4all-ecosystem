@@ -426,7 +426,18 @@ work_items:
     acceptance_tests:
       - Rust sidecar health/readiness/job/cancellation/WS protocol tests passed (15), including fragmented HTTP, bounded resources, WS upgrade validation and fixture correlations
       - release build and loopback readiness smoke passed; STU-001 frozen-contract verifier and targeted pytest passed
-    review: Sol-xhigh ACCEPT. This is an opt-in R1 skeleton with no Python backend, scientific/store implementation, Electron switch, legacy route serving, or full-parity claim; legacy_route_parity is explicitly not_started.
+    review: >-
+      Sol-xhigh ACCEPT. This is an opt-in R1 skeleton with no Python backend,
+      scientific/store implementation, Electron switch, legacy route serving, or full-parity
+      claim; legacy_route_parity is explicitly not_started. Follow-up RC commits `56ad25c`
+      (shared UI shim sync) and `e860721` add only the Rust-owned `GET /api/system/build`
+      inventory route: Electron passes fixed product metadata and explicit plugin-host runtime
+      classification to the sidecar; Rust owns the HTTP response and uses the configured
+      CPython host solely for a bounded isolated `torch` library probe (15 s, 8 KiB), never as
+      an HTTP backend or scientific-job fallback. Sidecar unit/contract tests, the Studio native
+      gate (30 tests), TypeScript/lint gates, and 3,726 frontend tests passed; the 2,335-case
+      backend pytest equivalent also passed directly. The npm backend runner remains unavailable
+      in this WSL UNC shell before pytest starts, so it is not release evidence.
     rollback: remove the standalone sidecar directory only; Studio legacy FastAPI/Electron paths and user workspaces are untouched.
   - id: SAVE-001
     owner: D
