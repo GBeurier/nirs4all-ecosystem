@@ -529,6 +529,33 @@ work_items:
       - source and extracted packages both passed 31 Rust tests; archive dag-ml validator/unittests and full validate_contracts passed
     review: Sol-xhigh ACCEPT. Scope is a strict stored-ZIP native archive reader/writer; it has no native execution engine, so predict returns UnsupportedCapability and this does not satisfy SAVE-002 run-save-load-predict.
     rollback: remove only Core archive/store package additions and mirrored synthetic contract corpus; retain dag-ml contract, legacy source archives and user data unchanged.
+  - id: STORE-002
+    owner: D + F
+    dependencies:
+      - STORE-001
+      - STU-001
+    state: contract_published_pending_native_consumer
+    input_sha: f2583062
+    owned_files:
+      - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
+      - nirs4all/nirs4all/pipeline/storage/workspace_read_contract.py
+      - nirs4all/nirs4all/pipeline/storage/__init__.py
+      - nirs4all/pyproject.toml
+      - nirs4all/tests/regression/test_workspace_store_read_contract.py
+    acceptance_tests:
+      - WorkspaceStore v5 run-summary projection opens store.sqlite with SQLite immutable read-only mode and executes against a fresh Store without creating WAL or SHM files
+      - contract resource is packaged under nirs4all.pipeline.storage and rejects a contract whose declared schema version differs from the installed WorkspaceStore schema
+      - focused pytest and Ruff pass; the module passes Mypy with dependency following disabled while the project-wide configured Mypy baseline retains unrelated failures
+    review: >-
+      Phase 1 handoff only. Commit f2583062 publishes the sole bounded projection
+      needed by the first native Studio scanner: runs metadata ordered by created_at,
+      with limit 1..500 and non-negative offset. It deliberately excludes arrays,
+      Parquet sidecars, artifacts, predictions, mutations, DuckDB workspaces and
+      Store schemas other than v5. No Rust crate or Studio route consumes it yet;
+      STU-005 remains unproven and FastAPI remains the product scanner/repository
+      owner until a native consumer validates PRAGMA user_version before running
+      this exact query against parity fixtures.
+    rollback: remove only the published contract/resource/test; do not alter existing workspace databases or conversion outputs.
   - id: W1-001
     owner: G
     dependencies:
