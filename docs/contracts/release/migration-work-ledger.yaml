@@ -483,6 +483,13 @@ work_items:
       host integration test, a Windows GNU target compile, the handoff pytest, the native Studio
       gate (36 tests), lint, and 3,732 frontend tests passed. Checking, downloads, runtime
       mutation, dependencies, snapshots, scanner/store, and scientific routes remain legacy.
+      Follow-up RC commit `6d4ee71` moves `GET /api/system/status` to the Rust sidecar without
+      a Python host. It reads only the active linked-workspace catalogue record and reports it
+      as catalogue state: it performs no path inspection, scan, dataset read, or WorkspaceStore
+      access. The historical `nirs4all_available` field reports only whether an explicit Python
+      plugin host was configured; the route neither imports nor executes Python. Rust
+      format/clippy, 32 unit tests, 5 contracts, the native Studio gate (37 tests), lint, and
+      3,733 frontend tests passed. Scanner/store and scientific-route parity remain legacy.
     rollback: remove the standalone sidecar directory only; Studio legacy FastAPI/Electron paths and user workspaces are untouched.
   - id: SAVE-001
     owner: D
