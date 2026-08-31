@@ -451,6 +451,11 @@ work_items:
       safely resolve to `auto`. It neither performs a network probe nor starts a Python backend.
       Rust format/clippy, 28 unit tests, 5 contracts, and a Windows GNU target compile passed,
       alongside the native Studio gate (32 tests), lint, and 3,728 frontend tests.
+      Follow-up RC commit `254e87f` connects the renderer's existing health check to the
+      sidecar's already frozen `GET /api/health` V1 bootstrap contract. That route is fully
+      native and needs neither an interpreter nor mutable product state; the native Studio gate
+      (33 tests), lint, and 3,729 frontend tests passed. This makes no readiness, WebSocket,
+      scientific-route, scanner, or store parity claim.
     rollback: remove the standalone sidecar directory only; Studio legacy FastAPI/Electron paths and user workspaces are untouched.
   - id: SAVE-001
     owner: D
