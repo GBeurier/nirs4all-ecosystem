@@ -307,6 +307,13 @@ work_items:
       `ConformalPresentationV1` by fingerprint, and refuses tampered bytes or malformed keys on
       re-read. This is persistence evidence only: no HTTP ingestion route, data-envelope adapter,
       native Core replay invocation, or Core-to-UI E2E claim has been added.
+      Follow-up Core commit `c17d49e` adds the next aggregate API
+      `replay_methods_archive_v2_conformal_presentation_v1`: it retains the integrity-checked
+      Package V2 and typed PREDICT request while DAG-ML produces the presentation, rather than
+      exposing an unbound outcome for Studio to reinterpret. Its archive semantic-refusal test
+      proves both V2 replay entries reject before any `libn4m` configuration. The API is source
+      evidence for the next Core release, not a claim that published 0.3.22 or the Studio sidecar
+      already performs the cross-component call.
     rollback: disable the additive native conformal capability and retain the R1 legacy engine; never rewrite legacy archives.
   - id: DOC-WEB-001
     owner: H + F + G
