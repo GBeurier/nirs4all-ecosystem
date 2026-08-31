@@ -464,6 +464,15 @@ work_items:
       contracts, and a Windows GNU target compile passed, alongside the native Studio gate (34
       tests), lint, and 3,730 frontend tests. Update checking, settings, downloads, runtime
       mutation, scanner/store, and all scientific routes remain legacy.
+      Follow-up RC commit `6e09db6` moves `GET /api/updates/runtime/status` to the Rust
+      sidecar when the explicit CPython library host is configured. Rust owns the HTTP response,
+      reads bounded local `venv_metadata.json`, and calculates runtime size; the isolated host
+      supplies only interpreter facts and a bounded (256 KiB, at most 4,096 entries) installed-
+      distribution inventory. The contract test exercises that route against the configured
+      host while scientific execution remains unavailable. Rust format/clippy, 30 unit tests, 5
+      contracts, the configured-host integration test, and a Windows GNU target compile passed,
+      alongside the native Studio gate (35 tests), lint, and 3,731 frontend tests. This does not
+      add update mutation, scanner/store, or scientific-route parity; those remain legacy.
     rollback: remove the standalone sidecar directory only; Studio legacy FastAPI/Electron paths and user workspaces are untouched.
   - id: SAVE-001
     owner: D
