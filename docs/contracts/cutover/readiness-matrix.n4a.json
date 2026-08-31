@@ -213,9 +213,9 @@
       "title": "Aggregation release lock matches member contract artifacts",
       "lane": "LOCK-REL/L3",
       "owner_repo": "nirs4all-ecosystem",
-      "status": "ready",
+      "status": "blocked",
       "required_for_cutover": true,
-      "primary_gate_id": "release_lock_fetchability_audit",
+      "primary_gate_id": "release_lock_validation",
       "gate_ids": [
         "release_lock_validation",
         "release_lock_fetchability_audit"
@@ -226,8 +226,8 @@
         "audit-fetchability --fail-on-unfetchable passes from clean clones",
         "every locked commit is advertised by its configured repo_url"
       ],
-      "missing_contract": "None for the selected RC-v1 lock. On 2026-07-02, release_lock_validation and release_lock_fetchability_audit passed, with 7/7 locked member commits advertised by their configured repo_url.",
-      "next_owner_action": "Keep release_lock_validation and release_lock_fetchability_audit green whenever the manifest, lock, or selected member heads change."
+      "missing_contract": "The pinned commits remain fetchable (7/7), but regeneration from the selected-member checkout differs in two exact_tag fields: the lock records historical version tags while the current selection resolves n4a-v1-rc12-2026.07-refactor. The lock is therefore not reproducible under its current preferred tag policy.",
+      "next_owner_action": "The release captain must intentionally select the RC tag policy and regenerate aggregation-lock.n4a.lock.json from the matching clean member workspace; then rerun both release_lock_validation and release_lock_fetchability_audit."
     },
     {
       "id": "CORE-V1-SURFACE-001",
