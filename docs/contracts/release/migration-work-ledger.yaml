@@ -501,6 +501,34 @@ work_items:
       release gates and are not masked or claimed by this item. Final staged
       WASM binaries must still be rebuilt from the future aggregation lock.
     rollback: revert the strict profile selector, manifest and profile-aware smoke commits together; preserve user browser storage and exported n4a artifacts.
+  - id: UI-001
+    owner: F + G
+    dependencies:
+      - WEB-001
+    state: immutable_ui_tarball_producer_qualified_studio_web_pin_and_registry_publish_pending
+    input_sha: b7cadebd0e2857c8e8a65d7e7b767a949fa60b1f
+    owned_files:
+      - nirs4all-ui/scripts/release-artifact.mjs
+      - nirs4all-ui/scripts/release-artifact.test.mjs
+      - nirs4all-ui/.github/workflows/release-npm.yml
+      - nirs4all-ui/package.json
+      - nirs4all-ui/README.md
+    acceptance_tests:
+      - the build job produces one nirs4all-ui tarball plus a closed provenance manifest and uploads both as one workflow artifact
+      - the publish job downloads, verifies and publishes that exact tarball instead of rebuilding or publishing from a second source tree
+      - the manifest pins package name and version, forty-character source commit, clean-tree state, byte size, SHA-256, npm SHA-1, SHA-512 integrity, entry count and required public files
+      - dirty tracked source, non-empty output, symlink or non-file inputs, unknown manifest fields, source-commit mismatch and tampered tarball bytes fail closed
+      - two clean builds from the selected commit produce byte-identical tarballs with SHA-256 7a232c746eeeda526a26d79ef79ab83f6b2363d2d8ec37d92e674ae61b248340
+      - Node 24 typecheck, 282 Vitest tests, four artifact-contract tests, build, pack smoke and packed React 18/19 consumer smokes pass
+    review: >-
+      UI commit b7cadeb closes the release-producer half of UI-001. It makes
+      the tarball the immutable handoff between build and npm publication and
+      provides an offline verifier for downstream consumers. No registry
+      publication or external push was performed. Studio and Web still point
+      at their local vendor directories, so the same-version/same-hash
+      consumer pin and their full product gates remain required before UI-001
+      can be complete.
+    rollback: revert only the additive artifact builder, verifier and workflow handoff; retain the UI package source and consumer vendor copies.
   - id: GATE-001
     owner: G
     dependencies:
