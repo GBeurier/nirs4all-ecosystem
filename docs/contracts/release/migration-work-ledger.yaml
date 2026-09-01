@@ -1019,10 +1019,15 @@ work_items:
     owner: E + C
     dependencies:
       - SAVE-002
-    state: archive_v2_prediction_session_hardened_native_run_session_and_general_cache_pending
-    input_sha: 6565c8ed885acc1a896c710fda693b4a540d7520
+    state: archive_v2_native_run_session_lifecycle_qualified_general_dag_data_cache_pending
+    input_sha: 5ebb0788c392e8e1e3e3538a8ab872d724d97a64
     owned_files:
       - nirs4all/nirs4all/api/session.py
+      - nirs4all/nirs4all/api/run.py
+      - nirs4all/nirs4all/api/predict.py
+      - nirs4all/nirs4all/api/retrain.py
+      - nirs4all/nirs4all/api/explain.py
+      - nirs4all/nirs4all/api/native_archive_training.py
       - nirs4all/nirs4all/api/__init__.py
       - nirs4all/nirs4all/__init__.py
       - nirs4all/nirs4all/pipeline/dagml/core_archive_replay.py
@@ -1040,6 +1045,9 @@ work_items:
       - the one-entry Session cache is capped at 8 MiB and bound to the full source archive SHA-256; archive hashing costs one bounded-memory read per prediction and Core still performs authoritative replay validation
       - SessionClosedError is the public top-level terminal error, close purges validation and fingerprint state, and a fresh load resumes finite multi-target prediction
       - independent focused gates pass 11 tests with one optional skip, and a fresh exact-wheel Core 0.3.22 plus Dag-ML 0.3.18 and libn4m live gate passes all 4 tests including multi-predict, close/reload, process replay and tamper refusal
+      - run(..., session=..., engine="native") adopts one bounded private Archive V2 into a fresh Session without PipelineRunner; a later native run atomically replaces it and a failed replacement preserves the previous archive/cache/history byte-for-byte
+      - legacy-loaded or legacy-executed Sessions refuse native adoption, while Core/native Sessions refuse every explicit legacy run/predict/retrain/explain and runner access before constructing PipelineRunner
+      - native/legacy authority is checked immediately after engine selection, before chart/tuning option validation, with a stable typed error and no runtime access or Session mutation
     review: >-
       Python RC commits 1216eedf and 9b862952 close the Archive V2
       multi-predict and terminal Session lifecycle without broadening the
@@ -1051,9 +1059,18 @@ work_items:
       refusals. Although the agent environment lacked native wheels, an
       independent fresh-venv rerun used the exact selected Core, Dag-ML and
       Methods artifacts and passed 4/4 live tests.
-      `run(..., session=..., engine="native")` remains explicitly refused
-      before PipelineRunner construction. Native multi-run reuse and the
-      general DAG/data cache are still API-003 work. At this checkpoint,
+      Python commits da397476 through 5ebb078 subsequently add bounded native
+      run adoption and reuse without PipelineRunner. Each Session owns at most
+      one private archive plus an 8 MiB Package V2 cache; training handles are
+      detached after export, successful reruns replace the prior archive, and
+      failed reruns preserve the previous state atomically. Two independent
+      reviews rejected and corrected mixed legacy/native ownership in both
+      directions and an option-preflight ordering bug; the final guard runs
+      immediately after engine selection and returns the stable typed collision
+      before charts, runtime access or mutation. API gates pass 518 tests, the
+      real Core 7c3ed3f/Dag-ML 0.3.18/Methods 1.0.13 cycle passes, and Ruff plus
+      touched-file Mypy are green. The callable and canonical Studio wheel are
+      unchanged. General DAG/data caching is still API-003 work. At this checkpoint,
       preprocessing, branches, HPO, conformal and multi-target prediction
       remained API-002/001 work; the subsequent API-002 item closes only
       bounded Methods PLS multi-target prediction.
