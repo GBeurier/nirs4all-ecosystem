@@ -584,8 +584,8 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: python_legacy_and_core_launchers_qualified_studio_web_and_four_way_perf_pending
-    input_sha: 063e2d3f66ba0737e58131624fa3590918f20517
+    state: python_legacy_and_core_executed_web_refusal_attested_studio_and_four_way_perf_pending
+    input_sha: 2b389cbb6b17874dac5ed2edcbc569ba19c25149
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
@@ -596,10 +596,12 @@ work_items:
       - nirs4all-benchmarks/tests/test_artifact_qualification.py
       - nirs4all-benchmarks/tests/test_scientific_runtime_adapter.py
       - nirs4all-benchmarks/tests/test_python_legacy_adapter.py
+      - nirs4all-benchmarks/tests/test_web_wasm_readiness.py
       - nirs4all-benchmarks/docs/QUALIFICATION.md
       - nirs4all-benchmarks/docs/CLI.md
       - nirs4all-benchmarks/docs/perf001-artifact-inventory.v1.json
       - nirs4all-benchmarks/docs/perf001-scenario.v1.json
+      - nirs4all-benchmarks/docs/perf001-web-wasm-readiness.v1.json
     acceptance_tests:
       - the manifest names Python oracle, Core/Rust, Studio sidecar and Web/WASM exactly once and pins every scenario, executable and input artifact by absolute path plus SHA-256
       - adapters execute in a temporary directory with a cleaned environment and cannot discover sibling checkouts or inject source trees through PYTHONPATH
@@ -612,7 +614,9 @@ work_items:
       - the Python oracle verifies its CPython 3.11 runtime, all 44 installed wheels against their declared RECORD bytes and mandatory dependency closure, and imports only from the isolated runtime prefix
       - the Python oracle fits, exports, reloads and predicts the exact legacy PLS witness; Python and Core both pass with maximum absolute difference 2.870914617147946e-10 and zero observations outside tolerance
       - source checkout injection, native or dag-ml oracle substitution, fallback, outer artifact tamper and installed-byte tamper all refuse without becoming a skip
-      - Ruff passes, Mypy passes over 44 source files and the isolated checkout passes 123 tests; the Core launcher wheel remains byte-reproducible at SHA-256 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
+      - selected Web 4fcd43d proves its strict-wasm profile and six exact WASM digests but remains required/refused before browser launch because it exposes neither Archive V2 replay nor a single multi-target result contract
+      - two independent Web mono-target fits are explicitly rejected as a substitute for the canonical Archive V2 multi-target operation
+      - Ruff passes, Mypy passes over 44 source files and the isolated checkout passes 126 tests; the Core launcher wheel remains byte-reproducible at SHA-256 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
     review: >-
       Benchmarks commits b9be6bf, b21f35f and 063e2d3 add the executable stdio
       JSON protocol, strict four-runtime runner and the Core plus Python-legacy
@@ -623,10 +627,18 @@ work_items:
       An independently rerun exact local report confirmed Python and Core as
       passed with the frozen multi-target witness; its 44-wheel closure and
       pyopls source-to-wheel provenance are content-addressed local evidence,
-      not published or final-lock artifacts. Studio and Web remain required and
-      refused. Their launchers, immutable artifact staging, a four-way executed
-      report and measured PERF-001 budgets remain open and cannot be represented
-      as a skip or partial green gate.
+      not published or final-lock artifacts. Studio remains required/refused;
+      Web is an evidence-backed required refusal rather than an executed lane.
+      The Studio launcher, missing Web replay surface, immutable artifact
+      staging, four-way executed report and measured PERF-001 budgets remain
+      open and cannot be represented as a skip or partial green gate.
+      Commit 2b389cb then content-addresses the selected strict Web profile,
+      six WASM payloads and source-contract evidence. It proves a required
+      refusal rather than a runtime pass: Web has portable fit/predict only,
+      no Archive V2 reader/replay and a single-target MaterializedDataset.
+      Benchmarks passes 126 tests plus Ruff and Mypy; Web typecheck, strict
+      tests and production build pass. A Web aggregate replay surface and the
+      Studio launcher are still required before the four-way gate can execute.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
