@@ -187,6 +187,41 @@ work_items:
       - cross-language DatasetPackage v3 golden and fold sample-leakage preflight/emission probes passed
     review: Sol-xhigh ACCEPT. Node WASM smoke is not proven locally because Node is absent; CI retains that smoke as a platform gate.
     rollback: revert the IO-owned v2 assembled/v3 package wire changes and their readers/goldens together; no source data is mutated.
+  - id: FMT-001
+    owner: C + G
+    dependencies:
+      - DATA-001
+    state: complete_real_legacy_and_studio_corpus_qualified
+    input_sha: c8c5f32e2ca8b69bb8f94e0e91197b1043e44eeb
+    owned_files:
+      - nirs4all-formats/crates/nirs4all-formats/
+      - nirs4all-formats/bindings/python/
+      - nirs4all-formats/tests/conformance/
+      - nirs4all-formats/tests/reverse_lab/
+    acceptance_tests:
+      - local legacy corpus classifies 219 entries as 207 parity and 12 expected refusals or auxiliaries with zero unnamed blocker
+      - linked real Studio Hardness_0.8 dataset classifies all seven business files as three exact spectral-table parities and four expected metadata/target-only refusals
+      - PerkinElmer, MicroNIR, FOSS and yamtot full-array comparisons preserve axes, values and sample identity within the declared source-export precision
+      - Rust workspace fmt, Clippy with warnings denied and 292 tests pass with the real corpus present
+      - Python binding and reverse-lab pass 24 tests with 3 documented skips; an abi3 wheel installs outside the checkout and reads a real MicroNIR file
+      - external-reference conformance passes 52 tests with 31 documented environment or reference-reader skips and no failure
+    review: >-
+      The selected Formats RC fast-forwards from 181946f through the published
+      v0.2.7 source 9ddb8f5 to c8c5f32. The only qualification correction is
+      in the conformance harness: jcamp 1.3.2 exposes `JCAMP_reader` while older
+      supported releases expose `jcamp_readfile`; accepting both restored 15
+      real JCAMP comparisons instead of false skips. The source inventories are
+      provenance-labelled local evidence and no corpus, private dataset or build
+      output is committed. PerkinElmer covered 31 binary/CSV pairs (exact axes,
+      maximum value delta 4.9999e-5), MicroNIR covered 120 SAM records against
+      CSV (maximum value delta 5e-8 and axis delta 4.97e-4 from rounded export),
+      FOSS covered three CAL/TXT pairs (exact axes, maximum delta 5e-8), and
+      yamtot covered 16 NIR records bit-exact by sample identity and occurrence.
+      The linked Studio matrices Xtrain 304x949, Xtest 80x949 and XY 384x949
+      matched exactly. Missing Rscript and platform-only binding jobs remain
+      documented release-platform gates; they do not hide an unclassified file
+      in the available legacy or Studio corpus.
+    rollback: revert only the conformance-harness compatibility commit; retain the immutable corpus classifications and never copy local corpus data into the repository.
   - id: MTH-001
     owner: B
     dependencies:
