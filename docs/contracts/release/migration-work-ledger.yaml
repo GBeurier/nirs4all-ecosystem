@@ -668,8 +668,8 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: python_legacy_core_and_web_passed_studio_executed_refused_archive_v2_predict_pending
-    input_sha: 8dbf272f00948fc35696b132b040cc55258678a6
+    state: studio_native_archive_v2_local_linux_passed_selected_core_0_3_23_publishable_direct_lane_pending
+    input_sha: 0846392a76f841d496296f0989d250e8623264d4
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
@@ -688,6 +688,7 @@ work_items:
       - nirs4all-benchmarks/tests/test_web_wasm_readiness.py
       - nirs4all-benchmarks/tests/test_studio_sidecar_readiness.py
       - nirs4all-benchmarks/tests/test_studio_sidecar_adapter.py
+      - nirs4all-benchmarks/tests/test_stage_studio_sidecar_runtime.py
       - nirs4all-benchmarks/docs/QUALIFICATION.md
       - nirs4all-benchmarks/docs/CLI.md
       - nirs4all-benchmarks/docs/perf001-artifact-inventory.v1.json
@@ -710,10 +711,13 @@ work_items:
       - the autonomous Web stage runs its copied Python with -I and user-site disabled, verifies every installed file and wheel, contains no producer path, and refuses fit/refit, fallback, identity drift, profile drift, missing runtime or tampered bytes
       - two independent Web mono-target fits are explicitly rejected as a substitute for the canonical Archive V2 multi-target operation
       - Benchmarks f038290 verifies selected Studio d829465 and Python 3b9eb3e with the canonical wheel SHA-256 24737550768868df37dc0bf11433c7bd409ef620a8667a88b99641658b5f3e6b; the bounded callable and Rust terminal bridge execute directly in the harness but product selection remains false because the scientific request resolver is unavailable
-      - Benchmarks 8dbf272 stages selected Studio 99ba715, IO f419 and the exact Python 5ebb wheel in an isolated content-addressed Linux runtime, then executes the real Rust POST /api/runs/run-groups route, Rust job registry, WebSocket terminal event, durable record and bounded CPython stdio worker
-      - the selected Studio job completes through dag-ml with no fallback, persists only the original saved-identity request, leaves zero Python children and scratch entries, and exposes scores plus prediction_count but no sample-addressable protein/moisture prediction series
-      - the exact-runner report therefore records Studio executed=true and refused while Python, Core and Web pass; the overall gate remains refused and PERF-001 receives no Studio credit
-      - the current first blocker is an additive Rust product Archive V2 multi-target prediction route backed by a Core matrix-replay composition; scores, prediction_count, fabricated JSON, a direct worker/Core call or two mono-target runs are rejected substitutes
+      - historical Benchmarks 8dbf272 stages selected Studio 99ba715, IO f419 and the exact Python 5ebb wheel in an isolated content-addressed Linux runtime, then executes the real Rust POST /api/runs/run-groups route, Rust job registry, WebSocket terminal event, durable record and bounded CPython stdio worker
+      - Benchmarks 0846392 stages selected Studio 6aed68a with embedded Core 45e1f53 and the exact autonomous Methods ABI 2.2 library, then executes the real Rust POST /api/predict/archive-v2 route with the canonical Archive V2 multi-target witness
+      - the Studio lane returns the exact protein and moisture series with engine core_rust_methods, fallback false, exact archive/sample/target identity, exact Core-plus-Methods provenance, zero product Python children and zero route-created scratch entries
+      - the Methods library has no RPATH or RUNPATH, only the approved libc/libgcc_s/libm/libstdc++ dependencies, and two independent clean local builds are byte-identical; its GLIBC 2.35 and GLIBCXX 3.4.29 requirements limit this proof to local Linux x86-64
+      - scenario SHA and values, response archive_id and provenance, packaged contract, source snapshots, symlink/tamper cases and dynamic dependency allowlist all fail closed in the strengthened harness
+      - the retained four-runtime diagnostic executes all lanes successfully but its direct Core lane is 085ab611/0.3.22 rather than selected 45e1f53/0.3.23; it is therefore explicitly non-promotable and gate_001_complete remains false
+      - an exact local Core 45e1f53 build compiles, but maturin refuses the host output as manylinux_2_28 because of GLIBC_2.30, GLIBC_2.33 and GLIBC_2.34 references; a publishable selected Core 0.3.23 wheel and refreshed exact report are the current first blocker
       - the historical d829465 Studio refusal occurred before request-body parsing, workspace access, job allocation, event publication, durable writes or scientific execution; it remains evidence but is not relabelled as the current blocker
       - Ruff passes, Mypy passes over 44 source files and the isolated checkout passes 129 tests; the Core launcher wheel remains byte-reproducible at SHA-256 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
       - the refreshed Bench descendant passes 148 tests with one explicit skip, Ruff, Mypy over 46 files, a targeted real Studio saved-route Rust test and cargo fmt
@@ -824,6 +828,19 @@ work_items:
       a versioned Core matrix-replay helper and additive Rust Studio Archive V2
       multi-target prediction route. Linux x86-64 is the only Studio runtime
       executed by this evidence.
+      Bench commits ce220e9 and 0846392 execute that additive route on selected
+      Studio 6aed68a with embedded Core 45e1f53 and autonomous Methods ABI 2.2
+      bytes. The selected Studio lane is locally complete on Linux: it returns
+      both aligned target series over the real product HTTP route with exact
+      provenance, no fallback, no product Python child and no route-created
+      scratch entry. An independent rebuild receipt records two clean,
+      byte-identical Methods builds. The initially green four-runtime report is
+      retained only as a mixed-version diagnostic because its direct Core lane
+      is still 085ab611/0.3.22. A clean Core 45e1f53 build succeeded locally,
+      but maturin correctly refused a manylinux_2_28 wheel due to newer GLIBC
+      symbols. GATE-001 and PERF-001 remain open until a publishable selected
+      Core 0.3.23 wheel is staged and the exact four-runtime report is replayed;
+      Windows, macOS and manylinux Studio packaging also remain unqualified.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
@@ -1577,8 +1594,8 @@ work_items:
     dependencies:
       - STU-002
       - STU-005
-    state: native_saved_submission_resolver_python_worker_and_rust_only_renderer_selected_linux_windows_pending
-    input_sha: 99ba7155eb619010a25cc5fc5d218752d43baced
+    state: native_archive_v2_prediction_local_linux_qualified_renderer_adoption_and_cross_platform_pending
+    input_sha: 6aed68a6c68b10829c9c484c34e23e4c2b652df3
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
       - nirs4all-studio/sidecar/contracts/studio_execution_job_record_v1.json
@@ -1591,6 +1608,8 @@ work_items:
       - nirs4all-studio/sidecar/src/lib.rs
       - nirs4all-studio/sidecar/src/scientific_submission.rs
       - nirs4all-studio/sidecar/src/scientific_cpython.rs
+      - nirs4all-studio/sidecar/src/archive_v2_prediction.rs
+      - nirs4all-studio/sidecar/contracts/studio_archive_v2_prediction_v1.json
       - nirs4all-studio/sidecar/src/websocket_transport.rs
       - nirs4all-studio/sidecar/tests/scientific_submission_runtime.rs
       - nirs4all-studio/sidecar/tests/scientific_cpython_runtime.rs
@@ -1610,6 +1629,8 @@ work_items:
       - nirs4all-studio/sidecar/tests/job_lifecycle_contract.rs
       - nirs4all-studio/sidecar/tests/job_lifecycle_state.rs
       - nirs4all-studio/sidecar/README.md
+      - nirs4all-studio/scripts/build-native-sidecar.cjs
+      - nirs4all-studio/scripts/native-runtime-contract.cjs
     acceptance_tests:
       - contract matches the frozen Studio-v1 five statuses, eleven job types and five cancellation endpoints
       - contract matches all three frozen WebSocket endpoints, emitted job-event envelope keys and declared-unreachable job_cancelled behavior
@@ -1649,6 +1670,10 @@ work_items:
       - diagnostic mode selects the Python HTTP owner process-wide before route classification, keeping creation, status, cancellation and WebSocket ownership coherent without per-route fallback
       - a static renderer gate rejects direct product /api fetches outside the preselected transport; the two synthesis bypasses found by independent audit were migrated to api.get/api.post
       - independently re-audited Studio passes 547 Vitest files and 3877 tests, TypeScript, ESLint with zero errors, 133 Rust tests with one ignored probe, fmt, strict Clippy and Electron build
+      - selected Studio 6aed68a exposes POST /api/predict/archive-v2 only for an exact persisted workspace export and bounded array request, and delegates archive loading plus matrix replay to embedded Core 45e1f53 without Python, fit, refit or fallback
+      - product capability is true only when the adjacent packaged contract and autonomous Methods ABI 2.2 file pass exact path, size, SHA-256 and Core preflight; missing, tampered, symlinked or dependency-incomplete closures remain false with typed 503 behavior
+      - the local Linux product route returns exact archive, sample, target and provenance identities plus both protein and moisture series while leaving zero child process and zero route scratch additions
+      - the complete embedded Core 0.3.23 source snapshot is a transition-only dependency and must be replaced by the exact published crate before LOCK-RELEASE; renderer adoption, remaining route parity and Windows/macOS packaging remain open
     review: >-
       Commit a9e57e2 freezes an executable R2 target without claiming a live
       WebSocket implementation. It distinguishes the sequenced native internal
@@ -1735,14 +1760,24 @@ work_items:
       snapshot by a published exact IO package/revision remain LOCK-RELEASE debt.
       LOCK-STUDIO and R2-W2 still require the refreshed four-runtime gate and
       remaining route/platform coverage.
+      Studio commits 81566fe through 6aed68a add the closed Archive V2 prediction
+      route and package one exact autonomous Methods ABI 2.2 identity beside the
+      Rust sidecar. Core 45e1f53 remains the sole parser/replay authority and
+      Rust remains the sole HTTP/control owner; CPython is neither acquired nor
+      available as fallback on this route. The locally staged Linux lane passes
+      with exact multi-target observations and zero child/scratch additions.
+      This closes the first Studio comparison blocker only. The renderer has no
+      product consumer for the new route yet, the direct Core gate wheel is not
+      publishable from the current host, the Core source is still vendored, and
+      remaining HTTP/WS/platform parity keeps LOCK-STUDIO and R2-W2 pending.
     rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
   - id: STU-006
     owner: F
     dependencies:
       - STU-002
       - STU-001
-    state: r2_native_startup_and_packaged_rust_only_renderer_policy_qualified_cross_platform_archives_pending
-    input_sha: cdb9f46de1643ab170934481cd9471e54ed3701c
+    state: r2_native_startup_and_linux_methods_closure_qualified_cross_platform_archives_pending
+    input_sha: 6aed68a6c68b10829c9c484c34e23e4c2b652df3
     owned_files:
       - nirs4all-studio/electron/native-session-lifecycle.ts
       - nirs4all-studio/electron/scientific-plugin-lifecycle.ts
@@ -1773,6 +1808,9 @@ work_items:
       - packaged default route selection is Rust-only and an available bundled CPython cannot start FastAPI/Uvicorn for an unmigrated route; typed refusal precedes fetch and process acquisition
       - packaged environment inheritance cannot activate Python HTTP; explicit CLI diagnostic selection remains whole-session and is reported through readiness/IPC
       - all renderer product fetch and WebSocket construction paths are guarded by source and behavior tests, with no native-to-Python retry
+      - the Linux build stages one exact non-symlink Methods library through paired build-only path and SHA-256 inputs and emits its path, size, digest and ABI 2.2 in the adjacent runtime contract
+      - runtime startup advertises native Archive V2 prediction only after Core preflights that exact Methods identity; an absent, stale, tampered or dependency-incomplete library disables the capability without changing Rust sidecar ownership
+      - the locally qualified Methods binary is reproducible from two clean builds but requires GLIBC 2.35 and is not a manylinux, Windows or macOS release artefact
     review: >-
       Commit 2490396 removes eager BackendManager startup from Electron and
       preserves legacy backend:* IPC as lazy aliases while publishing explicit
@@ -1804,6 +1842,13 @@ work_items:
       this exact cdb9f46 selection. It remains a required refusal rather than a
       scientific execution witness until the callable and durable terminal
       bridge are selected.
+      Studio 6aed68a extends that packaging contract with one build-time
+      content-addressed Methods ABI 2.2 member and advertises native Archive V2
+      prediction only after Core preflight succeeds. The Linux monofile has two
+      clean byte-identical rebuilds and no non-system dynamic dependency, while
+      CPython remains external-explicit and absent from product transport. This
+      is local GLIBC 2.35 evidence only; published Core/Methods identities and
+      Windows/macOS archives remain required before LOCK-RELEASE or R2-W2.
     rollback: revert only the lazy lifecycle/IPC/UI readiness adapter; preserve sidecar state and user Python environments.
   - id: W1-001
     owner: G
