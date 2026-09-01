@@ -187,6 +187,38 @@ work_items:
       - cross-language DatasetPackage v3 golden and fold sample-leakage preflight/emission probes passed
     review: Sol-xhigh ACCEPT. Node WASM smoke is not proven locally because Node is absent; CI retains that smoke as a platform gate.
     rollback: revert the IO-owned v2 assembled/v3 package wire changes and their readers/goldens together; no source data is mutated.
+  - id: DATA-003
+    owner: C
+    dependencies:
+      - DATA-001
+      - CAP-001
+    state: native_provider_and_bidirectional_dag_lockstep_qualified_binding_matrix_pending
+    input_sha: 4c8ce37952427fd13a132cbcca6324214c72554a
+    owned_files:
+      - dag-ml-data/crates/dag-ml-data-core/
+      - dag-ml-data/crates/dag-ml-data-provider/
+      - dag-ml-data/crates/dag-ml-data-capi/
+      - dag-ml-data/crates/dag-ml-data-wasm/
+      - dag-ml-data/docs/contracts/
+      - dag-ml-data/scripts/validate_contracts.py
+    acceptance_tests:
+      - branch views by_source, by_metadata, by_tag and closed by_filter preserve relation identity and reject unknown or unconstrained selectors
+      - feature fusion and collation preserve source layout, repetition identity, masks and stable release of data and child-view handles
+      - Cargo workspace fmt, Clippy with warnings denied and tests pass with 272 passed and 2 documented performance probes ignored
+      - C header/link, provider-vtable and Python ctypes smoke tests execute against the real C ABI
+      - dag-ml-data 4c8ce37 validates against selected Dag-ML 29abd30 and the same Dag-ML validates back against this exact dag-ml-data checkout
+      - release metadata validates as dag-ml-data 0.2.9 and the selected commit is advertised by origin/main
+    review: >-
+      A dirty historical `RC-v1-dmd` worktree is explicitly rejected as release
+      evidence and remains untouched. The clean selection is the remotely
+      advertised 4c8ce37 head in an isolated worktree. It includes native
+      branch filters and the mirrored predict-cohort envelope v2 required by
+      the selected Dag-ML contract. Full workspace Rust/C ABI qualification and
+      both directions of `validate_contracts.py` pass against Dag-ML 29abd30.
+      This closes the native provider/lockstep slice only; Python, R, WASM and
+      platform packaging must still be replayed from the final aggregation lock
+      before LOCK-DATA can be promoted.
+    rollback: select the previous advertised dag-ml-data ref without modifying the dirty historical RC worktree or any user data.
   - id: FMT-001
     owner: C + G
     dependencies:
