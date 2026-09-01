@@ -1219,16 +1219,29 @@ work_items:
     dependencies:
       - STU-002
       - STU-005
-    state: native_job_http_ws_lifecycle_and_durable_reads_wired_submission_renderer_pending
-    input_sha: 9814610d96e29909e6d8898552fe8569c6926016
+    state: native_submission_and_preflighted_renderer_transport_wired_scientific_execution_pending
+    input_sha: 161bf3f0334aff823c82885e2effd7f7eea989f1
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
       - nirs4all-studio/sidecar/contracts/studio_execution_job_record_v1.json
+      - nirs4all-studio/sidecar/contracts/studio_scientific_submission_v1.json
+      - nirs4all-studio/sidecar/contracts/studio_renderer_transport_selection_v1.json
       - nirs4all-studio/sidecar/src/execution_job_records.rs
       - nirs4all-studio/sidecar/src/job_http.rs
       - nirs4all-studio/sidecar/src/job_lifecycle.rs
       - nirs4all-studio/sidecar/src/lib.rs
+      - nirs4all-studio/sidecar/src/scientific_submission.rs
       - nirs4all-studio/sidecar/src/websocket_transport.rs
+      - nirs4all-studio/sidecar/tests/scientific_submission_runtime.rs
+      - nirs4all-studio/electron/main.ts
+      - nirs4all-studio/electron/preload.ts
+      - nirs4all-studio/electron/renderer-transport-selection.ts
+      - nirs4all-studio/electron/renderer-transport-selection.test.ts
+      - nirs4all-studio/src/api/transport.ts
+      - nirs4all-studio/src/api/transport.test.ts
+      - nirs4all-studio/src/lib/websocket.ts
+      - nirs4all-studio/src/lib/websocket.test.ts
+      - nirs4all-studio/src/types/electron.d.ts
       - nirs4all-studio/sidecar/tests/job_http_runtime.rs
       - nirs4all-studio/sidecar/tests/job_lifecycle_contract.rs
       - nirs4all-studio/sidecar/tests/job_lifecycle_state.rs
@@ -1249,8 +1262,12 @@ work_items:
       - both frozen durable execution-job-record GET routes require an active linked workspace and read bounded per-run snapshots without consulting the in-memory registry or invoking Python
       - the durable reader rejects symlinks, workspace escape, oversized or changing files, malformed or unknown fields and payload identity mismatch; legacy missing progress fields normalize explicitly
       - known run identities are joined through the immutable Store v5 projection while orphan job lookup remains bounded to request.run_name; neither route retries FastAPI after native selection
-      - combined selected Studio RC passes 115 Rust tests with one opt-in owner differential ignored, fmt and Clippy warnings denied; the real fresh isolated CPython owner differential passes 1/1 after integration
-      - scientific submission and renderer route selection remain explicitly unselected and fail closed
+      - the closed scientific submission contract rejects oversized, unknown, legacy, fallback and skipped fields before workspace resolution, executor preflight, registry mutation or durable writes
+      - Rust owns submission validation, job registration, start event, durable record, cancellation and transport; the default executor remains unselected and returns 503 with scientific_execution=false
+      - Electron preflights live sidecar capabilities before each native HTTP request or WebSocket connection and carries the selected URL in the decision; malformed or mismatched candidates reject without Python acquisition, retry or fallback
+      - native renderer HTTP includes submission, status, cancellation and durable reads; only auto-subscribed /ws/job/{id} and /ws/training/{id} are native, while dynamic /ws remains selected to the plugin before connection because its subscribe protocol is not native-compatible
+      - combined selected Studio RC passes 126 Rust tests with one opt-in owner differential ignored, fmt and Clippy warnings denied; the real fresh isolated CPython owner differential passes 1/1 after integration
+      - the complete frontend passes 544 files and 3851 Vitest tests, TypeScript, targeted ESLint and the Electron development build
     review: >-
       Commit a9e57e2 freezes an executable R2 target without claiming a live
       WebSocket implementation. It distinguishes the sequenced native internal
@@ -1271,8 +1288,13 @@ work_items:
       workspaces, joins known run identity through Store v5, and refuses
       symlinks, mutation and malformed snapshots without Python or FastAPI.
       Durable records remain WorkspaceStore-owned rather than in-memory
-      registry state. Renderer selection, scientific submission, independent
-      transport review, LOCK-STUDIO and R2-W2 remain open.
+      registry state. Canonical commits a1e9707 and 161bf3f add the closed
+      scientific-submission transport and live-preflighted Electron renderer
+      selector. They make native transport reachable without making scientific
+      execution available: scientific_execution remains false and the default
+      executor refuses before mutation. The general dynamic /ws protocol,
+      scientific executor, remaining routes/scanners, installers,
+      LOCK-STUDIO and R2-W2 remain open.
     rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
   - id: STU-006
     owner: F
