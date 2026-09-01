@@ -250,14 +250,16 @@ work_items:
       - MTH-002
       - DATA-001
       - PROV-001
-    state: evidence_accepted
-    input_sha: 7b0111981071cfc9b509c1eea100f0430372f103
+    state: evidence_accepted_rc_reconciled_overlay_free
+    input_sha: 29abd300e518d152eb5453ea57f5232dd2b595af
     owned_files:
       - dag-ml/crates/dag-ml-core/src/hpo.rs
       - dag-ml/crates/dag-ml-core/src/training_runtime.rs
       - dag-ml/crates/dag-ml-core/src/runtime/
       - dag-ml/crates/dag-ml-core/src/bundle.rs
       - dag-ml/crates/dag-ml-core/src/replay.rs
+      - dag-ml/crates/dag-ml-py/Cargo.lock
+      - dag-ml/scripts/validate_release_metadata.py
       - dag-ml/docs/HPO_METHODS_ADAPTER.md
     acceptance_tests:
       - native Methods ask/batch/tell/intermediate/best/trials/failure/prune with TPE and pruner
@@ -265,6 +267,8 @@ work_items:
       - controller-owned execution with attested DataBinding/identity, DAG folds/OOF/selection/refit
       - N4MM package reload into a fresh controller followed by predict without labels
       - extracted default dag-ml package has no sibling dependency; any local Methods overlay is explicit and fail-closed
+      - selected Dag-ML RC descends from the accepted HPO/results/conformal lineage, deletes the sibling manifest overlay, and resolves its standalone Python binding with --locked n4m 0.1.1
+      - overlay-free real Methods gate passes 652 tests with 2 unrelated ignores; full workspace fmt/clippy -D warnings/tests, release/contracts validators and wheel smoke pass
     review: >-
       Independent review ACCEPT. The controller-owned native Methods HPO
       implementation was reviewed at Dag-ML
@@ -285,11 +289,21 @@ work_items:
       resolves n4m 0.1.1 and Core 0.3.15 from registries only. Commit
       7b0111981071cfc9b509c1eea100f0430372f103 removes the stale
       pre-publication feature claim and adds a fail-closed release-metadata
-      guard tied to Cargo.toml. This accepts HPO-001 evidence only:
+      guard tied to Cargo.toml. Commit ff8ab3a reconciles the selected RC onto
+      that lineage, removes Cargo.toml.methods-local, adds a standalone Python
+      Cargo.lock SHA-256 22bf9a1ed2d05cf35b8df10c7c0e8f9bdd702b1848c75887435440a596098eeb,
+      and enforces n4m 0.1.1 plus --locked wheel builds in CI. The resulting
+      0.3.18 abi3 wheel SHA-256 is
+      db3394a4e2ea74b40038235e807e5f2b9027fc9eaf94557040e20216897c86dc;
+      the real Methods ABI 2.2.0 library SHA-256 is
+      ad68e6c83c19c50fcfc859c14e9c51ea333e307eaa254040d62afa911a20635a.
+      Commit 29abd30 carries the accepted Studio CPython plugin-host boundary
+      onto the same selected lineage without restoring a Python orchestration
+      backend. This accepts HPO-001 evidence only:
       LOCK-METHODS and LOCK-API remain pending, API-001/API-004 retain their
       remaining acceptance work, and no R2 waypoint or native-default flip is
       closed by this review.
-    rollback: remove only the uncommitted dag-ml HPO adapter/runtime additions; preserve Methods ABI and existing DAG contracts.
+    rollback: select the archived pre-reconciliation ref without deleting accepted HPO/results commits; preserve Methods ABI, packs and existing DAG contracts.
   - id: CONF-001
     owner: E + F
     dependencies:
