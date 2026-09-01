@@ -594,7 +594,7 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: python_legacy_and_core_executed_web_and_studio_refusals_attested_four_way_perf_pending
+    state: python_legacy_and_core_executed_web_refusal_attested_studio_refresh_pending_after_callable_selection
     input_sha: 4b590f392a677f13c55278d4e0d8e098e56871c5
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
@@ -628,7 +628,7 @@ work_items:
       - source checkout injection, native or dag-ml oracle substitution, fallback, outer artifact tamper and installed-byte tamper all refuse without becoming a skip
       - selected Web 4fcd43d proves its strict-wasm profile and six exact WASM digests but remains required/refused before browser launch because it exposes neither Archive V2 replay nor a single multi-target result contract
       - two independent Web mono-target fits are explicitly rejected as a substitute for the canonical Archive V2 multi-target operation
-      - selected Studio cdb9f46 verifies its content-addressed Rust sidecar and runtime contract, Rust-only renderer default with no implicit Python HTTP fallback, isolated CPython stdio preflight and exclusive Rust listener ownership, but remains required/refused because the selected Python package exposes no studio_scientific_job_v1 callable and the Rust durable terminal bridge is absent
+      - Benchmarks 4b590f3 verifies selected Studio cdb9f46 with its content-addressed Rust sidecar, Rust-only renderer default, isolated CPython stdio preflight and exclusive Rust listener ownership; its callable-absent observation predates selected Python 3b9eb3e and must be refreshed without treating callable presence as execution
       - Studio refusal occurs before request-body parsing, workspace access, job allocation, event publication, durable writes or scientific execution; submission transport, a Python listener, fabricated JSON or direct Core replay outside Studio are rejected substitutes
       - Ruff passes, Mypy passes over 44 source files and the isolated checkout passes 129 tests; the Core launcher wheel remains byte-reproducible at SHA-256 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
     review: >-
@@ -666,7 +666,12 @@ work_items:
       with executed=false because the selected Python callable and Rust
       result/event/cancellation terminal bridge are absent. Benchmarks passes
       129 tests plus Ruff and Mypy; 100 targeted Studio Rust/Electron tests,
-      Rust fmt, strict Clippy and release build pass.
+      Rust fmt, strict Clippy and release build pass. Selected Python advanced
+      afterward to 3b9eb3e, whose isolated wheel now exposes the callable.
+      Therefore the Rust-only/listener evidence remains valid, but the
+      callable-absent first blocker is historical and the Studio readiness row
+      must be regenerated. Studio still cannot pass until Rust resolves the
+      closed request and owns durable terminal completion/cancellation.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
@@ -1403,7 +1408,7 @@ work_items:
     dependencies:
       - STU-002
       - STU-005
-    state: native_submission_cpython_preflight_and_rust_only_renderer_selection_qualified_scientific_executor_pending
+    state: native_submission_python_callable_and_rust_only_renderer_selected_scientific_executor_pending
     input_sha: cdb9f46de1643ab170934481cd9471e54ed3701c
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
@@ -1460,7 +1465,7 @@ work_items:
       - the complete frontend passes 544 files and 3851 Vitest tests, TypeScript, targeted ESLint and the Electron development build
       - the explicit cpython-stdio-v1 acquisition uses a fresh isolated CPython 3.11+ process, a closed JSON response, a three-second deadline and bounded stdout/stderr; interpreter bytes are identity-bound and acquisition is sticky
       - CPython host absence, tamper, timeout, malformed or oversized output, wrong implementation/version/isolation and failed socket.bind audit guard return a typed 503 before body parsing, workspace access, registry mutation, events or durable writes
-      - no current Python callable satisfies the closed Studio submission while preserving Rust ownership, so scientific_execution remains false and even a preflight-ready impostor cannot accept a job
+      - selected Python 3b9eb3e exposes a bounded studio_scientific_job_v1 callable from an isolated wheel, but selected Studio cdb9f46 remains unselected because it does not resolve the current manifest/workspace request into the callable's closed inline matrices and has no durable terminal bridge
       - the selected increment passes 133 Rust tests with one opt-in differential ignored, real CPython 3.11 preflight and bind refusal, 3861 Vitest tests, TypeScript, Electron build and ESLint with zero errors
       - packaged and default development sessions freeze a Rust-only policy before requests; non-native HTTP and WebSocket paths return typed 501 before fetch, URL acquisition, runtime preparation or Python spawn
       - only the visible --enable-python-http-diagnostic switch can assign a packaged renderer session to FastAPI; the exact environment opt-in is development-only and ignored in packages
@@ -1515,9 +1520,15 @@ work_items:
       session rather than individual fallback routes. Independent audit found
       and corrected two direct synthesis fetches, added a whole-source bypass
       gate, synchronized the public contracts and operating docs, and approved
-      cdb9f46 after all gates passed. Scientific execution remains false: the
-      selected callable and Rust durable terminal bridge are separate open
-      work, so LOCK-STUDIO and R2-W2 remain pending.
+      cdb9f46 after all gates passed. Python commit 3b9eb3e subsequently adds
+      the bounded callable and closes ambient dag-ml file side channels,
+      source-checkout injection and process-global seed mutation; its isolated
+      wheel (SHA-256
+      24737550768868df37dc0bf11433c7bd409ef620a8667a88b99641658b5f3e6b)
+      executes dag-ml without subprocess and leaves no durable/cwd writes.
+      Scientific execution nevertheless remains false on cdb9f46: the
+      Rust request resolver and durable result/event/cancellation terminal
+      bridge are still open, so LOCK-STUDIO and R2-W2 remain pending.
     rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
   - id: STU-006
     owner: F
