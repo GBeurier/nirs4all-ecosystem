@@ -218,8 +218,8 @@ work_items:
     dependencies:
       - DATA-001
       - CAP-001
-    state: native_provider_linux_binding_matrix_and_cross_compile_qualified_release_runtime_matrix_pending
-    input_sha: bba0e2e891406077924634f8f39b55440e5875b0
+    state: native_provider_linux_autonomous_wheel_qualified_cross_platform_runtime_matrix_pending
+    input_sha: ed75da9ea58865c185d9db3ace0537956bd01357
     owned_files:
       - dag-ml-data/crates/dag-ml-data-core/
       - dag-ml-data/crates/dag-ml-data-provider/
@@ -228,6 +228,8 @@ work_items:
       - dag-ml-data/docs/contracts/
       - dag-ml-data/scripts/validate_contracts.py
       - dag-ml-data/scripts/smoke_wasm_provider_bindings.cjs
+      - dag-ml-data/scripts/smoke_python_provider_wheel.py
+      - dag-ml-data/scripts/test_provider_wheel_dirty_refusal.py
       - dag-ml-data/scripts/validate_release_metadata.py
       - dag-ml-data/.github/workflows/ci.yml
       - dag-ml-data/docs/STATUS.md
@@ -243,21 +245,22 @@ work_items:
       - Data workspace plus Dag core, C ABI and WASM cross-compile for linux-aarch64, macOS x64/arm64 and Windows MSVC without claiming execution on those targets
       - dag-ml-data bba0e2e validates against selected Dag-ML 4988542 and the same Dag-ML validates back against this exact dag-ml-data checkout
       - release metadata validates as dag-ml-data 0.2.9; all seven crates package and the seven-crate publish-plan dry-run passes
+      - the platform-specific Python provider wheel embeds the C ABI cdylib under the package, verifies a closed SHA-256, size, toolchain, target and clean forty-character source-commit manifest, and never discovers environment, sibling, Cargo or system libraries
+      - a clean Python 3.11 venv installs the wheel without PYTHONPATH or LD_LIBRARY_PATH and executes materialize, all four branch views, identity/targets/features/tensor/fusion, release invalidation and destroy
+      - missing or one-byte-tampered libraries fail with typed pre-ABI errors; tracked and untracked source dirtiness refuse release builds, while two canonical builds are byte-identical
+      - canonical Linux wheel SHA-256 is 65de31eaa0fa4bd944e9dd5aad9abc9069beb72c07299da35254ef90773726cb and its bundled cdylib SHA-256 is 89e1ba9ca31e95fc2670e2b161d513a5520b06bb857bf1a128bcf22d63f9855a
     review: >-
-      A dirty historical `RC-v1-dmd` worktree is explicitly rejected as
-      release evidence and remains untouched. Clean canonical commit bba0e2e
-      advances 4c8ce37 with a fail-closed executable WASM provider smoke and
-      release-metadata ratchet. Full Rust/C ABI, Python 3.11-3.13, Node
-      20/22/24, Linux R and packaging/cross-compile qualification passes, and
-      both directions of `validate_contracts.py` pass against the selected
-      docs-only Dag-ML descendant 4988542.
-      LOCK-DATA remains open honestly: production providers beyond in-memory
-      are still Backlog, the ctypes wheel does not bundle the native cdylib,
-      the published npm artifact is JSON-only while the provider is opt-in,
-      no real macOS/Windows/aarch64 runtime was executed, and the R license
-      warning remains for the release gate. The new DMD and Dag SHAs are not
-      yet advertised by a remote ref, so the final lock cannot claim remote
-      reconstruction.
+      A dirty historical `RC-v1-dmd` worktree remains untouched and rejected
+      as evidence. Canonical commits d5810ed through ed75da9 preserve the
+      earlier Rust/C ABI/WASM matrix and add a reproducible autonomous Linux
+      provider wheel. Independent audit found and closed an initial provenance
+      hole where untracked sources were ignored, then rebuilt and smoked the
+      exact canonical artifact. CI now contains concrete macOS arm64 and
+      Windows x64 wheel lanes, but only Linux manylinux_2_34_x86_64 has local
+      runtime evidence. LOCK-DATA remains open: the wrapped provider is still
+      the in-memory conformance implementation rather than domain storage,
+      no real macOS/Windows/aarch64 runtime was executed, no autonomous sdist
+      is promised, and selected DMD/Dag SHAs are not advertised by remote refs.
     rollback: select the previous advertised dag-ml-data ref without modifying the dirty historical RC worktree or any user data.
   - id: FMT-001
     owner: C + G
