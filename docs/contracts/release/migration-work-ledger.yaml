@@ -156,22 +156,29 @@ work_items:
     owner: G
     dependencies:
       - ARCH-001
-    state: evidence_accepted_not_selected_in_current_python_rc
-    input_sha: bd7fba454f5f
+    state: strict_dual_orchestration_oracle_selected_in_current_python_rc
+    input_sha: 71dce9d9ecfc9e872393b96f19cae8aded34df41
     owned_files: []
     acceptance_tests:
       - nirs4all pytest -q tests/unit/api/test_dual_run_oracle.py
       - native real-probe checks finite CV/fold OOF metrics before temporary legacy execution
       - wheel-installed compatibility ledger resolves outside the checkout
+      - compatibility-ledger NaN and positive or negative Infinity tolerances refuse before comparison
     review: >-
       Sol-xhigh ACCEPT: strict native-first orchestration dual-run compares ledger-bounded
       CV/fold metrics, winner/splits/OOF evidence and fails closed on missing/non-finite data.
       Legacy output is isolated in a temporary workspace. The exposed PLS operator remains
       Python sklearn-hosted; this item proves orchestration parity only, not Methods/libn4m
       numerical execution, which remains tracked by HPO/native API integration. The accepted
-      evidence commit bd7fba45 and implementing descendant dd93e9f6 are not ancestors of the
-      selected Python RC 6565c8ed; that RC still refuses engine="dual". The proof therefore
-      remains valid branch evidence but is not reconstructible from the current train selection.
+      historical evidence commits bd7fba45/dd93e9f6 were minimally reconciled
+      onto the selected 6565c8ed lineage without cherry-picking its obsolete
+      posture. Corrective descendants reject non-finite ledger tolerances and
+      publish the already-supported native engine in the machine-readable
+      registry. Current Python RC 71dce9d9 selects this result. Independent
+      audit executed the real in-process dual probe, inspected an exact wheel
+      containing the ledger and approved promotion; 520 API/registry tests,
+      Ruff and targeted Mypy pass. No publication or remote advertisement is
+      claimed.
     rollback: remove only the dual-run surface/tests/docs; preserve Python 0.12.0 oracle and existing fixtures
   - id: CAP-001
     owner: capability-ledger
@@ -1589,8 +1596,8 @@ work_items:
       - CAP-001
       - DATA-001
       - MTH-001
-    state: evidence_accepted_not_selected_in_current_python_rc
-    input_sha: bd7fba454f5f5a5e644941061b98d2c45f15fafd
+    state: selected_bounded_native_first_dual_oracle_methods_runtime_parity_pending
+    input_sha: 71dce9d9ecfc9e872393b96f19cae8aded34df41
     owned_files:
       - nirs4all/nirs4all/api/run.py
       - nirs4all/nirs4all/api/result.py
@@ -1603,14 +1610,21 @@ work_items:
       - installed-wheel ledger resource is byte-synchronized with docs and resolved outside checkout
       - real native PLS/KFold dual probe passed with exact OOF coverage, winner/split/y_pred and ledger bands
       - unsupported capabilities, calibration/tuning, non-exact types/data and native result environment refuse before legacy fallback
+      - native executes and exposes complete finite evidence before the temporary legacy workspace is allocated; cleanup holds on success, refusal and mismatch
+      - run.engine registry and user documentation enumerate legacy, dag-ml, native and dual consistently
     review: >-
       Sol-xhigh ACCEPT. Scope is explicitly partial: NumPy regression tuple,
       exact KFold(shuffle=False), exact PLSRegression and strict no-artifact
-      options only. The accepted evidence commit bd7fba45 and implementing
-      descendant dd93e9f6 are not ancestors of selected Python RC 6565c8ed,
-      whose resolve_engine still refuses engine="dual". PAR-002 must be
-      reconciled onto the selected lineage and requalified before it can close
-      a current-train gate.
+      options only. Python RC 71dce9d9 now contains the minimal reconciled
+      implementation plus finite-tolerance and native-registry corrections.
+      The native DAG-ML leg is executed and validated first; unsupported or
+      incomplete native evidence never starts legacy. The explicit legacy
+      oracle lives only in a removed TemporaryDirectory and the native result
+      is returned after an exact/ledger-bounded semantic comparison. The
+      independently built HEAD wheel SHA-256 is
+      cda2bf974c087562d3a7e5872a7a61912721f35ebd187ee1632a982a1ec58746.
+      This remains orchestration parity over Python sklearn PLS, not proof of
+      Methods/libn4m numerical execution; that broader integration stays open.
     rollback: remove only the dual-run implementation/resource/docs/tests; preserve engine=legacy and native single-run behavior.
   - id: PROV-001
     owner: C
