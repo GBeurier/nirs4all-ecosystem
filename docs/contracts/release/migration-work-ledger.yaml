@@ -595,7 +595,7 @@ work_items:
       - PAR-001
       - CAP-001
     state: python_legacy_and_core_executed_web_and_studio_refusals_attested_four_way_perf_pending
-    input_sha: a2598184c73284592634abcb0a6a7fbfa01bce8d
+    input_sha: 4b590f392a677f13c55278d4e0d8e098e56871c5
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
@@ -628,7 +628,7 @@ work_items:
       - source checkout injection, native or dag-ml oracle substitution, fallback, outer artifact tamper and installed-byte tamper all refuse without becoming a skip
       - selected Web 4fcd43d proves its strict-wasm profile and six exact WASM digests but remains required/refused before browser launch because it exposes neither Archive V2 replay nor a single multi-target result contract
       - two independent Web mono-target fits are explicitly rejected as a substitute for the canonical Archive V2 multi-target operation
-      - selected Studio f50a0bd verifies its content-addressed Rust sidecar and runtime contract, isolated CPython stdio preflight and exclusive Rust listener ownership but remains required/refused because the selected Python package exposes no studio_scientific_job_v1 callable and the Rust durable terminal bridge is absent
+      - selected Studio cdb9f46 verifies its content-addressed Rust sidecar and runtime contract, Rust-only renderer default with no implicit Python HTTP fallback, isolated CPython stdio preflight and exclusive Rust listener ownership, but remains required/refused because the selected Python package exposes no studio_scientific_job_v1 callable and the Rust durable terminal bridge is absent
       - Studio refusal occurs before request-body parsing, workspace access, job allocation, event publication, durable writes or scientific execution; submission transport, a Python listener, fabricated JSON or direct Core replay outside Studio are rejected substitutes
       - Ruff passes, Mypy passes over 44 source files and the isolated checkout passes 129 tests; the Core launcher wheel remains byte-reproducible at SHA-256 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
     review: >-
@@ -653,15 +653,20 @@ work_items:
       Benchmarks passes 126 tests plus Ruff and Mypy; Web typecheck, strict
       tests and production build pass. A Web aggregate replay surface and the
       Studio scientific executor are still required before the four-way gate
-      can execute. Commit a259818 then records the selected Studio f50a0bd
-      release sidecar and runtime-contract digests plus a live Rust-only
-      listener probe. Its bounded CPython stdio preflight is isolated and
-      cannot bind a network socket, but nirs4all 0.10.3 has no callable
-      studio_scientific_job_v1 and the Rust result/event/cancellation terminal
-      bridge is absent. The lane therefore remains required/refused with
-      executed=false; 129 Benchmarks tests, Ruff, Mypy and the targeted Studio
-      Rust/Electron gates pass. This evidence is tied to f50a0bd and must be
-      regenerated when a later Studio commit becomes selected.
+      can execute. Commit 4b590f3 refreshes that evidence on selected Studio
+      cdb9f46. The exact release sidecar SHA-256 is
+      ff7a45f69d67c8193d587d4c3ac8c373a044d65e49903c687d1f9fef3265ce5f
+      and the runtime-contract SHA-256 is
+      e642a4e9b18a7477c952e50bd263ced2a11eab204db4a97aecd41ebe3dc59d7b.
+      The live sidecar is the sole listener; its capabilities freeze the
+      Rust-only renderer default, absence of implicit Python HTTP fallback and
+      fail-closed unmigrated routes. Isolated CPython cannot bind a listener
+      and leaves no child, while invalid scientific submission refuses with a
+      typed 503 before parsing or mutation. The lane remains required/refused
+      with executed=false because the selected Python callable and Rust
+      result/event/cancellation terminal bridge are absent. Benchmarks passes
+      129 tests plus Ruff and Mypy; 100 targeted Studio Rust/Electron tests,
+      Rust fmt, strict Clippy and release build pass.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
@@ -1578,8 +1583,10 @@ work_items:
       gate prevents future direct /api fetch bypasses. The selected increment
       passes the full 3877-test Vitest suite, TypeScript, ESLint, Rust fmt,
       strict Clippy, 133 Rust tests with one ignored probe and Electron build.
-      The previous f50a0bd sidecar-readiness artifact is historical and must be
-      regenerated for cdb9f46 before GATE-001 can use the new selection.
+      Benchmarks commit 4b590f3 regenerates the sidecar-readiness artifact for
+      this exact cdb9f46 selection. It remains a required refusal rather than a
+      scientific execution witness until the callable and durable terminal
+      bridge are selected.
     rollback: revert only the lazy lifecycle/IPC/UI readiness adapter; preserve sidecar state and user Python environments.
   - id: W1-001
     owner: G
