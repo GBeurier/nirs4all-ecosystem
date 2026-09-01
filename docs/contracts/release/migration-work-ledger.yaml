@@ -536,7 +536,7 @@ work_items:
       - SAVE-001
       - MTH-002
     state: complete
-    input_sha: 0e920ecfcb1e32dca333dc31ad7926490fb61650
+    input_sha: 1dd67bed2b12f2290103640c838e96274f0a39d0
     owned_files:
       - nirs4all-core/bindings/rust/nirs4all/src/archive_v1.rs
       - nirs4all-core/bindings/rust/nirs4all/Cargo.toml
@@ -544,8 +544,10 @@ work_items:
       - nirs4all-core/bindings/rust/nirs4all/tests/parity/
       - nirs4all-core/bindings/rust/nirs4all/LICENSES/
       - nirs4all/nirs4all/api/predict.py
+      - nirs4all/nirs4all/api/session.py
       - nirs4all/nirs4all/pipeline/dagml/core_archive_replay.py
       - nirs4all/tests/unit/api/test_core_archive_predict.py
+      - nirs4all/tests/unit/api/test_core_archive_session.py
     acceptance_tests:
       - public reader/writer strictly validate stored archive V1 ZIP/manifest/inventory/reference/workspace rules before payload materialization and never replace an existing output
       - two normative positives and all 24 frozen refusals are materialized through the public reader from a local hash-provenance mirror
@@ -553,6 +555,7 @@ work_items:
       - Python binding exposes strict Methods Archive V2/V3 replay through py.allow_threads; Rust passed 64 tests and Python passed 91 with one skip
       - real 0.3.22 abi3 wheel imported both entrypoints (SHA-256 b7a1de538208ec61f8db94977239410e0b5e71c1fccf21f26f335fc1edbbe90e); a real pre-bridge wheel and missing extension fail closed
       - nirs4all predict detects exact Core V2 manifests before any PipelineRunner construction and directly invokes replay_methods_archive_v2; V3, explicit legacy, old/missing Core and invalid outputs fail closed while non-Core inputs retain the historical path (8 focused API tests)
+      - load_session detects and validates Core V2 before BundleLoader, returns a native session whose prediction never constructs PipelineRunner, and refuses V2 retrain plus V3 prediction semantics; the frozen predict/load_session signatures and 41 API contract tests pass
     review: >-
       Sol-xhigh ACCEPT for the strict stored-ZIP native archive reader/writer. Core
       commits 8ac95bbb and 39b71b47 add the Methods-only V2/V3 replay bridge and
@@ -560,9 +563,11 @@ work_items:
       libn4m replay was available, and serialized_model_predict remains false:
       nirs4all commit 0e920ecf adds the strict V2 public predict adapter without
       constructing PipelineRunner and refuses V3 as full-refit/retrain rather
-      than mislabelling it serialized prediction. The adapter has contract-fake
-      success coverage, but no real valid archive plus local libn4m positive
-      replay was available; SAVE-002 run-save-load-predict remains open.
+      than mislabelling it serialized prediction. Commits d304ae1d and 1dd67bed
+      extend the same fail-closed bridge to load_session/Session while preserving
+      both frozen public signatures. The adapters have contract-fake success
+      coverage, but no real valid archive plus local libn4m positive replay was
+      available; SAVE-002 run-save-load-predict remains open.
     rollback: remove only Core archive/store package additions and mirrored synthetic contract corpus; retain dag-ml contract, legacy source archives and user data unchanged.
   - id: STORE-002
     owner: D + F
