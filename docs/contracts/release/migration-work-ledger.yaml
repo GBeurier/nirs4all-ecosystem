@@ -414,7 +414,7 @@ work_items:
       - ARCH-001
       - CAP-001
     state: complete
-    input_sha: c0cbae31d1387b5332f3793dcdf5bab1f4d1e6f3
+    input_sha: c1e1e5836aff0d3d2dcf81379204386e03dffa00
     owned_files:
       - nirs4all-studio/docs/contracts/studio-v1/
       - nirs4all-studio/scripts/verify-studio-v1-contract.py
@@ -424,7 +424,16 @@ work_items:
       - physical route/OpenAPI/WS/readiness/jobs/cancellation/error/workspace snapshots validate in project FastAPI 0.128 and system FastAPI 0.139
       - focused contract suite passed 32/32; alternate runtime passed 31 with one expected portability skip
       - direct full backend equivalent passed 2334 with 59 skips; privacy scanner, exception ledger and schema mutation tests fail closed
-    review: Sol-xhigh ACCEPT. This freezes the legacy FastAPI compatibility baseline only; it does not provide a Rust sidecar or selectable native Studio runtime. npm runner is unavailable in WSL UNC mode, while the equivalent direct pytest gate passed.
+      - RC restoration preserves every frozen route and OpenAPI property; the sole route addition is POST /api/workspace/migrate/report-preview and 61 properties are additive
+      - restored conversion/dataset compatibility, concurrent lazy import and contract gates passed 74 focused pytest cases with one portability skip; TypeScript and 29 focused Vitest cases passed
+    review: >-
+      Sol-xhigh ACCEPT. This freezes the legacy FastAPI compatibility baseline only;
+      it does not provide a Rust sidecar or selectable native Studio runtime. An
+      independent RC re-review at c1e1e58 ACCEPTS zero removed paths/properties
+      relative to the frozen b22c4c8 oracle, restored conversion/dataset fields,
+      best-effort activation guards and serialized lazy imports. The unique new
+      migration-preview route is additive. This acceptance does not close
+      LOCK-STUDIO or any Rust-only cutover claim.
     rollback: remove only Studio contract fixtures/schemas/verifier/tests and package script; no route, Electron package, workspace or user-data migration was changed.
   - id: STU-002
     owner: F
@@ -527,26 +536,41 @@ work_items:
       - SAVE-001
       - MTH-002
     state: complete
-    input_sha: 83c246cff77b37ed321f14abf058564fccf17daa
+    input_sha: 0e920ecfcb1e32dca333dc31ad7926490fb61650
     owned_files:
       - nirs4all-core/bindings/rust/nirs4all/src/archive_v1.rs
       - nirs4all-core/bindings/rust/nirs4all/Cargo.toml
       - nirs4all-core/Cargo.lock
       - nirs4all-core/bindings/rust/nirs4all/tests/parity/
       - nirs4all-core/bindings/rust/nirs4all/LICENSES/
+      - nirs4all/nirs4all/api/predict.py
+      - nirs4all/nirs4all/pipeline/dagml/core_archive_replay.py
+      - nirs4all/tests/unit/api/test_core_archive_predict.py
     acceptance_tests:
       - public reader/writer strictly validate stored archive V1 ZIP/manifest/inventory/reference/workspace rules before payload materialization and never replace an existing output
       - two normative positives and all 24 frozen refusals are materialized through the public reader from a local hash-provenance mirror
       - source and extracted packages both passed 31 Rust tests; archive dag-ml validator/unittests and full validate_contracts passed
-    review: Sol-xhigh ACCEPT. Scope is a strict stored-ZIP native archive reader/writer; it has no native execution engine, so predict returns UnsupportedCapability and this does not satisfy SAVE-002 run-save-load-predict.
+      - Python binding exposes strict Methods Archive V2/V3 replay through py.allow_threads; Rust passed 64 tests and Python passed 91 with one skip
+      - real 0.3.22 abi3 wheel imported both entrypoints (SHA-256 b7a1de538208ec61f8db94977239410e0b5e71c1fccf21f26f335fc1edbbe90e); a real pre-bridge wheel and missing extension fail closed
+      - nirs4all predict detects exact Core V2 manifests before any PipelineRunner construction and directly invokes replay_methods_archive_v2; V3, explicit legacy, old/missing Core and invalid outputs fail closed while non-Core inputs retain the historical path (8 focused API tests)
+    review: >-
+      Sol-xhigh ACCEPT for the strict stored-ZIP native archive reader/writer. Core
+      commits 8ac95bbb and 39b71b47 add the Methods-only V2/V3 replay bridge and
+      real-wheel compatibility refusal evidence. No valid archive plus local
+      libn4m replay was available, and serialized_model_predict remains false:
+      nirs4all commit 0e920ecf adds the strict V2 public predict adapter without
+      constructing PipelineRunner and refuses V3 as full-refit/retrain rather
+      than mislabelling it serialized prediction. The adapter has contract-fake
+      success coverage, but no real valid archive plus local libn4m positive
+      replay was available; SAVE-002 run-save-load-predict remains open.
     rollback: remove only Core archive/store package additions and mirrored synthetic contract corpus; retain dag-ml contract, legacy source archives and user data unchanged.
   - id: STORE-002
     owner: D + F
     dependencies:
       - STORE-001
       - STU-001
-    state: native_run_pipeline_ranked_chain_results_summary_and_discovery_query_policies_published_pending_full_repository_parity
-    input_sha: 24c06c22e4e5e827d48a32034ab14a06f019b78c
+    state: native_run_pipeline_ranked_chain_results_summary_discovery_and_run_detail_policies_published_pending_full_repository_parity
+    input_sha: 55688872a9b1b7457fb52705310d7293316c8134
     owned_files:
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_results_summary_v1.json
@@ -574,6 +598,7 @@ work_items:
       - separate results-summary policy v1 (SHA-256 e497e7db0a5043626e5e1a64ecb14bce5523ac12c06193c982b8f2eef8ff7d70) preserves read-v1 bytes while publishing the full paged source projection, fixed bare n=5 surface, chain_id source order, one metric-direction registry, refit synthesis, selection, JSON/null serialization and variant-param merge
       - query_top_chains now applies chain_id ASC as a stable score-tie breaker; unknown metrics use the results-summary policy default higher-is-better at every summary ranking stage
       - studio_run_discovery_query_v1 publishes the exact source unified/manifests/parquet and refresh true/false scanner query allowlist with immutable Store-v5 read semantics, duplicate/unknown rejection and no fallback (SHA-256 354ec768f883ec6f4a1fa3831cf650f030920b08792dbe4e92c757478e129637)
+      - studio_run_detail_v1 publishes the deterministic Store-owned run/pipeline/log projection with recursive non-finite normalization, immutable read and fail-closed schema/journal/change/JSON checks (contract SHA-256 91733eab5de6ace6f3bb3e6534c46daf4055dcc343f26da0d85b7c8b30c82e27)
     review: >-
       Phase 2 evidence: nirs4all commits 56a9eb1e, ece5d7fd, 0288b1e5,
       09702901 and b7a5ff3e extend the public v5 contract
@@ -592,14 +617,17 @@ work_items:
       FastAPI retry. Local-volume SQLite is the supported surface; Windows UNC/device
       paths remain refused pending packaging and real-share evidence. This is not a
       scanner/repository cutover and does not satisfy R2 or any R3/R4 drop gate.
+      Owner commit 55688872 adds only the Store-owned run-detail projection;
+      dataset mapping, CV/runtime derivation, rerun readiness, results and legacy
+      manifest composition remain explicitly outside this slice.
     rollback: remove only the published contract/resource/test; do not alter existing workspace databases or conversion outputs.
   - id: STU-005
     owner: D + F
     dependencies:
       - STU-001
       - STORE-002
-    state: native_run_pipeline_ranked_chain_dataset_links_results_summary_and_discovery_queries_ready_pending_full_repository_parity
-    input_sha: 05ed4e7f1c068804b0466036bc43a49e5df29909
+    state: native_readers_include_run_detail_projection_pending_http_composition_and_full_repository_parity
+    input_sha: cdf0c9ffc3d4ab08a22c799529af61fa28b70f53
     owned_files:
       - nirs4all-studio/sidecar/Cargo.toml
       - nirs4all-studio/sidecar/Cargo.lock
@@ -622,7 +650,7 @@ work_items:
       - nirs4all-studio/src/types/runs.ts
     acceptance_tests:
       - direct native GET /api/workspaces/:id/runs returns the complete Python-written Store v5 run-summary fixture without a configured Python plugin host
-      - Electron selects only the bare GET run-summary endpoint; source/refresh scanner queries, enriched/detail routes and mutations remain FastAPI-owned, and a native 409 compatibility refusal never retries FastAPI
+      - Electron selects bare and strict allowlisted source/refresh run-summary queries; enriched/detail routes and mutations remain FastAPI-owned, and a native 409 compatibility refusal never retries FastAPI
       - the native reader is immutable and fail-closed for live SQLite journals, non-v5 schemas, incomplete projections, absent stores, and out-of-range requests
       - direct native bare GET /api/workspaces/:id/results returns the exact Python-written Store v5 pipeline-summary fixture, including nullable values, total count and has_more; query-bearing results requests are rejected before native routing
       - Electron selects only the filter-free pipeline-summary endpoint; query-bearing results, chain ranking, predictions and every mutation remain FastAPI-owned, and a native refusal never retries FastAPI
@@ -637,6 +665,7 @@ work_items:
       - the summary route rejects query-bearing requests before routing, returns 405 for mutations, fails closed for missing/non-v5/busy stores, exposes no configurable n surface, and never retries or falls back to Python/FastAPI after native selection
       - refit-only append marking matches the Python oracle for mixed CV/final payloads, while persisted Python NaN and infinities are recursively normalized to null without discarding finite JSON siblings
       - direct native run discovery accepts only source unified/manifests/parquet and refresh true/false, matches seven exact Python goldens, rejects duplicate/unknown values before selection, and returns Store-v5 compatibility errors without FastAPI retry
+      - Rust consumes studio_run_detail_v1 and its byte-identical golden with 53 unit and 5 contract tests, but deliberately leaves GET run detail on FastAPI until dataset/CV/runtime/rerun/results/legacy composition is contracted
     review: >-
       Studio commit d1260b1 selects bounded direct sidecar readers only for bare Store
       v5 run-summary and filter-free pipeline-summary GET requests, verifying exact
@@ -658,6 +687,11 @@ work_items:
       Studio 05ed4e7 consumes owner commit 24c06c22's byte-identical discovery
       policy and routes the strict source/refresh allowlist natively; scan POST,
       enriched/detail and repository surfaces remain FastAPI-owned.
+      Studio cdf0c9f consumes the byte-identical owner run-detail projection as
+      a strict immutable Rust reader without selecting the HTTP route. This is
+      an honest prerequisite only: the missing response-composition contracts
+      block cutover, so transport still selects FastAPI and no retry boundary is
+      weakened.
       Studio commit e7189d0 adds the bounded,
       read-only dataset-link identity projection required for future mapping without
       exposing or mutating scientific loader configuration. The selected readers
