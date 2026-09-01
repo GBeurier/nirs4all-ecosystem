@@ -603,6 +603,36 @@ work_items:
       Methods cross-site synchronization, public artifacts, publication and
       deployment remain open; no R1/R2/R3/V1 announcement is eligible yet.
     rollback: revert generated public content and deployment manifests atomically; no release, site deployment or public announcement without authorization.
+  - id: DOC-WEB-001B
+    owner: H + F
+    dependencies:
+      - DOC-WEB-001
+      - REL-002
+    state: cockpit_lock_driven_staging_complete_publication_and_cross_site_sync_pending
+    input_sha: 669cc81ceb4eebfc1b5249dec20fb91caa3ac28a
+    owned_files:
+      - nirs4all-cockpit/.github/workflows/ci.yml
+      - nirs4all-cockpit/cockpit/release_staging.py
+      - nirs4all-cockpit/data/release-staging.json
+      - nirs4all-cockpit/docs/release-staging.md
+      - nirs4all-cockpit/ops/release-staging/
+      - nirs4all-cockpit/scripts/release_staging.py
+      - nirs4all-cockpit/tests/test_release_staging.py
+    acceptance_tests:
+      - Cockpit release staging consumes only explicit validated manifest and lock inputs and emits a deterministic public-safe R2 projection
+      - the current incomplete lock remains R2 in progress, exposes no artifact or download and cannot be represented as a complete or published release
+      - absolute paths, worktree paths, private URLs, duplicate keys, incomplete component selections and projection drift are rejected
+      - direct CLI execution from an external directory resolves the selected checkout rather than a stale editable cockpit package
+      - the clean selected checkout passes 164 tests, Ruff, Mypy, target validation, Node syntax validation and the headless Chrome DOM smoke
+    review: >-
+      Cockpit commits b90d9be and 669cc81 add the separate closed
+      n4a.cockpit-release-staging/v1 projection without changing the existing
+      public snapshot or dashboard application. An independent rerun confirmed
+      all 164 tests and Ruff; the hermetic CLI regression now passes even with
+      an unrelated stale editable package. The projection remains staging-only:
+      cross-site synchronization, public artifacts, publication and deployment
+      are still open and no release announcement is eligible.
+    rollback: remove only the additive release-staging projection, CLI, tests and CI gate; retain the existing public cockpit snapshot and dashboard.
   - id: MTH-DOC-001
     owner: H + B
     dependencies:
@@ -1358,8 +1388,8 @@ work_items:
     dependencies:
       - STU-002
       - STU-001
-    state: rust_control_plane_native_session_python_scientific_plugin_lazy_transitional
-    input_sha: 2490396886a4a90e903991fd0bbe1d87813db373
+    state: r2_native_product_runtime_packaging_qualified_cross_platform_ci_and_scientific_host_execution_pending
+    input_sha: e6dc293756c7c4ff291c69d8a09dcffd2a2a18ad
     owned_files:
       - nirs4all-studio/electron/native-session-lifecycle.ts
       - nirs4all-studio/electron/scientific-plugin-lifecycle.ts
@@ -1369,21 +1399,36 @@ work_items:
       - nirs4all-studio/src/lib/websocket.ts
       - nirs4all-studio/src/context/MlReadinessContext.tsx
       - nirs4all-studio/src/types/electron.d.ts
+      - nirs4all-studio/electron/packaged-runtime-contract.ts
+      - nirs4all-studio/scripts/native-runtime-contract.cjs
+      - nirs4all-studio/scripts/build-native-sidecar.cjs
+      - nirs4all-studio/scripts/build-archive-standalone.cjs
+      - nirs4all-studio/scripts/smoke-archive-standalone.cjs
+      - nirs4all-studio/.github/workflows/ci.yml
+      - nirs4all-studio/.github/workflows/release-unified.yml
     acceptance_tests:
       - Electron session starts the Rust sidecar and creates the window without starting Uvicorn or requiring a Python environment
-      - legacy HTTP and WebSocket URL acquisition starts the compatibility/scientific process single-flight and returns only after readiness
+      - library/plugin-host acquisition is explicit and single-flight; it never owns the product HTTP port, scheduler, store, jobs or renderer transport
       - control-plane and scientific readiness, restart and interpreter-change lifecycles are separate; changing Python never restarts the sidecar
-      - selected native requests never retry FastAPI, while unmigrated requests explicitly acquire the compatibility process and fail closed on acquisition errors
+      - selected native requests never retry FastAPI; an unavailable or invalid CPython runtime disables the bounded library/plugin host without changing Rust backend ownership
       - selected Studio RC passes TypeScript, targeted ESLint and 47 focused Vitest tests after integration
+      - packaged startup verifies a content-addressed Rust sidecar contract before opening the renderer; a missing or altered sidecar fails closed without starting Python
+      - missing or altered bundled CPython disables only the explicit library/plugin host while the Rust backend remains active and no Python HTTP backend is spawned
+      - the selected Linux package launches under Xvfb with the Rust sidecar as the sole product-port owner and no Python or Uvicorn process
+      - full Studio qualification passes 3861 Vitest tests, TypeScript, ESLint with zero errors, 126 Rust tests with one ignored probe, rustfmt and Clippy with warnings denied
     review: >-
       Commit 2490396 removes eager BackendManager startup from Electron and
       preserves legacy backend:* IPC as lazy aliases while publishing explicit
       control:* and scientific:* roles. Commit 94688d8 synchronizes Studio
-      lifecycle and packaging documentation. This is native-first process
-      ownership, not full native route parity: unmigrated scientific and
-      compatibility routes still start FastAPI explicitly. STU-006 and
-      LOCK-STUDIO remain incomplete until STU-004 migrates every HTTP/WS/job
-      path and release installers prove the Rust-only product surface.
+      lifecycle and packaging documentation. Canonical R2 packaging commit
+      e6dc293 adds the content-addressed all-in-one runtime contract and makes
+      the verified Rust sidecar mandatory before renderer startup. CPython is
+      now bounded to the library/plugin-host role: absence or tamper disables
+      that host while Rust remains active, with no backend fallback. A real
+      Linux Electron package, archive smoke and Xvfb launch passed with the
+      sidecar as sole product-port owner. Windows, macOS and heavy all-in-one
+      CPython archives remain CI-only qualifications; the scientific executor,
+      remaining plugin routes, LOCK-STUDIO and R2-W2 remain open.
     rollback: revert only the lazy lifecycle/IPC/UI readiness adapter; preserve sidecar state and user Python environments.
   - id: W1-001
     owner: G
