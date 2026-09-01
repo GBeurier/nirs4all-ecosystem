@@ -440,12 +440,16 @@ work_items:
     dependencies:
       - STU-001
     state: complete
-    input_sha: c0cbae31d1387b5332f3793dcdf5bab1f4d1e6f3
+    input_sha: dc1c78028eb93be173e27e4f3d86a97bfa27798a
     owned_files:
       - nirs4all-studio/sidecar/
+      - nirs4all-studio/scripts/build-native-sidecar.cjs
+      - nirs4all-studio/.github/workflows/ci.yml
+      - nirs4all-studio/.github/workflows/release-unified.yml
     acceptance_tests:
       - Rust sidecar health/readiness/job/cancellation/WS protocol tests passed (15), including fragmented HTTP, bounded resources, WS upgrade validation and fixture correlations
       - release build and loopback readiness smoke passed; STU-001 frozen-contract verifier and targeted pytest passed
+      - installer CI builds the target-specific sidecar after backend cleanup, verifies staged and unpacked binaries, and runs readiness smoke when runner architecture matches; Node/YAML structure and focused packaging tests pass
     review: >-
       Sol-xhigh ACCEPT. This is an opt-in R1 skeleton with no Python backend,
       scientific/store implementation, Electron switch, legacy route serving, or full-parity
@@ -510,6 +514,10 @@ work_items:
       plugin host was configured; the route neither imports nor executes Python. Rust
       format/clippy, 32 unit tests, 5 contracts, the native Studio gate (37 tests), lint, and
       3,733 frontend tests passed. Scanner/store and scientific-route parity remain legacy.
+      Follow-up RC commit dc1c780 closes the packaging omission that allowed
+      Windows, macOS and Linux installers to run electron-builder without a
+      native sidecar. Authenticode, Apple signing and notarization remain
+      external secret-backed release gates and are not simulated locally.
     rollback: remove the standalone sidecar directory only; Studio legacy FastAPI/Electron paths and user workspaces are untouched.
   - id: SAVE-001
     owner: D
@@ -574,8 +582,8 @@ work_items:
     dependencies:
       - STORE-001
       - STU-001
-    state: native_run_pipeline_ranked_chain_results_summary_discovery_and_run_detail_policies_published_pending_full_repository_parity
-    input_sha: 55688872a9b1b7457fb52705310d7293316c8134
+    state: native_run_pipeline_ranked_chain_results_summary_discovery_and_run_detail_inputs_published_pending_http_policy_owners
+    input_sha: cb12f46fc19032be5e31113f3a6151caabd246f7
     owned_files:
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_results_summary_v1.json
@@ -604,6 +612,7 @@ work_items:
       - query_top_chains now applies chain_id ASC as a stable score-tie breaker; unknown metrics use the results-summary policy default higher-is-better at every summary ranking stage
       - studio_run_discovery_query_v1 publishes the exact source unified/manifests/parquet and refresh true/false scanner query allowlist with immutable Store-v5 read semantics, duplicate/unknown rejection and no fallback (SHA-256 354ec768f883ec6f4a1fa3831cf650f030920b08792dbe4e92c757478e129637)
       - studio_run_detail_v1 publishes the deterministic Store-owned run/pipeline/log projection with recursive non-finite normalization, immutable read and fail-closed schema/journal/change/JSON checks (contract SHA-256 91733eab5de6ace6f3bb3e6534c46daf4055dcc343f26da0d85b7c8b30c82e27)
+      - studio_run_detail_http_v1 publishes exact Store/splitter/results inputs and ownership boundaries (SHA-256 5661f99609e747bd581ecfd2be11306daadf004358cb494939978ca985f49e15), while route_selection remains forbidden until Studio/manifest policies exist
     review: >-
       Phase 2 evidence: nirs4all commits 56a9eb1e, ece5d7fd, 0288b1e5,
       09702901 and b7a5ff3e extend the public v5 contract
@@ -625,14 +634,17 @@ work_items:
       Owner commit 55688872 adds only the Store-owned run-detail projection;
       dataset mapping, CV/runtime derivation, rerun readiness, results and legacy
       manifest composition remain explicitly outside this slice.
+      Owner commit cb12f46f adds exact splitter and result inputs, but correctly
+      assigns linked-dataset mapping, CV/runtime/rerun policy and legacy manifest
+      discovery to their actual owners instead of moving them into Store code.
     rollback: remove only the published contract/resource/test; do not alter existing workspace databases or conversion outputs.
   - id: STU-005
     owner: D + F
     dependencies:
       - STU-001
       - STORE-002
-    state: native_readers_include_run_detail_projection_pending_http_composition_and_full_repository_parity
-    input_sha: cdf0c9ffc3d4ab08a22c799529af61fa28b70f53
+    state: native_run_detail_contract_consumed_route_forbidden_pending_owner_policies
+    input_sha: 5d00f62c8b7ba11f49da4bfc3765cf1f36d00dd2
     owned_files:
       - nirs4all-studio/sidecar/Cargo.toml
       - nirs4all-studio/sidecar/Cargo.lock
@@ -671,6 +683,7 @@ work_items:
       - refit-only append marking matches the Python oracle for mixed CV/final payloads, while persisted Python NaN and infinities are recursively normalized to null without discarding finite JSON siblings
       - direct native run discovery accepts only source unified/manifests/parquet and refresh true/false, matches seven exact Python goldens, rejects duplicate/unknown values before selection, and returns Store-v5 compatibility errors without FastAPI retry
       - Rust consumes studio_run_detail_v1 and its byte-identical golden with 53 unit and 5 contract tests, but deliberately leaves GET run detail on FastAPI until dataset/CV/runtime/rerun/results/legacy composition is contracted
+      - Rust strictly validates the byte-identical studio_run_detail_http_v1 ownership/cutover policy; 27 transport tests prove run detail stays exclusively FastAPI, propagates 404 and never probes the sidecar
     review: >-
       Studio commit d1260b1 selects bounded direct sidecar readers only for bare Store
       v5 run-summary and filter-free pipeline-summary GET requests, verifying exact
@@ -697,6 +710,11 @@ work_items:
       an honest prerequisite only: the missing response-composition contracts
       block cutover, so transport still selects FastAPI and no retry boundary is
       weakened.
+      Studio 5d00f62 consumes the HTTP-input contract without activating a route:
+      owner splitter output and runtime columns are still absent from the Store
+      projection, dataset/runtime policies are unpublished, and Electron lacks a
+      per-workspace Store-v5 preselection proof. Changing the contract's
+      route_selection from forbidden fails closed.
       Studio commit e7189d0 adds the bounded,
       read-only dataset-link identity projection required for future mapping without
       exposing or mutating scientific loader configuration. The selected readers
