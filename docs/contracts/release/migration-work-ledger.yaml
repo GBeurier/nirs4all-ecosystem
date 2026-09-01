@@ -562,28 +562,32 @@ work_items:
       - source and extracted packages both passed 31 Rust tests; archive dag-ml validator/unittests and full validate_contracts passed
       - Python binding exposes strict Methods Archive V2/V3 replay through py.allow_threads; Rust passed 64 tests and Python passed 91 with one skip
       - real 0.3.22 abi3 wheel imported both entrypoints (SHA-256 b7a1de538208ec61f8db94977239410e0b5e71c1fccf21f26f335fc1edbbe90e); a real pre-bridge wheel and missing extension fail closed
+      - real 0.3.22 abi3 wheel replayed a two-feature Archive V2 through Methods aabdecf and libn4m, preserving predict.0/predict.1 and finite values; one-byte N4MM tampering was refused on inventory hash/size mismatch (Core fd89d75)
       - nirs4all predict detects exact Core V2 manifests before any PipelineRunner construction and directly invokes replay_methods_archive_v2; V3, explicit legacy, old/missing Core and invalid outputs fail closed while non-Core inputs retain the historical path (8 focused API tests)
       - load_session detects and validates Core V2 before BundleLoader, returns a native session whose prediction never constructs PipelineRunner, and refuses V2 retrain plus V3 prediction semantics; the frozen predict/load_session signatures and 41 API contract tests pass
     review: >-
       Sol-xhigh ACCEPT for the strict stored-ZIP native archive reader/writer. Core
       commits 8ac95bbb and 39b71b47 add the Methods-only V2/V3 replay bridge and
-      real-wheel compatibility refusal evidence. No valid archive plus local
-      libn4m replay was available, and serialized_model_predict remains false:
+      real-wheel compatibility refusal evidence. Follow-up Core commit fd89d75
+      adds an opt-in release witness and proves a real wheel plus local libn4m
+      replays an integrity-valid Archive V2 with aligned, finite predictions;
+      an altered N4MM member refuses before replay. This closes the positive
+      Core bridge witness, while serialized_model_predict remains false:
       nirs4all commit 0e920ecf adds the strict V2 public predict adapter without
       constructing PipelineRunner and refuses V3 as full-refit/retrain rather
       than mislabelling it serialized prediction. Commits d304ae1d and 1dd67bed
       extend the same fail-closed bridge to load_session/Session while preserving
-      both frozen public signatures. The adapters have contract-fake success
-      coverage, but no real valid archive plus local libn4m positive replay was
-      available; SAVE-002 run-save-load-predict remains open.
+      both frozen public signatures. SAVE-002 run-save-load-predict remains
+      open because this witness starts from an already valid Archive V2; it
+      does not prove that the public training/save path produced that archive.
     rollback: remove only Core archive/store package additions and mirrored synthetic contract corpus; retain dag-ml contract, legacy source archives and user data unchanged.
   - id: STORE-002
     owner: D + F
     dependencies:
       - STORE-001
       - STU-001
-    state: native_run_pipeline_ranked_chain_results_summary_discovery_and_run_detail_inputs_published_pending_http_policy_owners
-    input_sha: cb12f46fc19032be5e31113f3a6151caabd246f7
+    state: native_run_pipeline_ranked_chain_results_summary_discovery_and_run_detail_runtime_inputs_published_pending_http_policy_owners
+    input_sha: b4b04b8f49cf47cf9ae9b94017ab53c694cdf0d4
     owned_files:
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_results_summary_v1.json
@@ -612,7 +616,8 @@ work_items:
       - query_top_chains now applies chain_id ASC as a stable score-tie breaker; unknown metrics use the results-summary policy default higher-is-better at every summary ranking stage
       - studio_run_discovery_query_v1 publishes the exact source unified/manifests/parquet and refresh true/false scanner query allowlist with immutable Store-v5 read semantics, duplicate/unknown rejection and no fallback (SHA-256 354ec768f883ec6f4a1fa3831cf650f030920b08792dbe4e92c757478e129637)
       - studio_run_detail_v1 publishes the deterministic Store-owned run/pipeline/log projection with recursive non-finite normalization, immutable read and fail-closed schema/journal/change/JSON checks (contract SHA-256 91733eab5de6ace6f3bb3e6534c46daf4055dcc343f26da0d85b7c8b30c82e27)
-      - studio_run_detail_http_v1 publishes exact Store/splitter/results inputs and ownership boundaries (SHA-256 5661f99609e747bd581ecfd2be11306daadf004358cb494939978ca985f49e15), while route_selection remains forbidden until Studio/manifest policies exist
+      - studio_run_detail_http_v1 publishes exact Store/splitter/results inputs and ownership boundaries, then owner commit b4b04b8f materializes splitters plus six optional runtime columns with explicit stored/absent provenance (contract SHA-256 773ee2bd36e154a9090c8e2978c1f7703eebff68e02c0e3c2dab2ca30eeb0a8d; golden SHA-256 1053274a5d5a900bb3511afc3290c0adae5a1c2b84beacb742fd650f806c19bd)
+      - historical Store-v5 databases without runtime columns emit null plus absent_in_store_v5; present text/JSON columns are shape-checked, non-finite values normalize recursively, and malformed data refuses under immutable before/after database stamps
     review: >-
       Phase 2 evidence: nirs4all commits 56a9eb1e, ece5d7fd, 0288b1e5,
       09702901 and b7a5ff3e extend the public v5 contract
@@ -637,6 +642,13 @@ work_items:
       Owner commit cb12f46f adds exact splitter and result inputs, but correctly
       assigns linked-dataset mapping, CV/runtime/rerun policy and legacy manifest
       discovery to their actual owners instead of moving them into Store code.
+      Owner commit b4b04b8f publishes splitter materialization before the consumer
+      boundary and a separate ordered runtime projection for engine,
+      engine_requested, engine_diagnostics, runtime_manifest, fallback_policy
+      and native_result_refs without changing the historical read-v1 contract.
+      Studio still owns composition vocabulary, dataset mapping and rerun policy;
+      the legacy-manifest branch or an exact per-request preselection proof remains
+      mandatory before route selection.
     rollback: remove only the published contract/resource/test; do not alter existing workspace databases or conversion outputs.
   - id: STU-005
     owner: D + F
@@ -723,6 +735,32 @@ work_items:
       parity fixtures; LOCK-STUDIO, R2 parity, and every R3/R4 drop claim remain
       pending.
     rollback: remove only the sidecar reader, copied public contract, fixture, and dependency additions; leave linked-workspace metadata and user workspace files unchanged.
+  - id: STU-004
+    owner: A + F
+    dependencies:
+      - STU-002
+      - STU-005
+    state: native_job_and_websocket_cutover_contract_frozen_implementation_pending
+    input_sha: a9e57e2cbea9ab8852a00752610594b56d2b802f
+    owned_files:
+      - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
+      - nirs4all-studio/sidecar/tests/job_lifecycle_contract.rs
+      - nirs4all-studio/sidecar/README.md
+    acceptance_tests:
+      - contract matches the frozen Studio-v1 five statuses, eleven job types and five cancellation endpoints
+      - contract matches all three frozen WebSocket endpoints, emitted job-event envelope keys and declared-unreachable job_cancelled behavior
+      - targeted Rust contract tests passed 2/2 and Clippy passed with warnings denied
+      - cutover remains forbidden until native scientific registry, real WebSocket upgrade/connection manager, endpoint mapping, HTTP/WS differential and renderer selection exist
+    review: >-
+      Commit a9e57e2 freezes an executable R2 target without claiming a live
+      WebSocket implementation. It distinguishes the sequenced native internal
+      stream from the exact renderer-facing Studio-v1 envelope, preserves the
+      legacy cancellation emission as job_failed with "Job was cancelled", and
+      declares no event replay promise. Native selection cannot be enabled by
+      this contract and never permits a Uvicorn/FastAPI retry after selection.
+      Independent implementation review remains pending; LOCK-STUDIO and R2-W2
+      remain open.
+    rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
   - id: W1-001
     owner: G
     dependencies:
