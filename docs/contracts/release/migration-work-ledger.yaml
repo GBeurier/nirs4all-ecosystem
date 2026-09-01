@@ -281,7 +281,7 @@ work_items:
     owner: C + G
     dependencies:
       - DATA-001
-    state: selected_rc_role_tagged_bounded_read_handoff_source_qualified_artifact_refresh_r_and_matlab_runtime_pending
+    state: selected_rc_role_tagged_bounded_read_handoff_rust_python_wasm_artifacts_qualified_r_and_matlab_runtime_pending
     input_sha: f41967d53b355b10951b5658af1dddb6bd926e3d
     owned_files:
       - nirs4all-io/crates/nirs4all-io-core/src/materialize/
@@ -347,6 +347,21 @@ work_items:
       shape, alias, rename and Latin-1 cases. ABI and public enums are unchanged.
       The 0.1.6 wheel hash above belongs to parent fce1e1f and must not be used
       as a 0.1.7 artifact identity; exact-HEAD wheel/WASM refresh remains open.
+      That refresh is now complete at exact HEAD f41967d with two
+      SOURCE_DATE_EPOCH-controlled byte-identical builds. The abi3 wheel
+      SHA-256 is
+      e988d4c3070341338439cf5ea29492c14779aa1db4cc9cd6faf80c6678e464ab,
+      the npm tarball SHA-256 is
+      c8e38a79015b22cc408a44da0c1f977276974e63c019876ed5076e804e475260,
+      the embedded WASM SHA-256 is
+      942d67c5db328f730c860171b020610d5fc50fd18c65c7a12511d786316078b9,
+      and the source archive SHA-256 is
+      08e7b3f86d7905bb23dc3bee343ab1da7ddfaf39aba88a94f5715dde5298aa28.
+      The installed wheel passes 25 tests outside the checkout; raw and
+      idiomatic WASM smokes pass under Node 22.21.1 and 24.10.0; the extracted
+      447-entry source archive vendors R and compiles the C ABI fully offline.
+      Exact-HEAD Python/WASM/source artifact identity is therefore qualified,
+      while R and MATLAB runtime execution remain open.
     rollback: remove only the additive qualification harness, binding summary facades and CI job; retain the DATA contracts and never alter user datasets.
   - id: FMT-001
     owner: C + G
