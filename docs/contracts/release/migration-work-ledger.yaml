@@ -265,6 +265,40 @@ work_items:
       no real macOS/Windows/aarch64 runtime was executed, no autonomous sdist
       is promised, and selected DMD/Dag SHAs are not advertised by remote refs.
     rollback: select the previous advertised dag-ml-data ref without modifying the dirty historical RC worktree or any user data.
+  - id: IO-XLG-001
+    owner: C + G
+    dependencies:
+      - DATA-001
+    state: rust_python_wasm_c_abi_identity_qualified_r_and_matlab_runtime_pending
+    input_sha: b9fc9307fdc3818060ec605007835efb5ff6c817
+    owned_files:
+      - nirs4all-io/tests/cross_binding/
+      - nirs4all-io/bindings/wasm/src/lib.rs
+      - nirs4all-io/bindings/wasm/tests/node_smoke.cjs
+      - nirs4all-io/bindings/wasm/types/nirs4all-io.d.ts
+      - nirs4all-io/bindings/matlab/
+      - nirs4all-io/docs/IO_XLG_QUALIFICATION.md
+      - nirs4all-io/.github/workflows/cross-binding.yml
+    acceptance_tests:
+      - the strict runner emits exactly one passed, refused or unavailable row for Rust, Python, WASM, R, MATLAB/Octave and direct C ABI, and overall_complete is true only for six passed rows
+      - Rust CLI, an extracted abi3 CPython 3.11 wheel without editable install or PYTHONPATH, the produced WASM module under Node 22 and a compiled direct C probe reproduce one identity-rich assembled-summary-v2 golden byte-for-byte
+      - the frozen witness preserves sample, observation, repetition, group, source, partition and fold provenance through the same Rust assembler on every qualified surface
+      - local R and MATLAB/Octave absence remain explicit unavailable dispositions and keep overall_complete=false; the strict command exits nonzero unless incomplete inventory is explicitly requested
+      - the qualification runner performs no dependency download; CI pins jsonlite 1.8.9 by SHA-256 before invoking the strict R lane
+      - Rust workspace passes 192 tests, fmt, Clippy with warnings denied and no-default-features build; qualification tests pass 3 with Ruff, Mypy and workflow parsing
+    review: >-
+      IO commit b9fc930 adds an executable six-surface matrix without changing
+      the frozen DATA schema or assembled-summary version. Independent report
+      ec94a6a5be9e1159be4743de7ab1cfd4a61f7451d71f5e1c627e7d25a461c59f
+      records Rust, Python, WASM and C ABI as passed and R plus MATLAB/Octave
+      as unavailable, so the gate remains incomplete. The runner cannot install
+      packages or silently skip a surface; CI provisions the exact jsonlite
+      archive separately after digest verification. The broader pre-existing
+      WASM smoke still fails its sample-id metadata assertion on the clean
+      parent 98aca515; the new rich-witness parity test passes and does not hide
+      or relabel that baseline defect. Real R and MATLAB/Octave execution and
+      repair of the parent smoke remain required before LOCK-DATA can close.
+    rollback: remove only the additive qualification harness, binding summary facades and CI job; retain the DATA contracts and never alter user datasets.
   - id: FMT-001
     owner: C + G
     dependencies:
