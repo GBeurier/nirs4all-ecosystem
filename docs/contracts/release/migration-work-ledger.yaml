@@ -639,18 +639,21 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: python_legacy_and_core_executed_studio_resolver_refusal_attested_web_refresh_pending_after_replay_selection
-    input_sha: f0382905837bd4153180c236edb428dd0fe88a77
+    state: python_legacy_core_and_web_executed_studio_resolver_refusal_attested
+    input_sha: 82dcf18b32980b211078bf7280af9d233fed0864
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/json_result_adapter.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/scientific_runtime_adapter.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/python_legacy_adapter.py
+      - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/web_wasm_adapter.py
+      - nirs4all-benchmarks/scripts/stage_web_wasm_runtime.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/cli.py
       - nirs4all-benchmarks/tests/test_artifact_qualification.py
       - nirs4all-benchmarks/tests/test_scientific_runtime_adapter.py
       - nirs4all-benchmarks/tests/test_python_legacy_adapter.py
+      - nirs4all-benchmarks/tests/test_web_wasm_adapter.py
       - nirs4all-benchmarks/tests/test_web_wasm_readiness.py
       - nirs4all-benchmarks/tests/test_studio_sidecar_readiness.py
       - nirs4all-benchmarks/docs/QUALIFICATION.md
@@ -671,7 +674,8 @@ work_items:
       - the Python oracle verifies its CPython 3.11 runtime, all 44 installed wheels against their declared RECORD bytes and mandatory dependency closure, and imports only from the isolated runtime prefix
       - the Python oracle fits, exports, reloads and predicts the exact legacy PLS witness; Python and Core both pass with maximum absolute difference 2.870914617147946e-10 and zero observations outside tolerance
       - source checkout injection, native or dag-ml oracle substitution, fallback, outer artifact tamper and installed-byte tamper all refuse without becoming a skip
-      - Benchmarks f038290 still records Web 4fcd43d as a required refusal; selected Web has advanced to 6b17d09 with Archive V2 multi-target replay, so the Web gate row must be regenerated from exact selected artifacts before it can pass
+      - Benchmarks 82dcf18 stages selected Web 6b17d09 from its exact Git tar and executes one Archive V2 multi-target replay under Node 22 and Node 24 after the producer checkout and original inputs are made unavailable
+      - the autonomous Web stage runs its copied Python with -I and user-site disabled, verifies every installed file and wheel, contains no producer path, and refuses fit/refit, fallback, identity drift, profile drift, missing runtime or tampered bytes
       - two independent Web mono-target fits are explicitly rejected as a substitute for the canonical Archive V2 multi-target operation
       - Benchmarks f038290 verifies selected Studio d829465 and Python 3b9eb3e with the canonical wheel SHA-256 24737550768868df37dc0bf11433c7bd409ef620a8667a88b99641658b5f3e6b; the bounded callable and Rust terminal bridge execute directly in the harness but product selection remains false because the scientific request resolver is unavailable
       - Studio refusal occurs before request-body parsing, workspace access, job allocation, event publication, durable writes or scientific execution; submission transport, a Python listener, fabricated JSON or direct Core replay outside Studio are rejected substitutes
@@ -739,6 +743,25 @@ work_items:
       product proof is recorded by WEB-001, but GATE-001 remains open until a
       new Bench commit executes and content-addresses the selected Web artifact;
       the stale refusal is not relabelled as a pass.
+      Bench commits 510774d and 82dcf18 perform that refresh. The first candidate
+      executed correct science but was rejected because typing_extensions and
+      source checkouts leaked into its runtime and its fit detector missed refit.
+      The corrective descendant builds an offline Python -I prefix, materializes
+      the 94-file Web/Methods closure and archive from the exact source tar, and
+      reports a child-observed fit/refit counter. Independent replay with the
+      producer paths masked passes under Node 22.21.1 and 24.10.0 with one
+      predict, zero fit/refit/fallback and exact protein/moisture values. The
+      Node 22 component-manifest SHA-256 is
+      4ccc6f9c169f8a5f02da748003374d56a6de4eea8f7ea28220c182256d8d7081,
+      the cross-runtime manifest SHA-256 is
+      ffa564eeb4169215f8c988d3e95347732db19bdef56d29389994fd5dc72563d3,
+      and the report SHA-256 is
+      dd5f5718be8230f3032f6c50847658b9d12a609f3e344b6b7f0e59452528efed.
+      Python, Core and Web pass while selected Studio remains required/refused
+      with scientific_request_resolver_unavailable, so overall remains refused.
+      Bench passes 141 tests plus Ruff/Mypy; Web typecheck, 23 tests, strict
+      build/profile and Chromium smokes pass. GATE-001 and PERF-001 remain open;
+      Node 20 is not locally qualified.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
