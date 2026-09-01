@@ -582,8 +582,8 @@ work_items:
     dependencies:
       - STU-001
       - STORE-002
-    state: native_run_and_pipeline_summary_routes_plus_ranked_chain_reader_selected_pending_results_policy_and_full_scanner_repository_parity
-    input_sha: 73b3aec
+    state: native_run_pipeline_ranked_chain_and_dataset_link_readers_selected_pending_results_policy_and_full_scanner_repository_parity
+    input_sha: e7189d0
     owned_files:
       - nirs4all-studio/sidecar/Cargo.toml
       - nirs4all-studio/sidecar/Cargo.lock
@@ -608,6 +608,7 @@ work_items:
       - focused nirs4all pytest passed (2); Ruff and Mypy passed
       - Studio Vitest passed 519 files / 3,737 tests; tsc --noEmit and targeted ESLint passed; Rust format/clippy passed with 40 unit and 5 frozen sidecar contract tests; the scanner oracle response matched exactly
       - public Rust workspace_store reader consumes studio_chain_ranked_v1 without metric inference and passes asc/desc, tie, null-last, offset/count, mixed-metric, invalid-JSON, eligibility and bound tests; full Rust gate passes 42 unit and 5 frozen contract tests
+      - native dataset-links reader projects only id/name/path, rejects files larger than 2 MiB, preserves missing/malformed legacy empty-catalogue semantics, and never rewrites or migrates scientific dataset configuration; Rust gate passes 45 unit and 5 frozen contract tests
     review: >-
       Studio commit d1260b1 selects bounded direct sidecar readers only for bare Store
       v5 run-summary and filter-free pipeline-summary GET requests, verifying exact
@@ -621,7 +622,9 @@ work_items:
       public Rust workspace_store module, with explicit direction and deterministic
       paging, but deliberately exposes no /results/summary route because metric
       direction, refit synthesis, variant-param merging and dataset-link mapping are
-      not yet public owner contracts. The selected readers
+      not yet a complete public owner policy. Studio commit e7189d0 adds the bounded,
+      read-only dataset-link identity projection required for future mapping without
+      exposing or mutating scientific loader configuration. The selected readers
       have no implicit Python or FastAPI fallback. STU-005 remains incomplete until
       those scanner/repository surfaces have public native contracts and approved
       parity fixtures; LOCK-STUDIO, R2 parity, and every R3/R4 drop claim remain
