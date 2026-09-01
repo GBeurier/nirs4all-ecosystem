@@ -820,10 +820,12 @@ work_items:
     owner: E + C
     dependencies:
       - SAVE-002
-    state: archive_v2_multi_predict_session_lifecycle_complete_native_run_session_and_general_cache_pending
-    input_sha: 9b862952c5695bbc1327c7ec5e92af71d40ef46f
+    state: archive_v2_prediction_session_hardened_native_run_session_and_general_cache_pending
+    input_sha: 6565c8ed885acc1a896c710fda693b4a540d7520
     owned_files:
       - nirs4all/nirs4all/api/session.py
+      - nirs4all/nirs4all/api/__init__.py
+      - nirs4all/nirs4all/__init__.py
       - nirs4all/nirs4all/pipeline/dagml/core_archive_replay.py
       - nirs4all/tests/unit/api/test_core_archive_session.py
       - nirs4all/tests/integration/api/test_native_archive_v2_training_cycle.py
@@ -834,13 +836,22 @@ work_items:
       - cached Package V2 data is immutable from the caller and repeated predictions keep identical finite values
       - Session.close is terminal and idempotent, detaches each native result once, closes the runner and purges the archive cache
       - run, predict, retrain, save, runner access and context-manager re-entry all fail closed after close
-      - selected Python RC passes 440 unit/integration API tests with one opt-in live skip and Ruff; the real Core/DAG-ML/Methods Archive V2 gate passes 3/3
+      - selected Python RC passes 449 API tests and 477 DAG-ML/bundle tests with three declared skips; the full unit inventory passes 7863 tests with 148 declared skips outside four pre-existing binary sampler failures
+      - Archive V2 run and retrain refuse as typed prediction-only capabilities before data or PipelineRunner access; legacy prediction is never an implicit fallback
+      - the one-entry Session cache is capped at 8 MiB and bound to the full source archive SHA-256; archive hashing costs one bounded-memory read per prediction and Core still performs authoritative replay validation
+      - SessionClosedError is the public top-level terminal error, close purges validation and fingerprint state, and a fresh load resumes finite multi-target prediction
+      - independent focused gates pass 11 tests with one optional skip, and a fresh exact-wheel Core 0.3.22 plus Dag-ML 0.3.18 and libn4m live gate passes all 4 tests including multi-predict, close/reload, process replay and tamper refusal
     review: >-
       Python RC commits 1216eedf and 9b862952 close the Archive V2
       multi-predict and terminal Session lifecycle without broadening the
       portable minimum qualified by SAVE-002. Core remains the authority for
       archive integrity and revalidates bytes on every replay; the Python
       cache contains no native model handle and cannot bypass tamper checks.
+      Canonical commit 6565c8ed adds the bounded source-fingerprint cache,
+      public terminal/dependency errors and typed prediction-only run/retrain
+      refusals. Although the agent environment lacked native wheels, an
+      independent fresh-venv rerun used the exact selected Core, Dag-ML and
+      Methods artifacts and passed 4/4 live tests.
       `run(..., session=..., engine="native")` remains explicitly refused
       before PipelineRunner construction. Native multi-run reuse and the
       general DAG/data cache are still API-003 work. At this checkpoint,
