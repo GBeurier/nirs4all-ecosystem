@@ -156,7 +156,7 @@ work_items:
     owner: G
     dependencies:
       - ARCH-001
-    state: complete
+    state: evidence_accepted_not_selected_in_current_python_rc
     input_sha: bd7fba454f5f
     owned_files: []
     acceptance_tests:
@@ -168,7 +168,10 @@ work_items:
       CV/fold metrics, winner/splits/OOF evidence and fails closed on missing/non-finite data.
       Legacy output is isolated in a temporary workspace. The exposed PLS operator remains
       Python sklearn-hosted; this item proves orchestration parity only, not Methods/libn4m
-      numerical execution, which remains tracked by HPO/native API integration.
+      numerical execution, which remains tracked by HPO/native API integration. The accepted
+      evidence commit bd7fba45 and implementing descendant dd93e9f6 are not ancestors of the
+      selected Python RC 6565c8ed; that RC still refuses engine="dual". The proof therefore
+      remains valid branch evidence but is not reconstructible from the current train selection.
     rollback: remove only the dual-run surface/tests/docs; preserve Python 0.12.0 oracle and existing fixtures
   - id: CAP-001
     owner: capability-ledger
@@ -1480,7 +1483,7 @@ work_items:
       - CAP-001
       - DATA-001
       - MTH-001
-    state: complete
+    state: evidence_accepted_not_selected_in_current_python_rc
     input_sha: bd7fba454f5f5a5e644941061b98d2c45f15fafd
     owned_files:
       - nirs4all/nirs4all/api/run.py
@@ -1494,7 +1497,14 @@ work_items:
       - installed-wheel ledger resource is byte-synchronized with docs and resolved outside checkout
       - real native PLS/KFold dual probe passed with exact OOF coverage, winner/split/y_pred and ledger bands
       - unsupported capabilities, calibration/tuning, non-exact types/data and native result environment refuse before legacy fallback
-    review: "Sol-xhigh ACCEPT. Scope is explicitly partial: NumPy regression tuple, exact KFold(shuffle=False), exact PLSRegression and strict no-artifact options only."
+    review: >-
+      Sol-xhigh ACCEPT. Scope is explicitly partial: NumPy regression tuple,
+      exact KFold(shuffle=False), exact PLSRegression and strict no-artifact
+      options only. The accepted evidence commit bd7fba45 and implementing
+      descendant dd93e9f6 are not ancestors of selected Python RC 6565c8ed,
+      whose resolve_engine still refuses engine="dual". PAR-002 must be
+      reconciled onto the selected lineage and requalified before it can close
+      a current-train gate.
     rollback: remove only the dual-run implementation/resource/docs/tests; preserve engine=legacy and native single-run behavior.
   - id: PROV-001
     owner: C
