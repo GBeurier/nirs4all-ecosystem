@@ -534,31 +534,39 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: strict_artifact_harness_complete_runtime_launchers_and_perf_pending
-    input_sha: b9be6bfaad75cf6b9a9957ff54758626d8f97e7c
+    state: core_runtime_launcher_qualified_other_launchers_and_four_way_perf_pending
+    input_sha: b21f35f6cf3ad211254988702e47375f6d0a1178
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/json_result_adapter.py
+      - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/scientific_runtime_adapter.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/cli.py
       - nirs4all-benchmarks/tests/test_artifact_qualification.py
+      - nirs4all-benchmarks/tests/test_scientific_runtime_adapter.py
       - nirs4all-benchmarks/docs/QUALIFICATION.md
       - nirs4all-benchmarks/docs/CLI.md
+      - nirs4all-benchmarks/docs/perf001-artifact-inventory.v1.json
+      - nirs4all-benchmarks/docs/perf001-scenario.v1.json
     acceptance_tests:
       - the manifest names Python oracle, Core/Rust, Studio sidecar and Web/WASM exactly once and pins every scenario, executable and input artifact by absolute path plus SHA-256
       - adapters execute in a temporary directory with a cleaned environment and cannot discover sibling checkouts or inject source trees through PYTHONPATH
       - every component reports version, forty-character commit SHA, artifact evidence, timings, metrics, observation digest and a terminal passed, refused or failed disposition
       - missing or digest-mismatched inputs refuse before execution; unfinished output, declared fallback, identity mismatch and numerical divergence never pass
       - an unavailable runtime launcher is represented as required and makes the overall gate refused; it is never silently skipped
-      - Ruff passes, Mypy passes over the source package, the isolated checkout passes 109 tests, and the wheel plus frontend syntax gates pass
+      - the Core launcher accepts only runtime_python, Core, Dag-ML, PyYAML, Archive V2 and methods-library artifacts and verifies their parent and installed-child bytes before direct Core replay
+      - a Core/native facade is explicitly refused when presented as the Python oracle; that oracle remains engine='legacy' and required/refused until its exact wheel closure, model and adapter exist
+      - the selected Core artifacts execute the two-row multi-target witness without fallback and return protein [1.6363636363636365, 2.4999999999999996] and moisture [13.272727272727273, 15.0]
+      - Ruff passes, Mypy passes over 43 source files, the isolated checkout passes 117 tests, and the byte-reproducible wheel SHA-256 is 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
     review: >-
-      Benchmarks commit b9be6bf adds the executable stdio JSON protocol, strict
-      four-runtime runner, finalized-JSON adapter, CLI and negative tests. An
-      independent detached-worktree rerun confirmed Ruff, source Mypy and all
-      109 tests. This closes the reproducible harness only. Runtime-specific
-      scientific launchers, a four-way executed report and PERF-001 budgets
-      remain open; their absence produces an explicit required-adapter refusal
-      rather than a skip or a partial green claim.
+      Benchmarks commits b9be6bf and b21f35f add the executable stdio JSON
+      protocol, strict four-runtime runner and first runtime-specific launcher.
+      An independent detached-worktree rerun confirmed Ruff, source Mypy, all
+      117 tests, the exact wheel hash and a real selected-artifact Core replay.
+      Python is still an explicit legacy oracle rather than a native facade;
+      Python, Studio and Web remain required/refused. Their launchers, a
+      four-way executed report and measured PERF-001 budgets remain open and
+      cannot be represented as a skip or partial green gate.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
