@@ -668,8 +668,8 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: python_legacy_core_and_web_executed_studio_refresh_pending_after_resolver_selection
-    input_sha: 82dcf18b32980b211078bf7280af9d233fed0864
+    state: python_legacy_core_and_web_passed_studio_executed_refused_archive_v2_predict_pending
+    input_sha: 8dbf272f00948fc35696b132b040cc55258678a6
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
@@ -677,7 +677,9 @@ work_items:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/scientific_runtime_adapter.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/python_legacy_adapter.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/web_wasm_adapter.py
+      - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/studio_sidecar_adapter.py
       - nirs4all-benchmarks/scripts/stage_web_wasm_runtime.py
+      - nirs4all-benchmarks/scripts/stage_studio_sidecar_runtime.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/cli.py
       - nirs4all-benchmarks/tests/test_artifact_qualification.py
       - nirs4all-benchmarks/tests/test_scientific_runtime_adapter.py
@@ -685,6 +687,7 @@ work_items:
       - nirs4all-benchmarks/tests/test_web_wasm_adapter.py
       - nirs4all-benchmarks/tests/test_web_wasm_readiness.py
       - nirs4all-benchmarks/tests/test_studio_sidecar_readiness.py
+      - nirs4all-benchmarks/tests/test_studio_sidecar_adapter.py
       - nirs4all-benchmarks/docs/QUALIFICATION.md
       - nirs4all-benchmarks/docs/CLI.md
       - nirs4all-benchmarks/docs/perf001-artifact-inventory.v1.json
@@ -707,9 +710,13 @@ work_items:
       - the autonomous Web stage runs its copied Python with -I and user-site disabled, verifies every installed file and wheel, contains no producer path, and refuses fit/refit, fallback, identity drift, profile drift, missing runtime or tampered bytes
       - two independent Web mono-target fits are explicitly rejected as a substitute for the canonical Archive V2 multi-target operation
       - Benchmarks f038290 verifies selected Studio d829465 and Python 3b9eb3e with the canonical wheel SHA-256 24737550768868df37dc0bf11433c7bd409ef620a8667a88b99641658b5f3e6b; the bounded callable and Rust terminal bridge execute directly in the harness but product selection remains false because the scientific request resolver is unavailable
-      - selected Studio has advanced to 99ba715 with a qualified saved-request resolver and the exact Python 5ebb wheel; Bench 82dcf18 still records d829465 as refused and must be regenerated before the Studio lane can pass
-      - Studio refusal occurs before request-body parsing, workspace access, job allocation, event publication, durable writes or scientific execution; submission transport, a Python listener, fabricated JSON or direct Core replay outside Studio are rejected substitutes
+      - Benchmarks 8dbf272 stages selected Studio 99ba715, IO f419 and the exact Python 5ebb wheel in an isolated content-addressed Linux runtime, then executes the real Rust POST /api/runs/run-groups route, Rust job registry, WebSocket terminal event, durable record and bounded CPython stdio worker
+      - the selected Studio job completes through dag-ml with no fallback, persists only the original saved-identity request, leaves zero Python children and scratch entries, and exposes scores plus prediction_count but no sample-addressable protein/moisture prediction series
+      - the exact-runner report therefore records Studio executed=true and refused while Python, Core and Web pass; the overall gate remains refused and PERF-001 receives no Studio credit
+      - the current first blocker is an additive Rust product Archive V2 multi-target prediction route backed by a Core matrix-replay composition; scores, prediction_count, fabricated JSON, a direct worker/Core call or two mono-target runs are rejected substitutes
+      - the historical d829465 Studio refusal occurred before request-body parsing, workspace access, job allocation, event publication, durable writes or scientific execution; it remains evidence but is not relabelled as the current blocker
       - Ruff passes, Mypy passes over 44 source files and the isolated checkout passes 129 tests; the Core launcher wheel remains byte-reproducible at SHA-256 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
+      - the refreshed Bench descendant passes 148 tests with one explicit skip, Ruff, Mypy over 46 files, a targeted real Studio saved-route Rust test and cargo fmt
     review: >-
       Benchmarks commits b9be6bf, b21f35f and 063e2d3 add the executable stdio
       JSON protocol, strict four-runtime runner and the Core plus Python-legacy
@@ -797,6 +804,26 @@ work_items:
       report dd5f5718: its Studio row remains the honest d829465 refusal. A new
       Bench run must restage and execute 99ba715 before GATE-001 or PERF-001 can
       advance.
+      Bench commit 8dbf272 performs that refresh without substituting a direct
+      callable or Core replay. Its isolated Linux stage pins the selected Studio
+      Git tar, release sidecar, complete IO f419 snapshot, exact Python 5ebb
+      wheel and every installed runtime file. The real Rust route accepts the
+      saved dataset/pipeline identities, resolves them before mutation, runs one
+      bounded CPython library worker, completes the Rust registry and WebSocket
+      terminal event, and writes a durable record containing only the original
+      request. No Python child or scratch entry survives. The product result is
+      nevertheless not comparable to the frozen Archive V2 operation: it
+      contains RMSE scores and prediction_count only, while the resolver selects
+      one target and exposes neither sample IDs nor the protein/moisture series.
+      The exact-runner manifest SHA-256 is
+      1777e06abb6c2a85af743655be55372d49bae9fdb789df6d63cb1355d2adf378
+      and report SHA-256 is
+      1019f8ad64fefd42cd3e147dabc6a7d6ba81e7551b63dc5c9bd4027ef02031ae.
+      Python, Core and Web pass; Studio is executed but refused and the overall
+      gate remains refused. GATE-001 and PERF-001 therefore remain open pending
+      a versioned Core matrix-replay helper and additive Rust Studio Archive V2
+      multi-target prediction route. Linux x86-64 is the only Studio runtime
+      executed by this evidence.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
