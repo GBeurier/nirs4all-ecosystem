@@ -250,8 +250,8 @@ work_items:
       - MTH-002
       - DATA-001
       - PROV-001
-    state: reproducibility_reverified_pending_independent_review
-    input_sha: e560a8ffc2da5fd489f65c010746492d1ef1b39b
+    state: evidence_accepted
+    input_sha: 7b0111981071cfc9b509c1eea100f0430372f103
     owned_files:
       - dag-ml/crates/dag-ml-core/src/hpo.rs
       - dag-ml/crates/dag-ml-core/src/training_runtime.rs
@@ -266,18 +266,29 @@ work_items:
       - N4MM package reload into a fresh controller followed by predict without labels
       - extracted default dag-ml package has no sibling dependency; any local Methods overlay is explicit and fail-closed
     review: >-
-      The prior reproducibility blocker is superseded by current direct evidence:
-      the published dynamic n4m 0.1.1 binding and immutable Methods source
-      aabdecfdd76d1a4d12cfbbade4eeee0d30a6ea47 are pinned in Dag-ML CI.
-      From clean detached worktrees at Dag-ML
-      e560a8ffc2da5fd489f65c010746492d1ef1b39b and that Methods SHA, the
-      documented FITPACK-free local build produced libn4m.so and
-      `CARGO_PROFILE_DEV_DEBUG=0 CARGO_INCREMENTAL=0 N4M_LIBRARY_PATH=<absolute-lib>
-      scripts/test_methods_optimizer_local.sh --test training_runtime_operation
-      native_methods_hpo_tpe_median_operation_preserves_terminal_ledger_through_package_resume`
-      passed after the script's feature-local clippy gate. The script restored
-      Cargo.toml and Cargo.lock byte-for-byte. A clean-checkout independent
-      Sol-xhigh review of the full HPO acceptance matrix remains required.
+      Independent review ACCEPT. The controller-owned native Methods HPO
+      implementation was reviewed at Dag-ML
+      e560a8ffc2da5fd489f65c010746492d1ef1b39b and remains byte-identical in
+      the documentation-only descendant
+      7b0111981071cfc9b509c1eea100f0430372f103. Methods source
+      aabdecfdd76d1a4d12cfbbade4eeee0d30a6ea47 produced the explicit
+      FITPACK-free ABI 2.2.0 libn4m runtime; the published dynamic Rust binding
+      is n4m 0.1.1. Methods CTest passed 2/2. The feature-local Dag-ML gate
+      passed clippy, 610 library tests with only two unrelated performance
+      probes ignored, 5 conformal tests, and 37 training-runtime integration
+      tests. Focused native evidence passed random HPO, TPE/Median pruning,
+      COMPLETED/PRUNED/FAILED terminal states, intermediate feedback, exact
+      N4MOPT checkpoint/resume trajectory, deterministic selection plus
+      exactly-once refit, and fresh-controller target-free N4MM replay.
+      Missing N4M_LIBRARY_PATH fails with status 2; no HPO test skips when
+      Methods is absent. The packaged crate excludes the local overlay and
+      resolves n4m 0.1.1 and Core 0.3.15 from registries only. Commit
+      7b0111981071cfc9b509c1eea100f0430372f103 removes the stale
+      pre-publication feature claim and adds a fail-closed release-metadata
+      guard tied to Cargo.toml. This accepts HPO-001 evidence only:
+      LOCK-METHODS and LOCK-API remain pending, API-001/API-004 retain their
+      remaining acceptance work, and no R2 waypoint or native-default flip is
+      closed by this review.
     rollback: remove only the uncommitted dag-ml HPO adapter/runtime additions; preserve Methods ABI and existing DAG contracts.
   - id: CONF-001
     owner: E + F
@@ -534,8 +545,8 @@ work_items:
     dependencies:
       - STORE-001
       - STU-001
-    state: native_run_pipeline_ranked_chain_and_results_summary_policy_published_pending_full_scanner_repository_parity
-    input_sha: b7a5ff3e
+    state: native_run_pipeline_ranked_chain_results_summary_and_discovery_query_policies_published_pending_full_repository_parity
+    input_sha: 24c06c22e4e5e827d48a32034ab14a06f019b78c
     owned_files:
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_results_summary_v1.json
@@ -562,6 +573,7 @@ work_items:
       - producer regression tests prove asc/desc ordering, stable offset/count, mixed-metric filtering, pending-pipeline inclusion and prediction eligibility against Store v5 without publishing the private Studio results-summary policy
       - separate results-summary policy v1 (SHA-256 e497e7db0a5043626e5e1a64ecb14bce5523ac12c06193c982b8f2eef8ff7d70) preserves read-v1 bytes while publishing the full paged source projection, fixed bare n=5 surface, chain_id source order, one metric-direction registry, refit synthesis, selection, JSON/null serialization and variant-param merge
       - query_top_chains now applies chain_id ASC as a stable score-tie breaker; unknown metrics use the results-summary policy default higher-is-better at every summary ranking stage
+      - studio_run_discovery_query_v1 publishes the exact source unified/manifests/parquet and refresh true/false scanner query allowlist with immutable Store-v5 read semantics, duplicate/unknown rejection and no fallback (SHA-256 354ec768f883ec6f4a1fa3831cf650f030920b08792dbe4e92c757478e129637)
     review: >-
       Phase 2 evidence: nirs4all commits 56a9eb1e, ece5d7fd, 0288b1e5,
       09702901 and b7a5ff3e extend the public v5 contract
@@ -572,9 +584,9 @@ work_items:
       user_version == 5, projection columns, bound limit/offset, active journal
       sidecars, and snapshot stability before returning Python-written run and
       pipeline fixtures. The Electron transport selects only bare run-summary and
-      filter-free pipeline-summary GET requests in opt-in sidecar mode. Explicit
-      source/refresh scanner queries, filtered results, legacy manifest/Parquet
-      scans, enriched runs, run detail, predictions,
+      filter-free pipeline-summary GET requests in opt-in sidecar mode. Owner
+      commit 24c06c22 additionally publishes the strict source/refresh run-discovery
+      query policy. Scan POST, filtered results, enriched runs, run detail, predictions,
       results-repository, mutation, arrays, artifacts, and scientific execution remain
       FastAPI-owned; native query or compatibility rejection never triggers a hidden
       FastAPI retry. Local-volume SQLite is the supported surface; Windows UNC/device
@@ -586,8 +598,8 @@ work_items:
     dependencies:
       - STU-001
       - STORE-002
-    state: native_run_pipeline_ranked_chain_dataset_links_and_bare_results_summary_ready_pending_full_scanner_repository_parity
-    input_sha: f70e42e
+    state: native_run_pipeline_ranked_chain_dataset_links_results_summary_and_discovery_queries_ready_pending_full_repository_parity
+    input_sha: 05ed4e7f1c068804b0466036bc43a49e5df29909
     owned_files:
       - nirs4all-studio/sidecar/Cargo.toml
       - nirs4all-studio/sidecar/Cargo.lock
@@ -624,6 +636,7 @@ work_items:
       - direct native bare GET /api/workspaces/:id/results/summary consumes the byte-identical public policy, pages all source rows by chain_id within one immutable snapshot, and equals the Python golden exactly; a 501-row regression crosses the fixed 500-row page boundary
       - the summary route rejects query-bearing requests before routing, returns 405 for mutations, fails closed for missing/non-v5/busy stores, exposes no configurable n surface, and never retries or falls back to Python/FastAPI after native selection
       - refit-only append marking matches the Python oracle for mixed CV/final payloads, while persisted Python NaN and infinities are recursively normalized to null without discarding finite JSON siblings
+      - direct native run discovery accepts only source unified/manifests/parquet and refresh true/false, matches seven exact Python goldens, rejects duplicate/unknown values before selection, and returns Store-v5 compatibility errors without FastAPI retry
     review: >-
       Studio commit d1260b1 selects bounded direct sidecar readers only for bare Store
       v5 run-summary and filter-free pipeline-summary GET requests, verifying exact
@@ -642,6 +655,9 @@ work_items:
       the bare GET summary surface with exact golden parity and fail-closed errors.
       Studio f70e42e closes independently reviewed refit-marker and non-finite JSON
       edge cases without adding a retry or hidden FastAPI fallback after native selection.
+      Studio 05ed4e7 consumes owner commit 24c06c22's byte-identical discovery
+      policy and routes the strict source/refresh allowlist natively; scan POST,
+      enriched/detail and repository surfaces remain FastAPI-owned.
       Studio commit e7189d0 adds the bounded,
       read-only dataset-link identity projection required for future mapping without
       exposing or mutating scientific loader configuration. The selected readers
