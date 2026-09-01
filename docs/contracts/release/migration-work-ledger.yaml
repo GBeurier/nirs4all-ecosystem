@@ -48,18 +48,22 @@ initialization:
       tests/test_cutover_state_gate.py
     result: 73 passed, 1 skipped (2026-08-31)
   dagml_data_lockstep_validation:
-    status: passed_selected_pair_binding_matrix_pending
+    status: passed_selected_pair_linux_binding_matrix_qualified_release_runtime_matrix_pending
     command: >-
       DAG_ML_REPO=/dev/shm/RC-v1-dagml-reconciled
       DAG_ML_DATA_REPO=/dev/shm/RC-v1-dmd-reconciled
       python3 scripts/validate_contracts.py
     evidence: >-
       The bidirectional contract validators pass on the clean selected pair
-      Dag-ML 29abd300e518d152eb5453ea57f5232dd2b595af and dag-ml-data
-      4c8ce37952427fd13a132cbcca6324214c72554a. The data workspace also
-      passes format, workspace Clippy with warnings denied, and 272 tests with
-      two explicitly ignored performance probes. Python, R, WASM and
-      multiplatform packaging qualification remains required for LOCK-DATA.
+      Dag-ML 4988542a952c4ff20a0a70e210d1ba680a718985 (docs-only child
+      of executable baseline 29abd30) and dag-ml-data
+      bba0e2e891406077924634f8f39b55440e5875b0. The data workspace also
+      passes format, workspace Clippy with warnings denied, exactly 272 tests
+      with two explicitly ignored performance probes, Python 3.11-3.13,
+      Node 20/22/24 WASM, Linux R and declared cross-compilation/package
+      gates. Real non-Linux runtime, published native-provider artifacts,
+      production providers and release-license closure remain required for
+      LOCK-DATA.
 locks:
   LOCK-ARCH: pending
   LOCK-REF: pending
@@ -69,7 +73,7 @@ locks:
   LOCK-API: pending
   LOCK-STUDIO: pending
   LOCK-DROP: pending
-  LOCK-RELEASE: selected_workspace_validated_pending_publication
+  LOCK-RELEASE: baseline_lock_validated_current_train_pending_full_product_manifest_remote_advertisement
   LOCK-SOAK: pending
   LOCK-DOCS: pending
 work_items:
@@ -90,13 +94,23 @@ work_items:
     dependencies:
       - ARCH-001
     state: accepted_four_release_mapping
-    input_sha: 02529a7ee8c72ef1aae0fed65defb93d18cf1160
+    input_sha: 4988542a952c4ff20a0a70e210d1ba680a718985
     owned_files:
       - docs/contracts/release/migration-work-ledger.yaml
+      - dag-ml/docs/adr/ADR-24-v1-four-release-rollback-mapping.md
     acceptance_tests:
       - dag-ml/docs/adr/ADR-17-cutover-rollback.md inspected
       - dag-ml/docs/adr/ADR-24-v1-four-release-rollback-mapping.md accepted
-    review: user-authorized governance decision; independent release review pending
+      - selected Dag-ML contract validator passes after the docs-only ADR clarification
+    review: >-
+      User-authorized governance decision; independent release review remains
+      pending. Dag-ML commit 4988542 clarifies that Rust owns Studio HTTP,
+      WebSocket, scheduler, store and jobs while a bounded CPython
+      library/plugin host remains permitted. LOCK-DROP means legacy
+      orchestration is unreachable from strict product paths in R3; physical
+      removal of the explicit engine=legacy rollback profile is separately
+      governed after R4. The synchronized roadmap SHA-256 is
+      52cf12c430378d5f2e038f3cb371b87332c87c2b0a41b6f03a4be7e22a4b58f5.
     rollback: supersede ADR-24 with an explicit release-count and rollback-policy replacement
   - id: REL-001
     owner: G
@@ -113,7 +127,7 @@ work_items:
     owner: G
     dependencies:
       - REL-001
-    state: complete
+    state: baseline_lock_complete_current_train_regeneration_pending
     input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
     owned_files:
       - docs/contracts/release/aggregation-lock.n4a.lock.json
@@ -131,7 +145,15 @@ work_items:
       on the published lock; the structural release/ledger/surface suite passed
       68 with 1 skip. On 2026-08-31, the lock-pinned reconstructed-root
       validators were repeated and the expanded structural suite including
-      `tests/test_cutover_state_gate.py` passed 73 with 1 skip.
+      `tests/test_cutover_state_gate.py` passed 73 with 1 skip. That immutable
+      lock remains valid only as the prior seven-component baseline: its
+      manifest contains Dag-ML, dag-ml-data, Methods, Formats, IO, Core and
+      Datasets, but not the full Python facade, Studio, Web or Tools. The
+      current selected Core, Python, Studio, Web, Dag-ML, dag-ml-data, Formats
+      and Tools SHAs are not contained by any locally
+      known remote ref. Therefore the active train must not reuse or merely
+      relabel this lock; it requires an expanded manifest, advertised commits
+      and a clean reconstruction before LOCK-RELEASE can advance.
     rollback: retain current immutable lock; create a new validated lock only from selected release heads
   - id: PAR-001
     owner: G
@@ -199,8 +221,8 @@ work_items:
     dependencies:
       - DATA-001
       - CAP-001
-    state: native_provider_and_bidirectional_dag_lockstep_qualified_binding_matrix_pending
-    input_sha: 4c8ce37952427fd13a132cbcca6324214c72554a
+    state: native_provider_linux_binding_matrix_and_cross_compile_qualified_release_runtime_matrix_pending
+    input_sha: bba0e2e891406077924634f8f39b55440e5875b0
     owned_files:
       - dag-ml-data/crates/dag-ml-data-core/
       - dag-ml-data/crates/dag-ml-data-provider/
@@ -208,23 +230,37 @@ work_items:
       - dag-ml-data/crates/dag-ml-data-wasm/
       - dag-ml-data/docs/contracts/
       - dag-ml-data/scripts/validate_contracts.py
+      - dag-ml-data/scripts/smoke_wasm_provider_bindings.cjs
+      - dag-ml-data/scripts/validate_release_metadata.py
+      - dag-ml-data/.github/workflows/ci.yml
+      - dag-ml-data/docs/STATUS.md
+      - dag-ml-data/docs/SUPPORTED.md
     acceptance_tests:
       - branch views by_source, by_metadata, by_tag and closed by_filter preserve relation identity and reject unknown or unconstrained selectors
       - feature fusion and collation preserve source layout, repetition identity, masks and stable release of data and child-view handles
-      - Cargo workspace fmt, Clippy with warnings denied and tests pass with 272 passed and 2 documented performance probes ignored
+      - Cargo workspace fmt, Clippy with warnings denied and tests pass with exactly 272 passed and 2 documented performance probes ignored
       - C header/link, provider-vtable and Python ctypes smoke tests execute against the real C ABI
-      - dag-ml-data 4c8ce37 validates against selected Dag-ML 29abd30 and the same Dag-ML validates back against this exact dag-ml-data checkout
-      - release metadata validates as dag-ml-data 0.2.9 and the selected commit is advertised by origin/main
+      - CPython 3.11, 3.12 and 3.13 build/install the exact abi3 Dag-ML and dag-ml-data wheels; the pure ctypes provider wheel plus four pytest cases and the Dag-to-Data integration pass on all three
+      - Node 20, 22 and 24 execute default Dag/Data, Web, tarball, cross-repository and opt-in provider runtime smokes; provider lifecycle covers materialize, by_source, targets, typed f64 projection, collation, release and use-after-release refusal
+      - R 4.1.2 builds, installs, loads and executes the native package on Linux; R CMD check has zero errors and one explicitly open non-standard-license warning
+      - Data workspace plus Dag core, C ABI and WASM cross-compile for linux-aarch64, macOS x64/arm64 and Windows MSVC without claiming execution on those targets
+      - dag-ml-data bba0e2e validates against selected Dag-ML 4988542 and the same Dag-ML validates back against this exact dag-ml-data checkout
+      - release metadata validates as dag-ml-data 0.2.9; all seven crates package and the seven-crate publish-plan dry-run passes
     review: >-
-      A dirty historical `RC-v1-dmd` worktree is explicitly rejected as release
-      evidence and remains untouched. The clean selection is the remotely
-      advertised 4c8ce37 head in an isolated worktree. It includes native
-      branch filters and the mirrored predict-cohort envelope v2 required by
-      the selected Dag-ML contract. Full workspace Rust/C ABI qualification and
-      both directions of `validate_contracts.py` pass against Dag-ML 29abd30.
-      This closes the native provider/lockstep slice only; Python, R, WASM and
-      platform packaging must still be replayed from the final aggregation lock
-      before LOCK-DATA can be promoted.
+      A dirty historical `RC-v1-dmd` worktree is explicitly rejected as
+      release evidence and remains untouched. Clean canonical commit bba0e2e
+      advances 4c8ce37 with a fail-closed executable WASM provider smoke and
+      release-metadata ratchet. Full Rust/C ABI, Python 3.11-3.13, Node
+      20/22/24, Linux R and packaging/cross-compile qualification passes, and
+      both directions of `validate_contracts.py` pass against the selected
+      docs-only Dag-ML descendant 4988542.
+      LOCK-DATA remains open honestly: production providers beyond in-memory
+      are still Backlog, the ctypes wheel does not bundle the native cdylib,
+      the published npm artifact is JSON-only while the provider is opt-in,
+      no real macOS/Windows/aarch64 runtime was executed, and the R license
+      warning remains for the release gate. The new DMD and Dag SHAs are not
+      yet advertised by a remote ref, so the final lock cannot claim remote
+      reconstruction.
     rollback: select the previous advertised dag-ml-data ref without modifying the dirty historical RC worktree or any user data.
   - id: FMT-001
     owner: C + G
@@ -424,6 +460,50 @@ work_items:
       evidence for the next Core release, not a claim that published 0.3.22 or the Studio sidecar
       already performs the cross-component call.
     rollback: disable the additive native conformal capability and retain the R1 legacy engine; never rewrite legacy archives.
+  - id: WEB-001
+    owner: F + G
+    dependencies:
+      - CAP-001
+      - DATA-003
+    state: strict_wasm_product_profile_qualified_transitional_profile_explicit
+    input_sha: 4fcd43debdb2678d447023cc44829505a251163a
+    owned_files:
+      - nirs4all-web/web-app/src/engine/web-profile.ts
+      - nirs4all-web/web-app/src/engine/main-engine.ts
+      - nirs4all-web/web-app/src/engine/dagml-engine.ts
+      - nirs4all-web/web-app/src/engine/worker.ts
+      - nirs4all-web/web-app/src/engine/client.ts
+      - nirs4all-web/web-app/src/engine/client.singlefile.ts
+      - nirs4all-web/web-app/src/engine/fixtures/core-parity/
+      - nirs4all-web/web-app/scripts/validate-web-profile.mjs
+      - nirs4all-web/web-app/scripts/run-smokes.mjs
+      - nirs4all-web/web-app/tests/rt-fallback-smoke.mjs
+      - nirs4all-web/web-app/vite.config.ts
+      - nirs4all-web/web-app/package.json
+      - nirs4all-web/.github/workflows/web-ci.yml
+      - nirs4all-web/.github/workflows/deploy-pages.yml
+    acceptance_tests:
+      - the standard production build and explicit strict build select strict-wasm; development, test, transitional and single-file modes remain visibly separate profiles
+      - strict-wasm refuses allowFallback true, direct/offline runners, JavaScript model execution, provider-to-in-memory matrix degradation and scheduler fallback at request, engine and worker boundaries
+      - the product remains client-side only and permits only a healthy portable Core/WASM plus Dag-ML, libn4m and provider chain; remote compute is not introduced
+      - every build emits nirs4all-web-profile.v1.json and validation fails before preview when the requested profile differs from the artifact manifest
+      - Core parity oracle and four pipeline fixtures are vendored with exact source SHA-256 fc008911607a3260218d98fee86ec38e4dd0e5994e91126f7403baff5bc7377c, so isolated worktrees execute rather than silently skip parity
+      - Node 22 full Vitest passes 178 tests, strict-profile Vitest passes 20, TypeScript passes, and the ABI catalogue proves 64 referenced symbols against 733 exports plus five Studio DAG operators
+      - standard, strict, transitional and single-file builds pass; strict browser smoke proves allowFallback true is refused and transitional smoke proves the historical fallback remains typed, finite and explicitly diagnosed
+      - a strict artifact requested as transitional exits 2 before starting a preview server
+    review: >-
+      Web commits 0154611, 415bc34 and 4fcd43d establish the strict product
+      profile, remove parity-test dependence on sibling checkout topology, and
+      make the browser fallback smoke profile-aware. The strict profile has no
+      hidden JavaScript or scheduler degradation; transitional behavior remains
+      available only through an explicit development/single-file build and
+      artifact manifest. The full unit/type/build/catalog and strict plus
+      transitional fallback gates pass on the selected clean Web worktree.
+      Artifact-driven converted-prediction/performance smokes, the Python paper
+      repository handoff and optional external format datasets remain separate
+      release gates and are not masked or claimed by this item. Final staged
+      WASM binaries must still be rebuilt from the future aggregation lock.
+    rollback: revert the strict profile selector, manifest and profile-aware smoke commits together; preserve user browser storage and exported n4a artifacts.
   - id: DOC-WEB-001
     owner: H + F + G
     dependencies:
@@ -654,10 +734,11 @@ work_items:
       (SHA-256 28838128b4bc7a615cc9c4d2ef1bfffb03a3874b9b06a758d6fe7e9638a99e6a),
       plus Methods source aabdecfdd76d1a4d12cfbbade4eeee0d30a6ea47 and
       libn4m.so SHA-256 95ae3b4df320ea232a180a0e5e251abfe8f9c9ab235a11384be8ed85bfecdccf.
-      No wheel, shared library, archive or build output is tracked. This does
-      not close general API-002/API-003: preprocessing, branches, HPO,
-      conformal, multi-target and the default dag-ml producer path remain to
-      be generalized and qualified.
+      No wheel, shared library, archive or build output is tracked. This item
+      did not by itself close general API-002/API-003: preprocessing, branches,
+      HPO, conformal, multi-target and the default dag-ml producer path still
+      required separate qualification. Subsequent API-002 evidence closes only
+      the bounded Methods PLS multi-target lane.
     rollback: remove the additive engine native producer and retain the default dag-ml plus explicit legacy profiles; never rewrite or delete user archives.
   - id: API-003
     owner: E + C
@@ -686,9 +767,52 @@ work_items:
       cache contains no native model handle and cannot bypass tamper checks.
       `run(..., session=..., engine="native")` remains explicitly refused
       before PipelineRunner construction. Native multi-run reuse and the
-      general DAG/data cache are still API-003 work, while preprocessing,
-      branches, HPO, conformal and multi-target prediction remain API-002/001.
+      general DAG/data cache are still API-003 work. At this checkpoint,
+      preprocessing, branches, HPO, conformal and multi-target prediction
+      remained API-002/001 work; the subsequent API-002 item closes only
+      bounded Methods PLS multi-target prediction.
     rollback: remove only the additive native Archive V2 session cache/lifecycle path; preserve archives and the explicit legacy profile.
+  - id: API-002
+    owner: E + C
+    dependencies:
+      - SAVE-002
+      - API-003
+    state: native_methods_pls_archive_v2_multitarget_run_save_load_predict_qualified_general_dag_pending
+    input_sha: 80eafd53ecf786429d8a9ceb7bae844beb6abcf8
+    owned_files:
+      - nirs4all/nirs4all/api/native_archive_training.py
+      - nirs4all/nirs4all/pipeline/dagml/core_archive_replay.py
+      - nirs4all/nirs4all/pipeline/dagml/raw_training_lowerer.py
+      - nirs4all/tests/integration/api/test_native_archive_v2_training_cycle.py
+      - nirs4all/tests/unit/api/test_core_archive_predict.py
+      - nirs4all-core/bindings/rust/nirs4all/Cargo.toml
+      - nirs4all-core/bindings/python/tests/test_archive_live.py
+      - nirs4all-core/Cargo.lock
+    acceptance_tests:
+      - native raw training accepts y with shape N by Q; Q greater than one requires explicit non-empty unique target_names whose length exactly matches Q, while the qualified single-target surface remains unchanged
+      - target_names cross the request, binding and Methods archive boundary and are returned in PredictResult metadata; any replay width mismatch fails closed
+      - raw Dag JSON contracts remain authoritative and the multi-target path never constructs PipelineRunner, installs an operation callback or performs an implicit legacy fallback
+      - a real N by 2 cycle trains, exports, closes, reopens a Session, predicts repeatedly and through a fresh process, and direct prediction preserves finite identical values and requested sample IDs
+      - Core revalidates archive inventory and refuses one-byte N4MM tampering; the witness uses exact Dag-ML and dag-ml-core 0.3.18 plus the selected Methods ABI
+      - Python Ruff and targeted Mypy pass, 21 targeted tests pass with one optional live skip, and the complete unit/API suite passes 414 tests
+      - Core fmt, Clippy with warnings denied, 63 Rust tests and one doctest pass; two real archive live witnesses and the promoted Python N by 2 gate pass
+    review: >-
+      Python commit 80eafd53 promotes the bounded multi-target Archive V2 lane
+      after Core commit 085ab611 pins both dag-ml and dag-ml-core to the
+      selected 0.3.18 release. The qualified Core abi3 wheel SHA-256 is
+      d08e4ff36b0b901105da8dc03f34064eec628e9d90786f34f95beea219d10e19,
+      the Dag-ML wheel SHA-256 is
+      db3394a4e2ea74b40038235e807e5f2b9027fc9eaf94557040e20216897c86dc,
+      and the exact libn4m SHA-256 is
+      95ae3b4df320ea232a180a0e5e251abfe8f9c9ab235a11384be8ed85bfecdccf.
+      The generated archive witness SHA-256 is
+      994252030ff80129d0431995bae53eb473082f05825b65714379262b72af13fa.
+      This closes multi-target Methods PLS replay only. Preprocessing, branches,
+      HPO, conformal, arbitrary controllers, native multi-run reuse and the
+      default producer cutover remain open API-001/API-002/API-003 work.
+      The Core wheel's historical omission of the additive n4a Python facade
+      remains a packaging limitation and is not hidden by this evidence.
+    rollback: remove only the multi-target lowering/replay additions and restore the prior Core Dag-ML pins together; preserve user archives and the explicit legacy profile.
   - id: SAVE-003
     owner: D
     dependencies:
@@ -1000,10 +1124,12 @@ work_items:
     dependencies:
       - STU-002
       - STU-005
-    state: native_job_http_ws_lifecycle_wired_submission_renderer_and_durable_reads_pending
-    input_sha: 23d1596a7b5139b1c8c442d13a8430768539961d
+    state: native_job_http_ws_lifecycle_and_durable_reads_wired_submission_renderer_pending
+    input_sha: 9814610d96e29909e6d8898552fe8569c6926016
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
+      - nirs4all-studio/sidecar/contracts/studio_execution_job_record_v1.json
+      - nirs4all-studio/sidecar/src/execution_job_records.rs
       - nirs4all-studio/sidecar/src/job_http.rs
       - nirs4all-studio/sidecar/src/job_lifecycle.rs
       - nirs4all-studio/sidecar/src/lib.rs
@@ -1025,8 +1151,11 @@ work_items:
       - pending cancellation becomes terminal and emits exactly one legacy job_failed event; running cancellation remains cooperative and emits nothing until acknowledged; job_cancelled remains unreachable
       - response envelopes expose exactly the four renderer keys and enforce the event-size budget before state mutation; the shared WebSocket queue remains bounded to 64
       - real loopback HTTP plus RFC 6455 proves cancellation reaches the shared registry and publishes the exact renderer failure without internal fields
-      - combined selected Studio RC passes 110 Rust tests with one opt-in owner differential ignored, fmt and Clippy warnings denied
-      - scientific submission, renderer route selection and the two durable WorkspaceStore execution-job-record reads remain explicitly unselected and fail closed
+      - both frozen durable execution-job-record GET routes require an active linked workspace and read bounded per-run snapshots without consulting the in-memory registry or invoking Python
+      - the durable reader rejects symlinks, workspace escape, oversized or changing files, malformed or unknown fields and payload identity mismatch; legacy missing progress fields normalize explicitly
+      - known run identities are joined through the immutable Store v5 projection while orphan job lookup remains bounded to request.run_name; neither route retries FastAPI after native selection
+      - combined selected Studio RC passes 115 Rust tests with one opt-in owner differential ignored, fmt and Clippy warnings denied; the real fresh isolated CPython owner differential passes 1/1 after integration
+      - scientific submission and renderer route selection remain explicitly unselected and fail closed
     review: >-
       Commit a9e57e2 freezes an executable R2 target without claiming a live
       WebSocket implementation. It distinguishes the sequenced native internal
@@ -1042,10 +1171,13 @@ work_items:
       same authoritative runtime, with a real HTTP/WebSocket differential and
       no FastAPI, Uvicorn, CPython or fallback. Integration commit 23d1596
       composes the job and run-detail capability assertions. The default
-      ScientificJobExecutor remains deliberately unselected; durable execution
-      records belong to WorkspaceStore, not the in-memory registry. Renderer
-      selection, scientific submission, independent transport review,
-      LOCK-STUDIO and R2-W2 remain open.
+      ScientificJobExecutor remains deliberately unselected. Studio commit
+      9814610 adds the two bounded durable execution-record reads from linked
+      workspaces, joins known run identity through Store v5, and refuses
+      symlinks, mutation and malformed snapshots without Python or FastAPI.
+      Durable records remain WorkspaceStore-owned rather than in-memory
+      registry state. Renderer selection, scientific submission, independent
+      transport review, LOCK-STUDIO and R2-W2 remain open.
     rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
   - id: STU-006
     owner: F
@@ -1177,7 +1309,9 @@ work_items:
 next_batch:
   gate: r2-api-studio-web-and-lock-closure
   condition: >-
-    Finish general API prediction/run coverage, Studio scientific submission
-    and durable job reads, WEB-001 strict WASM selection, and the remaining
-    data binding matrix; then run differential/performance/install gates and
-    regenerate a reconstructible selected-workspace lock before CUT-001.
+    Finish general API prediction/run coverage beyond the bounded multi-target
+    Methods PLS lane, Studio scientific submission and renderer selection, and
+    the remaining data binding matrix; then run artifact-driven
+    differential/performance/install gates, rebuild Web WASM from those exact
+    artifacts, and regenerate a reconstructible selected-workspace lock before
+    CUT-001.
