@@ -534,8 +534,8 @@ work_items:
     dependencies:
       - STORE-001
       - STU-001
-    state: native_run_and_pipeline_summary_readers_selected_pending_full_scanner_repository_parity
-    input_sha: 56a9eb1e
+    state: native_run_pipeline_and_ranked_chain_readers_selected_pending_results_policy_and_full_scanner_repository_parity
+    input_sha: ece5d7fd
     owned_files:
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
       - nirs4all/nirs4all/pipeline/storage/workspace_read_contract.py
@@ -553,21 +553,24 @@ work_items:
       - WorkspaceStore v5 run-summary projection opens store.sqlite with SQLite immutable read-only mode and executes against a fresh Store without creating WAL or SHM files
       - contract resource is packaged under nirs4all.pipeline.storage and rejects a contract whose declared schema version differs from the installed WorkspaceStore schema
       - focused pytest and Ruff pass; the module passes Mypy with dependency following disabled while the project-wide configured Mypy baseline retains unrelated failures
-      - native sidecar contract copy is byte-identical to the published resource (SHA-256 6de812516459d7dd49ea0aa16d04eb5777cddfbfb00836fad38d197b5a22e8f6)
+      - native sidecar contract copy is byte-identical to the published resource (SHA-256 7147b9ad47b39d4d36ab39a72208ca888dd5693b1b3c1fcd72d45bc7cafde9c5)
       - Store v5 run-summary timestamps declare ISO 8601 serialization; the native reader normalizes the SQLite separator and its complete response equals the Python-written fixture
       - native reader accepts only exact Store v5 run-summary fields, refuses active SQLite journals and database changes, and reads the Python-written fixture without WAL or SHM creation
       - public Store v5 pipeline-summary projection declares its count query, nullable fields and deterministic public list_pipelines ordering; the Python-written SQLite fixture is SHA-256 6d993625d44196a2812b3497b9776ada007ce099c88e904dba951ffa17460491
+      - public studio_chain_ranked_v1 projection requires explicit dataset, metric and asc/desc direction, bounds pages to 100, uses a matching count query, sorts null-last with chain_id tie-breaking, and excludes chains without predictions
+      - producer regression tests prove asc/desc ordering, stable offset/count, mixed-metric filtering, pending-pipeline inclusion and prediction eligibility against Store v5 without publishing the private Studio results-summary policy
     review: >-
-      Phase 2 evidence: nirs4all commit 56a9eb1e extends the public v5 contract
+      Phase 2 evidence: nirs4all commits 56a9eb1e and ece5d7fd extend the public v5 contract
       with a bounded pipeline-summary projection, count query, nullable values and
-      deterministic list_pipelines ordering; Studio commit d1260b1 consumes its
-      byte-identical copy through strict Rust readers. The readers check PRAGMA
+      deterministic list_pipelines ordering, followed by an explicitly directed,
+      deterministic studio_chain_ranked_v1 primitive. Studio commits d1260b1 and
+      73b3aec consume its byte-identical copy through strict Rust readers. The readers check PRAGMA
       user_version == 5, projection columns, bound limit/offset, active journal
       sidecars, and snapshot stability before returning Python-written run and
       pipeline fixtures. The Electron transport selects only bare run-summary and
       filter-free pipeline-summary GET requests in opt-in sidecar mode. Explicit
-      source/refresh scanner queries, filtered results, real results summary, chain
-      ranking, legacy manifest/Parquet scans, enriched runs, run detail, predictions,
+      source/refresh scanner queries, filtered results, real results summary, results
+      selection policy, dataset links, legacy manifest/Parquet scans, enriched runs, run detail, predictions,
       results-repository, mutation, arrays, artifacts, and scientific execution remain
       FastAPI-owned; native query or compatibility rejection never triggers a hidden
       FastAPI retry. Local-volume SQLite is the supported surface; Windows UNC/device
@@ -579,8 +582,8 @@ work_items:
     dependencies:
       - STU-001
       - STORE-002
-    state: native_run_and_pipeline_summary_routes_selected_pending_full_scanner_repository_parity
-    input_sha: d1260b1
+    state: native_run_and_pipeline_summary_routes_plus_ranked_chain_reader_selected_pending_results_policy_and_full_scanner_repository_parity
+    input_sha: 73b3aec
     owned_files:
       - nirs4all-studio/sidecar/Cargo.toml
       - nirs4all-studio/sidecar/Cargo.lock
@@ -604,6 +607,7 @@ work_items:
       - Electron selects only the filter-free pipeline-summary endpoint; query-bearing results, real /results/summary, chain ranking, predictions and every mutation remain FastAPI-owned, and a native refusal never retries FastAPI
       - focused nirs4all pytest passed (2); Ruff and Mypy passed
       - Studio Vitest passed 519 files / 3,737 tests; tsc --noEmit and targeted ESLint passed; Rust format/clippy passed with 40 unit and 5 frozen sidecar contract tests; the scanner oracle response matched exactly
+      - public Rust workspace_store reader consumes studio_chain_ranked_v1 without metric inference and passes asc/desc, tie, null-last, offset/count, mixed-metric, invalid-JSON, eligibility and bound tests; full Rust gate passes 42 unit and 5 frozen contract tests
     review: >-
       Studio commit d1260b1 selects bounded direct sidecar readers only for bare Store
       v5 run-summary and filter-free pipeline-summary GET requests, verifying exact
@@ -612,7 +616,12 @@ work_items:
       reclassify source/refresh scanner queries, filtered results, real results
       summary, chain ranking, legacy manifest/Parquet discovery, enriched runs, run
       detail, predictions, results-repository, mutations, arrays, artifacts, or
-      scientific execution: FastAPI remains their product owner. The selected readers
+      scientific execution: FastAPI remains their product owner. Studio commit 73b3aec
+      additionally consumes the owner-published ranked-chain primitive through the
+      public Rust workspace_store module, with explicit direction and deterministic
+      paging, but deliberately exposes no /results/summary route because metric
+      direction, refit synthesis, variant-param merging and dataset-link mapping are
+      not yet public owner contracts. The selected readers
       have no implicit Python or FastAPI fallback. STU-005 remains incomplete until
       those scanner/repository surfaces have public native contracts and approved
       parity fixtures; LOCK-STUDIO, R2 parity, and every R3/R4 drop claim remain
