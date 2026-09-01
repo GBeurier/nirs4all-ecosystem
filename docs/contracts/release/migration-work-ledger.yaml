@@ -728,11 +728,12 @@ work_items:
     dependencies:
       - STORE-001
       - STU-001
-    state: native_run_pipeline_ranked_chain_results_summary_discovery_and_run_detail_runtime_inputs_promoted_to_python_rc
-    input_sha: b0d97cea6561583251c03304ea2fcaf752d945ed
+    state: native_store_reads_and_run_detail_owner_cpython_boundary_qualified_on_python_rc
+    input_sha: 030a9f94bba2112d2d72102c9767533b62bee1a3
     owned_files:
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_results_summary_v1.json
+      - nirs4all/nirs4all/pipeline/storage/contracts/studio_run_detail_http_v1.json
       - nirs4all/nirs4all/pipeline/storage/workspace_read_contract.py
       - nirs4all/nirs4all/pipeline/storage/workspace_store.py
       - nirs4all/nirs4all/pipeline/storage/__init__.py
@@ -758,8 +759,10 @@ work_items:
       - query_top_chains now applies chain_id ASC as a stable score-tie breaker; unknown metrics use the results-summary policy default higher-is-better at every summary ranking stage
       - studio_run_discovery_query_v1 publishes the exact source unified/manifests/parquet and refresh true/false scanner query allowlist with immutable Store-v5 read semantics, duplicate/unknown rejection and no fallback (SHA-256 354ec768f883ec6f4a1fa3831cf650f030920b08792dbe4e92c757478e129637)
       - studio_run_detail_v1 publishes the deterministic Store-owned run/pipeline/log projection with recursive non-finite normalization, immutable read and fail-closed schema/journal/change/JSON checks (contract SHA-256 91733eab5de6ace6f3bb3e6534c46daf4055dcc343f26da0d85b7c8b30c82e27)
-      - studio_run_detail_http_v1 publishes exact Store/splitter/results inputs and ownership boundaries, then owner commit b4b04b8f materializes splitters plus six optional runtime columns with explicit stored/absent provenance (contract SHA-256 773ee2bd36e154a9090c8e2978c1f7703eebff68e02c0e3c2dab2ca30eeb0a8d; golden SHA-256 1053274a5d5a900bb3511afc3290c0adae5a1c2b84beacb742fd650f806c19bd)
+      - studio_run_detail_http_v1 publishes exact Store/splitter/results inputs and ownership boundaries, then owner commit b4b04b8f materializes splitters plus six optional runtime columns with explicit stored/absent provenance; the qualified current contract SHA-256 is 8230963eeb317ccacf5fa83a29fec730a830ebbb81ead9d16629251a1993ab1 and golden SHA-256 is 1053274a5d5a900bb3511afc3290c0adae5a1c2b84beacb742fd650f806c19bd
       - historical Store-v5 databases without runtime columns emit null plus absent_in_store_v5; present text/JSON columns are shape-checked, non-finite values normalize recursively, and malformed data refuses under immutable before/after database stamps
+      - public owner callable studio_run_detail_http_inputs_v1 accepts only workspace_path and run_id, derives splitter data from historical expanded_config before the consumer boundary, and exposes no native ABI or Store-v5 schema change
+      - a fresh isolated CPython subprocess with explicit host dependency roots returns strict finite JSON without FastAPI, without constructing PipelineRunner, without SQLite byte changes or journal sidecars, and with a 30-second test bound
     review: >-
       Phase 2 evidence: nirs4all commits 56a9eb1e, ece5d7fd, 0288b1e5,
       09702901 and b7a5ff3e extend the public v5 contract
@@ -797,6 +800,17 @@ work_items:
       lineage; the RC retains its independent Windows atomic-replace fix and
       API/session work. On that selected RC, 20 storage/splitter tests, 38
       public API/archive-session contract tests, Ruff and targeted Mypy pass.
+      Follow-up Python RC commits f3d83a98 and 030a9f94 make the already
+      exported `studio_run_detail_http_inputs_v1(workspace_path, run_id)`
+      boundary explicit and qualify it through a fresh `python -I` process.
+      Contract SHA-256 is
+      8230963eeb317ccacf5fa83a29fec730a830ebbb81ead9d16629251a1993ab1;
+      the owner golden remains
+      1053274a5d5a900bb3511afc3290c0adae5a1c2b84beacb742fd650f806c19bd.
+      The isolated host receives only explicit site/dist-packages roots, not
+      PYTHONPATH or sibling sources, and failures preserve child stdout/stderr.
+      This closes the Python owner materializer boundary, not the Studio route:
+      bounded Rust host invocation and response composition remain STU-005.
     rollback: remove only the published contract/resource/test; do not alter existing workspace databases or conversion outputs.
   - id: STU-005
     owner: D + F
