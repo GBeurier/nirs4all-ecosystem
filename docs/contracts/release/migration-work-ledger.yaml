@@ -42,11 +42,8 @@ initialization:
       docs/contracts/release/public-v1-surface-matrix.n4a.json validate
   control_tests:
     status: passed
-    command: >-
-      python3.11 -m pytest -q tests/test_release_lock.py
-      tests/test_native_capability_ledger.py tests/test_release_surface_matrix.py
-      tests/test_cutover_state_gate.py
-    result: 73 passed, 1 skipped (2026-08-31)
+    command: python3 -m pytest -q
+    result: 228 passed, 1 skipped (2026-09-01)
   dagml_data_lockstep_validation:
     status: passed_selected_pair_linux_binding_matrix_qualified_release_runtime_matrix_pending
     command: >-
@@ -504,6 +501,37 @@ work_items:
       release gates and are not masked or claimed by this item. Final staged
       WASM binaries must still be rebuilt from the future aggregation lock.
     rollback: revert the strict profile selector, manifest and profile-aware smoke commits together; preserve user browser storage and exported n4a artifacts.
+  - id: GATE-001
+    owner: G
+    dependencies:
+      - PAR-001
+      - CAP-001
+    state: strict_artifact_harness_complete_runtime_launchers_and_perf_pending
+    input_sha: b9be6bfaad75cf6b9a9957ff54758626d8f97e7c
+    owned_files:
+      - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
+      - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
+      - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/json_result_adapter.py
+      - nirs4all-benchmarks/src/nirs4all_benchmarks/cli.py
+      - nirs4all-benchmarks/tests/test_artifact_qualification.py
+      - nirs4all-benchmarks/docs/QUALIFICATION.md
+      - nirs4all-benchmarks/docs/CLI.md
+    acceptance_tests:
+      - the manifest names Python oracle, Core/Rust, Studio sidecar and Web/WASM exactly once and pins every scenario, executable and input artifact by absolute path plus SHA-256
+      - adapters execute in a temporary directory with a cleaned environment and cannot discover sibling checkouts or inject source trees through PYTHONPATH
+      - every component reports version, forty-character commit SHA, artifact evidence, timings, metrics, observation digest and a terminal passed, refused or failed disposition
+      - missing or digest-mismatched inputs refuse before execution; unfinished output, declared fallback, identity mismatch and numerical divergence never pass
+      - an unavailable runtime launcher is represented as required and makes the overall gate refused; it is never silently skipped
+      - Ruff passes, Mypy passes over the source package, the isolated checkout passes 109 tests, and the wheel plus frontend syntax gates pass
+    review: >-
+      Benchmarks commit b9be6bf adds the executable stdio JSON protocol, strict
+      four-runtime runner, finalized-JSON adapter, CLI and negative tests. An
+      independent detached-worktree rerun confirmed Ruff, source Mypy and all
+      109 tests. This closes the reproducible harness only. Runtime-specific
+      scientific launchers, a four-way executed report and PERF-001 budgets
+      remain open; their absence produces an explicit required-adapter refusal
+      rather than a skip or a partial green claim.
+    rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
     dependencies:
@@ -1311,7 +1339,7 @@ next_batch:
   condition: >-
     Finish general API prediction/run coverage beyond the bounded multi-target
     Methods PLS lane, Studio scientific submission and renderer selection, and
-    the remaining data binding matrix; then run artifact-driven
-    differential/performance/install gates, rebuild Web WASM from those exact
-    artifacts, and regenerate a reconstructible selected-workspace lock before
-    CUT-001.
+    the remaining data binding matrix; connect all four runtime-specific
+    launchers to the strict GATE-001 harness, run differential/performance and
+    install gates, rebuild Web WASM from those exact artifacts, and regenerate
+    a reconstructible selected-workspace lock before CUT-001.
