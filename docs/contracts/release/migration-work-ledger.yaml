@@ -538,6 +538,39 @@ work_items:
       - Python 3.11 archive suite 11 passed against exact pinned legacy loader oracle
     review: Sol-xhigh ACCEPT. W1 pack mismatch and missing paired dag-ml-data branch make the global CI/oracle path unproven and are separate release blockers.
     rollback: revert only the archive contract/validator/tests/CI oracle block; do not modify historical archives, W1 packs, or user data.
+  - id: SAVE-002
+    owner: D + E
+    dependencies:
+      - SAVE-001
+      - STORE-001
+      - MTH-002
+    state: minimal_methods_pls_archive_v2_run_save_close_load_predict_complete_generalization_pending
+    input_sha: 7b762bc90e7b1b48377ca0f4cc5f2265e92f2b97
+    owned_files:
+      - nirs4all/nirs4all/api/native_archive_training.py
+      - nirs4all/nirs4all/api/run.py
+      - nirs4all/nirs4all/pipeline/engine.py
+      - nirs4all/nirs4all/pipeline/dagml/raw_training_lowerer.py
+      - nirs4all/tests/integration/api/test_native_archive_v2_training_cycle.py
+    acceptance_tests:
+      - explicit engine native lowers raw X/y/sample_ids, one splitter and one sklearn PLSRegression to controller:methods.pls without constructing PipelineRunner or installing an op callback
+      - DAG-ML executes Methods training and exports Package V2 in portable_required/native_portable mode; Core alone writes and validates the Archive V2 container
+      - a public run saves Archive V2/N4MM, closes all native handles, then a fresh process load_session predict and direct predict preserve requested sample IDs and finite identical values on new data
+      - one-byte N4MM tampering is refused by the Core inventory hash/size validation before replay
+      - default dag-ml and explicit legacy behavior remain unchanged; the additive native lane is fail-closed and has no implicit PipelineRunner fallback
+      - selected Python RC passes 55 non-live tests with one opt-in live skip, Ruff and targeted Mypy; the exact live native gate passes all 56 tests
+    review: >-
+      Commit 7b762bc closes SAVE-002 only for the deliberately frozen portable
+      minimum. The live witness used Core source
+      fd89d75a19d86a398b382b521fd64693e504c636 and its 0.3.22 abi3 wheel
+      (SHA-256 28838128b4bc7a615cc9c4d2ef1bfffb03a3874b9b06a758d6fe7e9638a99e6a),
+      plus Methods source aabdecfdd76d1a4d12cfbbade4eeee0d30a6ea47 and
+      libn4m.so SHA-256 95ae3b4df320ea232a180a0e5e251abfe8f9c9ab235a11384be8ed85bfecdccf.
+      No wheel, shared library, archive or build output is tracked. This does
+      not close general API-002/API-003: preprocessing, branches, HPO,
+      conformal, multi-target and the default dag-ml producer path remain to
+      be generalized and qualified.
+    rollback: remove the additive engine native producer and retain the default dag-ml plus explicit legacy profiles; never rewrite or delete user archives.
   - id: STORE-001
     owner: D + E
     dependencies:
