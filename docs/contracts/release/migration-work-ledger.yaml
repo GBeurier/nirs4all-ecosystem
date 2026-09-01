@@ -652,6 +652,36 @@ work_items:
       conformal, multi-target and the default dag-ml producer path remain to
       be generalized and qualified.
     rollback: remove the additive engine native producer and retain the default dag-ml plus explicit legacy profiles; never rewrite or delete user archives.
+  - id: API-003
+    owner: E + C
+    dependencies:
+      - SAVE-002
+    state: archive_v2_multi_predict_session_lifecycle_complete_native_run_session_and_general_cache_pending
+    input_sha: 9b862952c5695bbc1327c7ec5e92af71d40ef46f
+    owned_files:
+      - nirs4all/nirs4all/api/session.py
+      - nirs4all/nirs4all/pipeline/dagml/core_archive_replay.py
+      - nirs4all/tests/unit/api/test_core_archive_session.py
+      - nirs4all/tests/integration/api/test_native_archive_v2_training_cycle.py
+    acceptance_tests:
+      - a native Archive V2 Session performs multiple predictions while preserving requested sample IDs and never constructing PipelineRunner
+      - the session cache retains only the validated Package V2 value plus the Core module and archive path; no Methods handle persists between predictions
+      - Core revalidates the archive inventory on every replay, so an atomic archive replacement with a one-byte-tampered N4MM member is refused on the next prediction
+      - cached Package V2 data is immutable from the caller and repeated predictions keep identical finite values
+      - Session.close is terminal and idempotent, detaches each native result once, closes the runner and purges the archive cache
+      - run, predict, retrain, save, runner access and context-manager re-entry all fail closed after close
+      - selected Python RC passes 440 unit/integration API tests with one opt-in live skip and Ruff; the real Core/DAG-ML/Methods Archive V2 gate passes 3/3
+    review: >-
+      Python RC commits 1216eedf and 9b862952 close the Archive V2
+      multi-predict and terminal Session lifecycle without broadening the
+      portable minimum qualified by SAVE-002. Core remains the authority for
+      archive integrity and revalidates bytes on every replay; the Python
+      cache contains no native model handle and cannot bypass tamper checks.
+      `run(..., session=..., engine="native")` remains explicitly refused
+      before PipelineRunner construction. Native multi-run reuse and the
+      general DAG/data cache are still API-003 work, while preprocessing,
+      branches, HPO, conformal and multi-target prediction remain API-002/001.
+    rollback: remove only the additive native Archive V2 session cache/lifecycle path; preserve archives and the explicit legacy profile.
   - id: SAVE-003
     owner: D
     dependencies:
@@ -849,8 +879,8 @@ work_items:
     dependencies:
       - STU-001
       - STORE-002
-    state: native_store_run_detail_preselection_proven_route_forbidden_pending_owner_materializer
-    input_sha: e88d83eacc9e69a0fad9663b46af95fbe3595f95
+    state: native_store_run_detail_owner_host_route_qualified_scientific_execution_still_unselected
+    input_sha: 23d1596a7b5139b1c8c442d13a8430768539961d
     owned_files:
       - nirs4all-studio/sidecar/Cargo.toml
       - nirs4all-studio/sidecar/Cargo.lock
@@ -858,8 +888,12 @@ work_items:
       - nirs4all-studio/sidecar/contracts/workspace_store_read_v1.json
       - nirs4all-studio/sidecar/contracts/workspace_store_results_summary_v1.json
       - nirs4all-studio/sidecar/contracts/studio_run_detail_preselection_v1.json
+      - nirs4all-studio/sidecar/contracts/studio_run_detail_http_v1.json
+      - nirs4all-studio/sidecar/contracts/studio_run_detail_composition_v1.json
       - nirs4all-studio/sidecar/src/lib.rs
       - nirs4all-studio/sidecar/src/results_summary.rs
+      - nirs4all-studio/sidecar/src/run_detail.rs
+      - nirs4all-studio/sidecar/src/run_detail_cpython.rs
       - nirs4all-studio/sidecar/src/run_detail_preselection.rs
       - nirs4all-studio/sidecar/src/settings.rs
       - nirs4all-studio/sidecar/src/workspace_store.rs
@@ -869,6 +903,8 @@ work_items:
       - nirs4all-studio/sidecar/tests/fixtures/workspace_store_v5_summary.sqlite
       - nirs4all-studio/sidecar/tests/fixtures/workspace_store_v5_summary.response.json
       - nirs4all-studio/sidecar/tests/fixtures/workspace_store_v5_summary_dataset_links.json
+      - nirs4all-studio/sidecar/tests/run_detail_owner_differential.rs
+      - nirs4all-studio/sidecar/tests/run_detail_preselection_contract.rs
       - nirs4all-studio/src/api/transport.ts
       - nirs4all-studio/src/api/transport.test.ts
       - nirs4all-studio/src/api/linkedWorkspaces.ts
@@ -891,14 +927,15 @@ work_items:
       - the summary route rejects query-bearing requests before routing, returns 405 for mutations, fails closed for missing/non-v5/busy stores, exposes no configurable n surface, and never retries or falls back to Python/FastAPI after native selection
       - refit-only append marking matches the Python oracle for mixed CV/final payloads, while persisted Python NaN and infinities are recursively normalized to null without discarding finite JSON siblings
       - direct native run discovery accepts only source unified/manifests/parquet and refresh true/false, matches seven exact Python goldens, rejects duplicate/unknown values before selection, and returns Store-v5 compatibility errors without FastAPI retry
-      - Rust consumes studio_run_detail_v1 and its byte-identical golden with 53 unit and 5 contract tests, but deliberately leaves GET run detail on FastAPI until dataset/CV/runtime/rerun/results/legacy composition is contracted
-      - Rust strictly validates the byte-identical studio_run_detail_http_v1 ownership/cutover policy; 27 transport tests prove run detail stays exclusively FastAPI, propagates 404 and never probes the sidecar
-      - Studio consumes the updated owner HTTP contract SHA-256 773ee2bd36e154a9090c8e2978c1f7703eebff68e02c0e3c2dab2ca30eeb0a8d and owner golden SHA-256 1053274a5d5a900bb3511afc3290c0adae5a1c2b84beacb742fd650f806c19bd
+      - Rust consumes studio_run_detail_v1 and the owner-produced studio_run_detail_http_inputs_v1 envelope without reconstructing splitters or parsing expanded_config
+      - Studio consumes owner HTTP contract SHA-256 8230963eeb317ccacf5fa83a29fec730a830ebbb81ead9d16629251a1993ab1 and owner golden SHA-256 1053274a5d5a900bb3511afc3290c0adae5a1c2b84beacb742fd650f806c19bd
       - studio_run_detail_composition_v1 freezes splitter vocabulary, runtime/provenance propagation, linked-dataset mapping, results alignment and rerun_ready; its Store-v5 response golden matches the FastAPI oracle without parsing expanded_config
       - integrated sidecar gate passes 82 Rust tests plus fmt/clippy; native composition and Store adapter pass 5 Python tests, RunDetail UI passes 5 Vitest tests, and TypeScript/Ruff/ESLint pass
-      - studio_run_detail_preselection_v1 SHA-256 0067c85d4c542a3d210664dcd1628820dcc1713e1f82171f88d9f8292d702044 resolves linked workspace ID to path in Rust and classifies exact Store v5, legacy/absent, busy and incomplete stores before the target HTTP request without caching
-      - exact Store v5 remains a native 409 reject and the detail route remains unregistered because the Store reader publishes studio_run_detail_v1 but no owner boundary publishes studio_run_detail_http_inputs_v1; consumer parsing of expanded_config remains forbidden
-      - integrated selected Studio RC passes 93 Rust tests with fmt/Clippy strict, 37 focused Vitest tests, TypeScript, targeted ESLint, 2 Python differential tests and Ruff
+      - studio_run_detail_preselection_v1 SHA-256 42b076b3cc31c167ac4366eaabb394876d84c40a044991217e2f2823a57b92c4 resolves linked workspace ID and classifies exact Store v5, legacy/absent, busy and incomplete stores before every target request without caching
+      - exact Store v5 selects the native route only after the configured CPython library host preflights the exact owner callable; legacy/absent selects the transitional plugin and busy/incomplete rejects before a target request
+      - each preflight and owner materialization uses fresh CPython isolated mode, strict JSON stdin, a 15 second deadline, 8 KiB input, 4 MiB stdout and 64 KiB stderr; malformed, oversized, timed-out or non-seven-field output fails closed
+      - Rust revalidates Store v5 immutably on the target request, validates the owner envelope, composes the response and exposes neither stderr nor the resolved workspace path; no fallback follows native selection
+      - combined selected Studio RC passes 110 Rust tests with one opt-in differential ignored, fmt and Clippy warnings denied; the real fresh-CPython owner differential passes 1/1, focused Vitest passes 34, TypeScript and targeted ESLint pass
     review: >-
       Studio commit d1260b1 selects bounded direct sidecar readers only for bare Store
       v5 run-summary and filter-free pipeline-summary GET requests, verifying exact
@@ -937,24 +974,34 @@ work_items:
       Store response composition, and e88d83e proves exact per-request
       preselection before target HTTP: legacy/absent stores select the explicit
       transition plugin, while busy/incomplete stores reject. Exact Store v5
-      also rejects because its SQLite projection does not persist the splitter
-      and result inputs required by studio_run_detail_http_inputs_v1. Until the
-      Store owner publishes that materializer boundary, the route is not
-      registered and Rust must not parse expanded_config. Scanner and repository
-      surfaces without public native contracts remain out of scope; LOCK-STUDIO,
-      R2 parity, and every R3/R4 drop claim remain pending.
+      also rejected because its SQLite projection did not persist the splitter
+      and result inputs required by studio_run_detail_http_inputs_v1. At that
+      checkpoint, the route was not registered and Rust remained forbidden to
+      parse expanded_config. Python RC f3d83a98
+      and 030a9f94 subsequently publish and qualify that owner boundary.
+      Studio commits 4cd4864 and 5d13d1d invoke it through a bounded fresh
+      CPython library host, revalidate Store v5 in Rust, compose the response
+      in Rust, and activate only the exact preselected target with no fallback.
+      Commit 23d1596 keeps the run-detail and native-job capability assertions
+      coherent after integration. This is not Python HTTP execution and does
+      not enable scientific job submission. Scanner and repository surfaces
+      without public native contracts remain out of scope; LOCK-STUDIO, R2
+      parity, and every R3/R4 drop claim remain pending.
     rollback: remove only the sidecar reader, copied public contract, fixture, and dependency additions; leave linked-workspace metadata and user workspace files unchanged.
   - id: STU-004
     owner: A + F
     dependencies:
       - STU-002
       - STU-005
-    state: native_job_registry_and_websocket_transport_implemented_wiring_and_differential_pending
-    input_sha: 7871230a7e984ff3c7efb4b0d239fa2232c54d55
+    state: native_job_http_ws_lifecycle_wired_submission_renderer_and_durable_reads_pending
+    input_sha: 23d1596a7b5139b1c8c442d13a8430768539961d
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
+      - nirs4all-studio/sidecar/src/job_http.rs
       - nirs4all-studio/sidecar/src/job_lifecycle.rs
+      - nirs4all-studio/sidecar/src/lib.rs
       - nirs4all-studio/sidecar/src/websocket_transport.rs
+      - nirs4all-studio/sidecar/tests/job_http_runtime.rs
       - nirs4all-studio/sidecar/tests/job_lifecycle_contract.rs
       - nirs4all-studio/sidecar/tests/job_lifecycle_state.rs
       - nirs4all-studio/sidecar/README.md
@@ -967,7 +1014,12 @@ work_items:
       - integrated sidecar all-target gate passed 82 tests with fmt and Clippy warnings denied
       - real loopback RFC 6455 upgrades serve /ws, /ws/job/{job_id} and /ws/training/{job_id}; job aliases auto-subscribe, JSON ping emits pong, dynamic subscribe/unsubscribe retain the frozen refusal, and renderer envelopes never expose internal protocol_version/sequence
       - each connection queue is bounded to 64 messages and saturated/dead peers are pruned; live handshake, exact channel delivery, unreachable job_cancelled, malformed envelopes and backpressure are tested
-      - cutover remains forbidden until registry events are wired to scientific runners and HTTP job state/cancellation, then HTTP/WS differential and renderer selection pass
+      - NativeJobRuntime shares one JobRegistry and WebSocketConnectionManager; three frozen status GET aliases and all five cancellation POST aliases route to that authority
+      - pending cancellation becomes terminal and emits exactly one legacy job_failed event; running cancellation remains cooperative and emits nothing until acknowledged; job_cancelled remains unreachable
+      - response envelopes expose exactly the four renderer keys and enforce the event-size budget before state mutation; the shared WebSocket queue remains bounded to 64
+      - real loopback HTTP plus RFC 6455 proves cancellation reaches the shared registry and publishes the exact renderer failure without internal fields
+      - combined selected Studio RC passes 110 Rust tests with one opt-in owner differential ignored, fmt and Clippy warnings denied
+      - scientific submission, renderer route selection and the two durable WorkspaceStore execution-job-record reads remain explicitly unselected and fail closed
     review: >-
       Commit a9e57e2 freezes an executable R2 target without claiming a live
       WebSocket implementation. It distinguishes the sequenced native internal
@@ -978,10 +1030,14 @@ work_items:
       Commits 1566bb8 and 4c3d8b9 implement the execution-agnostic bounded job
       registry and correct its metric/progress semantics against the Python
       oracle. Studio 7871230 adds the real bounded RFC 6455 connection manager
-      and three frozen aliases on the unselected sidecar port. It deliberately
-      adds no scientific runner, job HTTP wiring, renderer selection,
-      persistence or Python bridge. The integrated sidecar passes 93 tests plus
-      fmt and Clippy warnings denied. Independent transport differential review,
+      and three frozen aliases on the unselected sidecar port. Studio c4b9446
+      then wires the three status reads and five cancellation aliases to the
+      same authoritative runtime, with a real HTTP/WebSocket differential and
+      no FastAPI, Uvicorn, CPython or fallback. Integration commit 23d1596
+      composes the job and run-detail capability assertions. The default
+      ScientificJobExecutor remains deliberately unselected; durable execution
+      records belong to WorkspaceStore, not the in-memory registry. Renderer
+      selection, scientific submission, independent transport review,
       LOCK-STUDIO and R2-W2 remain open.
     rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
   - id: STU-006
