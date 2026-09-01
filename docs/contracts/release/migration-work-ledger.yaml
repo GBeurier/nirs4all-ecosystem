@@ -527,8 +527,8 @@ work_items:
     dependencies:
       - CAP-001
       - DATA-003
-    state: strict_wasm_product_profile_qualified_transitional_profile_explicit
-    input_sha: 4fcd43debdb2678d447023cc44829505a251163a
+    state: strict_wasm_archive_v2_multitarget_replay_qualified_transitional_profile_explicit
+    input_sha: 6b17d09e7e6261ff245fa1dc7e12715d6423ed05
     owned_files:
       - nirs4all-web/web-app/src/engine/web-profile.ts
       - nirs4all-web/web-app/src/engine/main-engine.ts
@@ -553,6 +553,8 @@ work_items:
       - Node 22 full Vitest passes 178 tests, strict-profile Vitest passes 20, TypeScript passes, and the ABI catalogue proves 64 referenced symbols against 733 exports plus five Studio DAG operators
       - standard, strict, transitional and single-file builds pass; strict browser smoke proves allowFallback true is refused and transitional smoke proves the historical fallback remains typed, finite and explicitly diagnosed
       - a strict artifact requested as transitional exits 2 before starting a preview server
+      - the strict product imports the canonical binary Archive V2 through Core Rust/WASM, performs one Methods multi-target replay with zero fit and zero fallback, and renders protein/moisture without substituting two mono-target operations
+      - archive bytes, matrix dimensions, cells and outputs are bounded before host copies; tamper, inventory drift and feature mismatch refuse; binary archives remain session-only and never enter localStorage
     review: >-
       Web commits 0154611, 415bc34 and 4fcd43d establish the strict product
       profile, remove parity-test dependence on sibling checkout topology, and
@@ -567,9 +569,22 @@ work_items:
       WASM binaries must still be rebuilt from the future aggregation lock.
       Core commit 7c3ed3f independently qualifies a canonical Rust-validated,
       Methods-backed Archive V2 multi-target replay surface in its packed WASM
-      aggregate under Node 22 and Node 24. That producer proof does not change
-      this selected Web commit: Web 4fcd43d has not consumed the surface, so its
-      product lane and the four-runtime gate remain required/refused.
+      aggregate under Node 22 and Node 24. At that checkpoint Web 4fcd43d had
+      not consumed the surface, so its product lane remained required/refused.
+      Web commits ff18fdc and 6b17d09 subsequently consume that exact producer
+      payload and close the product replay gap. An independent adversarial audit
+      first rejected two host allocations that preceded canonical bounds; the
+      corrective descendant checks File size before arrayBuffer and delegates
+      sample-id generation until after Core validates matrix dimensions/cells.
+      The final packed WASM SHA-256 is
+      6eb1f28ff00641415104411284029f7c49f85f612d15b70d776cf5a79edb1d82,
+      and the replay archive SHA-256 is
+      994252030ff80129d0431995bae53eb473082f05825b65714379262b72af13fa.
+      Node 22/24, 186 Vitest tests, typecheck, strict build and Chromium replay
+      pass with exact ownership and zero fit/fallback. The four npm high alerts
+      are pre-existing dev/build-tree findings; no automatic dependency rewrite
+      was applied. GATE-001 still needs its Web evidence regenerated on 6b17d09,
+      and final staged WASM bytes remain aggregation-lock work.
     rollback: revert the strict profile selector, manifest and profile-aware smoke commits together; preserve user browser storage and exported n4a artifacts.
   - id: UI-001
     owner: F + G
@@ -604,7 +619,7 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: python_legacy_and_core_executed_web_refusal_and_studio_resolver_refusal_attested
+    state: python_legacy_and_core_executed_studio_resolver_refusal_attested_web_refresh_pending_after_replay_selection
     input_sha: f0382905837bd4153180c236edb428dd0fe88a77
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
@@ -636,7 +651,7 @@ work_items:
       - the Python oracle verifies its CPython 3.11 runtime, all 44 installed wheels against their declared RECORD bytes and mandatory dependency closure, and imports only from the isolated runtime prefix
       - the Python oracle fits, exports, reloads and predicts the exact legacy PLS witness; Python and Core both pass with maximum absolute difference 2.870914617147946e-10 and zero observations outside tolerance
       - source checkout injection, native or dag-ml oracle substitution, fallback, outer artifact tamper and installed-byte tamper all refuse without becoming a skip
-      - selected Web 4fcd43d proves its strict-wasm profile and six exact WASM digests but remains required/refused before browser launch because it exposes neither Archive V2 replay nor a single multi-target result contract
+      - Benchmarks f038290 still records Web 4fcd43d as a required refusal; selected Web has advanced to 6b17d09 with Archive V2 multi-target replay, so the Web gate row must be regenerated from exact selected artifacts before it can pass
       - two independent Web mono-target fits are explicitly rejected as a substitute for the canonical Archive V2 multi-target operation
       - Benchmarks f038290 verifies selected Studio d829465 and Python 3b9eb3e with the canonical wheel SHA-256 24737550768868df37dc0bf11433c7bd409ef620a8667a88b99641658b5f3e6b; the bounded callable and Rust terminal bridge execute directly in the harness but product selection remains false because the scientific request resolver is unavailable
       - Studio refusal occurs before request-body parsing, workspace access, job allocation, event publication, durable writes or scientific execution; submission transport, a Python listener, fabricated JSON or direct Core replay outside Studio are rejected substitutes
@@ -699,6 +714,11 @@ work_items:
       differential, 93 targeted Electron/renderer tests, fmt, strict Clippy and
       release/contract builds. GATE-001 and PERF-001 remain open; macOS and
       Windows runtime archives were not executed locally.
+      Selected Web subsequently advanced to 6b17d09 and now exposes the exact
+      Archive V2 multi-target operation that this Bench commit lacked. That
+      product proof is recorded by WEB-001, but GATE-001 remains open until a
+      new Bench commit executes and content-addresses the selected Web artifact;
+      the stale refusal is not relabelled as a pass.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
