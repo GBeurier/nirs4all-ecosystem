@@ -534,36 +534,42 @@ work_items:
     dependencies:
       - STORE-001
       - STU-001
-    state: native_run_summary_reader_selected_pending_full_scanner_repository_parity
-    input_sha: 9c8fa7ef
+    state: native_run_and_pipeline_summary_readers_selected_pending_full_scanner_repository_parity
+    input_sha: 56a9eb1e
     owned_files:
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
       - nirs4all/nirs4all/pipeline/storage/workspace_read_contract.py
+      - nirs4all/nirs4all/pipeline/storage/workspace_store.py
       - nirs4all/nirs4all/pipeline/storage/__init__.py
       - nirs4all/pyproject.toml
       - nirs4all/tests/regression/test_workspace_store_read_contract.py
+      - nirs4all/tests/unit/pipeline/storage/test_workspace_store.py
       - nirs4all-studio/sidecar/contracts/workspace_store_read_v1.json
       - nirs4all-studio/sidecar/src/workspace_store.rs
       - nirs4all-studio/sidecar/tests/fixtures/workspace_store_v5.sqlite
       - nirs4all-studio/sidecar/tests/fixtures/workspace_store_v5_runs.response.json
+      - nirs4all-studio/sidecar/tests/fixtures/workspace_store_v5_results.response.json
     acceptance_tests:
       - WorkspaceStore v5 run-summary projection opens store.sqlite with SQLite immutable read-only mode and executes against a fresh Store without creating WAL or SHM files
       - contract resource is packaged under nirs4all.pipeline.storage and rejects a contract whose declared schema version differs from the installed WorkspaceStore schema
       - focused pytest and Ruff pass; the module passes Mypy with dependency following disabled while the project-wide configured Mypy baseline retains unrelated failures
-      - native sidecar contract copy is byte-identical to the published resource (SHA-256 8253ff7af3c2880fb604d7ca734c868d68de385c04434fdfa1010a6de2887d93)
+      - native sidecar contract copy is byte-identical to the published resource (SHA-256 6de812516459d7dd49ea0aa16d04eb5777cddfbfb00836fad38d197b5a22e8f6)
       - Store v5 run-summary timestamps declare ISO 8601 serialization; the native reader normalizes the SQLite separator and its complete response equals the Python-written fixture
       - native reader accepts only exact Store v5 run-summary fields, refuses active SQLite journals and database changes, and reads the Python-written fixture without WAL or SHM creation
+      - public Store v5 pipeline-summary projection declares its count query, nullable fields and deterministic public list_pipelines ordering; the Python-written SQLite fixture is SHA-256 6d993625d44196a2812b3497b9776ada007ce099c88e904dba951ffa17460491
     review: >-
-      Phase 2 evidence: nirs4all commit 9c8fa7ef declares ISO 8601 timestamp
-      serialization in the public contract; Studio commit 7247ea0 consumes its
-      byte-identical copy through a strict Rust SQLite reader. The reader checks
-      PRAGMA user_version == 5, projection columns, bound limit/offset, active
-      journal sidecars, and snapshot stability before returning the exact bounded
-      run-summary shape from a Python-written fixture. The Electron transport selects
-      only the bare run-summary GET in opt-in sidecar mode. Explicit source/refresh
-      scanner queries, legacy manifest/Parquet scans, enriched runs, run detail,
+      Phase 2 evidence: nirs4all commit 56a9eb1e extends the public v5 contract
+      with a bounded pipeline-summary projection, count query, nullable values and
+      deterministic list_pipelines ordering; Studio commit d1260b1 consumes its
+      byte-identical copy through strict Rust readers. The readers check PRAGMA
+      user_version == 5, projection columns, bound limit/offset, active journal
+      sidecars, and snapshot stability before returning Python-written run and
+      pipeline fixtures. The Electron transport selects only bare run-summary and
+      filter-free pipeline-summary GET requests in opt-in sidecar mode. Explicit
+      source/refresh scanner queries, filtered results, real results summary, chain
+      ranking, legacy manifest/Parquet scans, enriched runs, run detail, predictions,
       results-repository, mutation, arrays, artifacts, and scientific execution remain
-      FastAPI-owned; a native incompatibility is an explicit refusal, never a hidden
+      FastAPI-owned; native query or compatibility rejection never triggers a hidden
       FastAPI retry. Local-volume SQLite is the supported surface; Windows UNC/device
       paths remain refused pending packaging and real-share evidence. This is not a
       scanner/repository cutover and does not satisfy R2 or any R3/R4 drop gate.
@@ -573,8 +579,8 @@ work_items:
     dependencies:
       - STU-001
       - STORE-002
-    state: native_run_summary_route_selected_pending_full_scanner_repository_parity
-    input_sha: 7247ea0
+    state: native_run_and_pipeline_summary_routes_selected_pending_full_scanner_repository_parity
+    input_sha: d1260b1
     owned_files:
       - nirs4all-studio/sidecar/Cargo.toml
       - nirs4all-studio/sidecar/Cargo.lock
@@ -585,24 +591,32 @@ work_items:
       - nirs4all-studio/sidecar/src/workspace_store.rs
       - nirs4all-studio/sidecar/tests/fixtures/workspace_store_v5.sqlite
       - nirs4all-studio/sidecar/tests/fixtures/workspace_store_v5_runs.response.json
+      - nirs4all-studio/sidecar/tests/fixtures/workspace_store_v5_results.response.json
       - nirs4all-studio/src/api/transport.ts
       - nirs4all-studio/src/api/transport.test.ts
+      - nirs4all-studio/src/api/linkedWorkspaces.ts
+      - nirs4all-studio/src/types/runs.ts
     acceptance_tests:
       - direct native GET /api/workspaces/:id/runs returns the complete Python-written Store v5 run-summary fixture without a configured Python plugin host
       - Electron selects only the bare GET run-summary endpoint; source/refresh scanner queries, enriched/detail routes and mutations remain FastAPI-owned, and a native 409 compatibility refusal never retries FastAPI
       - the native reader is immutable and fail-closed for live SQLite journals, non-v5 schemas, incomplete projections, absent stores, and out-of-range requests
-      - focused nirs4all pytest passed (1); Ruff, Mypy, JSON parsing and contract byte comparison passed
-      - Studio Vitest passed 519 files / 3,735 tests; tsc --noEmit passed; ESLint reported 0 errors and 4 pre-existing vendor warnings; Rust format/clippy passed with 38 unit and 5 frozen sidecar contract tests
+      - direct native bare GET /api/workspaces/:id/results returns the exact Python-written Store v5 pipeline-summary fixture, including nullable values, total count and has_more; query-bearing results requests are rejected before native routing
+      - Electron selects only the filter-free pipeline-summary endpoint; query-bearing results, real /results/summary, chain ranking, predictions and every mutation remain FastAPI-owned, and a native refusal never retries FastAPI
+      - focused nirs4all pytest passed (2); Ruff and Mypy passed
+      - Studio Vitest passed 519 files / 3,737 tests; tsc --noEmit and targeted ESLint passed; Rust format/clippy passed with 40 unit and 5 frozen sidecar contract tests; the scanner oracle response matched exactly
     review: >-
-      Studio commit 7247ea0 selects the bounded direct sidecar reader only for the
-      bare Store v5 run-summary GET and verifies the exact fixture response plus
-      fail-closed compatibility refusals. This opt-in routing does not reclassify
-      source/refresh scanner queries, legacy manifest/Parquet discovery, enriched
-      runs, run detail, results-repository, mutations, arrays, artifacts, or scientific
-      execution: FastAPI remains their product owner. The selected reader has no
-      implicit Python or FastAPI fallback. STU-005 remains incomplete until those
-      scanner/repository surfaces have public native contracts and approved parity
-      fixtures; LOCK-STUDIO, R2 parity, and every R3/R4 drop claim remain pending.
+      Studio commit d1260b1 selects bounded direct sidecar readers only for bare Store
+      v5 run-summary and filter-free pipeline-summary GET requests, verifying exact
+      Python fixture responses, nulls, deterministic score order, total count, query
+      rejection and fail-closed compatibility refusals. This opt-in routing does not
+      reclassify source/refresh scanner queries, filtered results, real results
+      summary, chain ranking, legacy manifest/Parquet discovery, enriched runs, run
+      detail, predictions, results-repository, mutations, arrays, artifacts, or
+      scientific execution: FastAPI remains their product owner. The selected readers
+      have no implicit Python or FastAPI fallback. STU-005 remains incomplete until
+      those scanner/repository surfaces have public native contracts and approved
+      parity fixtures; LOCK-STUDIO, R2 parity, and every R3/R4 drop claim remain
+      pending.
     rollback: remove only the sidecar reader, copied public contract, fixture, and dependency additions; leave linked-workspace metadata and user workspace files unchanged.
   - id: W1-001
     owner: G
