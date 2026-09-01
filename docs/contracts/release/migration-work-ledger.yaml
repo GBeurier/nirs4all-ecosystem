@@ -1395,8 +1395,8 @@ work_items:
     dependencies:
       - STU-002
       - STU-005
-    state: native_submission_and_cpython_preflight_wired_implicit_python_http_selection_p0_open
-    input_sha: f50a0bd9443e63fac8e99416921bbf387772b0c7
+    state: native_submission_cpython_preflight_and_rust_only_renderer_selection_qualified_scientific_executor_pending
+    input_sha: cdb9f46de1643ab170934481cd9471e54ed3701c
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
       - nirs4all-studio/sidecar/contracts/studio_execution_job_record_v1.json
@@ -1414,10 +1414,13 @@ work_items:
       - nirs4all-studio/sidecar/tests/scientific_cpython_runtime.rs
       - nirs4all-studio/electron/main.ts
       - nirs4all-studio/electron/preload.ts
+      - nirs4all-studio/electron/python-http-diagnostic-policy.ts
       - nirs4all-studio/electron/renderer-transport-selection.ts
       - nirs4all-studio/electron/renderer-transport-selection.test.ts
       - nirs4all-studio/src/api/transport.ts
       - nirs4all-studio/src/api/transport.test.ts
+      - nirs4all-studio/src/api/renderer-transport-coverage.test.ts
+      - nirs4all-studio/src/components/spectra-synthesis/ExportDialog.tsx
       - nirs4all-studio/src/lib/websocket.ts
       - nirs4all-studio/src/lib/websocket.test.ts
       - nirs4all-studio/src/types/electron.d.ts
@@ -1451,7 +1454,11 @@ work_items:
       - CPython host absence, tamper, timeout, malformed or oversized output, wrong implementation/version/isolation and failed socket.bind audit guard return a typed 503 before body parsing, workspace access, registry mutation, events or durable writes
       - no current Python callable satisfies the closed Studio submission while preserving Rust ownership, so scientific_execution remains false and even a preflight-ready impostor cannot accept a job
       - the selected increment passes 133 Rust tests with one opt-in differential ignored, real CPython 3.11 preflight and bind refusal, 3861 Vitest tests, TypeScript, Electron build and ESLint with zero errors
-      - route-inventory audit shows that non-native renderer paths still select scientific-plugin and acquire FastAPI automatically; this is a P0 blocker and prevents any Rust-only product or LOCK-STUDIO claim
+      - packaged and default development sessions freeze a Rust-only policy before requests; non-native HTTP and WebSocket paths return typed 501 before fetch, URL acquisition, runtime preparation or Python spawn
+      - only the visible --enable-python-http-diagnostic switch can assign a packaged renderer session to FastAPI; the exact environment opt-in is development-only and ignored in packages
+      - diagnostic mode selects the Python HTTP owner process-wide before route classification, keeping creation, status, cancellation and WebSocket ownership coherent without per-route fallback
+      - a static renderer gate rejects direct product /api fetches outside the preselected transport; the two synthesis bypasses found by independent audit were migrated to api.get/api.post
+      - independently re-audited Studio passes 547 Vitest files and 3877 tests, TypeScript, ESLint with zero errors, 133 Rust tests with one ignored probe, fmt, strict Clippy and Electron build
     review: >-
       Commit a9e57e2 freezes an executable R2 target without claiming a live
       WebSocket implementation. It distinguishes the sequenced native internal
@@ -1491,17 +1498,30 @@ work_items:
       FastAPI/Uvicorn without an explicit user diagnostic choice. Native
       selection itself never falls back, but packaged product selection is not
       yet Rust-only. This P0 must fail closed before the Phase 2 claim.
+      Commits 2ea5c52 through cdb9f46 close that P0 on the selected RC. A
+      process-wide policy is resolved before any renderer request; packaged
+      default is Rust-only, unmigrated HTTP/WS refuses before fetch or Python
+      acquisition, and native selection has no retry. The visible CLI switch
+      is the sole packaged diagnostic activation; the environment opt-in is
+      accepted only in development. Diagnostic mode owns the entire renderer
+      session rather than individual fallback routes. Independent audit found
+      and corrected two direct synthesis fetches, added a whole-source bypass
+      gate, synchronized the public contracts and operating docs, and approved
+      cdb9f46 after all gates passed. Scientific execution remains false: the
+      selected callable and Rust durable terminal bridge are separate open
+      work, so LOCK-STUDIO and R2-W2 remain pending.
     rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
   - id: STU-006
     owner: F
     dependencies:
       - STU-002
       - STU-001
-    state: r2_native_startup_manifest_qualified_implicit_python_http_renderer_selection_p0_open
-    input_sha: f50a0bd9443e63fac8e99416921bbf387772b0c7
+    state: r2_native_startup_and_packaged_rust_only_renderer_policy_qualified_cross_platform_archives_pending
+    input_sha: cdb9f46de1643ab170934481cd9471e54ed3701c
     owned_files:
       - nirs4all-studio/electron/native-session-lifecycle.ts
       - nirs4all-studio/electron/scientific-plugin-lifecycle.ts
+      - nirs4all-studio/electron/python-http-diagnostic-policy.ts
       - nirs4all-studio/electron/main.ts
       - nirs4all-studio/electron/preload.ts
       - nirs4all-studio/src/api/transport.ts
@@ -1525,7 +1545,9 @@ work_items:
       - missing or altered bundled CPython disables the explicit library/plugin host while the Rust backend remains active during packaged startup smoke
       - the selected Linux package launches under Xvfb with the Rust sidecar as the sole product-port owner and no Python or Uvicorn process
       - full Studio qualification passes 3861 Vitest tests, TypeScript, ESLint with zero errors, 126 Rust tests with one ignored probe, rustfmt and Clippy with warnings denied
-      - packaged default route selection must still be corrected: an available bundled CPython currently lets unmigrated renderer requests start FastAPI/Uvicorn implicitly, contrary to the library-plugin-host-only manifest role
+      - packaged default route selection is Rust-only and an available bundled CPython cannot start FastAPI/Uvicorn for an unmigrated route; typed refusal precedes fetch and process acquisition
+      - packaged environment inheritance cannot activate Python HTTP; explicit CLI diagnostic selection remains whole-session and is reported through readiness/IPC
+      - all renderer product fetch and WebSocket construction paths are guarded by source and behavior tests, with no native-to-Python retry
     review: >-
       Commit 2490396 removes eager BackendManager startup from Electron and
       preserves legacy backend:* IPC as lazy aliases while publishing explicit
@@ -1545,6 +1567,16 @@ work_items:
       CPython is available. The runtime manifest therefore records the intended
       role but does not yet prove the product call graph; packaged default must
       refuse those paths unless an explicit diagnostic mode is selected.
+      Selected Studio cdb9f46 now proves that call graph: Electron freezes the
+      Rust-only default before startup, every renderer product request and
+      connection is preselected, unmigrated paths refuse without acquiring
+      Python, and packaged environment inheritance cannot enable FastAPI. Only
+      the visible whole-session diagnostic switch can do so. A static source
+      gate prevents future direct /api fetch bypasses. The selected increment
+      passes the full 3877-test Vitest suite, TypeScript, ESLint, Rust fmt,
+      strict Clippy, 133 Rust tests with one ignored probe and Electron build.
+      The previous f50a0bd sidecar-readiness artifact is historical and must be
+      regenerated for cdb9f46 before GATE-001 can use the new selection.
     rollback: revert only the lazy lifecycle/IPC/UI readiness adapter; preserve sidecar state and user Python environments.
   - id: W1-001
     owner: G
