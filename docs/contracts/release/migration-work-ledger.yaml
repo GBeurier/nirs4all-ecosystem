@@ -668,7 +668,7 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: python_legacy_core_and_web_executed_studio_resolver_refusal_attested
+    state: python_legacy_core_and_web_executed_studio_refresh_pending_after_resolver_selection
     input_sha: 82dcf18b32980b211078bf7280af9d233fed0864
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
@@ -707,6 +707,7 @@ work_items:
       - the autonomous Web stage runs its copied Python with -I and user-site disabled, verifies every installed file and wheel, contains no producer path, and refuses fit/refit, fallback, identity drift, profile drift, missing runtime or tampered bytes
       - two independent Web mono-target fits are explicitly rejected as a substitute for the canonical Archive V2 multi-target operation
       - Benchmarks f038290 verifies selected Studio d829465 and Python 3b9eb3e with the canonical wheel SHA-256 24737550768868df37dc0bf11433c7bd409ef620a8667a88b99641658b5f3e6b; the bounded callable and Rust terminal bridge execute directly in the harness but product selection remains false because the scientific request resolver is unavailable
+      - selected Studio has advanced to 99ba715 with a qualified saved-request resolver and the exact Python 5ebb wheel; Bench 82dcf18 still records d829465 as refused and must be regenerated before the Studio lane can pass
       - Studio refusal occurs before request-body parsing, workspace access, job allocation, event publication, durable writes or scientific execution; submission transport, a Python listener, fabricated JSON or direct Core replay outside Studio are rejected substitutes
       - Ruff passes, Mypy passes over 44 source files and the isolated checkout passes 129 tests; the Core launcher wheel remains byte-reproducible at SHA-256 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
     review: >-
@@ -791,6 +792,11 @@ work_items:
       Bench passes 141 tests plus Ruff/Mypy; Web typecheck, 23 tests, strict
       build/profile and Chromium smokes pass. GATE-001 and PERF-001 remain open;
       Node 20 is not locally qualified.
+      Selected Studio subsequently advanced to 99ba715 with a qualified Linux
+      resolver and exact Python 5ebb wheel. That does not retroactively change
+      report dd5f5718: its Studio row remains the honest d829465 refusal. A new
+      Bench run must restage and execute 99ba715 before GATE-001 or PERF-001 can
+      advance.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
@@ -1544,8 +1550,8 @@ work_items:
     dependencies:
       - STU-002
       - STU-005
-    state: native_submission_python_callable_terminal_bridge_and_rust_only_renderer_selected_request_resolver_pending
-    input_sha: d82946527b43d64214bdb8ecd6f1f7dea3f9f4fd
+    state: native_saved_submission_resolver_python_worker_and_rust_only_renderer_selected_linux_windows_pending
+    input_sha: 99ba7155eb619010a25cc5fc5d218752d43baced
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
       - nirs4all-studio/sidecar/contracts/studio_execution_job_record_v1.json
@@ -1605,6 +1611,11 @@ work_items:
       - Rust owns complete, fail and cancellation-ack callbacks, publishes the exact terminal WebSocket event and updates the durable execution record; worker cancellation and timeout kill the Unix process group and Rust removes the confined scratch tree
       - the worker revalidates interpreter and callable path, size and SHA-256, clears its environment, refuses socket bind and subprocess audit events, bounds stdin/stdout/stderr to 64 KiB/8 KiB/64 KiB and never sends workspace, path, manifest or opaque saved payload fields to Python
       - the promoted non-selected increment passes 138 Rust tests with one opt-in differential ignored, real canonical-wheel execution, rustfmt and strict Clippy; no TypeScript or renderer file changed
+      - Rust resolves bounded saved dataset and pipeline identities through the exact nirs4all-io f419 role-tagged reader before registry, events or durable writes, then sends only inline path-free matrices to the exact Python 5ebb callable
+      - Studio applies 1 MiB/file, 2 MiB total, 128 KiB/record, 64 KiB/field, 128-row, 256-column and 16,384-cell limits in the confined same-handle IO parser; every cap+1 case refuses with zero registry, event or durable mutation
+      - the real Linux HTTP route completes against wheel SHA-256 0aa170685d821c217011d00f6373853d993f340f1e70499d3f560fd92e40b86a and persists only the original saved-ID request, never resolved X/y; only Rust owns the listener and no Python child or scratch remains
+      - the vendored IO source is a complete byte-identical f419 Git snapshot with 359-entry inventory SHA-256 359d046275f8290b2c0a64107c06fa72d54ad669d2475bf802fe5bff2fe946c2 and passes 212 locked offline tests; it must be replaced by a published exact dependency before LOCK-RELEASE
+      - capability selection requires Linux, an exact copied non-symlink CPython executable, matching Python distribution/callable identities, a qualified dataset_links v2 root and exact executor configuration; Windows remains false
       - the selected increment passes 133 Rust tests with one opt-in differential ignored, real CPython 3.11 preflight and bind refusal, 3861 Vitest tests, TypeScript, Electron build and ESLint with zero errors
       - packaged and default development sessions freeze a Rust-only policy before requests; non-native HTTP and WebSocket paths return typed 501 before fetch, URL acquisition, runtime preparation or Python spawn
       - only the visible --enable-python-http-diagnostic switch can assign a packaged renderer session to FastAPI; the exact environment opt-in is development-only and ignored in packages
@@ -1675,6 +1686,28 @@ work_items:
       any future selection, callback persistence failures require explicit
       handling, Windows needs process-tree termination, and scratch permissions
       require an explicit private mode. LOCK-STUDIO and R2-W2 remain pending.
+      Studio commits e8a8cd2 and 99ba715 close the saved-request resolver on
+      Linux without changing product ownership. Rust reads bounded dataset_links
+      v2 and pipeline records, cross-checks strict/legacy/manifest identities,
+      invokes the exact IO f419 role-tagged assembler before any job mutation,
+      and permits only continuous single-source train-only KFold-to-PLS. It then
+      sends path-free inline matrices to the exact Python 5ebb wheel (SHA-256
+      0aa170685d821c217011d00f6373853d993f340f1e70499d3f560fd92e40b86a;
+      callable b861e555a5f210d8df22b1f3cd5f9cef3b6ee20cacd5e5d37b3bca8ae9c41e2a).
+      Two independent audits rejected and corrected late file/parser bounds and
+      an incomplete vendored IO snapshot. The final descendant enforces all
+      small-file/record/field/shape caps on the confined same-handle reader,
+      vendors the complete byte-identical f419 tree, and passes its 212 locked
+      offline tests. Studio passes 148 tests with one opt-in oracle ignored,
+      fmt, strict Clippy and real saved-route/wheel execution. The live sidecar
+      is the sole listener, durable state contains only the original request,
+      callbacks remain durable-first, and no Python child or scratch survives.
+      Linux capability is selected only with exact host/config/catalog identity;
+      Windows remains false because Job Object kill-tree behavior is unqualified.
+      The copied-interpreter requirement and replacement of the 13 MiB source
+      snapshot by a published exact IO package/revision remain LOCK-RELEASE debt.
+      LOCK-STUDIO and R2-W2 still require the refreshed four-runtime gate and
+      remaining route/platform coverage.
     rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
   - id: STU-006
     owner: F
