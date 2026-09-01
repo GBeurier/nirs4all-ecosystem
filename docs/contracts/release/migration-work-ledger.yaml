@@ -534,8 +534,8 @@ work_items:
     dependencies:
       - STORE-001
       - STU-001
-    state: native_run_pipeline_and_ranked_chain_readers_selected_pending_results_policy_and_full_scanner_repository_parity
-    input_sha: ece5d7fd
+    state: native_run_pipeline_ranked_chain_and_results_summary_policy_published_pending_full_scanner_repository_parity
+    input_sha: 09702901
     owned_files:
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
       - nirs4all/nirs4all/pipeline/storage/workspace_read_contract.py
@@ -559,8 +559,11 @@ work_items:
       - public Store v5 pipeline-summary projection declares its count query, nullable fields and deterministic public list_pipelines ordering; the Python-written SQLite fixture is SHA-256 6d993625d44196a2812b3497b9776ada007ce099c88e904dba951ffa17460491
       - public studio_chain_ranked_v1 projection requires explicit dataset, metric and asc/desc direction, bounds pages to 100, uses a matching count query, sorts null-last with chain_id tie-breaking, and excludes chains without predictions
       - producer regression tests prove asc/desc ordering, stable offset/count, mixed-metric filtering, pending-pipeline inclusion and prediction eligibility against Store v5 without publishing the private Studio results-summary policy
+      - separate results-summary policy v1 (SHA-256 5e4f1c17b070c2dfaa72fe8de7257447764f29455e411c2dbc5f9d3b8d404bf0) preserves read-v1 bytes while publishing the full paged source projection, fixed bare n=5 surface, one metric-direction registry, refit synthesis, selection, JSON/null serialization and variant-param merge
+      - query_top_chains now applies chain_id ASC as a stable score-tie breaker; unknown metrics use the results-summary policy default higher-is-better at every summary ranking stage
     review: >-
-      Phase 2 evidence: nirs4all commits 56a9eb1e and ece5d7fd extend the public v5 contract
+      Phase 2 evidence: nirs4all commits 56a9eb1e, ece5d7fd, 0288b1e5 and
+      09702901 extend the public v5 contract
       with a bounded pipeline-summary projection, count query, nullable values and
       deterministic list_pipelines ordering, followed by an explicitly directed,
       deterministic studio_chain_ranked_v1 primitive. Studio commits d1260b1 and
@@ -570,7 +573,7 @@ work_items:
       pipeline fixtures. The Electron transport selects only bare run-summary and
       filter-free pipeline-summary GET requests in opt-in sidecar mode. Explicit
       source/refresh scanner queries, filtered results, real results summary, results
-      selection policy, dataset links, legacy manifest/Parquet scans, enriched runs, run detail, predictions,
+      native results-summary route consumption, dataset links, legacy manifest/Parquet scans, enriched runs, run detail, predictions,
       results-repository, mutation, arrays, artifacts, and scientific execution remain
       FastAPI-owned; native query or compatibility rejection never triggers a hidden
       FastAPI retry. Local-volume SQLite is the supported surface; Windows UNC/device
@@ -582,8 +585,8 @@ work_items:
     dependencies:
       - STU-001
       - STORE-002
-    state: native_run_pipeline_ranked_chain_and_dataset_link_readers_selected_pending_results_policy_and_full_scanner_repository_parity
-    input_sha: e7189d0
+    state: native_run_pipeline_ranked_chain_dataset_links_and_results_summary_oracle_ready_pending_native_summary_route_and_full_scanner_repository_parity
+    input_sha: 2a3833f
     owned_files:
       - nirs4all-studio/sidecar/Cargo.toml
       - nirs4all-studio/sidecar/Cargo.lock
@@ -609,6 +612,9 @@ work_items:
       - Studio Vitest passed 519 files / 3,737 tests; tsc --noEmit and targeted ESLint passed; Rust format/clippy passed with 40 unit and 5 frozen sidecar contract tests; the scanner oracle response matched exactly
       - public Rust workspace_store reader consumes studio_chain_ranked_v1 without metric inference and passes asc/desc, tie, null-last, offset/count, mixed-metric, invalid-JSON, eligibility and bound tests; full Rust gate passes 42 unit and 5 frozen contract tests
       - native dataset-links reader projects only id/name/path, rejects files larger than 2 MiB, preserves missing/malformed legacy empty-catalogue semantics, and never rewrites or migrates scientific dataset configuration; Rust gate passes 45 unit and 5 frozen contract tests
+      - Python-generated Store v5 summary fixture (SHA-256 a535f9436b0ddcac851cff81ab8a4225296f62405801f9cf091ca4fce19a9b73) and golden (SHA-256 b2bda54750e8aaf40fc3cd505b489dcf99ed0da7e81d8a3058f56d51a6c2dbc1) cover 22 pipelines across r2, rmse and unknown metrics, ties/nulls, refit-only, synthetic refit, best-final outside top five, variant params and dataset-link matching
+      - summary oracle now passes the owner metric direction explicitly to query_top_chains; Store score ties are deterministic by chain_id, and generated/replayed golden parity tests pass
+      - immutable reader canonicalizes store symlinks before journal checks, refuses a canonical target with an active WAL, and declares local-filesystem-only plus Windows UNC/device exclusions in the byte-identical public contract
     review: >-
       Studio commit d1260b1 selects bounded direct sidecar readers only for bare Store
       v5 run-summary and filter-free pipeline-summary GET requests, verifying exact
@@ -620,9 +626,10 @@ work_items:
       scientific execution: FastAPI remains their product owner. Studio commit 73b3aec
       additionally consumes the owner-published ranked-chain primitive through the
       public Rust workspace_store module, with explicit direction and deterministic
-      paging, but deliberately exposes no /results/summary route because metric
-      direction, refit synthesis, variant-param merging and dataset-link mapping are
-      not yet a complete public owner policy. Studio commit e7189d0 adds the bounded,
+      paging, but deliberately exposes no /results/summary route at this input.
+      The owner policy is now published by nirs4all 0288b1e5 and the deterministic
+      Python oracle is frozen by Studio 2a3833f, pending Rust consumption and exact
+      golden parity. Studio commit e7189d0 adds the bounded,
       read-only dataset-link identity projection required for future mapping without
       exposing or mutating scientific loader configuration. The selected readers
       have no implicit Python or FastAPI fallback. STU-005 remains incomplete until
