@@ -574,8 +574,8 @@ work_items:
       - REL-002
       - STU-001
       - MTH-DOC-003
-    state: pending
-    input_sha: 0520cbd58540
+    state: org_lock_driven_staging_complete_public_artifacts_and_cross_site_sync_pending
+    input_sha: 427ffb34268955aa7a785479a9c7f4232aa77edb
     owned_files:
       - nirs4all-org/
       - nirs4all-cockpit/data/current.json
@@ -586,10 +586,19 @@ work_items:
       - canonical versions, SHAs and artifacts are generated from the selected validated aggregation lock
       - strict HTML/link/accessibility/SEO and Web smoke gates pass from clean builds
       - Studio contract verifier is committed and run by CI; documentation claims only capabilities proven by the same release lock
+      - Org release staging projects only public-safe version and source-SHA fields from a validated lock; absolute paths, worktrees and private URLs are rejected
+      - the current incomplete R2 lock renders every component as pending with no download and falls back to Publication en cours for absent, invalid or incomplete manifests
+      - the public projection is byte-reproducible with SHA-256 3868dbe836cba25d5b681864fbbffb8178c011353800ad1310767ae461f48f32
+      - static validation covers manifest, HTML, internal links, accessibility, SEO, JSON-LD and sitemaps; eight negative tests, Ruff, Mypy, HTTP and headless Chrome smokes pass
     review: >-
-      Inventory found Core version divergence (org/manifests 0.3.11 versus Cockpit 0.3.12),
-      untracked local contract/bibliography work, and no strict link/HTML/accessibility/SEO gate.
-      No R1 public message is eligible until corrected and independently reviewed.
+      Org commits 6899cfe and 427ffb3 replace divergent hard-coded release
+      claims on the touched landing/tools surfaces with a closed lock-derived
+      staging manifest and strict CI validation. Independent reproduction and
+      browser fallback smokes passed. The selected lock currently proves only
+      seven source selections and no public artifact, so the page deliberately
+      says R2 is in progress and exposes no download. Cockpit, Studio/Web and
+      Methods cross-site synchronization, public artifacts, publication and
+      deployment remain open; no R1/R2/R3/V1 announcement is eligible yet.
     rollback: revert generated public content and deployment manifests atomically; no release, site deployment or public announcement without authorization.
   - id: MTH-DOC-001
     owner: H + B
