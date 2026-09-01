@@ -877,6 +877,40 @@ work_items:
       The Core wheel's historical omission of the additive n4a Python facade
       remains a packaging limitation and is not hidden by this evidence.
     rollback: remove only the multi-target lowering/replay additions and restore the prior Core Dag-ML pins together; preserve user archives and the explicit legacy profile.
+  - id: API-004
+    owner: E + B
+    dependencies:
+      - CAP-001
+      - API-002
+    state: bounded_dagml_full_bundle_retrain_qualified_transfer_finetune_core_and_plugin_pending
+    input_sha: 79f4358b0ea4829cb18f28542dfce2af50973ed1
+    owned_files:
+      - nirs4all/nirs4all/api/retrain.py
+      - nirs4all/nirs4all/api/retrain_capabilities.py
+      - nirs4all/nirs4all/api/session.py
+      - nirs4all/nirs4all/api/result.py
+      - nirs4all/nirs4all/pipeline/bundle/loader.py
+      - nirs4all/tests/unit/api/test_retrain.py
+      - nirs4all/tests/unit/api/test_core_archive_session.py
+      - nirs4all/tests/integration/api/test_dagml_native_retrain_roundtrip.py
+      - nirs4all/tests/integration/parity/test_parity_smoke.py
+    acceptance_tests:
+      - default full retrain accepts only a concrete n4a bundle with one bounded train_pipeline.json contract, probes the real DAG-ML backend first and executes a new native run without constructing PipelineRunner
+      - the native full lane produces a distinct refit artifact and finite predictions; source bundle and training-spec digests, mode, engine and artifact count form additive retrain lineage
+      - exported retrained n4a provenance persists that lineage, BundleLoader validates and exposes it, and the exported artifact remains predict-capable
+      - transfer, finetune, Core-native, unavailable plugin, fallback-enabled selection and unsupported options refuse before source/data materialization, legacy loaders, computation or writes
+      - PipelineRunner is reachable only through explicit engine legacy selection during the ADR-24 rollback window; public signatures remain frozen and preflight discovery is additive
+      - independent qualification passes Ruff, focused Mypy and 27 retrain/Core/integration/parity tests; the final full inventory passes 7861 tests with 148 declared skips and four pre-existing binary sampler exclusions
+    review: >-
+      Candidate 7dd25ad was independently audited and promoted as Python
+      commit 79f4358b. This closes only the concrete DAG-ML full retrain path
+      backed by an exported training specification. Transfer, finetune,
+      Core Archive V3 and plugin adapters remain typed refusals. The immutable
+      native-results manifest is written by run before retrain attaches source
+      lineage and is deliberately not backpatched; durable lineage is carried
+      by the existing public n4a export provenance contract instead. General
+      retrain, HPO-controller integration and LOCK-API therefore remain open.
+    rollback: remove the additive retrain capability router and provenance field, restoring only the explicit legacy retrain path without modifying user bundles or native result directories.
   - id: API-005
     owner: E
     dependencies:
