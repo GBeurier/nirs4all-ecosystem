@@ -1375,7 +1375,7 @@ work_items:
     dependencies:
       - STU-002
       - STU-005
-    state: native_submission_renderer_and_bounded_cpython_preflight_wired_scientific_execution_pending
+    state: native_submission_and_cpython_preflight_wired_implicit_python_http_selection_p0_open
     input_sha: f50a0bd9443e63fac8e99416921bbf387772b0c7
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
@@ -1431,6 +1431,7 @@ work_items:
       - CPython host absence, tamper, timeout, malformed or oversized output, wrong implementation/version/isolation and failed socket.bind audit guard return a typed 503 before body parsing, workspace access, registry mutation, events or durable writes
       - no current Python callable satisfies the closed Studio submission while preserving Rust ownership, so scientific_execution remains false and even a preflight-ready impostor cannot accept a job
       - the selected increment passes 133 Rust tests with one opt-in differential ignored, real CPython 3.11 preflight and bind refusal, 3861 Vitest tests, TypeScript, Electron build and ESLint with zero errors
+      - route-inventory audit shows that non-native renderer paths still select scientific-plugin and acquire FastAPI automatically; this is a P0 blocker and prevents any Rust-only product or LOCK-STUDIO claim
     review: >-
       Commit a9e57e2 freezes an executable R2 target without claiming a live
       WebSocket implementation. It distinguishes the sequenced native internal
@@ -1463,14 +1464,20 @@ work_items:
       in Rust. Every acquisition failure is typed before mutation and no
       FastAPI/Uvicorn/legacy fallback is introduced. The general dynamic /ws protocol,
       selected scientific executor, remaining routes/scanners, installers,
-      LOCK-STUDIO and R2-W2 remain open.
+      LOCK-STUDIO and R2-W2 remain open. A subsequent full route-inventory
+      audit found a broader boundary outside this native request path: 284
+      unmigrated HTTP operations plus dynamic /ws are still automatically
+      preselected to scientific-plugin, whose Electron acquisition starts
+      FastAPI/Uvicorn without an explicit user diagnostic choice. Native
+      selection itself never falls back, but packaged product selection is not
+      yet Rust-only. This P0 must fail closed before the Phase 2 claim.
     rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
   - id: STU-006
     owner: F
     dependencies:
       - STU-002
       - STU-001
-    state: r2_native_product_runtime_and_cpython_stdio_preflight_qualified_cross_platform_ci_and_scientific_execution_pending
+    state: r2_native_startup_manifest_qualified_implicit_python_http_renderer_selection_p0_open
     input_sha: f50a0bd9443e63fac8e99416921bbf387772b0c7
     owned_files:
       - nirs4all-studio/electron/native-session-lifecycle.ts
@@ -1495,9 +1502,10 @@ work_items:
       - selected native requests never retry FastAPI; an unavailable or invalid CPython runtime disables the bounded library/plugin host without changing Rust backend ownership
       - selected Studio RC passes TypeScript, targeted ESLint and 47 focused Vitest tests after integration
       - packaged startup verifies a content-addressed Rust sidecar contract before opening the renderer; a missing or altered sidecar fails closed without starting Python
-      - missing or altered bundled CPython disables only the explicit library/plugin host while the Rust backend remains active and no Python HTTP backend is spawned
+      - missing or altered bundled CPython disables the explicit library/plugin host while the Rust backend remains active during packaged startup smoke
       - the selected Linux package launches under Xvfb with the Rust sidecar as the sole product-port owner and no Python or Uvicorn process
       - full Studio qualification passes 3861 Vitest tests, TypeScript, ESLint with zero errors, 126 Rust tests with one ignored probe, rustfmt and Clippy with warnings denied
+      - packaged default route selection must still be corrected: an available bundled CPython currently lets unmigrated renderer requests start FastAPI/Uvicorn implicitly, contrary to the library-plugin-host-only manifest role
     review: >-
       Commit 2490396 removes eager BackendManager startup from Electron and
       preserves legacy backend:* IPC as lazy aliases while publishing explicit
@@ -1510,7 +1518,13 @@ work_items:
       Linux Electron package, archive smoke and Xvfb launch passed with the
       sidecar as sole product-port owner. Windows, macOS and heavy all-in-one
       CPython archives remain CI-only qualifications; the scientific executor,
-      remaining plugin routes, LOCK-STUDIO and R2-W2 remain open.
+      remaining plugin routes, LOCK-STUDIO and R2-W2 remain open. The package
+      smoke covered startup and native readiness, not every renderer route.
+      Route-inventory audit at f50a0bd proves that unmigrated requests still
+      acquire the transitional FastAPI/Uvicorn process automatically when
+      CPython is available. The runtime manifest therefore records the intended
+      role but does not yet prove the product call graph; packaged default must
+      refuse those paths unless an explicit diagnostic mode is selected.
     rollback: revert only the lazy lifecycle/IPC/UI readiness adapter; preserve sidecar state and user Python environments.
   - id: W1-001
     owner: G
