@@ -540,16 +540,18 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: core_runtime_launcher_qualified_other_launchers_and_four_way_perf_pending
-    input_sha: b21f35f6cf3ad211254988702e47375f6d0a1178
+    state: python_legacy_and_core_launchers_qualified_studio_web_and_four_way_perf_pending
+    input_sha: 063e2d3f66ba0737e58131624fa3590918f20517
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/json_result_adapter.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/scientific_runtime_adapter.py
+      - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/python_legacy_adapter.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/cli.py
       - nirs4all-benchmarks/tests/test_artifact_qualification.py
       - nirs4all-benchmarks/tests/test_scientific_runtime_adapter.py
+      - nirs4all-benchmarks/tests/test_python_legacy_adapter.py
       - nirs4all-benchmarks/docs/QUALIFICATION.md
       - nirs4all-benchmarks/docs/CLI.md
       - nirs4all-benchmarks/docs/perf001-artifact-inventory.v1.json
@@ -561,18 +563,26 @@ work_items:
       - missing or digest-mismatched inputs refuse before execution; unfinished output, declared fallback, identity mismatch and numerical divergence never pass
       - an unavailable runtime launcher is represented as required and makes the overall gate refused; it is never silently skipped
       - the Core launcher accepts only runtime_python, Core, Dag-ML, PyYAML, Archive V2 and methods-library artifacts and verifies their parent and installed-child bytes before direct Core replay
-      - a Core/native facade is explicitly refused when presented as the Python oracle; that oracle remains engine='legacy' and required/refused until its exact wheel closure, model and adapter exist
+      - a Core/native facade is explicitly refused when presented as the Python oracle; the selected oracle calls nirs4all.run with literal engine='legacy' and allow_fallback=false
       - the selected Core artifacts execute the two-row multi-target witness without fallback and return protein [1.6363636363636365, 2.4999999999999996] and moisture [13.272727272727273, 15.0]
-      - Ruff passes, Mypy passes over 43 source files, the isolated checkout passes 117 tests, and the byte-reproducible wheel SHA-256 is 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
+      - the Python oracle verifies its CPython 3.11 runtime, all 44 installed wheels against their declared RECORD bytes and mandatory dependency closure, and imports only from the isolated runtime prefix
+      - the Python oracle fits, exports, reloads and predicts the exact legacy PLS witness; Python and Core both pass with maximum absolute difference 2.870914617147946e-10 and zero observations outside tolerance
+      - source checkout injection, native or dag-ml oracle substitution, fallback, outer artifact tamper and installed-byte tamper all refuse without becoming a skip
+      - Ruff passes, Mypy passes over 44 source files and the isolated checkout passes 123 tests; the Core launcher wheel remains byte-reproducible at SHA-256 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
     review: >-
-      Benchmarks commits b9be6bf and b21f35f add the executable stdio JSON
-      protocol, strict four-runtime runner and first runtime-specific launcher.
+      Benchmarks commits b9be6bf, b21f35f and 063e2d3 add the executable stdio
+      JSON protocol, strict four-runtime runner and the Core plus Python-legacy
+      launchers.
       An independent detached-worktree rerun confirmed Ruff, source Mypy, all
       117 tests, the exact wheel hash and a real selected-artifact Core replay.
-      Python is still an explicit legacy oracle rather than a native facade;
-      Python, Studio and Web remain required/refused. Their launchers, a
-      four-way executed report and measured PERF-001 budgets remain open and
-      cannot be represented as a skip or partial green gate.
+      Python remains an explicit legacy oracle rather than a native facade.
+      An independently rerun exact local report confirmed Python and Core as
+      passed with the frozen multi-target witness; its 44-wheel closure and
+      pyopls source-to-wheel provenance are content-addressed local evidence,
+      not published or final-lock artifacts. Studio and Web remain required and
+      refused. Their launchers, immutable artifact staging, a four-way executed
+      report and measured PERF-001 budgets remain open and cannot be represented
+      as a skip or partial green gate.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
