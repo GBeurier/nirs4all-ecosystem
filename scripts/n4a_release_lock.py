@@ -196,6 +196,40 @@ def read_description(path: Path) -> dict[str, str]:
     return values
 
 
+def read_python_literal(path: Path, field: str) -> Any:
+    """Read one top-level Python literal without importing or executing code."""
+
+    if not field.isidentifier():
+        raise RelError(f"python_literal field must be an identifier: {field!r}")
+
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    matches: list[ast.expr] = []
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            if any(isinstance(target, ast.Name) and target.id == field for target in node.targets):
+                matches.append(node.value)
+        elif (
+            isinstance(node, ast.AnnAssign)
+            and isinstance(node.target, ast.Name)
+            and node.target.id == field
+            and node.value is not None
+        ):
+            matches.append(node.value)
+
+    if not matches:
+        raise RelError(f"missing top-level Python literal {field!r}")
+    if len(matches) != 1:
+        raise RelError(f"ambiguous top-level Python literal {field!r}")
+
+    try:
+        value = ast.literal_eval(matches[0])
+    except (TypeError, ValueError, SyntaxError) as exc:
+        raise RelError(f"Python field {field!r} is not a literal") from exc
+    if not isinstance(value, (str, int, float, bool)) or isinstance(value, complex):
+        raise RelError(f"Python field {field!r} has unsupported literal type")
+    return value
+
+
 def version_metadata(source: dict[str, Any], path: str, kind: str, value: Any) -> dict[str, Any]:
     entry = {
         "value": value,
@@ -294,6 +328,13 @@ def collect_versions(repo_path: Path, component: dict[str, Any]) -> dict[str, An
                     rel_path,
                     kind,
                     get_nested(load_json(path), source["field"]),
+                )
+            elif kind == "python_literal":
+                versions[key] = version_metadata(
+                    source,
+                    rel_path,
+                    kind,
+                    read_python_literal(path, source["field"]),
                 )
             elif kind == "c_header_macros":
                 versions[key] = version_metadata(

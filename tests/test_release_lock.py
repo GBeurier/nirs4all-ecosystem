@@ -197,6 +197,84 @@ def test_generate_lock_uses_selected_workspace_path_but_records_canonical_repo_p
     assert member["state"]["branch"] == "rc/v1-demo"
 
 
+def test_generate_lock_reads_python_literal_version_without_execution(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "manifest.json"
+    repo = tmp_path / "workspace" / "member"
+    repo.parent.mkdir()
+    _init_repo(repo)
+    (repo / "package.py").write_text(
+        '__version__: str = "1.2.3"\nraise RuntimeError("must not execute")\n',
+        encoding="utf-8",
+    )
+    _commit_all(repo)
+    _write_json(
+        manifest_path,
+        {
+            "schema_version": release_lock.MANIFEST_SCHEMA_VERSION,
+            "components": [
+                {
+                    "key": "member",
+                    "repo_path": "member",
+                    "version_sources": [
+                        {
+                            "key": "python",
+                            "kind": "python_literal",
+                            "path": "package.py",
+                            "field": "__version__",
+                        }
+                    ],
+                }
+            ],
+        },
+    )
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "workspace")
+
+    assert lock["members"]["member"]["versions"]["python"] == {
+        "value": "1.2.3",
+        "source": "package.py",
+        "kind": "python_literal",
+        "read_from": "tracked_worktree",
+    }
+
+
+@pytest.mark.parametrize(
+    ("source", "message"),
+    [
+        ("__version__ = build_version()\n", "is not a literal"),
+        ('__version__ = "1"\n__version__ = "2"\n', "ambiguous"),
+        ('other = "1"\n', "missing"),
+    ],
+)
+def test_python_literal_version_source_fails_closed(
+    tmp_path: Path,
+    source: str,
+    message: str,
+) -> None:
+    release_lock = _load_release_lock()
+    repo = tmp_path / "member"
+    _init_repo(repo)
+    (repo / "package.py").write_text(source, encoding="utf-8")
+    _commit_all(repo)
+    component = {
+        "key": "member",
+        "version_sources": [
+            {
+                "key": "python",
+                "kind": "python_literal",
+                "path": "package.py",
+                "field": "__version__",
+            }
+        ],
+    }
+
+    with pytest.raises(release_lock.RelError, match=message):
+        release_lock.collect_versions(repo, component)
+
+
 def test_generate_lock_prefers_manifest_exact_tag_when_multiple_tags_match(tmp_path: Path) -> None:
     release_lock = _load_release_lock()
     manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
