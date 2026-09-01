@@ -281,8 +281,8 @@ work_items:
     owner: C + G
     dependencies:
       - DATA-001
-    state: selected_rc_role_tagged_studio_handoff_and_rust_python_wasm_c_abi_identity_qualified_r_and_matlab_runtime_pending
-    input_sha: fce1e1f7a573d59c280010b65b073b039049d6cc
+    state: selected_rc_role_tagged_bounded_read_handoff_source_qualified_artifact_refresh_r_and_matlab_runtime_pending
+    input_sha: f41967d53b355b10951b5658af1dddb6bd926e3d
     owned_files:
       - nirs4all-io/crates/nirs4all-io-core/src/materialize/
       - nirs4all-io/src/nirs4all_io/materialize/
@@ -305,6 +305,7 @@ work_items:
       - Rust workspace passes 183 tests, fmt, Clippy with warnings denied and no-default-features build; Python passes 236 tests with 3 documented skips, plus Ruff and Mypy; qualification tests pass 3 and workflow parsing succeeds
       - Studio dataset_links v2 role-tagged configurations translate to the same ordered DatasetSpec as the exact Studio oracle while source labels remain annotations and partial NA overrides inherit global settings
       - capability-relative handles prevent path re-open drift; symlink/hardlink aliases, compression, oversize configs/files and dataset-root escapes refuse before scientific assembly
+      - additive RoleTaggedReadLimits applies file, total, record, field, row, column and cell budgets inside the existing confined reader/parser before large reads or cell copies; the historical three-argument API retains its prior 256/512 MiB file/total behavior without implicit shape limits
     review: >-
       Commit b1151ce is a one-commit fast-forward from selected RC 1fc6c12. It
       ports only the assembled-summary-v2 identity, fold and source contract
@@ -333,6 +334,19 @@ work_items:
       80b1feacc578f4559a8c995103d91e07cce270c1237bfd60fa7c5c08d72b0038.
       R/MATLAB runtime execution and broader DatasetPackage/N-D/fused handoff
       remain open, so IO-XLG-001 and LOCK-DATA are not complete.
+      Commits 9582996 and f41967d add a 0.1.7 bounded-read API required by
+      Studio. Explicit Studio limits are 1 MiB per file, 2 MiB total, 128 KiB
+      per record, 64 KiB per field, 128 rows, 256 columns and 16,384 cells,
+      enforced in the existing same-handle reader and shared CSV parser before
+      duplication. Independent review rejected an initial default because
+      Latin-1 to UTF-8 expansion introduced an unintended historical shape
+      limit; f41967d restores record/field/shape defaults to u64::MAX while
+      preserving 256/512 MiB file/total compatibility. Rust passes 212 tests,
+      fmt, strict Clippy and no-default build; the bounded adapter passes 17
+      focused tests including exact/cap+1, sparse, cumulative, long field/record,
+      shape, alias, rename and Latin-1 cases. ABI and public enums are unchanged.
+      The 0.1.6 wheel hash above belongs to parent fce1e1f and must not be used
+      as a 0.1.7 artifact identity; exact-HEAD wheel/WASM refresh remains open.
     rollback: remove only the additive qualification harness, binding summary facades and CI job; retain the DATA contracts and never alter user datasets.
   - id: FMT-001
     owner: C + G
