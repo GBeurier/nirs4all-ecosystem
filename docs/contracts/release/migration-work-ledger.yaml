@@ -565,6 +565,11 @@ work_items:
       repository handoff and optional external format datasets remain separate
       release gates and are not masked or claimed by this item. Final staged
       WASM binaries must still be rebuilt from the future aggregation lock.
+      Core commit 7c3ed3f independently qualifies a canonical Rust-validated,
+      Methods-backed Archive V2 multi-target replay surface in its packed WASM
+      aggregate under Node 22 and Node 24. That producer proof does not change
+      this selected Web commit: Web 4fcd43d has not consumed the surface, so its
+      product lane and the four-runtime gate remain required/refused.
     rollback: revert the strict profile selector, manifest and profile-aware smoke commits together; preserve user browser storage and exported n4a artifacts.
   - id: UI-001
     owner: F + G
@@ -599,8 +604,8 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: python_legacy_and_core_executed_web_refusal_attested_studio_refresh_pending_after_callable_selection
-    input_sha: 4b590f392a677f13c55278d4e0d8e098e56871c5
+    state: python_legacy_and_core_executed_web_refusal_and_studio_resolver_refusal_attested
+    input_sha: f0382905837bd4153180c236edb428dd0fe88a77
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
@@ -633,7 +638,7 @@ work_items:
       - source checkout injection, native or dag-ml oracle substitution, fallback, outer artifact tamper and installed-byte tamper all refuse without becoming a skip
       - selected Web 4fcd43d proves its strict-wasm profile and six exact WASM digests but remains required/refused before browser launch because it exposes neither Archive V2 replay nor a single multi-target result contract
       - two independent Web mono-target fits are explicitly rejected as a substitute for the canonical Archive V2 multi-target operation
-      - Benchmarks 4b590f3 verifies selected Studio cdb9f46 with its content-addressed Rust sidecar, Rust-only renderer default, isolated CPython stdio preflight and exclusive Rust listener ownership; its callable-absent observation predates selected Python 3b9eb3e and must be refreshed without treating callable presence as execution
+      - Benchmarks f038290 verifies selected Studio d829465 and Python 3b9eb3e with the canonical wheel SHA-256 24737550768868df37dc0bf11433c7bd409ef620a8667a88b99641658b5f3e6b; the bounded callable and Rust terminal bridge execute directly in the harness but product selection remains false because the scientific request resolver is unavailable
       - Studio refusal occurs before request-body parsing, workspace access, job allocation, event publication, durable writes or scientific execution; submission transport, a Python listener, fabricated JSON or direct Core replay outside Studio are rejected substitutes
       - Ruff passes, Mypy passes over 44 source files and the isolated checkout passes 129 tests; the Core launcher wheel remains byte-reproducible at SHA-256 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
     review: >-
@@ -677,6 +682,23 @@ work_items:
       callable-absent first blocker is historical and the Studio readiness row
       must be regenerated. Studio still cannot pass until Rust resolves the
       closed request and owns durable terminal completion/cancellation.
+      Commit f038290 performs that regeneration against selected Studio
+      d829465 and Python 3b9eb3e. The canonical wheel SHA-256 is
+      24737550768868df37dc0bf11433c7bd409ef620a8667a88b99641658b5f3e6b;
+      the release sidecar SHA-256 is
+      f8bbb7c94c8f5b69f1cbdf5b04ea4d1a679f29ef0891137893ee829598f49e97,
+      the runtime contract SHA-256 is
+      67dffb103a203a6cc595bd914746b3c6f21f8fdaf1849dceef2b8ca111e42162,
+      and the readiness evidence SHA-256 is
+      904c7617140d22f24f7b91c5bc2d57ece4620ff1b472514fa62fc6831aac33b5.
+      Rust is still the sole listener and owns worker terminal callbacks, but
+      scientific_execution and executor_selected remain false with the live
+      reason scientific_request_resolver_unavailable. The direct callable
+      harness is non-product evidence only. Benchmarks passes 129 tests plus
+      Ruff and Mypy; Studio passes 138 Rust tests with one ignored opt-in
+      differential, 93 targeted Electron/renderer tests, fmt, strict Clippy and
+      release/contract builds. GATE-001 and PERF-001 remain open; macOS and
+      Windows runtime archives were not executed locally.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
