@@ -586,8 +586,8 @@ work_items:
     dependencies:
       - STORE-001
       - STU-001
-    state: native_run_pipeline_ranked_chain_results_summary_discovery_and_run_detail_runtime_inputs_published_pending_http_policy_owners
-    input_sha: b4b04b8f49cf47cf9ae9b94017ab53c694cdf0d4
+    state: native_run_pipeline_ranked_chain_results_summary_discovery_and_run_detail_runtime_inputs_promoted_to_python_rc
+    input_sha: b0d97cea6561583251c03304ea2fcaf752d945ed
     owned_files:
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_results_summary_v1.json
@@ -649,14 +649,20 @@ work_items:
       Studio still owns composition vocabulary, dataset mapping and rerun policy;
       the legacy-manifest branch or an exact per-request preselection proof remains
       mandatory before route selection.
+      The complete storage chain from f2583062 through b4b04b8f is promoted
+      onto the selected Python RC as commits 24f39352 through b0d97cea. The
+      contracts, policy module and goldens are byte-identical to the owner
+      lineage; the RC retains its independent Windows atomic-replace fix and
+      API/session work. On that selected RC, 20 storage/splitter tests, 38
+      public API/archive-session contract tests, Ruff and targeted Mypy pass.
     rollback: remove only the published contract/resource/test; do not alter existing workspace databases or conversion outputs.
   - id: STU-005
     owner: D + F
     dependencies:
       - STU-001
       - STORE-002
-    state: native_run_detail_contract_consumed_route_forbidden_pending_owner_policies
-    input_sha: 5d00f62c8b7ba11f49da4bfc3765cf1f36d00dd2
+    state: native_store_run_detail_composition_proven_route_forbidden_pending_manifest_preselection
+    input_sha: fa9fb0f4390d5a228aa37942669652ed2e659682
     owned_files:
       - nirs4all-studio/sidecar/Cargo.toml
       - nirs4all-studio/sidecar/Cargo.lock
@@ -696,6 +702,9 @@ work_items:
       - direct native run discovery accepts only source unified/manifests/parquet and refresh true/false, matches seven exact Python goldens, rejects duplicate/unknown values before selection, and returns Store-v5 compatibility errors without FastAPI retry
       - Rust consumes studio_run_detail_v1 and its byte-identical golden with 53 unit and 5 contract tests, but deliberately leaves GET run detail on FastAPI until dataset/CV/runtime/rerun/results/legacy composition is contracted
       - Rust strictly validates the byte-identical studio_run_detail_http_v1 ownership/cutover policy; 27 transport tests prove run detail stays exclusively FastAPI, propagates 404 and never probes the sidecar
+      - Studio consumes the updated owner HTTP contract SHA-256 773ee2bd36e154a9090c8e2978c1f7703eebff68e02c0e3c2dab2ca30eeb0a8d and owner golden SHA-256 1053274a5d5a900bb3511afc3290c0adae5a1c2b84beacb742fd650f806c19bd
+      - studio_run_detail_composition_v1 freezes splitter vocabulary, runtime/provenance propagation, linked-dataset mapping, results alignment and rerun_ready; its Store-v5 response golden matches the FastAPI oracle without parsing expanded_config
+      - integrated sidecar gate passes 82 Rust tests plus fmt/clippy; native composition and Store adapter pass 5 Python tests, RunDetail UI passes 5 Vitest tests, and TypeScript/Ruff/ESLint pass
     review: >-
       Studio commit d1260b1 selects bounded direct sidecar readers only for bare Store
       v5 run-summary and filter-free pipeline-summary GET requests, verifying exact
@@ -731,25 +740,33 @@ work_items:
       read-only dataset-link identity projection required for future mapping without
       exposing or mutating scientific loader configuration. The selected readers
       have no implicit Python or FastAPI fallback. STU-005 remains incomplete until
-      those scanner/repository surfaces have public native contracts and approved
-      parity fixtures; LOCK-STUDIO, R2 parity, and every R3/R4 drop claim remain
-      pending.
+      the legacy-manifest branch is contracted or the renderer proves exact
+      per-request Store-v5 preselection. Commit fa9fb0f proves the Store branch
+      composition but deliberately leaves the HTTP route unregistered; changing
+      either consumed contract's route_selection still fails closed. Scanner and
+      repository surfaces without public native contracts remain out of scope;
+      LOCK-STUDIO, R2 parity, and every R3/R4 drop claim remain pending.
     rollback: remove only the sidecar reader, copied public contract, fixture, and dependency additions; leave linked-workspace metadata and user workspace files unchanged.
   - id: STU-004
     owner: A + F
     dependencies:
       - STU-002
       - STU-005
-    state: native_job_and_websocket_cutover_contract_frozen_implementation_pending
-    input_sha: a9e57e2cbea9ab8852a00752610594b56d2b802f
+    state: native_job_registry_implemented_websocket_transport_pending
+    input_sha: 4c3d8b9d77403c0dc4f5fea13c58cf530812a8b4
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
+      - nirs4all-studio/sidecar/src/job_lifecycle.rs
       - nirs4all-studio/sidecar/tests/job_lifecycle_contract.rs
+      - nirs4all-studio/sidecar/tests/job_lifecycle_state.rs
       - nirs4all-studio/sidecar/README.md
     acceptance_tests:
       - contract matches the frozen Studio-v1 five statuses, eleven job types and five cancellation endpoints
       - contract matches all three frozen WebSocket endpoints, emitted job-event envelope keys and declared-unreachable job_cancelled behavior
       - targeted Rust contract tests passed 2/2 and Clippy passed with warnings denied
+      - bounded native registry implements strict transitions, terminal-only TTL/eviction, cooperative cancellation, finite clamped progress and exact legacy public fields/events
+      - legacy metrics update is shallow-merge while progress preserves the stored snapshot; cancellation emits job_failed and no job_cancelled variant exists
+      - integrated sidecar all-target gate passed 82 tests with fmt and Clippy warnings denied
       - cutover remains forbidden until native scientific registry, real WebSocket upgrade/connection manager, endpoint mapping, HTTP/WS differential and renderer selection exist
     review: >-
       Commit a9e57e2 freezes an executable R2 target without claiming a live
@@ -758,9 +775,44 @@ work_items:
       legacy cancellation emission as job_failed with "Job was cancelled", and
       declares no event replay promise. Native selection cannot be enabled by
       this contract and never permits a Uvicorn/FastAPI retry after selection.
-      Independent implementation review remains pending; LOCK-STUDIO and R2-W2
-      remain open.
+      Commits 1566bb8 and 4c3d8b9 implement the execution-agnostic bounded job
+      registry and correct its metric/progress semantics against the Python
+      oracle. They add no runner, HTTP route, WebSocket upgrade, persistence or
+      Python bridge. Independent transport review remains pending; LOCK-STUDIO
+      and R2-W2 remain open.
     rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
+  - id: STU-006
+    owner: F
+    dependencies:
+      - STU-002
+      - STU-001
+    state: rust_control_plane_native_session_python_scientific_plugin_lazy_transitional
+    input_sha: 2490396886a4a90e903991fd0bbe1d87813db373
+    owned_files:
+      - nirs4all-studio/electron/native-session-lifecycle.ts
+      - nirs4all-studio/electron/scientific-plugin-lifecycle.ts
+      - nirs4all-studio/electron/main.ts
+      - nirs4all-studio/electron/preload.ts
+      - nirs4all-studio/src/api/transport.ts
+      - nirs4all-studio/src/lib/websocket.ts
+      - nirs4all-studio/src/context/MlReadinessContext.tsx
+      - nirs4all-studio/src/types/electron.d.ts
+    acceptance_tests:
+      - Electron session starts the Rust sidecar and creates the window without starting Uvicorn or requiring a Python environment
+      - legacy HTTP and WebSocket URL acquisition starts the compatibility/scientific process single-flight and returns only after readiness
+      - control-plane and scientific readiness, restart and interpreter-change lifecycles are separate; changing Python never restarts the sidecar
+      - selected native requests never retry FastAPI, while unmigrated requests explicitly acquire the compatibility process and fail closed on acquisition errors
+      - selected Studio RC passes TypeScript, targeted ESLint and 47 focused Vitest tests after integration
+    review: >-
+      Commit 2490396 removes eager BackendManager startup from Electron and
+      preserves legacy backend:* IPC as lazy aliases while publishing explicit
+      control:* and scientific:* roles. Commit 94688d8 synchronizes Studio
+      lifecycle and packaging documentation. This is native-first process
+      ownership, not full native route parity: unmigrated scientific and
+      compatibility routes still start FastAPI explicitly. STU-006 and
+      LOCK-STUDIO remain incomplete until STU-004 migrates every HTTP/WS/job
+      path and release installers prove the Rust-only product surface.
+    rollback: revert only the lazy lifecycle/IPC/UI readiness adapter; preserve sidecar state and user Python environments.
   - id: W1-001
     owner: G
     dependencies:
