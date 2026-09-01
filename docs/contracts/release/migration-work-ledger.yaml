@@ -48,11 +48,18 @@ initialization:
       tests/test_cutover_state_gate.py
     result: 73 passed, 1 skipped (2026-08-31)
   dagml_data_lockstep_validation:
-    status: blocked
+    status: passed_selected_pair_binding_matrix_pending
     command: >-
-      DAG_ML_DATA_REPO=/home/delete/nirs4all/dag-ml-data
+      DAG_ML_REPO=/dev/shm/RC-v1-dagml-reconciled
+      DAG_ML_DATA_REPO=/dev/shm/RC-v1-dmd-reconciled
       python3 scripts/validate_contracts.py
-    evidence: W1 training pack artifact[7].sha256 does not match file bytes
+    evidence: >-
+      The bidirectional contract validators pass on the clean selected pair
+      Dag-ML 29abd300e518d152eb5453ea57f5232dd2b595af and dag-ml-data
+      4c8ce37952427fd13a132cbcca6324214c72554a. The data workspace also
+      passes format, workspace Clippy with warnings denied, and 272 tests with
+      two explicitly ignored performance probes. Python, R, WASM and
+      multiplatform packaging qualification remains required for LOCK-DATA.
 locks:
   LOCK-ARCH: pending
   LOCK-REF: pending
@@ -1168,7 +1175,9 @@ work_items:
     review: pending
     rollback: ownership records are additive and reversible
 next_batch:
-  gate: phase-0-inventory-and-contract-review
+  gate: r2-api-studio-web-and-lock-closure
   condition: >-
-    Integrate independent inventories; assign a Sol review; then freeze only
-    contracts proved by code, tests, and a validated selected-workspace lock.
+    Finish general API prediction/run coverage, Studio scientific submission
+    and durable job reads, WEB-001 strict WASM selection, and the remaining
+    data binding matrix; then run differential/performance/install gates and
+    regenerate a reconstructible selected-workspace lock before CUT-001.
