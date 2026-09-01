@@ -281,8 +281,8 @@ work_items:
     owner: C + G
     dependencies:
       - DATA-001
-    state: selected_rc_rust_python_wasm_c_abi_identity_qualified_r_and_matlab_runtime_pending
-    input_sha: b1151ce87d470e29b4608868a776182889f8a454
+    state: selected_rc_role_tagged_studio_handoff_and_rust_python_wasm_c_abi_identity_qualified_r_and_matlab_runtime_pending
+    input_sha: fce1e1f7a573d59c280010b65b073b039049d6cc
     owned_files:
       - nirs4all-io/crates/nirs4all-io-core/src/materialize/
       - nirs4all-io/src/nirs4all_io/materialize/
@@ -291,6 +291,9 @@ work_items:
       - nirs4all-io/bindings/wasm/tests/node_smoke.cjs
       - nirs4all-io/bindings/wasm/types/nirs4all-io.d.ts
       - nirs4all-io/bindings/matlab/
+      - nirs4all-io/crates/nirs4all-io-core/src/spec/role_tagged.rs
+      - nirs4all-io/crates/nirs4all-io/tests/role_tagged_adapter.rs
+      - nirs4all-io/tests/fixtures/role_tagged/
       - nirs4all-io/docs/IO_XLG_QUALIFICATION.md
       - nirs4all-io/.github/workflows/cross-binding.yml
     acceptance_tests:
@@ -300,6 +303,8 @@ work_items:
       - local R and MATLAB/Octave absence remain explicit unavailable dispositions and keep overall_complete=false; the strict command exits nonzero unless incomplete inventory is explicitly requested
       - the qualification runner performs no dependency download; CI pins jsonlite 1.8.9 by SHA-256 before invoking the strict R lane
       - Rust workspace passes 183 tests, fmt, Clippy with warnings denied and no-default-features build; Python passes 236 tests with 3 documented skips, plus Ruff and Mypy; qualification tests pass 3 and workflow parsing succeeds
+      - Studio dataset_links v2 role-tagged configurations translate to the same ordered DatasetSpec as the exact Studio oracle while source labels remain annotations and partial NA overrides inherit global settings
+      - capability-relative handles prevent path re-open drift; symlink/hardlink aliases, compression, oversize configs/files and dataset-root escapes refuse before scientific assembly
     review: >-
       Commit b1151ce is a one-commit fast-forward from selected RC 1fc6c12. It
       ports only the assembled-summary-v2 identity, fold and source contract
@@ -313,6 +318,21 @@ work_items:
       silently skip a surface; CI provisions exact jsonlite separately after
       digest verification. Real R and MATLAB/Octave execution remains required
       before IO-XLG-001 or LOCK-DATA can close.
+      Commit fce1e1f adds the bounded Studio role-tagged handoff on the selected
+      IO lineage and bumps the public IO surfaces coherently to 0.1.6. An
+      independent release review replayed the exact Studio oracle corpus and
+      accepted capability-relative same-handle reads, canonical file-identity
+      deduplication, inherited NA overrides, non-first defaults and bounded
+      target metadata. Configuration is capped at 1 MiB, config files/targets
+      at 64 each, individual files at 256 MiB and total input at 512 MiB;
+      ZIP/GZIP, non-null multi_source, heterogeneous target tasks, ambiguous
+      classification and column-sourced folds remain explicit refusals. Rust
+      passes 200 workspace tests plus fmt/clippy/no-default; an isolated abi3
+      wheel passes 25 tests and WASM smokes pass under Node 22. The independently
+      rebuilt wheel SHA-256 is
+      80b1feacc578f4559a8c995103d91e07cce270c1237bfd60fa7c5c08d72b0038.
+      R/MATLAB runtime execution and broader DatasetPackage/N-D/fused handoff
+      remain open, so IO-XLG-001 and LOCK-DATA are not complete.
     rollback: remove only the additive qualification harness, binding summary facades and CI job; retain the DATA contracts and never alter user datasets.
   - id: FMT-001
     owner: C + G
