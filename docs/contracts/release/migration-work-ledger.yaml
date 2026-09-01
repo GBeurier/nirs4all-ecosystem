@@ -869,6 +869,37 @@ work_items:
       The Core wheel's historical omission of the additive n4a Python facade
       remains a packaging limitation and is not hidden by this evidence.
     rollback: remove only the multi-target lowering/replay additions and restore the prior Core Dag-ML pins together; preserve user archives and the explicit legacy profile.
+  - id: API-005
+    owner: E
+    dependencies:
+      - CAP-001
+    state: advanced_verb_preflight_complete_native_and_plugin_execution_refused_pending_callable_contracts
+    input_sha: 48a85680c6c49fd6a293dcb45d049a3debe0c884
+    owned_files:
+      - nirs4all/nirs4all/api/advanced_capabilities.py
+      - nirs4all/nirs4all/api/explain.py
+      - nirs4all/nirs4all/api/generate.py
+      - nirs4all/tests/unit/api/test_explain.py
+      - nirs4all/tests/unit/api/test_generate.py
+      - nirs4all/tests/integration/parity/test_parity_smoke.py
+      - nirs4all/tests/regression/test_public_api_contract.py
+    acceptance_tests:
+      - explain and every generate namespace surface perform a side-effect-free capability decision before Session, PipelineRunner, synthesis or loader imports, data normalization, path access, compute or output writes
+      - default dag-ml/native selection returns a typed unsupported-capability RtError because no callable Core or DAG-ML explain/generate contract exists
+      - explicit plugin selection is also refused honestly until a callable V1 adapter is installed; allow_fallback true is never accepted
+      - the historical Python SHAP and synthesis implementations remain reachable only through explicit engine legacy selection or the documented N4A_ENGINE legacy profile for frozen helper signatures
+      - public 0.9.x signatures remain unchanged and preflight discovery is additive through explain.preflight and generate.preflight
+      - independent qualification passes Ruff, targeted Mypy, 489 API and public-contract tests with one opt-in live skip, plus two explicit-legacy parity explain tests
+    review: >-
+      Candidate commit 0821c82 was independently rerun and promoted as Python
+      commit 48a85680. API-005 closes executable routing and early refusal, not
+      scientific implementation: the capability ledger deliberately records
+      native and plugin execution as false. The full unit inventory passed
+      7,844 tests with 148 declared skips outside four pre-existing binary
+      sampler failures unrelated to this item. A future callable Core/DAG or
+      bounded plugin contract must add new differential evidence before either
+      capability can become true.
+    rollback: remove only the additive advanced-capability preflight and restore the explicit legacy calls in affected tests; retain user data and rollback distributions.
   - id: SAVE-003
     owner: D
     dependencies:
