@@ -43,7 +43,7 @@ initialization:
   control_tests:
     status: passed
     command: python3 -m pytest -q
-    result: 228 passed, 1 skipped (2026-09-01)
+    result: 229 passed, 1 skipped (2026-09-01)
   dagml_data_lockstep_validation:
     status: passed_selected_pair_linux_binding_matrix_qualified_release_runtime_matrix_pending
     command: >-

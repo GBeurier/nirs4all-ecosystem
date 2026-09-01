@@ -494,6 +494,11 @@ def collect_member(
     selected_workspace_path = component.get("selected_workspace_path") or component["repo_path"]
     repo_path = (workspace_root / selected_workspace_path).resolve()
     state = repo_state(repo_path, preferred_exact_tag)
+    if state["dirty"]:
+        raise RelError(
+            f"{component['key']} selected workspace {selected_workspace_path!r} "
+            "has tracked or untracked modifications; release-lock members must be clean"
+        )
     branch_patterns = component.get("selected_branch_patterns", [])
     if branch_patterns and not matches_any_pattern(state.get("branch"), branch_patterns):
         raise RelError(

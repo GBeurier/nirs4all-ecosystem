@@ -417,6 +417,29 @@ def test_generate_lock_rejects_selected_workspace_on_non_rc_branch(tmp_path: Pat
         release_lock.generate_lock(manifest_path, tmp_path / "workspace")
 
 
+def test_generate_lock_rejects_dirty_selected_member(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "manifest.json"
+    repo = tmp_path / "workspace" / "member"
+    repo.parent.mkdir()
+    _init_repo(repo)
+    (repo / "README.md").write_text("committed\n", encoding="utf-8")
+    _commit_all(repo)
+    (repo / "untracked.txt").write_text("not release evidence\n", encoding="utf-8")
+    _write_json(
+        manifest_path,
+        {
+            "schema_version": release_lock.MANIFEST_SCHEMA_VERSION,
+            "components": [{"key": "member", "repo_path": "member"}],
+        },
+    )
+
+    with pytest.raises(release_lock.RelError, match="release-lock members must be clean"):
+        release_lock.generate_lock(manifest_path, tmp_path / "workspace")
+
+
 def test_audit_fetchability_cli_only_fails_when_requested(tmp_path: Path) -> None:
     release_lock, manifest_path, lock_path = _write_fetchability_fixture(tmp_path)
     output_json = tmp_path / "fetchability.json"
