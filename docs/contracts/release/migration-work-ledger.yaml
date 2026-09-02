@@ -199,21 +199,19 @@ current_candidate_evidence:
       ordered publication/repin cascade is complete.
   methods:
     evidence_status: locally_qualified_unpublished_candidate
-    commit: 4983c9a1df39d430a78c615bda209d3353514aa1
-    tree: 8f8a7809d22ff5d95f64a22e519759eaa3fd2ec0
-    version: 1.0.13
-    c_abi_version: 2.3.0
-    next_abi_inspector:
-      status: in_progress_not_a_selected_candidate
-      target_abi_version: "2.4"
-      release_effect: none_until_qualified_and_selected
+    commit: a71ee2927524d03482183de3d6e22661efc05d12
+    tree: f6749f4c4be7dca161f3c2677dd10a9ac4434b66
+    version: 1.0.14
+    c_abi_version: 2.4.0
+    rust_binding_version: 0.1.3
     evidence: >-
-      The exact local Methods 1.0.13 source candidate and ABI 2.3.0 have passed
-      the recorded source/runtime qualification. This identity remains a local
-      candidate and is not a registry, signature or multi-OS publication claim.
+      The exact local Methods 1.0.14 source candidate exposes ABI 2.4.0 and Rust
+      binding 0.1.3, including the qualified inspector surface. This identity is
+      local only and is not a registry, signature or multi-OS publication claim.
     release_limit: >-
-      LOCK-METHODS and LOCK-RELEASE remain unclosed until the promised platform
-      matrix, signed publication artifacts and exact downstream repins pass.
+      n4m 0.1.3 is not published and the release lock still resolves 0.1.2.
+      LOCK-METHODS and LOCK-RELEASE remain unclosed until publication, promised
+      platform evidence, signed artifacts and exact downstream repins pass.
   methods_documentation:
     evidence_status: local_anti_loss_and_generation_go_scientific_release_no_go
     commit: 325387120375ca4973238ace8a415155594dfe50
@@ -241,21 +239,23 @@ current_candidate_evidence:
       remain unchanged on dag-ml-data 0.2.9 and must be repinned and rebuilt
       against 0.2.10 before this candidate can enter a release lock.
   dag_ml:
-    evidence_status: locally_qualified_unpublished_candidate
-    commit: bad5aff0bfbc14c622f5ade7f393f29399df6e07
-    tree: 529ecc687d6b9307f41ee34feafcf5d8135ba9ae
+    evidence_status: local_unpublished_predictor_descriptor_candidate
+    commit: afcd8af3832abc977bf626ff77ea37b5ca72d929
+    tree: 92f2bb37e21b859c7a13cce48de136400d1317c4
     version: 0.3.23
     resolved_dag_ml_data_version: 0.2.9
+    resolved_n4m_rust_binding_version: 0.1.2
     release_limit: >-
-      The local candidate is qualified and clean, but it is unpublished and
-      must be repinned to the selected dag-ml-data 0.2.10 candidate, rebuilt,
-      and requalified as the exact pair before publication.
+      The predictor-descriptor candidate is local only. It must be repinned to
+      dag-ml-data 0.2.10 and n4m 0.1.3 after publication, rebuilt and requalified
+      before entering the release lock.
   core:
     evidence_status: locally_qualified_unpublished_candidate
     commit: 4eb8a687b0b3797b6f5db816444cf840f67c8ee0
     tree: 4ccd67a7fe556db2c50615500cca096cae7666ef
     version: 0.3.25
     resolved_dag_ml_data_version: 0.2.9
+    predictor_descriptor_consumption: in_progress_not_selected
     evidence: >-
       Core 0.3.25 passed its recorded local qualification and exact WASM/npm
       staging checks. It remains an unpublished candidate rather than a lock or
@@ -328,12 +328,15 @@ current_candidate_evidence:
       exact train-wide evidence.
   studio:
     evidence_status: local_product_candidate_go_external_release_hold
-    candidate_commit: 06ad6a70e7d1e075dfa143a057dee56f5b621b5d
-    candidate_tree: 14945c72620f8c54bb59639451958aef72d49f90
+    candidate_commit: 1708b8c9ea2186b540fd2554d930122171222f5e
+    candidate_tree: 51a7080f59537faf2a9c6b11e7a6ca1eebc3a77a
     rust_tests_passed: 191
     vitest_tests_passed: 3961
     backend_control_plane: rust_only
     python_http_backend: removed
+    drop_005_status: closed_local_candidate
+    plugin_host_packaging: separated_from_rust_control_plane
+    bundle_gate: passed_local_candidate
     conversion_status: operational_local_candidate
     accepted_non_blocking_local_conversion_risks:
       disposition: >-
@@ -346,9 +349,10 @@ current_candidate_evidence:
     evidence: >-
       The integrated Studio candidate passes 191 Rust tests and 3,961 Vitest
       tests. Its HTTP/control/store/jobs/scheduler/WebSocket backend is Rust-only,
-      the Python HTTP backend is removed, and qualified legacy conversion is
-      operational. The two accepted TOCTOU windows above remain documented open
-      risks rather than being described as closed security properties.
+      the Python HTTP backend is removed, the plugin host is separately packaged,
+      and the bundle gate closes DROP-005 locally. Qualified legacy conversion
+      is operational. The two accepted TOCTOU windows above remain documented
+      open risks rather than being described as closed security properties.
     release_limit: >-
       LOCK-STUDIO remains on external HOLD for authoritative Windows Job Object
       runtime evidence, Docker execution, exact target closure/installer checks,
@@ -373,6 +377,8 @@ current_candidate_evidence:
   dependency_repin:
     status: pending
     selected_dag_ml_data_version: 0.2.10
+    selected_n4m_rust_binding_version: 0.1.3
+    dag_ml_locked_n4m_rust_binding_version: 0.1.2
     consumers_still_resolving_0_2_9:
       - dag-ml 0.3.23
       - nirs4all-core 0.3.25
@@ -385,6 +391,8 @@ current_candidate_evidence:
     - aggregation manifest member commit/tree/version and preferred exact tags
     - aggregation lock artifact digests, lockstep attestations and manifest digest
     - dag-ml/Core/IO dag-ml-data 0.2.10 dependency resolutions
+    - Methods n4m 0.1.3 publication and Dag-ML replacement of locked 0.1.2
+    - Core predictor-descriptor consumption and exact downstream qualification
     - Studio exact Core/IO/Methods target closures and external release artifacts
     - Web exact post-publication dependency repins and three external handoffs
     - Python, Tools, Studio and Web outside-lock release-surface evidence
@@ -402,9 +410,10 @@ current_candidate_evidence:
       remain documented open without blocking the local product effort.
     - >-
       LOCK-RELEASE is NO-GO: candidates are local and unpublished, the
-      dag-ml-data 0.2.10 repin cascade is incomplete, and registries, immutable
-      staging, provenance/SBOM closure, signatures and clean installs on all
-      promised targets are not proven from one lock.
+      dag-ml-data 0.2.10 and n4m 0.1.3 repin cascades are incomplete, Core
+      predictor-descriptor consumption is still in progress, and registries,
+      immutable staging, provenance/SBOM closure, signatures and clean installs
+      on all promised targets are not proven from one lock.
     - >-
       LOCK-DOCS is NO-GO: MTH-DOC has 209/209 mapped pages but 131/209 methods
       still lack safe attribution and 0/209 have reviewed structured publication
@@ -414,7 +423,8 @@ current_candidate_evidence:
       memory/performance, installer rollback and RC feedback evidence remain
       incomplete.
     - >-
-      R3 and R4 remain pending. Legacy must be proven unreachable from strict
+      DROP-005 is closed on the local Studio candidate, but the remaining R3 and
+      R4 gates stay pending. Legacy must be proven unreachable from strict
       Studio/Web/product paths without removing the explicit Python
       engine=legacy rollback profile before the end of R4, then the complete R3
       soak must precede an unchanged R4 promotion.
