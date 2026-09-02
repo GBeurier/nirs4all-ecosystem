@@ -78,7 +78,7 @@ current_candidate_evidence:
   observed_at: 2026-09-02
   promotion_status: no_go
   publication_status: no_go
-  gate_001_status: no_go
+  gate_001_status: local_linux_four_runtime_functional_go_release_no_go
   core:
     evidence_status: locally_qualified_unpublished_candidate
     commit: bc001e53f41cee6eb5e6f1bf6b363db25cf750ee
@@ -103,13 +103,15 @@ current_candidate_evidence:
       without RUSTFLAGS remapping or inter-machine reproducibility evidence.
       No registry publication is claimed.
   python_oracle:
-    evidence_status: selected_candidate_locally_rebuilt_four_runtime_qualification_pending
+    evidence_status: selected_candidate_exact_four_runtime_gate_passed_local_linux
     commit: 5ebb0788c392e8e1e3e3538a8ab872d724d97a64
     wheel_sha256: 0aa170685d821c217011d00f6373853d993f340f1e70499d3f560fd92e40b86a
     evidence: >-
-      Two local builds are byte-identical at the recorded wheel digest. This
-      is build evidence only; the wheel has not yet been staged with the exact
-      Core, Studio and Web artifacts in a selected four-runtime GATE-001 report.
+      Two local builds are byte-identical at the recorded wheel digest. The
+      exact isolated CPython 3.11 oracle runtime verifies the closed 44-wheel
+      RECORD union before and after execution: 8,274 files and 949 directories,
+      with no extra, collision, symlink, .pth, .pyc or __pycache__ entry. Both
+      selected four-runtime runs execute engine=legacy with fallback disabled.
   studio:
     evidence_status: locally_qualified_unpublished_candidate
     commit: 6b0545771b7bb14e127ca4842d1a56e9b007ee42
@@ -143,31 +145,35 @@ current_candidate_evidence:
       The final persisted UI selection binding, Windows/macOS packaging and
       remaining native route parity are still open; LOCK-STUDIO stays pending.
   benchmarks:
-    evidence_status: selected_commit_with_core_only_evidence_not_gate_promoted
-    selected_commit: e19c2d6dcbd43e9e4ac3f103648d11c2b95332dc
-    selected_tree: 070dbf0ba0c61cbaba67b8e718df77d2635b287c
-    runner_commit: 55f15710b64508c6f0dc73f58130ec8942ba95d2
-    runner_tree: fa53a95260ac0bfeac9c5fb7bc97cb913cc02756
+    evidence_status: selected_local_linux_four_runtime_functional_gate_passed_release_unlocked
+    selected_commit: 0f9bfaa730b9c19168cb2e5bd73c4424a6598973
+    selected_tree: db23756708543e8a8c714a542a2222ac3820e6bc
+    runner_commit: 88a087c4fa1a2392701631b01a86bd6bce35af35
+    runner_tree: 3b79c2b4e6b8ae70092a859dca75ca0384b20c8b
     ledger_base_ecosystem_gitlink: 0af2916a72e85541fb5a44b6b857c607c059304b
-    core_only_report_sha256: 08491added1c81f7f7a036197eceaacaaa9a8586fac5ceac2e5c2ed10f8f683f
+    qualification_manifest_sha256: 6c90fbbb4ebb8f4ec152fc7d10e87c74d2c229387eb8539dcae26459561f3d81
+    qualification_report_sha256: 532a40bb32a2cc5ece89571689f252ae3336468d3653132db779740f4a97beaf
+    qualification_repeat_report_sha256: 895e94106a484d31300410367da31c6ed9e99ee77d2420a4c513ffa3049c2095
+    reproducible_runner_wheel_sha256: 0366ebff3053ff01e485a8517ea4aa791acf26a936d7b4a5439020cdbce7a48d
+    readiness_sha256: d5b399f5ac4db5f9c28e1378f38580ffeaea9c8c018e8c3d81551e891751c502
     evidence: >-
-      Candidate e19c2d6 records a closed Core-only execution of the public
-      nirs4all_core.predict_methods_archive_v2_matrix API from bc001e53. The
-      exact wheel, crate, receipt, runtime, PyYAML, archive, Methods and runner
-      artifacts are content-addressed; the four expected observations are
-      returned with zero fallback.
+      Selected Bench 0f9bfaa records two exact executions from the same
+      content-addressed manifest. Python 5ebb078, Core bc001e53, Studio
+      6b054577 and Web 6b17d09 all execute and pass. The Python observation is
+      c06c929f3b4c6cdfb94d698227fbc2eda203d94e7f183dec0ad9110630a918b7;
+      all three native observations are
+      7965e800273c4305f39ffbfe027b330e2c3337a8aeede5ced947042722ffc5ec.
+      Maximum absolute error is 2.870914617147946e-10 with zero values outside
+      tolerance, and both reports are identical outside generated timestamps
+      and timings. Every declared artifact has expected SHA equal to actual SHA.
     release_limit: >-
-      The report is globally refused by design: Python, Studio and Web are
-      explicit required refusals, so no oracle comparison or same-manifest
-      four-runtime gate ran. Release authority selected e19c2d6 after this
-      ledger worktree was created, while the ledger-base ecosystem gitlink
-      remains 0af2916. Selection does not promote GATE-001 or publication.
+      This is a local Linux x86-64 functional gate, not a product-release gate,
+      performance qualification or embedded-Python proof. Studio 6b054577 has
+      the external-explicit Python contract; bounded embedded CPython plugin
+      hosting remains Phase 2 work. The ledger-base ecosystem gitlink remains
+      0af2916, the expanded release lock is not regenerated, and no exact
+      candidate is remotely advertised, signed or published.
   blockers:
-    - >-
-      GATE-001 requires one exact selected four-runtime manifest and report
-      executing the Python legacy oracle, Core bc001e53, Studio 6b054577 and
-      the selected Web runtime with comparison enabled; the Core-only report
-      cannot satisfy that gate.
     - >-
       Core requires the official cibuildwheel platform/API matrix, a
       deterministic external Rust SBOM, path-remapped inter-machine
@@ -178,8 +184,9 @@ current_candidate_evidence:
       supported target, bind the persisted renderer UI state, and close the
       remaining native route inventory before LOCK-STUDIO.
     - >-
-      Selected Bench e19c2d6 must be regenerated against the exact four-runtime
-      selection; its current globally refused Core-only report is not promotable.
+      The local four-runtime functional result must be reproduced from the
+      expanded immutable release lock across the promised platform matrix;
+      PERF-001 budgets, installer gates and target-specific closures remain open.
     - >-
       The expanded aggregation manifest and lock do not select these exact
       product commits. They must be regenerated from remotely advertised,
@@ -783,8 +790,8 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: no_go_bench_selected_core_0_3_24_core_only_evidence_four_runtime_report_and_publication_pending
-    input_sha: e19c2d6dcbd43e9e4ac3f103648d11c2b95332dc
+    state: local_linux_four_runtime_functional_go_release_matrix_and_publication_no_go
+    input_sha: 0f9bfaa730b9c19168cb2e5bd73c4424a6598973
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
@@ -840,6 +847,9 @@ work_items:
       - the Core-only report SHA-256 08491added1c81f7f7a036197eceaacaaa9a8586fac5ceac2e5c2ed10f8f683f is globally refused because Python, Studio and Web are explicit required refusals; no comparison executes and gate_001_complete remains false
       - Studio 6b054577 independently consumes a byte- and mode-identical bc001e53 snapshot, exposes the bounded renderer adapter and passes the real native route, but is not substituted into or credited to the Core-only Bench report
       - release authority selected e19c2d6 after this ledger worktree was created; the ledger-base ecosystem Bench gitlink remains 0af2916 and no GATE-001 promotion or publication is claimed
+      - selected Bench 0f9bfaa executes Python 5ebb078, Core bc001e53, Studio 6b054577 and Web 6b17d09 twice from manifest SHA-256 6c90fbbb4ebb8f4ec152fc7d10e87c74d2c229387eb8539dcae26459561f3d81; reports 532a40bb32a2cc5ece89571689f252ae3336468d3653132db779740f4a97beaf and 895e94106a484d31300410367da31c6ed9e99ee77d2420a4c513ffa3049c2095 both pass
+      - the Python oracle verifies the exact 44-wheel, 8,274-file RECORD union before and after each run and refuses extras, collisions, symlinks, .pth, .pyc, __pycache__, omitted roles and wheel substitution before spawn
+      - both selected reports have identical non-timing evidence, all declared artifact digests match, all four components execute, maximum absolute error is 2.870914617147946e-10 and no value is outside tolerance
     review: >-
       Benchmarks commits b9be6bf, b21f35f and 063e2d3 add the executable stdio
       JSON protocol, strict four-runtime runner and the Core plus Python-legacy
@@ -979,6 +989,22 @@ work_items:
       consumption and target-specific Methods/release archives, immutable
       staging, the expanded aggregation lock and remote advertisement also
       remain publication blockers.
+      Bench commits c6a05da, 88a087c and 0f9bfaa then close the selected local
+      Linux four-runtime functional gate. The exact manifest SHA-256 is
+      6c90fbbb4ebb8f4ec152fc7d10e87c74d2c229387eb8539dcae26459561f3d81;
+      report and repeat SHA-256 are respectively
+      532a40bb32a2cc5ece89571689f252ae3336468d3653132db779740f4a97beaf and
+      895e94106a484d31300410367da31c6ed9e99ee77d2420a4c513ffa3049c2095.
+      All four selected lanes execute and pass twice with stable non-timing
+      evidence and zero values outside tolerance. The hardened Python adapter
+      proves the exact 44-wheel RECORD union before and after child execution,
+      launches isolated with bytecode disabled, and refuses undeclared files,
+      caches, path hooks, symlinks, collisions, omissions and substitution.
+      Independent audit passed 187 tests with one optional FastAPI skip plus
+      final targeted assertions and Ruff. This advances only the bounded local
+      functional gate: it does not close PERF-001, platform/installers,
+      embedded CPython Phase 2, immutable release-lock reconstruction,
+      signatures, SBOM, remote advertisement or publication.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
