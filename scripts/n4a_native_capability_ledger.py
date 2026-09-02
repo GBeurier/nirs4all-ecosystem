@@ -78,6 +78,16 @@ PORTABLE_CONTROLLER_KINDS = {
     "model.pls_regression": "model",
     "pipeline.portable_methods": "api",
 }
+ROADMAP_REQUIRED_SURFACE_IDS = {
+    "nirs4all.studio.product",
+    "nirs4all.ui.package",
+    "nirs4all.web.product",
+    "nirs4all.tools.migration",
+    "nirs4all.providers.contracts",
+    "nirs4all.cockpit.product",
+    "nirs4all.org.site",
+}
+V1_SURFACE_SCOPE_EXTENSION = "nirs4all.v1_surface_scope"
 
 
 class CapabilityLedgerError(RuntimeError):
@@ -590,6 +600,47 @@ def _validate_baseline_completeness(capabilities: dict[str, dict[str, Any]], cro
     _require(LEGACY_ORACLE_CAPABILITY in by_capability, "baseline must crosswalk retained legacy backend availability")
 
 
+def _validate_v1_surface_scope_extension(extensions: dict[str, Any], matrix: dict[str, Any]) -> None:
+    entry = _object(extensions.get(V1_SURFACE_SCOPE_EXTENSION), f"ledger.extensions.{V1_SURFACE_SCOPE_EXTENSION}")
+    _exact_keys(
+        entry,
+        {"matrix_path", "matrix_exhaustive", "required_surface_ids", "omission_semantics"},
+        f"ledger.extensions.{V1_SURFACE_SCOPE_EXTENSION}",
+    )
+    _require(
+        entry["matrix_path"] == DEFAULT_SURFACE_MATRIX.as_posix(),
+        f"ledger.extensions.{V1_SURFACE_SCOPE_EXTENSION}.matrix_path must identify the release-context surface matrix",
+    )
+    _require(
+        entry["matrix_exhaustive"] is False,
+        f"ledger.extensions.{V1_SURFACE_SCOPE_EXTENSION}.matrix_exhaustive must be false",
+    )
+    omission_semantics = _non_empty_string(
+        entry["omission_semantics"],
+        f"ledger.extensions.{V1_SURFACE_SCOPE_EXTENSION}.omission_semantics",
+    )
+    _require(
+        "not evidence" in omission_semantics,
+        f"ledger.extensions.{V1_SURFACE_SCOPE_EXTENSION}.omission_semantics must distinguish omission from V1 exclusion",
+    )
+    matrix_scope = _object(matrix.get("scope"), "surface_matrix.scope")
+    _require(matrix_scope.get("exhaustive") is False, "surface matrix must explicitly remain non-exhaustive")
+    matrix_required = _string_list(
+        matrix.get("required_nirs4all_v1_surface_ids"),
+        "surface_matrix.required_nirs4all_v1_surface_ids",
+    )
+    extension_required = _string_list(
+        entry["required_surface_ids"],
+        f"ledger.extensions.{V1_SURFACE_SCOPE_EXTENSION}.required_surface_ids",
+    )
+    _require(
+        extension_required == matrix_required,
+        f"ledger.extensions.{V1_SURFACE_SCOPE_EXTENSION}.required_surface_ids must exactly mirror the surface matrix",
+    )
+    missing = sorted(ROADMAP_REQUIRED_SURFACE_IDS - set(extension_required))
+    _require(not missing, f"native capability ledger omits roadmap-required V1 surface accounting: {missing}")
+
+
 def validate_ledger(
     ledger_path: Path,
     *,
@@ -632,6 +683,7 @@ def validate_ledger(
     _validate_release_lock(release_lock, ecosystem_root, workspace_root)
     selected_members = _selected_members(manifest, lock, workspace_root) if verify_release_inputs else {}
     _extensions(root["extensions"], "ledger.extensions")
+    _validate_v1_surface_scope_extension(root["extensions"], matrix)
 
     capabilities = root["capabilities"]
     _require(isinstance(capabilities, list) and capabilities, "ledger.capabilities must be a non-empty list")

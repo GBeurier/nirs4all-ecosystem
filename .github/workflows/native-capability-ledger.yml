@@ -8,6 +8,8 @@ on:
       - ".gitmodules"
       - "nirs4all"
       - "scripts/n4a_native_capability_ledger.py"
+      - "scripts/n4a_migration_work_ledger.py"
+      - "scripts/n4a_release_surface_matrix.py"
       - "scripts/n4a_release_lock.py"
       - "docs/contracts/release/native-capability-ledger.v1.json"
       - "docs/contracts/release/native-capability-ledger/**"
@@ -16,6 +18,8 @@ on:
       - "docs/contracts/release/public-v1-surface-matrix.n4a.json"
       - "docs/contracts/release/migration-work-ledger.yaml"
       - "tests/test_native_capability_ledger.py"
+      - "tests/test_migration_work_ledger.py"
+      - "tests/test_release_surface_matrix.py"
       - "tests/fixtures/native-capability-ledger/**"
       - "tests/test_release_lock.py"
   push:
@@ -25,6 +29,8 @@ on:
       - ".gitmodules"
       - "nirs4all"
       - "scripts/n4a_native_capability_ledger.py"
+      - "scripts/n4a_migration_work_ledger.py"
+      - "scripts/n4a_release_surface_matrix.py"
       - "scripts/n4a_release_lock.py"
       - "docs/contracts/release/native-capability-ledger.v1.json"
       - "docs/contracts/release/native-capability-ledger/**"
@@ -33,6 +39,8 @@ on:
       - "docs/contracts/release/public-v1-surface-matrix.n4a.json"
       - "docs/contracts/release/migration-work-ledger.yaml"
       - "tests/test_native_capability_ledger.py"
+      - "tests/test_migration_work_ledger.py"
+      - "tests/test_release_surface_matrix.py"
       - "tests/fixtures/native-capability-ledger/**"
       - "tests/test_release_lock.py"
   workflow_dispatch:
@@ -54,7 +62,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install release-gate test dependency
-        run: python3 -m pip install pytest jsonschema
+        run: python3 -m pip install pytest jsonschema pyyaml
       - name: Materialize the ledger-pinned outside-lock Python oracle
         run: |
           oracle_commit="$(python3 - <<'PY'
@@ -99,7 +107,14 @@ jobs:
           python3 scripts/n4a_native_capability_ledger.py \
             --workspace-root "$N4A_RELEASE_WORKSPACE_ROOT" \
             validate
+          python3 scripts/n4a_release_surface_matrix.py validate
+          python3 scripts/n4a_migration_work_ledger.py validate
       - name: Test structural semantics and the selected-workspace integration path
         env:
           N4A_RELEASE_WORKSPACE_ROOT: ${{ runner.temp }}/n4a-selected-release-members
-        run: python3 -m pytest -q tests/test_release_lock.py tests/test_native_capability_ledger.py
+        run: >-
+          python3 -m pytest -q
+          tests/test_release_lock.py
+          tests/test_native_capability_ledger.py
+          tests/test_release_surface_matrix.py
+          tests/test_migration_work_ledger.py

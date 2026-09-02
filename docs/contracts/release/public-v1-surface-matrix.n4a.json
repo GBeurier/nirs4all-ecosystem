@@ -2,9 +2,15 @@
   "schema_version": "n4a.public-v1-surface-matrix/v1",
   "release_train": "2026.07-refactor",
   "status": "candidate",
-  "purpose": "Bound V1 release accounting without expanding the aggregation lock. The aggregation lock pins reproducible aggregate members; it is not the complete public V1 product matrix.",
+  "purpose": "Bound the known V1 release-accounting surfaces without confusing aggregation-lock membership with V1 program scope or claiming an exhaustive capability inventory.",
+  "scope": {
+    "authority": "Known package, product, migration, provider and publication surfaces required by ROADMAP_BACKEND_NATIF_V1.md",
+    "coverage": "The required ids below cover the reviewed V1 surfaces represented by this contract. Additional implementation capabilities and future public surfaces may exist and require separate evidence.",
+    "exhaustive": false,
+    "omission_semantics": "Omission is not a capability disposition and does not prove that a repository or surface is outside the V1 program. The roadmap and migration-work-ledger remain authoritative for program work."
+  },
   "release_batch_semantics": {
-    "required_for_nirs4all_v1": "A surface required for V1 accounting, proof, or compatibility gating. This does not necessarily mean the surface is shipped in the final V1 RC product batch.",
+    "required_for_nirs4all_v1": "A surface inside the V1 program that must be accounted and proved before R4 promotion. The value does not mean its gate passed, its artifact was published, or it belongs to the aggregation lock.",
     "held_surface_ids": [
       "nirs4all.python.oracle",
       "nirs4all.studio.product"
@@ -57,7 +63,7 @@
     "non_scope": [
       "The full public V1 product matrix.",
       "A green full Python-reference parity result.",
-      "Studio/Web/cluster/provider end-to-end environment proof.",
+      "Studio/Web/cluster/provider end-to-end environment proof; outside-lock V1 surfaces remain required where marked and require their own evidence.",
       "The current Python nirs4all repository, selected from the nirs4all-python RC worktree and targeted for a future nirs4all-python repo rename, remains the V1 Python reference but is not an aggregation-lock member."
     ]
   },
@@ -111,7 +117,14 @@
     "nirs4all.javascript_wasm.methods_scoped",
     "nirs4all.javascript_wasm.datasets_scoped",
     "nirs4all.rust.aggregate",
-    "nirs4all.matlab_octave.aggregate"
+    "nirs4all.matlab_octave.aggregate",
+    "nirs4all.studio.product",
+    "nirs4all.ui.package",
+    "nirs4all.web.product",
+    "nirs4all.providers.contracts",
+    "nirs4all.cockpit.product",
+    "nirs4all.org.site",
+    "nirs4all.tools.migration"
   ],
   "public_v1_surfaces": [
     {
@@ -237,9 +250,9 @@
       "repo_path": "nirs4all-studio",
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
-      "required_for_nirs4all_v1": false,
-      "release_batch_role": "production_held",
-      "proof_boundary": "Public product release surface; not a member of the aggregation lock. Playwright/runtime e2e remains an environment gate.",
+      "required_for_nirs4all_v1": true,
+      "release_batch_role": "required_product_held",
+      "proof_boundary": "Required V1 product surface currently held pending its product gates; it is not an aggregation-lock member. Playwright/runtime e2e remains an environment gate, and neither required scope nor this row means readiness.",
       "local_gate_policy": "npm run lint:parallel, npm run test:parallel, and Playwright/screenshot gates when product UI/runtime surfaces change."
     },
     {
@@ -251,7 +264,7 @@
       "repo_path": "nirs4all-ui",
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
-      "required_for_nirs4all_v1": false,
+      "required_for_nirs4all_v1": true,
       "release_batch_role": "custom_app_host_ui",
       "proof_boundary": "Shared React UI components and pure TypeScript view-model helpers for Studio/Web consumers; not a member of the aggregation lock and not a backend, parser, persistence, ML, or parity-proof surface.",
       "local_gate_policy": "npm run typecheck, npm test, npm run build, plus component/visual baseline checks when React UI surfaces change."
@@ -265,7 +278,7 @@
       "repo_path": "nirs4all-web",
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
-      "required_for_nirs4all_v1": false,
+      "required_for_nirs4all_v1": true,
       "release_batch_role": "custom_app_host_product",
       "proof_boundary": "Public client-side-only browser/WASM product surface; not a member of the aggregation lock, implies no Python server, and must not overclaim Python parity.",
       "local_gate_policy": "typecheck/build/Vitest/client-side browser smoke according to touched Web surface."
@@ -293,7 +306,7 @@
       "repo_path": "nirs4all-providers",
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
-      "required_for_nirs4all_v1": false,
+      "required_for_nirs4all_v1": true,
       "release_batch_role": "optional_provider_contracts",
       "proof_boundary": "Published Python provider client surface; the canonical release contract remains the neutral schemas in docs/contracts/providers and must stay consumable by R/WASM/native clients without a Python dependency.",
       "local_gate_policy": "providers_local_sibling_release plus canonical schema byte-identity and fixture validation in the providers repo."
@@ -307,7 +320,7 @@
       "repo_path": "nirs4all-cockpit",
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
-      "required_for_nirs4all_v1": false,
+      "required_for_nirs4all_v1": true,
       "release_batch_role": "publication_dashboard",
       "proof_boundary": "Published operational cockpit/site surface; outside the aggregation lock and separate from the client-side nirs4all-web product.",
       "local_gate_policy": "site build/deploy smoke according to the touched cockpit publication surface."
@@ -321,7 +334,7 @@
       "repo_path": "nirs4all-org",
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
-      "required_for_nirs4all_v1": false,
+      "required_for_nirs4all_v1": true,
       "release_batch_role": "publication_site",
       "proof_boundary": "Published public site surface; outside the aggregation lock and distinct from the aggregate runtime/package topology.",
       "local_gate_policy": "static-site validation/build smoke when org publication content or release claims change."
@@ -335,7 +348,7 @@
       "repo_path": "nirs4all-tools",
       "lock_relation": "outside_aggregation_lock",
       "lock_member_key": null,
-      "required_for_nirs4all_v1": false,
+      "required_for_nirs4all_v1": true,
       "release_batch_role": "migration_tooling",
       "proof_boundary": "Public support/migration surface; not a runtime dependency of the aggregation lock.",
       "local_gate_policy": "legacy migration converter fixtures, dry-run/verify-only, and golden preservation tests."

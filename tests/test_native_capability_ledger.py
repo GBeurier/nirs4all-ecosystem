@@ -84,9 +84,27 @@ def test_native_capability_ledger_validates_baseline_and_release_inputs() -> Non
     ledger = _validate_structural_semantics(validator, LEDGER)
 
     assert ledger["scope"]["exhaustive"] is False
+    assert "not an exhaustive V1 program" in ledger["scope"]["coverage"]
     assert ledger["release_context"]["release_train"] == "2026.07-refactor"
     assert {entry["id"] for entry in ledger["capabilities"]} >= set(validator.PORTABLE_CONTROLLER_KINDS)
     assert {entry["kind"] for entry in ledger["capabilities"]} >= {"api", "model", "operator", "format"}
+    surface_scope = ledger["extensions"][validator.V1_SURFACE_SCOPE_EXTENSION]
+    assert surface_scope["matrix_exhaustive"] is False
+    assert validator.ROADMAP_REQUIRED_SURFACE_IDS <= set(surface_scope["required_surface_ids"])
+
+
+def test_native_ledger_cannot_exclude_a_roadmap_surface_via_bounded_capability_scope(
+    tmp_path: Path,
+) -> None:
+    validator = _load_validator()
+    ledger = _read_ledger()
+    scope = ledger["extensions"][validator.V1_SURFACE_SCOPE_EXTENSION]
+    scope["required_surface_ids"].remove("nirs4all.studio.product")
+    path = tmp_path / "ledger.json"
+    _write_ledger(path, ledger)
+
+    with pytest.raises(validator.CapabilityLedgerError, match="must exactly mirror the surface matrix"):
+        _validate_structural_semantics(validator, path)
 
 
 def test_schema_is_json_schema_for_the_contract_core() -> None:
@@ -349,7 +367,12 @@ def test_release_ci_gate_validates_only_a_lock_pinned_selected_workspace() -> No
     assert "--output \"$N4A_RELEASE_WORKSPACE_ROOT\"" in workflow
     assert workflow.count("--workspace-root \"$N4A_RELEASE_WORKSPACE_ROOT\"") == 2
     assert "scripts/n4a_native_capability_ledger.py" in workflow
-    assert "tests/test_release_lock.py tests/test_native_capability_ledger.py" in workflow
+    assert "tests/test_release_lock.py" in workflow
+    assert "tests/test_native_capability_ledger.py" in workflow
+    assert "tests/test_release_surface_matrix.py" in workflow
+    assert "tests/test_migration_work_ledger.py" in workflow
+    assert "scripts/n4a_release_surface_matrix.py validate" in workflow
+    assert "scripts/n4a_migration_work_ledger.py validate" in workflow
     assert "--workspace-root \"$GITHUB_WORKSPACE\"" not in workflow
     assert "git submodule update --init --checkout nirs4all" in workflow
     assert 'git rev-parse HEAD:nirs4all' in workflow

@@ -53,7 +53,32 @@ def test_public_v1_surface_matrix_validates_current_contracts() -> None:
         "nirs4all.javascript_wasm.datasets_scoped",
         "nirs4all.rust.aggregate",
         "nirs4all.matlab_octave.aggregate",
+        "nirs4all.studio.product",
+        "nirs4all.ui.package",
+        "nirs4all.web.product",
+        "nirs4all.providers.contracts",
+        "nirs4all.cockpit.product",
+        "nirs4all.org.site",
+        "nirs4all.tools.migration",
     ]
+
+
+def test_public_v1_surface_matrix_is_explicitly_non_exhaustive() -> None:
+    matrix = _read_matrix()
+
+    assert matrix["scope"]["exhaustive"] is False
+    assert "does not prove" in matrix["scope"]["omission_semantics"]
+
+
+def test_surface_matrix_rejects_a_false_exhaustivity_claim(tmp_path: Path) -> None:
+    surface_matrix = _load_surface_matrix()
+    matrix = _read_matrix()
+    matrix["scope"]["exhaustive"] = True
+    matrix_path = tmp_path / "matrix.json"
+    _write_json(matrix_path, matrix)
+
+    with pytest.raises(surface_matrix.SurfaceMatrixError, match="exhaustive must be false"):
+        surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)
 
 
 def test_public_v1_surface_matrix_requires_r_aggregate_surface(tmp_path: Path) -> None:
@@ -122,11 +147,12 @@ def test_public_surface_matrix_accounts_for_web_providers_and_sites() -> None:
     assert ui["ecosystem"] == "javascript_ui"
     assert ui["repo_path"] == "nirs4all-ui"
     assert ui["lock_relation"] == "outside_aggregation_lock"
-    assert ui["required_for_nirs4all_v1"] is False
+    assert ui["required_for_nirs4all_v1"] is True
     assert "pure TypeScript view-model helpers" in ui["proof_boundary"]
     assert "not a backend" in ui["proof_boundary"]
 
     web = by_id["nirs4all.web.product"]
+    assert web["required_for_nirs4all_v1"] is True
     assert "browser" in web["display_name"]
     assert "client-side-only" in web["proof_boundary"]
     assert "Python server" in web["proof_boundary"]
@@ -142,17 +168,53 @@ def test_public_surface_matrix_accounts_for_web_providers_and_sites() -> None:
     providers = by_id["nirs4all.providers.contracts"]
     assert providers["distribution"] == "nirs4all-providers"
     assert providers["lock_relation"] == "outside_aggregation_lock"
+    assert providers["required_for_nirs4all_v1"] is True
     assert "neutral schemas" in providers["proof_boundary"]
     assert "R/WASM/native" in providers["proof_boundary"]
 
     cockpit = by_id["nirs4all.cockpit.product"]
     assert cockpit["distribution"] == "nirs4all-cockpit"
-    assert cockpit["required_for_nirs4all_v1"] is False
+    assert cockpit["required_for_nirs4all_v1"] is True
 
     org = by_id["nirs4all.org.site"]
     assert org["distribution"] == "nirs4all-org"
     assert org["repo_path"] == "nirs4all-org"
     assert org["lock_relation"] == "outside_aggregation_lock"
+    assert org["required_for_nirs4all_v1"] is True
+
+    studio = by_id["nirs4all.studio.product"]
+    assert studio["required_for_nirs4all_v1"] is True
+    assert studio["release_batch_role"] == "required_product_held"
+
+    tools = by_id["nirs4all.tools.migration"]
+    assert tools["required_for_nirs4all_v1"] is True
+    assert tools["repo_path"] == "nirs4all-tools"
+
+
+@pytest.mark.parametrize(
+    "surface_id",
+    [
+        "nirs4all.studio.product",
+        "nirs4all.ui.package",
+        "nirs4all.web.product",
+        "nirs4all.tools.migration",
+        "nirs4all.providers.contracts",
+        "nirs4all.cockpit.product",
+        "nirs4all.org.site",
+    ],
+)
+def test_roadmap_v1_surface_cannot_be_removed_from_required_scope(
+    tmp_path: Path, surface_id: str
+) -> None:
+    surface_matrix = _load_surface_matrix()
+    matrix = _read_matrix()
+    matrix["required_nirs4all_v1_surface_ids"].remove(surface_id)
+    _surface(matrix, surface_id)["required_for_nirs4all_v1"] = False
+    matrix_path = tmp_path / "matrix.json"
+    _write_json(matrix_path, matrix)
+
+    with pytest.raises(surface_matrix.SurfaceMatrixError, match="roadmap-required V1 surfaces"):
+        surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)
 
 
 def test_release_batch_semantics_keep_oracle_and_shipped_surfaces_distinct() -> None:
@@ -167,8 +229,8 @@ def test_release_batch_semantics_keep_oracle_and_shipped_surfaces_distinct() -> 
     assert "nirs4all.python.oracle" in semantics["held_surface_ids"]
 
     studio = by_id["nirs4all.studio.product"]
-    assert studio["required_for_nirs4all_v1"] is False
-    assert studio["release_batch_role"] == "production_held"
+    assert studio["required_for_nirs4all_v1"] is True
+    assert studio["release_batch_role"] == "required_product_held"
     assert "nirs4all.studio.product" in semantics["held_surface_ids"]
 
     assert semantics["custom_app_host_surface_ids"] == [

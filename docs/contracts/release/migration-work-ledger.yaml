@@ -6,6 +6,113 @@ authoritative_sources:
   release_lock: docs/contracts/release/aggregation-lock.n4a.lock.json
   release_manifest: docs/contracts/release/aggregation-manifest.n4a.json
   public_surface_matrix: docs/contracts/release/public-v1-surface-matrix.n4a.json
+roadmap_coverage:
+  source_label: ROADMAP_BACKEND_NATIF_V1.md
+  source_sha256: 52cf12c430378d5f2e038f3cb371b87332c87c2b0a41b6f03a4be7e22a4b58f5
+  exhaustive_for_source_work_lots: true
+  total_required_work_lots: 66
+  phases:
+    phase_0:
+      - ARCH-001
+      - ARCH-002
+      - REL-001
+      - REL-002
+      - PAR-001
+      - CAP-001
+      - GOV-001
+    r1:
+      - SAVE-001
+      - PAR-002
+      - STU-001
+      - DATA-001
+      - MTH-001
+      - MTH-002
+      - MTH-003
+      - MTH-DOC-001
+      - MTH-DOC-002
+      - DATA-002
+      - DATA-003
+      - IO-XLG-001
+      - CONF-001
+      - FMT-001
+      - CORE-001
+      - STU-002
+      - GATE-001
+      - SAVE-002
+      - SAVE-003
+      - SAVE-004
+      - STU-003
+      - REL-003
+      - MTH-DOC-003
+      - WEBREL-001
+    r2:
+      - API-001
+      - API-002
+      - API-003
+      - API-004
+      - API-005
+      - DAG-001
+      - HPO-001
+      - STU-004
+      - STU-005
+      - STU-006
+      - UI-001
+      - WEB-001
+      - PERF-001
+      - CUT-001
+      - CUT-002
+      - CUT-003
+      - DOC-001
+      - WEBREL-002
+    r3:
+      - DROP-001
+      - DROP-002
+      - DROP-003
+      - DROP-004
+      - DROP-005
+      - SOAK-001
+      - SEC-001
+      - PERF-002
+      - INST-001
+      - SUP-001
+      - WEBREL-003
+    r4:
+      - RC-001
+      - RC-002
+      - DOC-002
+      - SUP-002
+      - REL-004
+      - WEBREL-004
+  supplemental_work_items:
+    - id: DOC-WEB-001
+      source: ecosystem execution ledger
+      reason: Cross-release Org staging work split from the roadmap WEBREL lots.
+    - id: DOC-WEB-001B
+      source: ecosystem execution ledger
+      reason: Cockpit staging work split from DOC-WEB-001.
+    - id: STORE-001
+      source: ecosystem execution ledger
+      reason: Native store implementation slice supporting SAVE-002.
+    - id: STORE-002
+      source: ecosystem execution ledger
+      reason: Native store-to-Studio integration slice supporting STU-005.
+    - id: W1-001
+      source: ecosystem execution ledger
+      reason: Workspace V1 implementation slice supporting SAVE-001.
+    - id: TOOLS-001
+      source: ecosystem execution ledger
+      reason: Converter implementation slice supporting SAVE and DROP work.
+    - id: PROV-001
+      source: ecosystem execution ledger
+      reason: Provider implementation slice supporting DATA-003 and HPO-001.
+    - id: CORE-002
+      source: docs/PARALLEL_REFACTORING_ROADMAP.md
+      reason: Direct aggregate-upstream exposure dependency retained by API-001.
+  status_semantics: >-
+    Coverage means that every roadmap lot has a ledger record. It does not mean
+    acceptance, completion, release readiness or publication. Newly inventoried
+    lots remain pending until their own acceptance evidence and independent
+    review are recorded; release locks remain authoritative for promotion.
 release_train:
   shape: four_release_v1_with_explicit_rollback_profile
   reason: >-
@@ -317,7 +424,7 @@ work_items:
     dependencies:
       - ARCH-001
       - PAR-001
-    state: complete
+    state: bounded_evidence_baseline_complete_full_v1_capability_inventory_pending
     input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
     owned_files:
       - docs/contracts/release/native-capability-ledger.v1.json
@@ -332,7 +439,14 @@ work_items:
       - python3 scripts/n4a_release_lock.py --workspace-root <selected-release-members> validate --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json
       - python3 scripts/n4a_native_capability_ledger.py --workspace-root <selected-release-members> validate
       - native-capability-ledger GitHub Actions workflow checks out lock-pinned selected members before validation
-    review: "Sol-xhigh ACCEPT (CAP R7): lock-pinned workspace simulation passed 60 tests; local structural suite passed 59 with one selected-workspace skip. Global remote-SHA fetchability audit remains unproven and is not credited by this item."
+      - Every V1 model, operator, format and public API has an evidence-backed native, plugin, refused or not-promised disposition per applicable language.
+    review: >-
+      Sol-xhigh ACCEPT (CAP R7) applies only to the bounded evidence baseline:
+      lock-pinned workspace simulation passed 60 tests and the local structural
+      suite passed 59 with one selected-workspace skip. The ledger is explicitly
+      non-exhaustive, so this does not close the roadmap CAP-001 inventory or
+      R1-W1; full per-language disposition coverage and global remote-SHA
+      fetchability remain pending.
     rollback: remove only CAP-owned ledger/schema/validator/tests/fixtures/CI additions; do not alter the immutable lock, manifest, or surface matrix
   - id: DATA-001
     owner: C
@@ -2206,6 +2320,449 @@ work_items:
     acceptance_tests: []
     review: pending
     rollback: ownership records are additive and reversible
+  - id: CORE-002
+    owner: E
+    dependencies:
+      - CORE-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-core/
+    acceptance_tests:
+      - Direct aggregate exposure and the datasets default-versus-optional decision are implemented and proved without duplicate domain logic.
+    review: pending
+    rollback: remove only the unaccepted direct-exposure slice; retain the aggregate naming contract
+  - id: DATA-002
+    owner: C
+    dependencies:
+      - DATA-001
+      - IO-XLG-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-io/
+      - dag-ml-data/
+    acceptance_tests:
+      - Materialization uses the published Rust IO to dag-ml-data bridge without a mandatory SpectroDataset adapter and preserves identities.
+    review: pending
+    rollback: retain the published bridge and remove only the unaccepted consumer replug
+  - id: CORE-001
+    owner: E
+    dependencies:
+      - MTH-002
+      - DATA-002
+      - DATA-003
+      - FMT-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-core/
+    acceptance_tests:
+      - Formats, IO, data, dag and Methods execute through Core rather than being metadata-only exposures.
+    review: pending
+    rollback: retain the prior aggregate release and remove only the unaccepted real-upstream wiring
+  - id: STU-003
+    owner: F + D
+    dependencies:
+      - STU-001
+      - SAVE-004
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-studio/
+      - nirs4all-tools/
+    acceptance_tests:
+      - Conversion UI and CLI treat code 0 as verified, code 10 as preserved with warning and no activation, and code 20 as refused.
+    review: pending
+    rollback: keep conversion sources immutable and remove only the unaccepted UI or CLI presentation changes
+  - id: REL-003
+    owner: G
+    dependencies:
+      - REL-002
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-tools/
+      - nirs4all-datasets/
+      - docs/contracts/release/
+    acceptance_tests:
+      - Tools and Datasets licenses have no manual blocker and the resulting SBOM and provenance artifacts are signable.
+    review: pending
+    rollback: retain the previous no-go release record and discard only unaccepted release artifacts
+  - id: WEBREL-001
+    owner: H + G
+    dependencies:
+      - REL-003
+      - MTH-DOC-003
+      - STU-003
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-org/
+      - docs/
+    acceptance_tests:
+      - R1 pages are built from the release lock, announce consolidation without claiming native default, and include publishable migration and Methods documentation.
+    review: pending
+    rollback: keep sites in release-in-progress mode and retain the prior published pages
+  - id: DAG-001
+    owner: E + C
+    dependencies:
+      - DATA-003
+      - API-003
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - dag-ml/
+      - dag-ml-data/
+      - nirs4all/
+    acceptance_tests:
+      - Production controllers hydrate artifacts and fingerprinted Arrow cache outside the initial process while releasing all handles.
+    review: pending
+    rollback: disable only the unaccepted hydration path and preserve the prior native archive contract
+  - id: PERF-001
+    owner: G
+    dependencies:
+      - GATE-001
+      - STU-006
+      - WEB-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-benchmarks/
+      - docs/contracts/release/
+    acceptance_tests:
+      - Oracle, direct Rust, Studio Rust and WASM satisfy the frozen R1 budgets or carry an independently approved evidenced exception.
+    review: pending
+    rollback: retain the last accepted budgets and keep the release on hold
+  - id: CUT-001
+    owner: E + G
+    dependencies:
+      - API-001
+      - API-002
+      - API-003
+      - API-004
+      - API-005
+      - SAVE-004
+      - STU-006
+      - PERF-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all/
+      - docs/contracts/release/
+    acceptance_tests:
+      - DEFAULT_ENGINE is native and every test without an engine parameter exercises the native backend.
+    review: pending
+    rollback: restore the R1 default without converting sources backward or deleting the explicit native path
+  - id: CUT-002
+    owner: E
+    dependencies:
+      - CUT-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all/
+    acceptance_tests:
+      - Legacy fallback is opt-in and visible, with no generic exception path relaunching legacy and with a structured warning and counter.
+    review: pending
+    rollback: restore the R1 default rather than adding an implicit fallback
+  - id: CUT-003
+    owner: G + D
+    dependencies:
+      - CUT-001
+      - SAVE-004
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-tools/
+      - docs/
+    acceptance_tests:
+      - Package and installer rollback to R1 is documented and tested without destructive reverse conversion.
+    review: pending
+    rollback: retain the R1 package and immutable legacy sources as the recovery point
+  - id: DOC-001
+    owner: H
+    dependencies:
+      - CUT-002
+      - MTH-DOC-003
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - docs/
+      - nirs4all-methods/docs/
+    acceptance_tests:
+      - Every R2 limitation is preflightable and documented, and Methods examples use the R2 APIs and artifacts while retaining scientific links.
+    review: pending
+    rollback: retain the R1 documentation set and do not announce R2
+  - id: WEBREL-002
+    owner: H + G
+    dependencies:
+      - DOC-001
+      - CUT-003
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-org/
+      - nirs4all-studio/
+      - nirs4all-web/
+      - docs/
+    acceptance_tests:
+      - R2 pages, downloads and changelogs state native default and legacy opt-in, show the conversion command, and name the exact supported platforms.
+    review: pending
+    rollback: keep all sites in release-in-progress mode and preserve R1 links
+  - id: DROP-001
+    owner: E
+    dependencies:
+      - CUT-002
+      - API-005
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all/
+      - nirs4all-studio/
+      - nirs4all-web/
+    acceptance_tests:
+      - Studio and Web call graphs expose no legacy runner, executor, orchestrator, selector or implicit fallback while explicit Python engine legacy remains rollback-only.
+    review: pending
+    rollback: restore the signed R2 product while retaining the explicit Python rollback profile
+  - id: DROP-002
+    owner: F
+    dependencies:
+      - DROP-001
+      - STU-006
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-studio/
+    acceptance_tests:
+      - Studio installers contain no Uvicorn, FastAPI, standalone CPython backend, PyInstaller backend or backend requirements; any CPython is a preflighted plugin host with no HTTP port or scheduler.
+    review: pending
+    rollback: restore the signed R2 installer rather than embedding a Python orchestration fallback
+  - id: DROP-003
+    owner: D
+    dependencies:
+      - SAVE-004
+      - TOOLS-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-tools/
+      - nirs4all/
+    acceptance_tests:
+      - Legacy readers and writers live in Tools and conversion remains available without reintroducing them into the strict runtime.
+    review: pending
+    rollback: keep the last accepted converter package and do not reactivate readers in the product runtime
+  - id: DROP-004
+    owner: F
+    dependencies:
+      - DROP-001
+      - UI-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-studio/
+      - nirs4all-ui/
+      - nirs4all-web/
+    acceptance_tests:
+      - Product UI offers one backend, keeps diagnostics separate, and does not remove the explicit Python rollback API.
+    review: pending
+    rollback: restore the R2 product preferences without enabling implicit fallback
+  - id: DROP-005
+    owner: G
+    dependencies:
+      - DROP-002
+      - DROP-003
+      - DROP-004
+      - REL-003
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - .github/workflows/
+      - nirs4all-studio/
+      - docs/contracts/release/
+    acceptance_tests:
+      - No product job installs the Python backend and licenses and SBOM match the actual package contents.
+    review: pending
+    rollback: restore the signed R2 jobs and packaging manifests without adding a hidden backend
+  - id: SOAK-001
+    owner: G + D
+    dependencies:
+      - DROP-005
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-benchmarks/
+      - docs/contracts/e2e/
+    acceptance_tests:
+      - Representative user corpora and workspaces show no crash or loss and every refusal is classified and actionable.
+    review: pending
+    rollback: keep R3 on hold and preserve the signed R2 rollback artifacts
+  - id: SEC-001
+    owner: G + B + C + D
+    dependencies:
+      - DROP-005
+      - MTH-002
+      - SAVE-004
+      - FMT-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-formats/
+      - nirs4all-methods/
+      - nirs4all-tools/
+      - docs/contracts/release/
+    acceptance_tests:
+      - Fuzzing and hostile-payload tests for formats, archives, store and ABI leave no critical or high vulnerability open.
+    review: pending
+    rollback: keep the release on hold and retain the prior signed artifacts
+  - id: PERF-002
+    owner: G
+    dependencies:
+      - SOAK-001
+      - PERF-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-benchmarks/
+      - docs/contracts/release/
+    acceptance_tests:
+      - Concurrency and memory soak finds no handle leak or store corruption and no unapproved latency-budget overrun.
+    review: pending
+    rollback: keep R3 on hold and retain the accepted R1 budgets
+  - id: INST-001
+    owner: F + G
+    dependencies:
+      - DROP-002
+      - DROP-005
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-studio/
+      - docs/contracts/release/
+    acceptance_tests:
+      - Install, update, uninstall and crash recovery pass on promised Linux, macOS and Windows architectures, including the manual Windows smoke.
+    review: pending
+    rollback: retain the signed R2 installers and do not promote R3
+  - id: SUP-001
+    owner: H + D
+    dependencies:
+      - DROP-003
+      - SOAK-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-tools/
+      - docs/
+    acceptance_tests:
+      - Conversion diagnostics, support and rollback are reproducible by a person without a development checkout.
+    review: pending
+    rollback: retain R2 support instructions and keep R3 unpublished
+  - id: WEBREL-003
+    owner: H + G
+    dependencies:
+      - DROP-005
+      - INST-001
+      - SUP-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-org/
+      - nirs4all-cockpit/
+      - nirs4all-studio/
+      - nirs4all-web/
+      - docs/
+    acceptance_tests:
+      - R3 pages remove Python or FastAPI backend instructions and document preflight refusal, plugins, Rust-only installers, R2 rollback and archived documentation.
+    review: pending
+    rollback: leave public sites on R2 and keep R3 in release-in-progress mode
+  - id: RC-001
+    owner: release-captain + owners
+    dependencies:
+      - WEBREL-003
+      - SOAK-001
+      - SEC-001
+      - PERF-002
+      - INST-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - docs/contracts/release/
+    acceptance_tests:
+      - Every R3 report is a corrected blocker, a documented limitation, or an explicitly accepted post-V1 item.
+    review: pending
+    rollback: keep the R3 candidate unpromoted while retaining all reports
+  - id: RC-002
+    owner: G
+    dependencies:
+      - RC-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - docs/contracts/release/
+      - .github/workflows/
+    acceptance_tests:
+      - The complete gate set is rerun after every correction with no untested cherry-pick or artifact rebuilt outside the lock.
+    review: pending
+    rollback: discard the unqualified candidate and rebuild from the last accepted lock
+  - id: DOC-002
+    owner: H
+    dependencies:
+      - RC-001
+      - SUP-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - docs/
+    acceptance_tests:
+      - Migration, API, ABI, schema, examples and FAQ present no Python or legacy backend installation as the current product path.
+    review: pending
+    rollback: retain the R3 documentation archive and postpone stable promotion
+  - id: SUP-002
+    owner: H + D
+    dependencies:
+      - RC-001
+      - SUP-001
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-tools/
+      - docs/
+    acceptance_tests:
+      - Archive read, write and migration versions and the Tools support duration are explicit in the published SLA and support matrix.
+    review: pending
+    rollback: retain the R3 support policy and postpone stable promotion
+  - id: REL-004
+    owner: G
+    dependencies:
+      - RC-002
+      - DOC-002
+      - SUP-002
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - docs/contracts/release/
+    acceptance_tests:
+      - Final versions, SHAs, checksums, SBOM and signatures are frozen and reproducible from the product manifest.
+    review: pending
+    rollback: retain the R3 lock and refuse stable promotion
+  - id: WEBREL-004
+    owner: H + G
+    dependencies:
+      - REL-004
+    state: pending
+    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    owned_files:
+      - nirs4all-org/
+      - nirs4all-cockpit/
+      - nirs4all-studio/
+      - nirs4all-web/
+      - nirs4all-repository/
+      - nirs4all-benchmarks/
+      - docs/
+    acceptance_tests:
+      - Org, package documentation, Methods, Studio, Web, Repository, Benchmarks and Cockpit pages are generated from the final lock with redirects, SEO, JSON-LD, sitemap and downloads validated.
+    review: pending
+    rollback: retain R3 pages and leave stable publication in release-in-progress mode
 next_batch:
   gate: r2-api-studio-web-and-lock-closure
   condition: >-

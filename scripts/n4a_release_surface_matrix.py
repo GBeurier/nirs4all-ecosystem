@@ -30,6 +30,16 @@ LOCK_RELATIONS = {
     "outside_aggregation_lock",
 }
 
+ROADMAP_REQUIRED_V1_SURFACES = {
+    "nirs4all.studio.product": "nirs4all-studio",
+    "nirs4all.ui.package": "nirs4all-ui",
+    "nirs4all.web.product": "nirs4all-web",
+    "nirs4all.tools.migration": "nirs4all-tools",
+    "nirs4all.providers.contracts": "nirs4all-providers",
+    "nirs4all.cockpit.product": "nirs4all-cockpit",
+    "nirs4all.org.site": "nirs4all-org",
+}
+
 PACKAGE_ECOSYSTEM_KEYS = {
     "python": ("python", "distribution"),
     "r": ("r", "packages"),
@@ -61,6 +71,24 @@ def _require(condition: bool, message: str) -> None:
 
 def _component_map(manifest: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return {component["key"]: component for component in manifest.get("components", [])}
+
+
+def _validate_scope(matrix: dict[str, Any]) -> None:
+    scope = matrix.get("scope")
+    _require(isinstance(scope, dict), "matrix.scope must be an object")
+    _require(
+        set(scope) == {"authority", "coverage", "exhaustive", "omission_semantics"},
+        "matrix.scope must contain authority, coverage, exhaustive and omission_semantics",
+    )
+    for field in ("authority", "coverage", "omission_semantics"):
+        _require(
+            isinstance(scope.get(field), str) and bool(scope[field].strip()),
+            f"matrix.scope.{field} must be a non-empty string",
+        )
+    _require(
+        scope.get("exhaustive") is False,
+        "matrix.scope.exhaustive must be false; this evidence-bound matrix is not a capability inventory",
+    )
 
 
 def _member_packages(member: dict[str, Any], ecosystem: str) -> list[str]:
@@ -196,6 +224,10 @@ def _validate_public_surfaces(matrix: dict[str, Any], lock: dict[str, Any]) -> N
         isinstance(required_ids, list) and required_ids,
         "matrix.required_nirs4all_v1_surface_ids must be a non-empty list",
     )
+    _require(
+        len(required_ids) == len(set(required_ids)),
+        "matrix.required_nirs4all_v1_surface_ids must not contain duplicates",
+    )
     missing = sorted(set(required_ids) - seen_ids)
     _require(not missing, f"required nirs4all V1 surface ids are missing: {missing}")
     by_id = {surface["id"]: surface for surface in surfaces}
@@ -203,6 +235,21 @@ def _validate_public_surfaces(matrix: dict[str, Any], lock: dict[str, Any]) -> N
         _require(
             by_id[surface_id].get("required_for_nirs4all_v1") is True,
             f"{surface_id}: required_nirs4all_v1_surface_ids entries must set required_for_nirs4all_v1=true",
+        )
+    missing_roadmap_surfaces = sorted(set(ROADMAP_REQUIRED_V1_SURFACES) - set(required_ids))
+    _require(
+        not missing_roadmap_surfaces,
+        f"roadmap-required V1 surfaces are missing from required accounting: {missing_roadmap_surfaces}",
+    )
+    for surface_id, repo_path in ROADMAP_REQUIRED_V1_SURFACES.items():
+        surface = by_id[surface_id]
+        _require(
+            surface.get("repo_path") == repo_path,
+            f"{surface_id}: roadmap-required V1 surface must map to {repo_path!r}",
+        )
+        _require(
+            surface.get("lock_relation") == "outside_aggregation_lock",
+            f"{surface_id}: current roadmap-required product/support surface remains outside the aggregate lock",
         )
 
     required_shapes = [
@@ -261,7 +308,7 @@ def _validate_release_batch_semantics(matrix: dict[str, Any]) -> None:
 
     for surface_id, role in (
         ("nirs4all.python.oracle", "required_parity_oracle_held"),
-        ("nirs4all.studio.product", "production_held"),
+        ("nirs4all.studio.product", "required_product_held"),
     ):
         surface = surfaces.get(surface_id)
         _require(surface is not None, f"release batch semantics require {surface_id}")
@@ -285,8 +332,8 @@ def _validate_release_batch_semantics(matrix: dict[str, Any]) -> None:
     )
     studio = surfaces["nirs4all.studio.product"]
     _require(
-        studio.get("required_for_nirs4all_v1") is False,
-        "nirs4all.studio.product must stay outside the required final V1 RC batch",
+        studio.get("required_for_nirs4all_v1") is True,
+        "nirs4all.studio.product is required V1 scope even while its release remains held",
     )
     for surface_id in (
         "nirs4all.javascript_wasm.aggregate",
@@ -330,6 +377,7 @@ def validate_surface_matrix(matrix_path: Path, manifest_path: Path, lock_path: P
             f"{name}.release_train={data.get('release_train')!r} does not match matrix.release_train={matrix.get('release_train')!r}",
         )
 
+    _validate_scope(matrix)
     _validate_lock_member_list(matrix, manifest, lock)
     _validate_public_surfaces(matrix, lock)
     _validate_release_batch_semantics(matrix)
