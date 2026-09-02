@@ -203,6 +203,10 @@ current_candidate_evidence:
     tree: 8f8a7809d22ff5d95f64a22e519759eaa3fd2ec0
     version: 1.0.13
     c_abi_version: 2.3.0
+    next_abi_inspector:
+      status: in_progress_not_a_selected_candidate
+      target_abi_version: "2.4"
+      release_effect: none_until_qualified_and_selected
     evidence: >-
       The exact local Methods 1.0.13 source candidate and ABI 2.3.0 have passed
       the recorded source/runtime qualification. This identity remains a local
@@ -232,9 +236,10 @@ current_candidate_evidence:
     tree: f2144d861642e81758dcef4f6ee76ec32c0961ff
     version: 0.2.10
     release_limit: >-
-      The candidate is locally qualified but unpublished. Dag-ML, Core and IO
-      candidate roots still resolve dag-ml-data 0.2.9 and must be repinned and
-      rebuilt against 0.2.10 before this candidate can enter a release lock.
+      The candidate is locally qualified but unpublished. Publication is still
+      blocked on crates.io, PyPI and npm. Dag-ML, Core and IO candidate roots
+      remain unchanged on dag-ml-data 0.2.9 and must be repinned and rebuilt
+      against 0.2.10 before this candidate can enter a release lock.
   dag_ml:
     evidence_status: locally_qualified_unpublished_candidate
     commit: bad5aff0bfbc14c622f5ade7f393f29399df6e07
@@ -322,41 +327,49 @@ current_candidate_evidence:
       robustness, explain/generate and remaining dual-Methods paths still need
       exact train-wide evidence.
   studio:
-    evidence_status: pending_final_independent_audit
-    candidate_commit: pending
-    candidate_tree: pending
-    last_observed_head: 1a4690fd6cb8ec81f033db422b747db91fbb2127
-    last_observed_tree: c280d778abc7d2d46cf0185fe1e4d4160becb207
+    evidence_status: local_product_candidate_go_external_release_hold
+    candidate_commit: 06ad6a70e7d1e075dfa143a057dee56f5b621b5d
+    candidate_tree: 14945c72620f8c54bb59639451958aef72d49f90
+    rust_tests_passed: 191
+    vitest_tests_passed: 3961
+    backend_control_plane: rust_only
+    python_http_backend: removed
+    conversion_status: operational_local_candidate
+    accepted_non_blocking_local_conversion_risks:
+      disposition: >-
+        Explicitly accepted by the user as non-priority for a conversion path
+        expected to serve approximately ten users. These risks are not claimed
+        closed and do not block the current local product effort.
+      open_risks:
+        - content hash to process spawn mutation window
+        - source mutation after validation scan
     evidence: >-
-      The last observed Studio integration head is recorded only for audit
-      continuity. It is not the final candidate: the content-identity binding,
-      Windows Job Object process-tree control, nested-symlink rejection and
-      mandatory runtime attestation corrective pass still requires integration
-      and independent review.
+      The integrated Studio candidate passes 191 Rust tests and 3,961 Vitest
+      tests. Its HTTP/control/store/jobs/scheduler/WebSocket backend is Rust-only,
+      the Python HTTP backend is removed, and qualified legacy conversion is
+      operational. The two accepted TOCTOU windows above remain documented open
+      risks rather than being described as closed security properties.
     release_limit: >-
-      LOCK-STUDIO remains NO-GO pending the final SHA/tree, exact Core/IO/Methods
-      repins, Docker and installer execution, Linux/macOS/Windows evidence,
-      signing and the complete HTTP/WS/readiness/differential inventory. Studio
-      control, store, jobs, scheduler and WebSocket remain Rust-only; any
-      embedded CPython is limited to an attested stdio library/plugin host with
-      no HTTP server, scheduler, store or fallback.
+      LOCK-STUDIO remains on external HOLD for authoritative Windows Job Object
+      runtime evidence, Docker execution, exact target closure/installer checks,
+      signing and the promised platform matrix. Any embedded CPython remains
+      limited to an attested stdio library/plugin host with no HTTP server,
+      scheduler, store or fallback.
   web:
-    evidence_status: pending_final_legal_distribution_audit
-    candidate_commit: pending
-    candidate_tree: pending
-    last_observed_head: c5072964414bd43e7d4223453dc6e6aeb498ddd0
-    last_observed_tree: c5fa9ab3f2006b5d156c1483a15cf7ead3517929
+    evidence_status: local_product_candidate_go_independent_audit_accepted
+    candidate_commit: d15332e6dd6677cf971d4b8afe826a4af8f4b805
+    candidate_tree: 1667248c41542cbdcde2414c4a6c34b93b2891c1
+    tests_passed: 190
+    available_smokes_passed: 25/25
+    external_handoffs_pending: 3
     evidence: >-
-      The last observed Web integration head has green local runtime/type/test/
-      build smokes, but it is not the final candidate while component-specific
-      legal payload distribution and exact Methods/Core aggregate verification
-      are being closed. The final legal commit and independent audit remain
-      pending.
+      The final local Web candidate passed its independent audit, 190 tests and
+      all 25 available smokes. Exact component legal payloads, provenance and
+      required SBOM distribution are present in the qualified dist candidate.
     release_limit: >-
-      Web is client-side-only and must ship the exact qualified WASM bytes plus
-      their component notices, licenses, provenance and required SBOM in the
-      actual dist output. Publication and external artifact-dependent smokes are
-      not complete.
+      Web remains client-side-only. Three external artifact-dependent handoffs,
+      publication, signatures and final lock-driven downstream repins remain
+      outside the local GO and block a release claim.
   dependency_repin:
     status: pending
     selected_dag_ml_data_version: 0.2.10
@@ -372,8 +385,8 @@ current_candidate_evidence:
     - aggregation manifest member commit/tree/version and preferred exact tags
     - aggregation lock artifact digests, lockstep attestations and manifest digest
     - dag-ml/Core/IO dag-ml-data 0.2.10 dependency resolutions
-    - Studio final commit/tree and exact Core/IO/Methods closures
-    - Web final commit/tree and exact Methods/Core/component-legal inventories
+    - Studio exact Core/IO/Methods target closures and external release artifacts
+    - Web exact post-publication dependency repins and three external handoffs
     - Python, Tools, Studio and Web outside-lock release-surface evidence
     - registry URLs, SBOM/provenance digests, signatures and installer checksums
   blockers:
@@ -382,9 +395,11 @@ current_candidate_evidence:
       complete R2 run/predict/session/cache/retrain/finetune/conformal/
       robustness/explain/generate and dual-Methods capability matrix.
     - >-
-      LOCK-STUDIO is open: Studio has no final independently accepted SHA and
-      Docker, installer, HTTP/WS/readiness and promised multi-OS evidence remain
-      incomplete.
+      LOCK-STUDIO is on external HOLD: the local product candidate is integrated
+      and Rust-only, but authoritative Windows Job Object runtime, Docker,
+      installer/closure, signing and promised multi-OS evidence remain
+      incomplete. The two explicitly accepted low-scale conversion TOCTOU risks
+      remain documented open without blocking the local product effort.
     - >-
       LOCK-RELEASE is NO-GO: candidates are local and unpublished, the
       dag-ml-data 0.2.10 repin cascade is incomplete, and registries, immutable
