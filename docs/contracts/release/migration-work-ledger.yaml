@@ -183,130 +183,226 @@ locks:
   LOCK-DOCS: pending
 current_candidate_evidence:
   observed_at: 2026-09-02
+  authority: local_candidate_snapshot_only
   promotion_status: no_go
   publication_status: no_go
-  gate_001_status: local_linux_four_runtime_functional_go_release_no_go
+  release_gate_status: no_go
+  canonical_release_lock:
+    updated: false
+    status: retained_published_selection_baseline
+    reason: >-
+      aggregation-lock.n4a.lock.json is generated from the selected release
+      manifest and represents reconstructible release members. The local
+      candidates below are not all remotely advertised, tagged, signed or
+      published, so copying their identities into that lock would create false
+      publication evidence. A release captain must regenerate it only after the
+      ordered publication/repin cascade is complete.
+  methods:
+    evidence_status: locally_qualified_unpublished_candidate
+    commit: 4983c9a1df39d430a78c615bda209d3353514aa1
+    tree: 8f8a7809d22ff5d95f64a22e519759eaa3fd2ec0
+    version: 1.0.13
+    c_abi_version: 2.3.0
+    evidence: >-
+      The exact local Methods 1.0.13 source candidate and ABI 2.3.0 have passed
+      the recorded source/runtime qualification. This identity remains a local
+      candidate and is not a registry, signature or multi-OS publication claim.
+    release_limit: >-
+      LOCK-METHODS and LOCK-RELEASE remain unclosed until the promised platform
+      matrix, signed publication artifacts and exact downstream repins pass.
+  methods_documentation:
+    evidence_status: local_anti_loss_and_generation_go_scientific_release_no_go
+    commit: 325387120375ca4973238ace8a415155594dfe50
+    tree: 534be82f7a49f49e9d101b2b70882fbef286b22b
+    mapped_documentation_pages: 209/209
+    attributable_tracked_prose: 78/209
+    safe_attribution_missing: 131/209
+    reviewed_structured_method_publications: 0/209
+    reviewed_explicit_absence_status: 0/209
+    evidence: >-
+      All 209 catalog methods have mapped documentation pages and a parity
+      disposition, and the 73-entry historical citation baseline is preserved.
+      Scientific publication attribution is not release-complete: 131 methods
+      still lack safe attribution and none of the 209 methods has reviewed
+      structured publication metadata or a reviewed explicit absence status.
+      MTH-DOC and LOCK-DOCS therefore remain NO-GO.
+  dag_ml_data:
+    evidence_status: locally_qualified_unpublished_candidate
+    commit: 1f60b920d34acda7c0fbc044b593bb6af1fab4c1
+    tree: f2144d861642e81758dcef4f6ee76ec32c0961ff
+    version: 0.2.10
+    release_limit: >-
+      The candidate is locally qualified but unpublished. Dag-ML, Core and IO
+      candidate roots still resolve dag-ml-data 0.2.9 and must be repinned and
+      rebuilt against 0.2.10 before this candidate can enter a release lock.
+  dag_ml:
+    evidence_status: locally_qualified_unpublished_candidate
+    commit: bad5aff0bfbc14c622f5ade7f393f29399df6e07
+    tree: 529ecc687d6b9307f41ee34feafcf5d8135ba9ae
+    version: 0.3.23
+    resolved_dag_ml_data_version: 0.2.9
+    release_limit: >-
+      The local candidate is qualified and clean, but it is unpublished and
+      must be repinned to the selected dag-ml-data 0.2.10 candidate, rebuilt,
+      and requalified as the exact pair before publication.
   core:
     evidence_status: locally_qualified_unpublished_candidate
-    commit: bc001e53f41cee6eb5e6f1bf6b363db25cf750ee
-    tree: b7afff9a5c9e14838a6bb3405be99c51d30dbb19
-    version: 0.3.24
-    crate_tree: bbb900b0735d40e61a0ace72a545b6485264f1af
-    crate_sha256: cab4281741eb762113dc5ea270f248ea8a8d6ac919cd74f766aa9506b90b3575
-    local_manylinux_wheel_sha256: db76ab209988c30f15d1053a489d48c521286bb90cfac0f81659a87db1adb58d
-    receipt_sha256: 06a84d2e8d189f5e60a5cb6a236c9da212a333342c9a19beec5e76517c4103a0
+    commit: 4eb8a687b0b3797b6f5db816444cf840f67c8ee0
+    tree: 4ccd67a7fe556db2c50615500cca096cae7666ef
+    version: 0.3.25
+    resolved_dag_ml_data_version: 0.2.9
     evidence: >-
-      The pinned local Zig/auditwheel build is tagged manylinux_2_28_x86_64,
-      has maximum GLIBC_2.28, installs under CPython 3.11 and 3.13, and is
-      byte-identical across two clean same-host builds. Rust format, strict
-      Clippy, workspace tests, Python tests, package verification, twine and
-      version synchronization passed. The wheel contains both nirs4all_core
-      and n4a, excludes caches, and its closed checker refuses duplicate,
-      traversal, drive, backslash, symlink and special ZIP entries.
+      Core 0.3.25 passed its recorded local qualification and exact WASM/npm
+      staging checks. It remains an unpublished candidate rather than a lock or
+      registry identity.
     release_limit: >-
-      This is local candidate evidence only. Docker was unavailable, so the
-      official cibuildwheel matrix did not run; deterministic external Rust
-      SBOM output is still required; Cargo registry paths remain embedded
-      without RUSTFLAGS remapping or inter-machine reproducibility evidence.
-      No registry publication is claimed.
-  python_oracle:
-    evidence_status: selected_candidate_exact_four_runtime_gate_passed_local_linux
-    commit: c8b5fd5bf847ce26f78008b9abd00fa54f790825
-    tree: 52fa14c268aad9994f7fa014369b8fb88f17dafe
-    wheel_sha256: 646971289137b8005b9848a4c22c000acce01660850ade63fd743c637366d24e
-    wheel_closure_sha256: 579c7e493625c32cdb12bc5eca4e3658e65e556652083b0d056155683e825675
-    native_methods_hpo_slice: pls_n_components_1_to_3_random_no_pruner_rmse_grouped
+      Core still resolves dag-ml-data 0.2.9. The final leaf-to-aggregate repin,
+      clean rebuild, immutable artifact staging, multi-OS matrix, SBOM,
+      signatures and registry publication remain required.
+  formats:
+    evidence_status: local_candidate_go_global_release_no_go
+    commit: 2d46285843dc366da1d38f133131b5329c886b12
+    tree: 2ee12c035db8a78721315ee65cf684d811552aa9
+    version: 0.2.8
+    wasm_sha256: 51c8ff57186676b30b512142f7880075432c6b1f155912858dd21f1e785f8b6e
+    release_limit: >-
+      Local source/WASM qualification does not close the promised multi-OS,
+      security, signing and registry gates. Formats remains globally NO-GO.
+  io:
+    evidence_status: locally_qualified_unpublished_candidate_with_deterministic_sbom
+    commit: 7abd256cbad1ee4eff3b6d507dd3fd28d2caac80
+    tree: b36575f0e21e3ff08225c7f421ce99deabd26aeb
+    version: 0.1.12
+    resolved_dag_ml_data_version: 0.2.9
+    wasm_sha256: a99b75a6dfa3fe86c0b27d96334b8da0b4ccae5eda39084533f57a104738fc9c
+    cyclonedx_sbom_sha256: 2fb93d6b81a3fa7fab9b0bf388b170f8dac4e4ac0f5a37f51b616bfb67067631
+    cyclonedx_components: 55
     evidence: >-
-      Two local builds are byte-identical at the recorded wheel digest. The
-      exact isolated CPython 3.11 oracle runtime verifies the closed 44-wheel
-      RECORD union before and after execution: 8,274 files and 949 directories,
-      with no extra, collision, symlink, .pth, .pyc or __pycache__ entry. Both
-      selected four-runtime runs execute engine=legacy with fallback disabled.
-      Separately, the selected facade exposes a bounded native Methods HPO
-      slice with controller-owned CV/OOF/selection/refit and Archive V2 replay.
-      Exact unsupported or ambiguous ranges fail before arrays, Session or
-      runtime access; PipelineRunner and Python optimizers are not reached.
-      Checkpoint/resume, TPE/pruners and the remaining API-001 matrix are not
-      exposed by this public slice.
-  studio:
+      The deterministic CycloneDX 1.6 WASM SBOM records the exact source commit
+      and tree, contains 55 locked components and 55 dependency records, and
+      omits volatile timestamps, UUIDs and local paths. The qualified WASM bytes
+      are unchanged from the preceding legal-closure candidate.
+    release_limit: >-
+      IO still resolves dag-ml-data 0.2.9 and must be repinned to 0.2.10 before
+      rebuild/requalification. Publication, signatures and promised platform
+      runtime evidence remain open.
+  datasets:
     evidence_status: locally_qualified_unpublished_candidate
-    commit: 6b0545771b7bb14e127ca4842d1a56e9b007ee42
-    tree: 7d11441011f449a97cb32a56eafd0cc29b7bc23c
-    version: 0.9.1
-    vendored_core_commit: bc001e53f41cee6eb5e6f1bf6b363db25cf750ee
-    vendored_core_tree: b7afff9a5c9e14838a6bb3405be99c51d30dbb19
-    vendored_core_inventory_files: 214
-    vendored_core_crate_version: 0.3.24
-    vendored_core_crate_sha256: cab4281741eb762113dc5ea270f248ea8a8d6ac919cd74f766aa9506b90b3575
-    archive_v2_sha256: 994252030ff80129d0431995bae53eb473082f05825b65714379262b72af13fa
-    methods_library_sha256: 847f3b23986d9f74d392169bf559c49a38ca915492286e61ada10c31f72bfdf0
-    local_sidecar_rebuilds: byte_identical_a_and_b
-    local_sidecar_sha256: 40b4aaac3f597ffba0680cdf0caf133250a65d0159fc5e6c4f191720c31e4ac1
+    commit: 53017672c82df106a17b512846425bc9e846565f
+    tree: 68513f3b938407846a9014d0dad47f58ded09bf4
+    version: 0.3.9
+    wasm_sha256: 9275834e88b052304b0258022956ab99373cd874b2c6167081faedf58ad20f0a
     evidence: >-
-      The complete 213-file Core Git snapshot is byte- and mode-identical to
-      bc001e53; PROVENANCE.json makes the closed inventory 214 files. Studio
-      consumes nirs4all 0.3.24 from that snapshot, exposes the bounded native
-      Archive V2 renderer adapter, cancels refused over-limit responses, and
-      executes the real Rust route against the exact archive and Methods
-      identities without Python, FastAPI, fit, refit or fallback. Rust format,
-      strict Clippy, 110 Rust tests plus the opt-in real route witness, and 61
-      targeted renderer/transport tests, TypeScript and targeted ESLint passed.
-      Two same-host sidecar rebuilds and the locally staged product copy are
-      byte-identical at SHA-256 40b4aaac3f597ffba0680cdf0caf133250a65d0159fc5e6c4f191720c31e4ac1;
-      those local paths are not immutable publication staging.
+      Python, R, Rust and WASM package versions are reconciled at 0.3.9 and the
+      recorded local package/catalog qualification passed. No publication or
+      remote artifact availability is claimed.
+  tools:
+    evidence_status: locally_qualified_unpublished_candidate
+    commit: e3a332633f87b4652a06f8993e63c386a3568698
+    tree: c708b9153be8bfd85ba02135c1406f3f3ddf1ae2
+    version: 0.0.7
+    wheel_sha256: 372ecec41b18c25c607fd660060f19780cdaf8aea378239fa5ade5a61d81c8dc
+    wheel_record_sha256: 8db345e39929f63e658d33bba1a9379336547e5653ed4b51271792791e5d6f54
     release_limit: >-
-      The vendored Core tree is transition-only and must be replaced by the
-      exact published nirs4all 0.3.24 dependency. Release builders must provide
-      and qualify a content-addressed Methods library closure for every target.
-      The final persisted UI selection binding, Windows/macOS packaging and
-      remaining native route parity are still open; LOCK-STUDIO stays pending.
-  benchmarks:
-    evidence_status: selected_local_linux_four_runtime_functional_gate_passed_release_unlocked
-    selected_commit: 85d9f6e211c542e8c4b193c187a8a03679d55df2
-    selected_tree: eb0d6aa255261989e5f2068017d441175940fe1a
-    runner_commit: 99997ce43229bed04c0519a09e6dcc56db0b7575
-    runner_tree: 5ddfbbb9ac2004d7071a3db7c40ae9c2a18424fa
-    ledger_base_ecosystem_gitlink: 0af2916a72e85541fb5a44b6b857c607c059304b
-    qualification_manifest_sha256: 22613d0d98aefbc50483d58fd8628e054d60a33f921cbd6cc0a8b7d4598ef21f
-    qualification_report_sha256: a3e6f0fa73eb1c143d70b66f3e9f12d747f003e0e5510b0b42e2288545c3b51b
-    qualification_repeat_report_sha256: 39a1f05f59c2ce3b87a7adaf31ef32e708d2c47cb58ef22ae22934a496adff02
-    reproducible_runner_wheel_sha256: 7e792f00a189a85faa7104a7e378ab1d7dd1f1b95821880e4952e9170edfdd42
-    readiness_sha256: 6233fe8218c2f70d86f2201a86f1aaf4f2a690072066766984491ce4474488fd
+      Tools remains an outside-aggregation-lock migration surface. Its exact
+      wheel candidate is local and must be published, signed and referenced by
+      the support/conversion release documents before promotion.
+  python_strict_profile:
+    evidence_status: locally_qualified_unpublished_candidate
+    commit: 85017c515f154fd36072dfcbfd09e935530b30d2
+    tree: cc8012f327862c7bf5d32328e009eba5570b693c
     evidence: >-
-      Selected Bench 85d9f6e records two exact executions from the same
-      content-addressed manifest. Python c8b5fd5, Core bc001e53, Studio
-      6b054577 and Web 6b17d09 all execute and pass. The Python observation is
-      c06c929f3b4c6cdfb94d698227fbc2eda203d94e7f183dec0ad9110630a918b7;
-      all three native observations are
-      7965e800273c4305f39ffbfe027b330e2c3337a8aeede5ced947042722ffc5ec.
-      Maximum absolute error is 2.870914617147946e-10 with zero values outside
-      tolerance, and both reports are identical outside generated timestamps
-      and timings. Every declared artifact has expected SHA equal to actual SHA.
+      The private strict product path passed its final local audit while public
+      nirs4all.run remains unchanged. The explicit engine=legacy rollback
+      profile remains supported through R4 and is unreachable only from strict
+      product paths, as required by ADR-24.
     release_limit: >-
-      This is a local Linux x86-64 functional gate, not a product-release gate,
-      performance qualification or embedded-Python proof. Studio 6b054577 has
-      the external-explicit Python contract; bounded embedded CPython plugin
-      hosting remains Phase 2 work. The ledger-base ecosystem gitlink remains
-      0af2916, the expanded release lock is not regenerated, and no exact
-      candidate is remotely advertised, signed or published.
+      This bounded strict-path proof does not close the general R2 API matrix:
+      general run/predict/session/cache, transfer/finetune, conformal,
+      robustness, explain/generate and remaining dual-Methods paths still need
+      exact train-wide evidence.
+  studio:
+    evidence_status: pending_final_independent_audit
+    candidate_commit: pending
+    candidate_tree: pending
+    last_observed_head: 1a4690fd6cb8ec81f033db422b747db91fbb2127
+    last_observed_tree: c280d778abc7d2d46cf0185fe1e4d4160becb207
+    evidence: >-
+      The last observed Studio integration head is recorded only for audit
+      continuity. It is not the final candidate: the content-identity binding,
+      Windows Job Object process-tree control, nested-symlink rejection and
+      mandatory runtime attestation corrective pass still requires integration
+      and independent review.
+    release_limit: >-
+      LOCK-STUDIO remains NO-GO pending the final SHA/tree, exact Core/IO/Methods
+      repins, Docker and installer execution, Linux/macOS/Windows evidence,
+      signing and the complete HTTP/WS/readiness/differential inventory. Studio
+      control, store, jobs, scheduler and WebSocket remain Rust-only; any
+      embedded CPython is limited to an attested stdio library/plugin host with
+      no HTTP server, scheduler, store or fallback.
+  web:
+    evidence_status: pending_final_legal_distribution_audit
+    candidate_commit: pending
+    candidate_tree: pending
+    last_observed_head: c5072964414bd43e7d4223453dc6e6aeb498ddd0
+    last_observed_tree: c5fa9ab3f2006b5d156c1483a15cf7ead3517929
+    evidence: >-
+      The last observed Web integration head has green local runtime/type/test/
+      build smokes, but it is not the final candidate while component-specific
+      legal payload distribution and exact Methods/Core aggregate verification
+      are being closed. The final legal commit and independent audit remain
+      pending.
+    release_limit: >-
+      Web is client-side-only and must ship the exact qualified WASM bytes plus
+      their component notices, licenses, provenance and required SBOM in the
+      actual dist output. Publication and external artifact-dependent smokes are
+      not complete.
+  dependency_repin:
+    status: pending
+    selected_dag_ml_data_version: 0.2.10
+    consumers_still_resolving_0_2_9:
+      - dag-ml 0.3.23
+      - nirs4all-core 0.3.25
+      - nirs4all-io 0.1.12
+    required_action: >-
+      Publish/select dag-ml-data 0.2.10 first, repin all consumers, rebuild and
+      requalify them, then repin Studio/Web and regenerate the canonical
+      aggregation manifest and lock from remotely reconstructible heads.
+  fields_pending_final_repin:
+    - aggregation manifest member commit/tree/version and preferred exact tags
+    - aggregation lock artifact digests, lockstep attestations and manifest digest
+    - dag-ml/Core/IO dag-ml-data 0.2.10 dependency resolutions
+    - Studio final commit/tree and exact Core/IO/Methods closures
+    - Web final commit/tree and exact Methods/Core/component-legal inventories
+    - Python, Tools, Studio and Web outside-lock release-surface evidence
+    - registry URLs, SBOM/provenance digests, signatures and installer checksums
   blockers:
     - >-
-      Core requires the official cibuildwheel platform/API matrix, a
-      deterministic external Rust SBOM, path-remapped inter-machine
-      reproducibility evidence and immutable publication staging.
+      LOCK-API is open: the bounded strict Python path is not evidence for the
+      complete R2 run/predict/session/cache/retrain/finetune/conformal/
+      robustness/explain/generate and dual-Methods capability matrix.
     - >-
-      Studio must consume the published exact Core 0.3.24 dependency, qualify
-      the content-addressed Methods closure and release archives on every
-      supported target, bind the persisted renderer UI state, and close the
-      remaining native route inventory before LOCK-STUDIO.
+      LOCK-STUDIO is open: Studio has no final independently accepted SHA and
+      Docker, installer, HTTP/WS/readiness and promised multi-OS evidence remain
+      incomplete.
     - >-
-      The local four-runtime functional result must be reproduced from the
-      expanded immutable release lock across the promised platform matrix;
-      PERF-001 budgets, installer gates and target-specific closures remain open.
+      LOCK-RELEASE is NO-GO: candidates are local and unpublished, the
+      dag-ml-data 0.2.10 repin cascade is incomplete, and registries, immutable
+      staging, provenance/SBOM closure, signatures and clean installs on all
+      promised targets are not proven from one lock.
     - >-
-      The expanded aggregation manifest and lock do not select these exact
-      product commits. They must be regenerated from remotely advertised,
-      clean, reconstructible heads and validated before any publication.
+      LOCK-DOCS is NO-GO: MTH-DOC has 209/209 mapped pages but 131/209 methods
+      still lack safe attribution and 0/209 have reviewed structured publication
+      metadata or reviewed absence status.
+    - >-
+      LOCK-SOAK is open: corpus, fuzz/security, crash recovery, concurrency,
+      memory/performance, installer rollback and RC feedback evidence remain
+      incomplete.
+    - >-
+      R3 and R4 remain pending. Legacy must be proven unreachable from strict
+      Studio/Web/product paths without removing the explicit Python
+      engine=legacy rollback profile before the end of R4, then the complete R3
+      soak must precede an unchanged R4 promotion.
 work_items:
   - id: ARCH-001
     owner: A
