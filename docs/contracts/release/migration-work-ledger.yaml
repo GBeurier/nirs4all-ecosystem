@@ -182,7 +182,7 @@ locks:
   LOCK-SOAK: pending
   LOCK-DOCS: pending
 current_candidate_evidence:
-  observed_at: 2026-09-02
+  observed_at: 2026-09-03
   authority: local_candidate_snapshot_only
   promotion_status: no_go
   publication_status: no_go
@@ -248,10 +248,23 @@ current_candidate_evidence:
     resolved_dag_ml_data_version: 0.2.9
     resolved_n4m_rust_binding_version: 0.1.2
     predictor_descriptor_attestation: public_attestor_and_centralized_pure_validation_qualified
+    loaded_cache_no_leak_witness:
+      commit: 7c03732297570c6093f20557c3f98e900e729fea
+      tree: 372cdcb939474cdb2ee41f0a54eef1503d527cbf
+      parent_descriptor_commit: 189099119b69e74c69466f2308808cb423dc2e94
+      disposition: targeted_passed
+    resume_merge_fix:
+      commit: d80a5d09d38bed621b739fa996369227e5191402
+      tree: c5b9c2c0f159aeaefeb7e365a7e95ec7b5dddd66
+      parent_witness_commit: 7c03732297570c6093f20557c3f98e900e729fea
+      disposition: targeted_passed
     evidence: >-
       The final local candidate publishes the native predictor attestor and
       centralizes pure descriptor validation. Targeted spoof, controller,
-      algorithm, capability, dimension and fingerprint gates are green.
+      algorithm, capability, dimension and fingerprint gates are green. Its
+      local descendants prove loaded stacking-cache isolation without leakage,
+      then merge resumed completed evidence before validation; neither
+      descendant replaces the selected descriptor candidate or release lock.
     release_limit: >-
       The official lock still resolves dag-ml-data 0.2.9 and n4m 0.1.2. The
       candidate is local only and its qualification patch is not publication
@@ -284,19 +297,23 @@ current_candidate_evidence:
       Local source/WASM qualification does not close the promised multi-OS,
       security, signing and registry gates. Formats remains globally NO-GO.
   io:
-    evidence_status: locally_qualified_unpublished_candidate_with_deterministic_sbom
-    commit: 7abd256cbad1ee4eff3b6d507dd3fd28d2caac80
-    tree: b36575f0e21e3ff08225c7f421ce99deabd26aeb
+    evidence_status: locally_qualified_unpublished_datasetpackage_handoff_candidate
+    commit: 6157c994fa82be58f8b357f5a7788e36e9b84653
+    tree: 407d1fa5f71f9cc281777bccb43746b3e1ed2e86
+    parent_commit: 7abd256cbad1ee4eff3b6d507dd3fd28d2caac80
     version: 0.1.12
     resolved_dag_ml_data_version: 0.2.9
     wasm_sha256: a99b75a6dfa3fe86c0b27d96334b8da0b4ccae5eda39084533f57a104738fc9c
     cyclonedx_sbom_sha256: 2fb93d6b81a3fa7fab9b0bf388b170f8dac4e4ac0f5a37f51b616bfb67067631
     cyclonedx_components: 55
     evidence: >-
-      The deterministic CycloneDX 1.6 WASM SBOM records the exact source commit
-      and tree, contains 55 locked components and 55 dependency records, and
-      omits volatile timestamps, UUIDs and local paths. The qualified WASM bytes
-      are unchanged from the preceding legal-closure candidate.
+      DATA-002 locally wires Rust DatasetPackage.to_assembled into
+      PackageProvider and CoordinatorDataPlanEnvelope without SpectroDataset,
+      Python or duplicate serialization. Its grouped round-trip preserves
+      sample, observation, group, source, fold and target identities. The
+      parent's deterministic CycloneDX 1.6 WASM record remains prior evidence,
+      not a new artifact identity; this handoff is local-only and does not
+      replace published pins.
     release_limit: >-
       IO still resolves dag-ml-data 0.2.9 and must be repinned to 0.2.10 before
       rebuild/requalification. Publication, signatures and promised platform
@@ -324,15 +341,21 @@ current_candidate_evidence:
       the support/conversion release documents before promotion.
   python_strict_profile:
     evidence_status: locally_qualified_unpublished_candidate
-    commit: 1ebe03ddbd99e691f1f0332655bee5ebf584f2e9
-    tree: e2f5d7f0df886fd29738e1b6fabb885537666540
+    commit: a56a870f461ffa80c24dffba3b266725695c129f
+    tree: 28aaeb377c130a355eb5aae0ddaaa0418b27cb7f
+    parent_hpo_commit: e99a7ab30086ef494e9f48a4863776480c964564
+    predictor_descriptor_commit: 1ebe03ddbd99e691f1f0332655bee5ebf584f2e9
+    predictor_descriptor_tree: e2f5d7f0df886fd29738e1b6fabb885537666540
     predictor_descriptor_gate: targeted_passed
+    native_hpo_resume_witness: 2_completed_to_4_trials_export_replay_passed
     evidence: >-
       The private strict product path now enforces Core native predictor
-      descriptors and passed its targeted archive prediction/session gates.
-      Public nirs4all.run remains unchanged. The explicit engine=legacy rollback
-      profile remains supported through R4 and is unreachable only from strict
-      product paths, as required by ADR-24.
+      descriptors and passes its final native HPO package witness: resume from
+      two completed trials to four, select/refit once, export Archive V2 and
+      replay after close. It descends from HPO parent e99a7ab and preserves the
+      1ebe03d descriptor evidence. Public nirs4all.run remains unchanged. The
+      explicit engine=legacy rollback profile remains supported through R4 and
+      is unreachable only from strict product paths, as required by ADR-24.
     release_limit: >-
       This bounded strict-path proof does not close the general R2 API matrix:
       general run/predict/session/cache, transfer/finetune, conformal,
@@ -392,6 +415,25 @@ current_candidate_evidence:
       Web remains client-side-only. Three external artifact-dependent handoffs,
       publication, signatures and final lock-driven downstream repins remain
       outside the local GO and block a release claim.
+  benchmarks:
+    evidence_status: local_contract_fixture_qualified_release_no_go
+    commit: 433ad714d475dd0c8fd7d4ee2664665894caaee9
+    tree: 4103609587714f1a19c6834c2e4bbf2d71ea4d97
+    performance_contract: archive_v2_same_matrix_four_surfaces
+    contract_fixture_surfaces_passed: 4/4
+    release_eligible: false
+    evidence: >-
+      PERF-001 removes the obsolete Studio Python-worker and legacy comparison
+      from V1, records the exact predictor descriptor/fingerprint and candidate
+      SHAs, separates startup from steady-state, checks numeric consistency and
+      emits the Web performance-compare handoff. Its deterministic smoke passes
+      all four adapter contracts but is explicitly fixture evidence, not a
+      performance or release qualification.
+    release_limit: >-
+      Exact Python native, direct Rust and Studio packaged closures plus the Web
+      PERF adapter, one executed four-candidate report, approved reference-host
+      budgets and non-WSL evidence remain required. No definitive WSL threshold,
+      publication, lock or global GO is claimed.
   dependency_repin:
     status: pending
     selected_dag_ml_data_version: 0.2.10
@@ -415,6 +457,7 @@ current_candidate_evidence:
     - Studio exact Core/IO/Methods target closures and external release artifacts
     - Web exact post-publication dependency repins and three external handoffs
     - Python, Tools, Studio and Web outside-lock release-surface evidence
+    - PERF-001 exact four-candidate closures, executed report and reference-host budgets
     - registry URLs, SBOM/provenance digests, signatures and installer checksums
   blockers:
     - >-
@@ -442,6 +485,10 @@ current_candidate_evidence:
       LOCK-SOAK is open: corpus, fuzz/security, crash recovery, concurrency,
       memory/performance, installer rollback and RC feedback evidence remain
       incomplete.
+    - >-
+      PERF-001 is open: the four-surface contract fixture is green but is not
+      release-eligible; exact mutually attested closures, Web timing adapter,
+      one real four-surface execution and approved non-WSL budgets remain absent.
     - >-
       DROP-005 is closed on the local Studio candidate, but the remaining R3 and
       R4 gates stay pending. Legacy must be proven unreachable from strict
@@ -907,8 +954,8 @@ work_items:
       - HPO-001
       - CORE-002
       - SAVE-001
-    state: partial_native_methods_hpo_slice_selected_remaining_v1_matrix_pending
-    input_sha: c8b5fd5bf847ce26f78008b9abd00fa54f790825
+    state: native_methods_hpo_resume_export_replay_qualified_remaining_v1_matrix_pending
+    input_sha: a56a870f461ffa80c24dffba3b266725695c129f
     owned_files:
       - nirs4all/nirs4all/api/native_archive_training.py
       - nirs4all/tests/unit/api/test_native_methods_hpo.py
@@ -920,6 +967,7 @@ work_items:
       - incompatible, ambiguous, partial, mixed or duplicated range aliases fail with NativeMethodsHpoCapabilityError before arrays, Session preparation or runtime resolution
       - N4MOPT resume is explicitly reported as not_exposed_by_public_api_v1 and is not claimed by this tranche
       - exact selected Core bc001e53, Dag-ML 4988542 and Methods 847f3b2 gate passes 42 independently audited targeted tests plus the real native cycle
+      - local descendant a56a870 resumes the package from 2 to 4 completed native trials, exports Archive V2 and replays it after close without changing the public N4MOPT resume claim
     review: >-
       Independent review GO for the bounded c8b5fd5 tranche after three
       corrective audits. The initial implementation accepted a 1..4 range that
@@ -934,8 +982,11 @@ work_items:
       detaches the native handle. Ruff, targeted Mypy and diff-check pass.
       This is deliberately partial: TPE/pruner/resume, conformal, multisource,
       stacking, variants and the rest of the supported ledger remain required,
-      so API-001, DAG-001, LOCK-API and R2-W1 stay open.
-    rollback: revert only commits 886036bf, 3e3d302e and c8b5fd5b; retain the selected native run/session/archive foundation.
+      so API-001, DAG-001, LOCK-API and R2-W1 stay open. Descendant a56a870 on
+      parent e99a7ab adds the final local package-resume witness: 2 to 4 trials,
+      export and fresh replay are green without claiming a public N4MOPT resume
+      API or changing the selected descriptor ancestry.
+    rollback: revert only the a56a870 witness and prior API-001 commits; retain the selected native run/session/archive foundation.
   - id: CONF-001
     owner: E + F
     dependencies:
