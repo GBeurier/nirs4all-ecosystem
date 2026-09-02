@@ -104,14 +104,23 @@ current_candidate_evidence:
       No registry publication is claimed.
   python_oracle:
     evidence_status: selected_candidate_exact_four_runtime_gate_passed_local_linux
-    commit: 5ebb0788c392e8e1e3e3538a8ab872d724d97a64
-    wheel_sha256: 0aa170685d821c217011d00f6373853d993f340f1e70499d3f560fd92e40b86a
+    commit: c8b5fd5bf847ce26f78008b9abd00fa54f790825
+    tree: 52fa14c268aad9994f7fa014369b8fb88f17dafe
+    wheel_sha256: 646971289137b8005b9848a4c22c000acce01660850ade63fd743c637366d24e
+    wheel_closure_sha256: 579c7e493625c32cdb12bc5eca4e3658e65e556652083b0d056155683e825675
+    native_methods_hpo_slice: pls_n_components_1_to_3_random_no_pruner_rmse_grouped
     evidence: >-
       Two local builds are byte-identical at the recorded wheel digest. The
       exact isolated CPython 3.11 oracle runtime verifies the closed 44-wheel
       RECORD union before and after execution: 8,274 files and 949 directories,
       with no extra, collision, symlink, .pth, .pyc or __pycache__ entry. Both
       selected four-runtime runs execute engine=legacy with fallback disabled.
+      Separately, the selected facade exposes a bounded native Methods HPO
+      slice with controller-owned CV/OOF/selection/refit and Archive V2 replay.
+      Exact unsupported or ambiguous ranges fail before arrays, Session or
+      runtime access; PipelineRunner and Python optimizers are not reached.
+      Checkpoint/resume, TPE/pruners and the remaining API-001 matrix are not
+      exposed by this public slice.
   studio:
     evidence_status: locally_qualified_unpublished_candidate
     commit: 6b0545771b7bb14e127ca4842d1a56e9b007ee42
@@ -146,19 +155,19 @@ current_candidate_evidence:
       remaining native route parity are still open; LOCK-STUDIO stays pending.
   benchmarks:
     evidence_status: selected_local_linux_four_runtime_functional_gate_passed_release_unlocked
-    selected_commit: 0f9bfaa730b9c19168cb2e5bd73c4424a6598973
-    selected_tree: db23756708543e8a8c714a542a2222ac3820e6bc
-    runner_commit: 88a087c4fa1a2392701631b01a86bd6bce35af35
-    runner_tree: 3b79c2b4e6b8ae70092a859dca75ca0384b20c8b
+    selected_commit: 85d9f6e211c542e8c4b193c187a8a03679d55df2
+    selected_tree: eb0d6aa255261989e5f2068017d441175940fe1a
+    runner_commit: 99997ce43229bed04c0519a09e6dcc56db0b7575
+    runner_tree: 5ddfbbb9ac2004d7071a3db7c40ae9c2a18424fa
     ledger_base_ecosystem_gitlink: 0af2916a72e85541fb5a44b6b857c607c059304b
-    qualification_manifest_sha256: 6c90fbbb4ebb8f4ec152fc7d10e87c74d2c229387eb8539dcae26459561f3d81
-    qualification_report_sha256: 532a40bb32a2cc5ece89571689f252ae3336468d3653132db779740f4a97beaf
-    qualification_repeat_report_sha256: 895e94106a484d31300410367da31c6ed9e99ee77d2420a4c513ffa3049c2095
-    reproducible_runner_wheel_sha256: 0366ebff3053ff01e485a8517ea4aa791acf26a936d7b4a5439020cdbce7a48d
-    readiness_sha256: d5b399f5ac4db5f9c28e1378f38580ffeaea9c8c018e8c3d81551e891751c502
+    qualification_manifest_sha256: 22613d0d98aefbc50483d58fd8628e054d60a33f921cbd6cc0a8b7d4598ef21f
+    qualification_report_sha256: a3e6f0fa73eb1c143d70b66f3e9f12d747f003e0e5510b0b42e2288545c3b51b
+    qualification_repeat_report_sha256: 39a1f05f59c2ce3b87a7adaf31ef32e708d2c47cb58ef22ae22934a496adff02
+    reproducible_runner_wheel_sha256: 7e792f00a189a85faa7104a7e378ab1d7dd1f1b95821880e4952e9170edfdd42
+    readiness_sha256: 6233fe8218c2f70d86f2201a86f1aaf4f2a690072066766984491ce4474488fd
     evidence: >-
-      Selected Bench 0f9bfaa records two exact executions from the same
-      content-addressed manifest. Python 5ebb078, Core bc001e53, Studio
+      Selected Bench 85d9f6e records two exact executions from the same
+      content-addressed manifest. Python c8b5fd5, Core bc001e53, Studio
       6b054577 and Web 6b17d09 all execute and pass. The Python observation is
       c06c929f3b4c6cdfb94d698227fbc2eda203d94e7f183dec0ad9110630a918b7;
       all three native observations are
@@ -637,6 +646,41 @@ work_items:
       remaining acceptance work, and no R2 waypoint or native-default flip is
       closed by this review.
     rollback: select the archived pre-reconciliation ref without deleting accepted HPO/results commits; preserve Methods ABI, packs and existing DAG contracts.
+  - id: API-001
+    owner: E
+    dependencies:
+      - HPO-001
+      - CORE-002
+      - SAVE-001
+    state: partial_native_methods_hpo_slice_selected_remaining_v1_matrix_pending
+    input_sha: c8b5fd5bf847ce26f78008b9abd00fa54f790825
+    owned_files:
+      - nirs4all/nirs4all/api/native_archive_training.py
+      - nirs4all/tests/unit/api/test_native_methods_hpo.py
+      - nirs4all/tests/integration/api/test_native_methods_hpo_cycle.py
+    acceptance_tests:
+      - engine native PLS HPO with exact n_components 1..=3, random sampler, no pruner, grouped RMSE executes three real Methods trials without PipelineRunner or Python optimizers
+      - Dag-ML and Methods own folds, OOF scoring, selection and refit; Python validates, translates and projects the detached result only
+      - incumbent metadata and score are returned, handles close idempotently, Archive V2 exports and replays in a fresh isolated process
+      - incompatible, ambiguous, partial, mixed or duplicated range aliases fail with NativeMethodsHpoCapabilityError before arrays, Session preparation or runtime resolution
+      - N4MOPT resume is explicitly reported as not_exposed_by_public_api_v1 and is not claimed by this tranche
+      - exact selected Core bc001e53, Dag-ML 4988542 and Methods 847f3b2 gate passes 42 independently audited targeted tests plus the real native cycle
+    review: >-
+      Independent review GO for the bounded c8b5fd5 tranche after three
+      corrective audits. The initial implementation accepted a 1..4 range that
+      selected Dag-ML refused; the next correction still accepted contradictory
+      low/high plus min/max aliases. Descendants 3e3d302 and c8b5fd5 now admit
+      only the exact portable Methods v1 1..=3 step=1 space and reject every
+      broader or ambiguous request before data/session/runtime work. A real
+      three-trial run uses Methods ask/tell and Dag-ML CV/OOF/selection/refit,
+      exports Archive V2, closes the native result and replays in a fresh
+      python -I -B process. PipelineRunner, OptunaManager and
+      N4MFinetuneManager sentinels are never reached; a post-runtime fault still
+      detaches the native handle. Ruff, targeted Mypy and diff-check pass.
+      This is deliberately partial: TPE/pruner/resume, conformal, multisource,
+      stacking, variants and the rest of the supported ledger remain required,
+      so API-001, DAG-001, LOCK-API and R2-W1 stay open.
+    rollback: revert only commits 886036bf, 3e3d302e and c8b5fd5b; retain the selected native run/session/archive foundation.
   - id: CONF-001
     owner: E + F
     dependencies:
@@ -791,7 +835,7 @@ work_items:
       - PAR-001
       - CAP-001
     state: local_linux_four_runtime_functional_go_release_matrix_and_publication_no_go
-    input_sha: 0f9bfaa730b9c19168cb2e5bd73c4424a6598973
+    input_sha: 85d9f6e211c542e8c4b193c187a8a03679d55df2
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
@@ -850,6 +894,7 @@ work_items:
       - selected Bench 0f9bfaa executes Python 5ebb078, Core bc001e53, Studio 6b054577 and Web 6b17d09 twice from manifest SHA-256 6c90fbbb4ebb8f4ec152fc7d10e87c74d2c229387eb8539dcae26459561f3d81; reports 532a40bb32a2cc5ece89571689f252ae3336468d3653132db779740f4a97beaf and 895e94106a484d31300410367da31c6ed9e99ee77d2420a4c513ffa3049c2095 both pass
       - the Python oracle verifies the exact 44-wheel, 8,274-file RECORD union before and after each run and refuses extras, collisions, symlinks, .pth, .pyc, __pycache__, omitted roles and wheel substitution before spawn
       - both selected reports have identical non-timing evidence, all declared artifact digests match, all four components execute, maximum absolute error is 2.870914617147946e-10 and no value is outside tolerance
+      - selected Bench 85d9f6e replaces only the Python selection with audited c8b5fd5, then executes all four exact lanes twice from manifest SHA-256 22613d0d98aefbc50483d58fd8628e054d60a33f921cbd6cc0a8b7d4598ef21f; reports a3e6f0fa73eb1c143d70b66f3e9f12d747f003e0e5510b0b42e2288545c3b51b and 39a1f05f59c2ce3b87a7adaf31ef32e708d2c47cb58ef22ae22934a496adff02 both pass
     review: >-
       Benchmarks commits b9be6bf, b21f35f and 063e2d3 add the executable stdio
       JSON protocol, strict four-runtime runner and the Core plus Python-legacy
@@ -1005,6 +1050,19 @@ work_items:
       functional gate: it does not close PERF-001, platform/installers,
       embedded CPython Phase 2, immutable release-lock reconstruction,
       signatures, SBOM, remote advertisement or publication.
+      Python c8b5fd5 then adds the bounded native Methods HPO facade slice and
+      Bench commits 99997ce plus 85d9f6e requalify the complete selected set.
+      The c8 wheel is byte-identical across two builds at SHA-256
+      646971289137b8005b9848a4c22c000acce01660850ade63fd743c637366d24e;
+      its 44-wheel closure SHA-256 is
+      579c7e493625c32cdb12bc5eca4e3658e65e556652083b0d056155683e825675.
+      Manifest v7 and both passing reports are independently verified; 187
+      tests pass with one optional Node skip, Ruff and targeted Mypy pass, all
+      71 artifacts are regular non-symlink files with exact digests, and the
+      post-run Python inventory remains 8,274 files/949 directories with zero
+      forbidden entry. This supersedes v5/v6 only as current selection evidence;
+      those earlier reports remain immutable history. Release/platform/perf,
+      embedded Python, lock, SBOM, signature and publication claims remain open.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
