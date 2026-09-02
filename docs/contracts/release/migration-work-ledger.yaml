@@ -71,9 +71,119 @@ locks:
   LOCK-API: pending
   LOCK-STUDIO: pending
   LOCK-DROP: pending
-  LOCK-RELEASE: baseline_lock_validated_current_train_pending_full_product_manifest_remote_advertisement
+  LOCK-RELEASE: no_go_baseline_lock_validated_current_candidates_unlocked_unpublished_and_not_remotely_advertised
   LOCK-SOAK: pending
   LOCK-DOCS: pending
+current_candidate_evidence:
+  observed_at: 2026-09-02
+  promotion_status: no_go
+  publication_status: no_go
+  gate_001_status: no_go
+  core:
+    evidence_status: locally_qualified_unpublished_candidate
+    commit: bc001e53f41cee6eb5e6f1bf6b363db25cf750ee
+    tree: b7afff9a5c9e14838a6bb3405be99c51d30dbb19
+    version: 0.3.24
+    crate_tree: bbb900b0735d40e61a0ace72a545b6485264f1af
+    crate_sha256: cab4281741eb762113dc5ea270f248ea8a8d6ac919cd74f766aa9506b90b3575
+    local_manylinux_wheel_sha256: db76ab209988c30f15d1053a489d48c521286bb90cfac0f81659a87db1adb58d
+    receipt_sha256: 06a84d2e8d189f5e60a5cb6a236c9da212a333342c9a19beec5e76517c4103a0
+    evidence: >-
+      The pinned local Zig/auditwheel build is tagged manylinux_2_28_x86_64,
+      has maximum GLIBC_2.28, installs under CPython 3.11 and 3.13, and is
+      byte-identical across two clean same-host builds. Rust format, strict
+      Clippy, workspace tests, Python tests, package verification, twine and
+      version synchronization passed. The wheel contains both nirs4all_core
+      and n4a, excludes caches, and its closed checker refuses duplicate,
+      traversal, drive, backslash, symlink and special ZIP entries.
+    release_limit: >-
+      This is local candidate evidence only. Docker was unavailable, so the
+      official cibuildwheel matrix did not run; deterministic external Rust
+      SBOM output is still required; Cargo registry paths remain embedded
+      without RUSTFLAGS remapping or inter-machine reproducibility evidence.
+      No registry publication is claimed.
+  python_oracle:
+    evidence_status: selected_candidate_locally_rebuilt_four_runtime_qualification_pending
+    commit: 5ebb0788c392e8e1e3e3538a8ab872d724d97a64
+    wheel_sha256: 0aa170685d821c217011d00f6373853d993f340f1e70499d3f560fd92e40b86a
+    evidence: >-
+      Two local builds are byte-identical at the recorded wheel digest. This
+      is build evidence only; the wheel has not yet been staged with the exact
+      Core, Studio and Web artifacts in a selected four-runtime GATE-001 report.
+  studio:
+    evidence_status: locally_qualified_unpublished_candidate
+    commit: 6b0545771b7bb14e127ca4842d1a56e9b007ee42
+    tree: 7d11441011f449a97cb32a56eafd0cc29b7bc23c
+    version: 0.9.1
+    vendored_core_commit: bc001e53f41cee6eb5e6f1bf6b363db25cf750ee
+    vendored_core_tree: b7afff9a5c9e14838a6bb3405be99c51d30dbb19
+    vendored_core_inventory_files: 214
+    vendored_core_crate_version: 0.3.24
+    vendored_core_crate_sha256: cab4281741eb762113dc5ea270f248ea8a8d6ac919cd74f766aa9506b90b3575
+    archive_v2_sha256: 994252030ff80129d0431995bae53eb473082f05825b65714379262b72af13fa
+    methods_library_sha256: 847f3b23986d9f74d392169bf559c49a38ca915492286e61ada10c31f72bfdf0
+    local_sidecar_rebuilds: byte_identical_a_and_b
+    local_sidecar_sha256: 40b4aaac3f597ffba0680cdf0caf133250a65d0159fc5e6c4f191720c31e4ac1
+    evidence: >-
+      The complete 213-file Core Git snapshot is byte- and mode-identical to
+      bc001e53; PROVENANCE.json makes the closed inventory 214 files. Studio
+      consumes nirs4all 0.3.24 from that snapshot, exposes the bounded native
+      Archive V2 renderer adapter, cancels refused over-limit responses, and
+      executes the real Rust route against the exact archive and Methods
+      identities without Python, FastAPI, fit, refit or fallback. Rust format,
+      strict Clippy, 110 Rust tests plus the opt-in real route witness, and 61
+      targeted renderer/transport tests, TypeScript and targeted ESLint passed.
+      Two same-host sidecar rebuilds and the locally staged product copy are
+      byte-identical at SHA-256 40b4aaac3f597ffba0680cdf0caf133250a65d0159fc5e6c4f191720c31e4ac1;
+      those local paths are not immutable publication staging.
+    release_limit: >-
+      The vendored Core tree is transition-only and must be replaced by the
+      exact published nirs4all 0.3.24 dependency. Release builders must provide
+      and qualify a content-addressed Methods library closure for every target.
+      The final persisted UI selection binding, Windows/macOS packaging and
+      remaining native route parity are still open; LOCK-STUDIO stays pending.
+  benchmarks:
+    evidence_status: selected_commit_with_core_only_evidence_not_gate_promoted
+    selected_commit: e19c2d6dcbd43e9e4ac3f103648d11c2b95332dc
+    selected_tree: 070dbf0ba0c61cbaba67b8e718df77d2635b287c
+    runner_commit: 55f15710b64508c6f0dc73f58130ec8942ba95d2
+    runner_tree: fa53a95260ac0bfeac9c5fb7bc97cb913cc02756
+    ledger_base_ecosystem_gitlink: 0af2916a72e85541fb5a44b6b857c607c059304b
+    core_only_report_sha256: 08491added1c81f7f7a036197eceaacaaa9a8586fac5ceac2e5c2ed10f8f683f
+    evidence: >-
+      Candidate e19c2d6 records a closed Core-only execution of the public
+      nirs4all_core.predict_methods_archive_v2_matrix API from bc001e53. The
+      exact wheel, crate, receipt, runtime, PyYAML, archive, Methods and runner
+      artifacts are content-addressed; the four expected observations are
+      returned with zero fallback.
+    release_limit: >-
+      The report is globally refused by design: Python, Studio and Web are
+      explicit required refusals, so no oracle comparison or same-manifest
+      four-runtime gate ran. Release authority selected e19c2d6 after this
+      ledger worktree was created, while the ledger-base ecosystem gitlink
+      remains 0af2916. Selection does not promote GATE-001 or publication.
+  blockers:
+    - >-
+      GATE-001 requires one exact selected four-runtime manifest and report
+      executing the Python legacy oracle, Core bc001e53, Studio 6b054577 and
+      the selected Web runtime with comparison enabled; the Core-only report
+      cannot satisfy that gate.
+    - >-
+      Core requires the official cibuildwheel platform/API matrix, a
+      deterministic external Rust SBOM, path-remapped inter-machine
+      reproducibility evidence and immutable publication staging.
+    - >-
+      Studio must consume the published exact Core 0.3.24 dependency, qualify
+      the content-addressed Methods closure and release archives on every
+      supported target, bind the persisted renderer UI state, and close the
+      remaining native route inventory before LOCK-STUDIO.
+    - >-
+      Selected Bench e19c2d6 must be regenerated against the exact four-runtime
+      selection; its current globally refused Core-only report is not promotable.
+    - >-
+      The expanded aggregation manifest and lock do not select these exact
+      product commits. They must be regenerated from remotely advertised,
+      clean, reconstructible heads and validated before any publication.
 work_items:
   - id: ARCH-001
     owner: A
@@ -125,7 +235,7 @@ work_items:
     owner: G
     dependencies:
       - REL-001
-    state: baseline_lock_complete_current_train_regeneration_pending
+    state: baseline_lock_complete_current_candidate_train_no_go_regeneration_pending
     input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
     owned_files:
       - docs/contracts/release/aggregation-lock.n4a.lock.json
@@ -151,7 +261,12 @@ work_items:
       and Tools SHAs are not contained by any locally
       known remote ref. Therefore the active train must not reuse or merely
       relabel this lock; it requires an expanded manifest, advertised commits
-      and a clean reconstruction before LOCK-RELEASE can advance.
+      and a clean reconstruction before LOCK-RELEASE can advance. The 2026-09-02
+      Core bc001e53, Studio 6b054577 and Bench e19c2d6 candidate evidence does
+      not change that conclusion: none of those exact product selections is in
+      this lock. Release authority subsequently selected Bench e19c2d6, but
+      this ledger-base ecosystem gitlink remains 0af2916 and no expanded lock
+      or four-runtime report was regenerated. Publication remains NO-GO.
     rollback: retain current immutable lock; create a new validated lock only from selected release heads
   - id: PAR-001
     owner: G
@@ -668,8 +783,8 @@ work_items:
     dependencies:
       - PAR-001
       - CAP-001
-    state: studio_native_archive_v2_local_linux_passed_selected_core_0_3_23_publishable_direct_lane_pending
-    input_sha: 0846392a76f841d496296f0989d250e8623264d4
+    state: no_go_bench_selected_core_0_3_24_core_only_evidence_four_runtime_report_and_publication_pending
+    input_sha: e19c2d6dcbd43e9e4ac3f103648d11c2b95332dc
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
@@ -721,6 +836,10 @@ work_items:
       - the historical d829465 Studio refusal occurred before request-body parsing, workspace access, job allocation, event publication, durable writes or scientific execution; it remains evidence but is not relabelled as the current blocker
       - Ruff passes, Mypy passes over 44 source files and the isolated checkout passes 129 tests; the Core launcher wheel remains byte-reproducible at SHA-256 806905011f1e01a43de26cf4ce89af6bb49e4819d64c0044039caa880fd4ffc4
       - the refreshed Bench descendant passes 148 tests with one explicit skip, Ruff, Mypy over 46 files, a targeted real Studio saved-route Rust test and cargo fmt
+      - candidate Benchmarks e19c2d6 records Core bc001e53 / nirs4all-core 0.3.24 executing only the public predict_methods_archive_v2_matrix API from a closed 238-file six-wheel runtime with archive 9942520 and Methods 847f3b2
+      - the Core-only report SHA-256 08491added1c81f7f7a036197eceaacaaa9a8586fac5ceac2e5c2ed10f8f683f is globally refused because Python, Studio and Web are explicit required refusals; no comparison executes and gate_001_complete remains false
+      - Studio 6b054577 independently consumes a byte- and mode-identical bc001e53 snapshot, exposes the bounded renderer adapter and passes the real native route, but is not substituted into or credited to the Core-only Bench report
+      - release authority selected e19c2d6 after this ledger worktree was created; the ledger-base ecosystem Bench gitlink remains 0af2916 and no GATE-001 promotion or publication is claimed
     review: >-
       Benchmarks commits b9be6bf, b21f35f and 063e2d3 add the executable stdio
       JSON protocol, strict four-runtime runner and the Core plus Python-legacy
@@ -841,6 +960,25 @@ work_items:
       symbols. GATE-001 and PERF-001 remain open until a publishable selected
       Core 0.3.23 wheel is staged and the exact four-runtime report is replayed;
       Windows, macOS and manylinux Studio packaging also remain unqualified.
+      Bench candidate e19c2d6 supersedes only that obsolete direct-Core first
+      blocker: it executes the public Core bc001e53 / 0.3.24 matrix API from the
+      exact local Zig/auditwheel candidate and returns all four observations
+      without fallback. Its report remains deliberately globally refused
+      because Python, Studio and Web are required refusals and no comparison
+      runs. Release authority subsequently selected e19c2d6, while the
+      ledger-base ecosystem gitlink remains 0af2916; selection does not turn
+      the refused Core-only report into promotion. Independently audited Studio 6b054577
+      vendors the complete bc001e53 tree, consumes nirs4all 0.3.24 and exposes
+      a bounded/cancellable renderer adapter over the real Rust route, but that
+      result is not retroactively inserted into the Core-only report. GATE-001
+      stays NO-GO until selected Bench produces one exact manifest that
+      executes selected Python, Core, Studio and Web artifacts with the oracle
+      comparison.
+      Core official cibuildwheel/platform evidence, deterministic external Rust
+      SBOM, path-remapped inter-machine reproducibility, Studio published-Core
+      consumption and target-specific Methods/release archives, immutable
+      staging, the expanded aggregation lock and remote advertisement also
+      remain publication blockers.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
@@ -1594,8 +1732,8 @@ work_items:
     dependencies:
       - STU-002
       - STU-005
-    state: native_archive_v2_prediction_local_linux_qualified_renderer_adoption_and_cross_platform_pending
-    input_sha: 6aed68a6c68b10829c9c484c34e23e4c2b652df3
+    state: native_archive_v2_renderer_adapter_local_linux_qualified_ui_binding_cross_platform_and_publication_pending
+    input_sha: 6b0545771b7bb14e127ca4842d1a56e9b007ee42
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
       - nirs4all-studio/sidecar/contracts/studio_execution_job_record_v1.json
@@ -1620,6 +1758,9 @@ work_items:
       - nirs4all-studio/electron/renderer-transport-selection.test.ts
       - nirs4all-studio/src/api/transport.ts
       - nirs4all-studio/src/api/transport.test.ts
+      - nirs4all-studio/src/api/archiveV2Prediction.ts
+      - nirs4all-studio/src/api/archiveV2Prediction.test.ts
+      - nirs4all-studio/src/types/archiveV2Prediction.ts
       - nirs4all-studio/src/api/renderer-transport-coverage.test.ts
       - nirs4all-studio/src/components/spectra-synthesis/ExportDialog.tsx
       - nirs4all-studio/src/lib/websocket.ts
@@ -1674,6 +1815,10 @@ work_items:
       - product capability is true only when the adjacent packaged contract and autonomous Methods ABI 2.2 file pass exact path, size, SHA-256 and Core preflight; missing, tampered, symlinked or dependency-incomplete closures remain false with typed 503 behavior
       - the local Linux product route returns exact archive, sample, target and provenance identities plus both protein and moisture series while leaving zero child process and zero route scratch additions
       - the complete embedded Core 0.3.23 source snapshot is a transition-only dependency and must be replaced by the exact published crate before LOCK-RELEASE; renderer adoption, remaining route parity and Windows/macOS packaging remain open
+      - Studio 6b054577 vendors the complete Core bc001e53 tree byte- and mode-identically with a closed 214-file inventory, consumes nirs4all 0.3.24 and verifies crate SHA-256 cab4281741eb762113dc5ea270f248ea8a8d6ac919cd74f766aa9506b90b3575
+      - the renderer adapter accepts only persisted relative Archive V2 identity plus digest, bounded finite arrays, ordered sample/target identities, engine core_rust_methods and fallback false; it bounds raw responses to 2 MiB and cancels refused over-limit bodies
+      - the exact real Rust route passes with archive SHA-256 994252030ff80129d0431995bae53eb473082f05825b65714379262b72af13fa and Methods SHA-256 847f3b23986d9f74d392169bf559c49a38ca915492286e61ada10c31f72bfdf0, with no Python, FastAPI, fit, refit or fallback
+      - the qualified candidate passes Rust fmt, strict Clippy, 110 Rust tests plus the opt-in real route witness, and 61 targeted renderer/transport tests, TypeScript and targeted ESLint
     review: >-
       Commit a9e57e2 freezes an executable R2 target without claiming a live
       WebSocket implementation. It distinguishes the sequenced native internal
@@ -1770,14 +1915,26 @@ work_items:
       product consumer for the new route yet, the direct Core gate wheel is not
       publishable from the current host, the Core source is still vendored, and
       remaining HTTP/WS/platform parity keeps LOCK-STUDIO and R2-W2 pending.
+      Studio commits 50d1baf through 6b054577 close the bounded renderer adapter
+      and replace the stale Core snapshot with the complete bc001e53 / 0.3.24
+      tree. Independent audit verified 213 upstream Git files byte- and
+      mode-identically; PROVENANCE.json makes the closed inventory 214 files.
+      The adapter validates identity, order, shape, finiteness, engine and
+      fallback, caps raw responses before parsing, and cancels refused bodies.
+      The real route returns the exact archive/Methods-backed two-target matrix
+      without Python, FastAPI, fit, refit or fallback. This remains local Linux
+      candidate evidence: the persisted UI selection model is not yet bound,
+      the snapshot must become the exact published nirs4all 0.3.24 dependency,
+      every target needs a qualified Methods closure and release archive, and
+      remaining route/platform parity keeps LOCK-STUDIO and publication NO-GO.
     rollback: remove only the additive job/WS target contract and test; retain the frozen Studio-v1 oracle and R1 sidecar behavior.
   - id: STU-006
     owner: F
     dependencies:
       - STU-002
       - STU-001
-    state: r2_native_startup_and_linux_methods_closure_qualified_cross_platform_archives_pending
-    input_sha: 6aed68a6c68b10829c9c484c34e23e4c2b652df3
+    state: r2_native_startup_core_0_3_24_and_linux_methods_closure_qualified_cross_platform_archives_pending
+    input_sha: 6b0545771b7bb14e127ca4842d1a56e9b007ee42
     owned_files:
       - nirs4all-studio/electron/native-session-lifecycle.ts
       - nirs4all-studio/electron/scientific-plugin-lifecycle.ts
@@ -1811,6 +1968,7 @@ work_items:
       - the Linux build stages one exact non-symlink Methods library through paired build-only path and SHA-256 inputs and emits its path, size, digest and ABI 2.2 in the adjacent runtime contract
       - runtime startup advertises native Archive V2 prediction only after Core preflights that exact Methods identity; an absent, stale, tampered or dependency-incomplete library disables the capability without changing Rust sidecar ownership
       - the locally qualified Methods binary is reproducible from two clean builds but requires GLIBC 2.35 and is not a manylinux, Windows or macOS release artefact
+      - Studio 6b054577 binds the sidecar to the complete bc001e53 / nirs4all 0.3.24 snapshot and exact Methods SHA-256 847f3b23986d9f74d392169bf559c49a38ca915492286e61ada10c31f72bfdf0; the snapshot remains transition-only and is not publication evidence
     review: >-
       Commit 2490396 removes eager BackendManager startup from Electron and
       preserves legacy backend:* IPC as lazy aliases while publishing explicit
@@ -1849,6 +2007,11 @@ work_items:
       CPython remains external-explicit and absent from product transport. This
       is local GLIBC 2.35 evidence only; published Core/Methods identities and
       Windows/macOS archives remain required before LOCK-RELEASE or R2-W2.
+      Studio 6b054577 updates that local closure to the complete Core bc001e53
+      / nirs4all 0.3.24 snapshot. It does not turn the vendored tree into a
+      published dependency or qualify new platforms. Exact published Core,
+      target-specific Methods identities and Windows/macOS release archives
+      remain required; LOCK-RELEASE, LOCK-STUDIO and publication stay NO-GO.
     rollback: revert only the lazy lifecycle/IPC/UI readiness adapter; preserve sidecar state and user Python environments.
   - id: W1-001
     owner: G
@@ -1962,9 +2125,14 @@ work_items:
 next_batch:
   gate: r2-api-studio-web-and-lock-closure
   condition: >-
-    Finish general API prediction/run coverage beyond the bounded multi-target
-    Methods PLS lane, Studio scientific submission and renderer selection, and
-    the remaining data binding matrix; connect all four runtime-specific
-    launchers to the strict GATE-001 harness, run differential/performance and
-    install gates, rebuild Web WASM from those exact artifacts, and regenerate
-    a reconstructible selected-workspace lock before CUT-001.
+    Use selected Bench e19c2d6 or a corrective descendant to connect the exact
+    Python oracle, Core bc001e53, Studio 6b054577 and selected Web artifacts to
+    one strict GATE-001 manifest and execute the comparison. Finish general API
+    prediction/run coverage beyond the bounded multi-target Methods PLS lane,
+    the persisted Studio UI binding and remaining data/platform matrix. Run the
+    official Core cibuildwheel matrix, produce the deterministic external Rust
+    SBOM and inter-machine path-remapped reproducibility evidence, replace
+    Studio's transient Core snapshot with the published exact 0.3.24 dependency
+    plus qualified per-target Methods closures, rebuild Web WASM from the exact
+    selected artifacts, and regenerate a remotely advertised, reconstructible
+    expanded selected-workspace lock before CUT-001 or publication.
