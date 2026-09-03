@@ -106,18 +106,25 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["methods"]["commit"] == "e0bee1ce160cd805d3060185fd151c09230c3381"
     assert evidence["dag_ml_data"]["commit"] == "7d9b9fed04c135ed4c2bba472c782aca7ef85807"
     assert evidence["dag_ml"]["commit"] == "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381"
-    assert evidence["python_strict_profile"]["commit"] == "3a38f589e5acbda58c5d071c95036f2572972ecd"
-    assert evidence["core"]["commit"] == "af4b4001e7fd2d88c7f5adca238d63f2f98858ba"
-    assert evidence["core"]["version"] == "0.3.26"
-    assert evidence["io"]["commit"] == "0b7d39ee2264fb2fe13a68a540f7297658bfcd6d"
-    assert evidence["io"]["publication_repair_commit"] == "f5a5e222f83258981cca480d45d13767b1e65c53"
-    assert evidence["datasets"]["commit"] == "5b528e96af80a3566a9773a617b76f447f5c8d50"
+    assert evidence["python_strict_profile"]["commit"] == "53a0acb964bff86dc67002763d8e9b850336731f"
+    assert evidence["python_strict_profile"]["r3_direct_parent"] == "1de9dcb50fcdcc6273113f54a7c7235528c31ed8"
+    assert evidence["core"]["commit"] == "89787477bd7883ceb26b51fa3228bca13db85f6e"
+    assert evidence["core"]["version"] == "0.3.27"
+    assert evidence["io"]["commit"] == "df7f2198862c71a24aeeba08ba09ee118524b55d"
+    assert evidence["io"]["publication_repair_commit"] == "a5f7eac50126d445f745f945ff5c770ed470254c"
+    assert evidence["datasets"]["commit"] == "007d7aafe50e6e4148d5a5cefe0ad96d9da37e7b"
+    assert evidence["datasets"]["product_commit"] == "285d8df2a6701e870566f66c931438b8fdf04ffb"
+    assert evidence["datasets"]["release_tag_move_count"] == 1
     assert evidence["tools"]["commit"] == "88c2bc1e29603049cdbf1a1080a35845edf2f3c9"
     assert evidence["tools"]["support_matrix_sha256"] == "85031fd02b89c16f7adc90e1faad4843cd654f0279c48332d58af3ad6b37a65b"
     assert evidence["ui"]["commit"] == "406d94d70004f27459ef12347af1e6f0079ab6ac"
     assert evidence["ui"]["tarball_sha256"] == "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67"
-    assert evidence["studio"]["candidate_commit"] == "aa84efc02cf89df6f87278777dc8df9b43ee8df3"
-    assert evidence["web"]["candidate_commit"] == "146e3e4632807d28c81031070fb1523b2ff13359"
+    assert evidence["studio"]["candidate_commit"] == "f8e9da2ecc71a1207f92a19a1aec0535a69c02d7"
+    assert evidence["studio"]["published"] is False
+    assert evidence["studio"]["signed"] is False
+    assert evidence["web"]["candidate_commit"] == "051bf636d7c1729087e5d40061b18bd690cd33b7"
+    assert evidence["web"]["published"] is True
+    assert evidence["web"]["pages_published"] is True
     assert evidence["benchmarks"]["commit"] == "9ff889a5be1bbc48a16d69a27ab743c23598f7da"
     assert evidence["security_harnesses"]["formats"]["commit"] == "892a48b38f6c94697f805524f6efd4e8ff7323b0"
     assert evidence["security_harnesses"]["core"]["commit"] == "0218bfc8b9d9193f771d27470e7cf9d5cf578823"
@@ -125,13 +132,15 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["security_harnesses"]["studio_store"]["commit"] == "6d53f301830947ff85767c53c800829741af75ff"
     assert evidence["org"]["commit"] == "b09f2768f264269d72be351d0c6282b769ec8f85"
     assert evidence["cockpit"]["commit"] == "0abde191e91629d4d54d111f93805508de9a6639"
-    assert evidence["remote_candidate_staging"]["status"] == "component_releases_published_product_candidates_remain_unpublished"
+    assert evidence["remote_candidate_staging"]["status"] == "components_r1_and_web_published_r2_r3_and_studio_unpublished"
     assert evidence["remote_candidate_staging"]["tag_or_registry_publication"] is True
     assert evidence["remote_candidate_staging"]["all_product_milestones_published"] is False
     assert len(evidence["remote_candidate_staging"]["heads"]) == 15
     assert evidence["product_release_sequence"]["status"] == "r1_r2_r3_distinct_remote_candidates_r4_held"
     assert evidence["product_release_sequence"]["milestones"]["r1"]["default_engine"] == "legacy"
-    assert evidence["product_release_sequence"]["milestones"]["r1"]["publication_repair_commit"] == "c21b8bcba9e5921e206bc90d60f991e74f8fc330"
+    assert evidence["product_release_sequence"]["milestones"]["r1"]["publication_repair_commit"] == "e76c834c75157f0c74fcbba7383a69a818ed6b34"
+    assert evidence["product_release_sequence"]["milestones"]["r1"]["pypi_published"] is True
+    assert evidence["product_release_sequence"]["milestones"]["r1"]["ghcr_published"] is True
     assert evidence["product_release_sequence"]["milestones"]["r2"]["studio_commit"] == "54350c688ae576bbbb393c5a24dae8d106f77322"
     assert evidence["product_release_sequence"]["milestones"]["r3"]["version"] == "1.0.0rc2"
     assert items["UI-001"]["state"] == "complete_registry_publication_downstream_product_hold"
