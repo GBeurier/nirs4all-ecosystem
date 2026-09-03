@@ -116,13 +116,13 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["ui"]["tarball_sha256"] == "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67"
     assert evidence["studio"]["candidate_commit"] == "bb66016cf4f7578543cdc294713011881b884969"
     assert evidence["web"]["candidate_commit"] == "dbbbcaeaf5f0d0da35a5242f21e234ba92c67cf8"
-    assert evidence["benchmarks"]["commit"] == "9aab2e13513b4e0a5a699a11ebc70f2bd00f10fb"
+    assert evidence["benchmarks"]["commit"] == "9ff889a5be1bbc48a16d69a27ab743c23598f7da"
     assert evidence["security_harnesses"]["formats"]["commit"] == "892a48b38f6c94697f805524f6efd4e8ff7323b0"
     assert evidence["security_harnesses"]["core"]["commit"] == "0218bfc8b9d9193f771d27470e7cf9d5cf578823"
     assert evidence["security_harnesses"]["methods"]["commit"] == "530b11c632ac467e6bf54022c7241d27cd72d73c"
     assert evidence["security_harnesses"]["studio_store"]["commit"] == "6d53f301830947ff85767c53c800829741af75ff"
-    assert evidence["org"]["commit"] == "63d00bea2bd44b024e6321c195d673909006ca9d"
-    assert evidence["cockpit"]["commit"] == "61ffa75fc23201e6150df62ed34034e3b60762f2"
+    assert evidence["org"]["commit"] == "b09f2768f264269d72be351d0c6282b769ec8f85"
+    assert evidence["cockpit"]["commit"] == "0abde191e91629d4d54d111f93805508de9a6639"
     assert evidence["remote_candidate_staging"]["status"] == "all_selected_component_heads_advertised_unpublished"
     assert evidence["remote_candidate_staging"]["tag_or_registry_publication"] is False
     assert len(evidence["remote_candidate_staging"]["heads"]) == 15

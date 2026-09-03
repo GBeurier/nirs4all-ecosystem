@@ -215,9 +215,9 @@ current_candidate_evidence:
       python: 3a38f589e5acbda58c5d071c95036f2572972ecd
       studio: bb66016cf4f7578543cdc294713011881b884969
       web: dbbbcaeaf5f0d0da35a5242f21e234ba92c67cf8
-      benchmarks: 9aab2e13513b4e0a5a699a11ebc70f2bd00f10fb
-      org: 63d00bea2bd44b024e6321c195d673909006ca9d
-      cockpit: 61ffa75fc23201e6150df62ed34034e3b60762f2
+      benchmarks: 9ff889a5be1bbc48a16d69a27ab743c23598f7da
+      org: b09f2768f264269d72be351d0c6282b769ec8f85
+      cockpit: 0abde191e91629d4d54d111f93805508de9a6639
   product_release_sequence:
     status: r1_r2_r3_distinct_remote_candidates_r4_held
     required_order: r1_0_13_0_then_r2_1_0_0_rc_1_then_r3_1_0_0_rc_2_then_r4_1_0_0
@@ -663,19 +663,20 @@ current_candidate_evidence:
     scope: local_code_only_no_global_go
   org:
     evidence_status: final_native_candidate_staging_local_publication_hold
-    commit: 63d00bea2bd44b024e6321c195d673909006ca9d
-    tree: eeead3429ae85d114ebdb04ad34333f18de71c50
+    commit: b09f2768f264269d72be351d0c6282b769ec8f85
+    tree: 324c150f944f240b027308d135c8f096f8c808a5
     package_version: 1.0.7
-    snapshot_sha256: 0937cefbd5c267bce1c2772843aa8f4a0a491f62197b03fb9b3e39abd48c68f5
-    snapshot_source_commit: ff7dfc568d0862268393c187f4e1c4eebcade4b9
+    snapshot_sha256: 3577c320a33e3bba70a41419caef72dd25cf2405518a156a9f6e79bf4d5a18eb
+    snapshot_source_commit: 8aa4540a6b97b9e6cb8facf2f3a189f0d62f1e1b
+    stale_benchmark_disposition: stale_not_current_evidence
     publication: false
   cockpit:
     evidence_status: final_native_candidate_staging_local_publication_hold
-    commit: 61ffa75fc23201e6150df62ed34034e3b60762f2
-    tree: cf4d1a086f1ddc31a3befcccabf63f20a81c6c76
+    commit: 0abde191e91629d4d54d111f93805508de9a6639
+    tree: 08bf192aa15475b431c8438c9d80f611e5ec7601
     package_version: 0.1.8
-    snapshot_sha256: 0937cefbd5c267bce1c2772843aa8f4a0a491f62197b03fb9b3e39abd48c68f5
-    snapshot_source_commit: ff7dfc568d0862268393c187f4e1c4eebcade4b9
+    snapshot_sha256: da760239d31feefe813b83bf9b8e652a18f69ba9823ad015862d77a0f862e3fb
+    snapshot_source_commit: 8aa4540a6b97b9e6cb8facf2f3a189f0d62f1e1b
     canonical_lock_updated: false
     global_status: no_go
   capability_governance:
@@ -687,9 +688,9 @@ current_candidate_evidence:
     commit: fe17a3f939f9fb95c8ed1e068138c72ceac92890
     tree: f3c849628f4711d8590d3d73c33af877f9cf49ab
   benchmarks:
-    evidence_status: local_real_measurement_and_soak_harness_ready_release_no_go
-    commit: 9aab2e13513b4e0a5a699a11ebc70f2bd00f10fb
-    tree: 9bcd2647f332ff74ffff5da9a4326c6314835f01
+    evidence_status: selected_heads_unmeasured_historical_measurement_retained_release_no_go
+    commit: 9ff889a5be1bbc48a16d69a27ab743c23598f7da
+    tree: 7c8b9c20cf8ae1c5d16a885ddc7c04f79aa1ed6b
     package_version: 0.1.7
     qualified_measurement_parent: 3f9be0fce0a79260a0813f964704ca1f337d47fe
     metadata_repin_parent: 0f7cda6b0f4ca21c6feb44f8011320d885d5382a
@@ -726,7 +727,10 @@ current_candidate_evidence:
       adds the missing stdlib-only soak harness with declared argv workloads,
       bounded output, timeout/process-group cleanup, direct-process RSS/FD and
       integrity probes. Its six targeted tests pass; no product or sustained
-      soak is claimed.
+      soak is claimed. Descendant 9ff889a records Governance 8aa4540 and the
+      selected Methods, DAG, Python R3 and Studio R3 heads while preserving all
+      historical report bytes and runtime identities. Those selected heads are
+      explicitly unmeasured and remain NO-GO pending a fresh four-runtime run.
     release_limit: >-
       This is a WSL-local measurement, not release qualification. Budgets are
       not frozen, external performance matrices remain incomplete, and no
