@@ -17,7 +17,7 @@ This report is a local triage input, not an R3 or RC-001 closure.
 | `DROP-004` | `complete_local_code_release_hold` | `a6688f53994b4bf9f612057a86b17a25f04401c3` | `closed_local` |
 | `DROP-005` | `complete_local_code_sbom_signature_release_hold` | `a6688f53994b4bf9f612057a86b17a25f04401c3` | `closed_local` |
 | `SOAK-001` | `advanced_local_evidence_not_closed` | `24751ea97a3e12d48ffb9f0438a4355b024e15d8` | `advanced_not_closed` |
-| `SEC-001` | `prepared_local_native_fuzz_harnesses_campaign_not_closed` | `3f9be0fce0a79260a0813f964704ca1f337d47fe` | `advanced_not_closed` |
+| `SEC-001` | `prepared_local_native_fuzz_harnesses_campaign_not_closed` | `6d53f301830947ff85767c53c800829741af75ff` | `advanced_not_closed` |
 | `PERF-002` | `advanced_local_evidence_not_closed` | `24751ea97a3e12d48ffb9f0438a4355b024e15d8` | `advanced_not_closed` |
 | `INST-001` | `prepared_local_linux_harness_external_matrix_hold` | `e027cbf8dea9fc2297ac91b9cd983346a44fb34f` | `advanced_not_closed` |
 | `SUP-001` | `complete_local_support_soak_release_hold` | `6796a01a75b0b51301a693011f3e904a60598817` | `closed_local` |
