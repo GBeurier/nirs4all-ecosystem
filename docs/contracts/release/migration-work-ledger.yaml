@@ -277,18 +277,23 @@ current_candidate_evidence:
       local patch. Registry publication, external matrices, signing and exact
       lock reconstruction remain required.
   core:
-    evidence_status: locally_qualified_data_and_conformal_candidate
-    commit: 94d712f60848df60ce6fa90f006ada09767cfd08
-    tree: e1444766493d235d13cbdf53bf7e80371a43a525
+    evidence_status: locally_qualified_data_conformal_and_runtime_identity_candidate
+    commit: 6b25b63bb09adfe3c4dae8ffacc90d09a1a81e16
+    tree: 11344243884a24aeec75f73e0469f23721c76978
+    conformal_producer_commit: 0115c1bbf7db351b7da7ff88708cd334602d3450
+    conformal_producer_tree: 24e454a636e136324489a42f461aba3d93c54252
+    methods_runtime_identity_fix_commit: 6b25b63bb09adfe3c4dae8ffacc90d09a1a81e16
     version: 0.3.25
     resolved_dag_ml_data_version: 0.2.10_local_patch_publish_false
     resolved_n4m_rust_binding_version: 0.1.4_local_patch
     predictor_descriptor_consumption: qualified_v1_v2_rust_python_wasm
     evidence: >-
-      Core 0.3.25 combines the DATA package-to-training path with archive-bound
-      conformal projection while retaining authoritative Rust/Python/WASM N4MM
-      V1/V2 replay and raw-X ownership. Targeted DATA, conformal, descriptor,
-      tamper, ABI and compatibility gates are green against DAG dafb8b6.
+      Core 0.3.25 final 6b25b63 descends from the actual conformal producer
+      0115c1bb (not the earlier 94d712f base), combines DATA package-to-training
+      with archive-bound conformal projection, and fixes shared attested Methods
+      runtime identity. Rust/Python/WASM N4MM V1/V2 replay and raw-X ownership
+      remain authoritative; targeted DATA, conformal, descriptor, tamper, ABI
+      and compatibility gates are green against DAG dafb8b6.
     release_limit: >-
       Core uses local patches for publish=false dag-ml-data 0.2.10, final DAG
       and unpublished n4m 0.1.4. Published pins, external matrices, signing and
@@ -354,7 +359,7 @@ current_candidate_evidence:
     predictor_descriptor_gate: targeted_passed
     native_hpo_resume_witness: 2_completed_to_4_trials_export_replay_passed
     embedded_pipeline_lowering: canonical_snv_sg_pls_v2_targeted_passed
-    final_stack_requalification: passed_without_new_python_commit
+    final_stack_requalification: one_native_archive_e2e_passed_without_new_python_commit
     evidence: >-
       The final Python candidate descends from the a56a870 native HPO witness
       and lowers the canonical SNV to Savitzky-Golay to PLS pipeline into the
@@ -362,25 +367,26 @@ current_candidate_evidence:
       fail-closed unreplayable preprocessing, export and fresh replay gates are
       green; the earlier two-to-four-trial witness remains valid. Public
       nirs4all.run and the explicit engine=legacy rollback profile remain
-      unchanged. The same 56db62c source was requalified green against final IO
-      54fa4f5, DAG dafb8b6, Core 94d712f and Methods 48ad1e5 without a new
-      Python commit.
+      unchanged. The same 56db62c source passed one fresh-process native Archive
+      V2 E2E against final IO 54fa4f5, DAG dafb8b6, Core 6b25b63 and Methods
+      48ad1e5 without a new Python commit.
     release_limit: >-
       This bounded strict-path proof does not close the general R2 API matrix:
       general run/predict/session/cache, transfer/finetune, conformal,
       robustness, explain/generate and remaining dual-Methods paths still need
       exact train-wide evidence.
   studio:
-    evidence_status: local_product_candidate_go_external_release_hold
-    candidate_commit: 325f6edada56da544f0b56a5a5ca7745958440ad
-    candidate_tree: 305af9ce4ab08025a9d025f9dea36b58f8eda252
+    evidence_status: locally_qualified_combined_candidate_external_release_hold
+    candidate_commit: 2ad862aeab4048ced6c4c70fee5b2f88adaa16e8
+    candidate_tree: e32f15cd1c4e76ef9fb82d2c2ffc81afddc6bbdc
     integration_chain:
       native_pipeline: 868b71e97e8d8498d8ebdfd9b11e6c132eb68295
       stu_004_predict_ui: f4761c25a0992312c64c8e37a0a6f0650a48ae2d
       stu_004_native_catalogue: 5e72fd3daafd399d96d0c47853f6e639eb262537
-      final_conformal: 325f6edada56da544f0b56a5a5ca7745958440ad
-    rust_tests_passed: 191
-    vitest_tests_passed: 3961
+      conformal_presentation: 325f6edada56da544f0b56a5a5ca7745958440ad
+      native_dataset_train: 769bf9cbbec0c51e619c2a17f27001d9f8299816
+      combined_conformal_live: 2ad862aeab4048ced6c4c70fee5b2f88adaa16e8
+    targeted_rust_witnesses: native_train_and_conformal_live_passed
     backend_control_plane: rust_only
     python_http_backend: removed
     drop_005_status: closed_local_candidate
@@ -391,6 +397,7 @@ current_candidate_evidence:
     n4mm_pipeline_v2_gate: targeted_passed_raw_x_core_authority
     legacy_v1_live_replay: passed_with_final_stack
     stu_004_status: closed_local_code
+    native_dataset_train_status: closed_local_code
     conformal_v2_status: targeted_passed_core_authority
     accepted_non_blocking_local_conversion_risks:
       disposition: >-
@@ -401,38 +408,41 @@ current_candidate_evidence:
         - content hash to process spawn mutation window
         - source mutation after validation scan
     evidence: >-
-      The final Studio chain 868b71e to f4761c2 to 5e72fd3 to 325f6ed closes
-      the native STU-004 Predict UI, Store-authorized Archive V2 catalogue and
-      conformal presentation locally against final Core/DAG/Methods. Core
-      remains inspection/replay authority; Studio adds no preprocessing or
-      conformal math. Qualified legacy conversion is byte-untouched and operational.
+      The final combined Studio candidate 2ad862a preserves the 868b71e to
+      f4761c2 to 5e72fd3 UI/catalogue chain, adds the 769bf9c persisted dataset
+      to native train to catalogued archive to fresh prediction path, and carries
+      the live conformal witness. It is qualified against Core 6b25b63, DAG
+      dafb8b6, IO 54fa4f5, DMD 1f60b92 and Methods 48ad1e5. Core remains
+      inspection/replay authority; Studio adds no preprocessing or conformal
+      math. Qualified legacy conversion is byte-untouched and operational.
       The two accepted TOCTOU windows above remain documented open risks rather
       than being described as closed security properties.
     release_limit: >-
-      LOCK-STUDIO remains on external HOLD for authoritative Windows Job Object
-      runtime evidence, Docker execution, exact target closure/installer checks,
-      signing and the promised platform matrix. Any embedded CPython remains
-      limited to an attested stdio library/plugin host with no HTTP server,
-      scheduler, store or fallback.
+      LOCK-STUDIO remains on external HOLD only for the release lock, signing or
+      SBOM closure if required, installers and promised platform/soak matrices.
+      Any embedded CPython remains limited to an attested stdio library/plugin
+      host with no HTTP server, scheduler, store or fallback.
   web:
-    evidence_status: local_product_candidate_go_independent_audit_accepted
-    candidate_commit: 80085f6fe049b414e2fcbbde3181e2e4f8e5a701
-    candidate_tree: df00d29a0831b2120424a7b271128769884388c5
-    tests_passed: 190
-    available_smokes_passed: 25/25
-    external_handoffs_pending: 3
+    evidence_status: locally_qualified_final_wasm_candidate_external_release_hold
+    candidate_commit: 20867a71c45731f757267a98e7928710e7c3693d
+    candidate_tree: 5883040939306b8d5ef5a02eacde90caeea23efa
+    wasm_artifacts_a_b: byte_identical
     predictor_descriptor_gate: targeted_passed
     n4mm_v1_v2_smoke: targeted_passed
     evidence: >-
-      Web 80085f6 stages byte-identical A/B Core 94d712f and DAG dafb8b6 WASM
-      artifacts with exact provenance/legal digests and unchanged Methods
-      48ad1e5. The existing historical V1 and embedded-pipeline V2 Archive
-      smokes pass against that final stack without fallback; no conformal UI
-      claim is made here.
+      Web 20867a7 stages byte-identical A/B Core 6b25b63 and DAG dafb8b6
+      WASM artifacts with exact provenance/legal digests and unchanged Methods
+      48ad1e5. Historical V1 and embedded-pipeline V2 Archive smokes pass against
+      that final stack without fallback; no conformal UI claim is made here.
     release_limit: >-
-      Web remains client-side-only. Three external artifact-dependent handoffs,
-      publication, signatures and final lock-driven downstream repins remain
-      outside the local GO and block a release claim.
+      Web remains client-side-only. Registry publication, final lock-driven
+      downstream repins, signing/SBOM if required, installers and external
+      matrices remain release holds.
+  local_code_closure:
+    data_flows: closed
+    conformal_flows: closed
+    stu_004_ui_catalogue_and_native_train_flows: closed
+    scope: local_code_only_no_global_go
   benchmarks:
     evidence_status: local_contract_fixture_qualified_release_no_go
     commit: 433ad714d475dd0c8fd7d4ee2664665894caaee9
@@ -466,54 +476,21 @@ current_candidate_evidence:
       removing publish=false, publish n4m 0.1.4, replace local patches with
       registry pins, then regenerate the lock from remotely reconstructible heads.
   fields_pending_final_repin:
-    - aggregation manifest member commit/tree/version and preferred exact tags
-    - aggregation lock artifact digests, lockstep attestations and manifest digest
-    - publish=false DMD 0.2.10 and nirs4all-io 0.1.12-dagml closures
-    - Methods n4m 0.1.4 publication and replacement of local downstream patches
-    - replacement of predictor-descriptor qualification patches by published pins
-    - live ABI witness from the exact selected release artifacts
-    - Studio external target/installer closure and final release artifacts
-    - Web post-publication dependency repins and external handoffs
-    - Python, Tools, Studio and Web outside-lock release-surface evidence
-    - PERF-001 exact four-candidate closures, executed report and reference-host budgets
-    - registry URLs, SBOM/provenance digests, signatures and installer checksums
+    - registry publication of n4m 0.1.4, DMD 0.2.10, nirs4all-io 0.1.12-dagml and Core/DAG packages, followed by exact downstream repins
+    - remotely reconstructible aggregation manifest and canonical release lock
+    - signing and SBOM/provenance closure where required
+    - external matrices, installers, soak and real performance closures
   blockers:
     - >-
-      LOCK-API is open: the bounded strict Python path is not evidence for the
-      complete R2 run/predict/session/cache/retrain/finetune/conformal/
-      robustness/explain/generate and dual-Methods capability matrix.
+      Registry HOLD: n4m 0.1.4, DMD 0.2.10, nirs4all-io 0.1.12-dagml and the
+      selected Core/DAG packages are not yet published and repinned.
     - >-
-      LOCK-STUDIO is on external HOLD: the local product candidate is integrated
-      and Rust-only, but authoritative Windows Job Object runtime, Docker,
-      installer/closure, signing and promised multi-OS evidence remain
-      incomplete. The two explicitly accepted low-scale conversion TOCTOU risks
-      remain documented open without blocking the local product effort.
+      Release-artifact HOLD: the canonical lock is intentionally unchanged;
+      signing and SBOM/provenance closure remain required where applicable.
     - >-
-      LOCK-RELEASE is NO-GO: candidates are local and unpublished, the
-      publish=false dag-ml-data 0.2.10/nirs4all-io 0.1.12-dagml and n4m 0.1.4
-      publication/repin cascades are incomplete, local
-      qualification patches have not been replaced by published pins, and the
-      exact selected artifacts lack their release-environment live ABI witness.
-      Registries, immutable staging, provenance/SBOM closure, signatures and
-      clean installs on all promised targets are not proven from one lock.
-    - >-
-      MTH-DOC is closed locally at d9c42917, but LOCK-DOCS remains open for the
-      final lock-driven cross-site publication, immutable artifact references
-      and external release-documentation closure.
-    - >-
-      LOCK-SOAK is open: corpus, fuzz/security, crash recovery, concurrency,
-      memory/performance, installer rollback and RC feedback evidence remain
-      incomplete.
-    - >-
-      PERF-001 is open: the four-surface contract fixture is green but is not
-      release-eligible; exact mutually attested closures, Web timing adapter,
-      one real four-surface execution and approved non-WSL budgets remain absent.
-    - >-
-      DROP-005 is closed on the local Studio candidate, but the remaining R3 and
-      R4 gates stay pending. Legacy must be proven unreachable from strict
-      Studio/Web/product paths without removing the explicit Python
-      engine=legacy rollback profile before the end of R4, then the complete R3
-      soak must precede an unchanged R4 promotion.
+      External qualification HOLD: promised matrices, installers, soak and real
+      performance closures remain incomplete. Local DATA, CONF and STU code
+      flows are closed, but this snapshot grants no global GO.
 work_items:
   - id: ARCH-001
     owner: A
@@ -1035,7 +1012,7 @@ work_items:
       - a clean autonomous Core wheel reopens the calibrated Archive V2 in a fresh isolated child process and returns the exact closed ConformalPresentationV1 without importing a Python conformal runtime
       - Archive V2 tamper and invalid contracts refuse before process-global libn4m configuration; Core delegates interval composition and identity/order validation to DAG-ML
       - two clean wheel builds are byte-identical at SHA-256 1006a5d96233bd457e95b19bcb3db38f09c3160d2c645e967c3520b7e34e14bd
-      - final DAG dafb8b6, Core 94d712f and Studio 325f6ed close archive-bound multi-target conformal V2 locally
+      - final DAG dafb8b6, true Core producer 0115c1bb, identity-fixed Core 6b25b63 and combined Studio 2ad862a close archive-bound multi-target conformal V2 locally
     review: >-
       Two independent Sol-xhigh reviews ACCEPT the DAG-ML V2 runtime: calibration is
       PREDICT-only, relation-authoritative, distinct and identity-disjoint from development;
@@ -2206,7 +2183,7 @@ work_items:
       - the complete frontend passes 544 files and 3851 Vitest tests, TypeScript, targeted ESLint and the Electron development build
       - the explicit cpython-stdio-v1 acquisition uses a fresh isolated CPython 3.11+ process, a closed JSON response, a three-second deadline and bounded stdout/stderr; interpreter bytes are identity-bound and acquisition is sticky
       - CPython host absence, tamper, timeout, malformed or oversized output, wrong implementation/version/isolation and failed socket.bind audit guard return a typed 503 before body parsing, workspace access, registry mutation, events or durable writes
-      - final chain 868b71e to f4761c2 to 5e72fd3 to 325f6ed closes native Predict UI, Store-authorized Archive V2 catalogue and conformal presentation without touching conversion
+      - final chain 868b71e to f4761c2 to 5e72fd3 to 769bf9c to 2ad862a closes native Predict UI, Store-authorized Archive V2 catalogue, dataset-to-native-train-to-fresh-predict and conformal live presentation without touching conversion
       - selected Python 3b9eb3e exposes a bounded studio_scientific_job_v1 callable from the canonical isolated wheel SHA-256 24737550768868df37dc0bf11433c7bd409ef620a8667a88b99641658b5f3e6b; selected Studio d829465 executes that exact callable through fresh-process stdio but remains unselected because it does not resolve saved dataset and pipeline identities into the closed inline matrices
       - Rust owns complete, fail and cancellation-ack callbacks, publishes the exact terminal WebSocket event and updates the durable execution record; worker cancellation and timeout kill the Unix process group and Rust removes the confined scratch tree
       - the worker revalidates interpreter and callable path, size and SHA-256, clears its environment, refuses socket bind and subprocess audit events, bounds stdin/stdout/stderr to 64 KiB/8 KiB/64 KiB and never sends workspace, path, manifest or opaque saved payload fields to Python
@@ -2981,7 +2958,7 @@ next_batch:
   gate: r2-api-studio-web-and-lock-closure
   condition: >-
     Use Bench 433ad714 or a corrective descendant to connect exact Python
-    56db62c1, Core 94d712f, Studio 325f6ed and Web 80085f6 artifacts to one
+    56db62c1, Core 6b25b63, Studio 2ad862a and Web 20867a7 artifacts to one
     strict GATE-001 manifest and execute the real performance comparison.
     Publish/select DMD 0.2.10, nirs4all-io 0.1.12-dagml and n4m 0.1.4, replace
     every local qualification patch with registry identities, and rerun the
