@@ -370,6 +370,25 @@ current_candidate_evidence:
       Tools remains an outside-aggregation-lock migration surface. Its exact
       wheel candidate is local and must be published, signed and referenced by
       the support/conversion release documents before promotion.
+  ui:
+    evidence_status: locally_qualified_shared_tarball_registry_publication_hold
+    commit: 406d94d70004f27459ef12347af1e6f0079ab6ac
+    tree: 377722160bbf188c474aacfecc8a6825095be2ca
+    version: 0.1.13
+    tarball_sha256: 44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67
+    studio_consumer_commit: a6688f53994b4bf9f612057a86b17a25f04401c3
+    web_consumer_commit: e7b9a6384050c2c1a92dcec6aab41e9f0430be43
+    registry_latest_observed_at: 2026-09-03
+    registry_latest_version: 0.1.12
+    evidence: >-
+      Studio and Web consume the same content-addressed nirs4all-ui 0.1.13
+      tarball, verify the same producer commit, tree, SHA-256 and integrity
+      receipt, and fail closed on identity or byte drift. The producer and both
+      consumers are locally qualified without a sibling source dependency.
+    release_limit: >-
+      Version 0.1.13 is not tagged or published to npm/GitHub; registry
+      publication, downstream registry repins and final product gates remain
+      required before UI-001 can become a public release claim.
   python_strict_profile:
     evidence_status: local_native_default_final_capability_docs_release_hold
     commit: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
@@ -409,14 +428,16 @@ current_candidate_evidence:
       only through the declared Python-library plugin contract, and refuses
       finetune, unknown and session-plugin requests before data access.
     release_limit: >-
-      This bounded strict-path proof does not close the general R2 API matrix:
-      general run/predict/session/cache, transfer/finetune, conformal,
-      robustness, explain/generate and remaining dual-Methods paths still need
-      exact train-wide evidence.
+      The CAP-bounded API-001 through API-005 matrix is closed locally: promised
+      run, predict, session/cache, full retrain, conformal/robustness and
+      orchestration surfaces are native; transfer is plugin-bound, while
+      finetune and unavailable explain/generate capabilities refuse before data
+      access. Publication, external platform matrices, signatures and the
+      expanded release lock remain holds.
   studio:
     evidence_status: locally_qualified_combined_candidate_external_release_hold
-    candidate_commit: bb76f2c8833f430d26311422c9d7018592fcf6cb
-    candidate_tree: e0560c07d34e9c5e928f44076cffdba100f17ee5
+    candidate_commit: a6688f53994b4bf9f612057a86b17a25f04401c3
+    candidate_tree: 3f0776a6d406a0112fa730f5cbb0e8c347d19ef6
     integration_chain:
       native_pipeline: 868b71e97e8d8498d8ebdfd9b11e6c132eb68295
       stu_004_predict_ui: f4761c25a0992312c64c8e37a0a6f0650a48ae2d
@@ -425,7 +446,7 @@ current_candidate_evidence:
       native_dataset_train: 769bf9cbbec0c51e619c2a17f27001d9f8299816
       combined_conformal_live: 2ad862aeab4048ced6c4c70fee5b2f88adaa16e8
       strict_native_runtime: 8bf1ca93aa24168ed8cbaa07cf52fce2d52cc6ad
-      rust_only_documentation: bb76f2c8833f430d26311422c9d7018592fcf6cb
+      rust_only_documentation: a6688f53994b4bf9f612057a86b17a25f04401c3
     targeted_rust_witnesses: native_train_and_conformal_live_passed
     backend_control_plane: rust_only
     python_http_backend: removed
@@ -448,7 +469,7 @@ current_candidate_evidence:
         - content hash to process spawn mutation window
         - source mutation after validation scan
     evidence: >-
-      The final Studio candidate bb76f2c documents the Rust-only control plane
+      The final Studio candidate a6688f5 documents the Rust-only control plane
       on strict-runtime descendant 8bf1ca9 and preserves the 868b71e to
       f4761c2 to 5e72fd3 UI/catalogue chain, adds the 769bf9c persisted dataset
       to native train to catalogued archive to fresh prediction path, and carries
@@ -457,7 +478,10 @@ current_candidate_evidence:
       inspection/replay authority; Studio adds no preprocessing or conformal
       math. Qualified legacy conversion is byte-untouched and operational.
       The two accepted TOCTOU windows above remain documented open risks rather
-      than being described as closed security properties.
+      than being described as closed security properties. Its documentation
+      labels the public 0.10.1 installers as historical, keeps the unpublished
+      candidate downloads unavailable, and confines every Python/FastAPI
+      instruction to explicit web-development or diagnostic use.
     release_limit: >-
       LOCK-STUDIO remains on external HOLD only for the release lock, signing or
       SBOM closure if required, installers and promised platform/soak matrices.
@@ -465,14 +489,15 @@ current_candidate_evidence:
       host with no HTTP server, scheduler, store or fallback.
   web:
     evidence_status: locally_qualified_final_wasm_candidate_external_release_hold
-    candidate_commit: 59cfffbd7444a9afa9527fbaa12d078811abaf33
-    candidate_tree: 42926535b2f333cdec77951bcbdcef2fc2268f42
-    candidate_docs_parent: f1ae6c38e6c82bd7bf525c8c4a7adc8deb456eea
+    candidate_commit: e7b9a6384050c2c1a92dcec6aab41e9f0430be43
+    candidate_tree: 883135384bbc15939a5aa55bac0f9227cebcf16f
+    candidate_docs_parent: 59cfffbd7444a9afa9527fbaa12d078811abaf33
     wasm_artifacts_a_b: refreshed_final_candidate_with_provenance
     predictor_descriptor_gate: targeted_passed
     n4mm_v1_v2_smoke: targeted_passed
     evidence: >-
-      Web 59cfffb refreshes final Core/Formats/IO WASM artifacts and their
+      Web e7b9a63 documents the exact content-addressed UI tarball on top of
+      59cfffb, which refreshes final Core/Formats/IO WASM artifacts and their
       provenance/SBOM records after the f1ae6c3 strict-surface documentation.
       Historical V1 and embedded-pipeline V2 Archive smokes pass against
       that final stack without fallback; no conformal UI claim is made here.
@@ -493,13 +518,17 @@ current_candidate_evidence:
     scope: local_code_only_no_global_go
   org:
     evidence_status: final_native_candidate_staging_local_publication_hold
-    commit: c82da91f3465e7ad2fd22e91d6018cda5a739f34
-    tree: d8579ab3dd43b60dfd32ffb16518c8e7a5dbbba9
+    commit: 8cb9bee885a16bbd6c8e72eafdf565a139f143e5
+    tree: 0e50e1bebee3b2c9d46146d91c619e66f73388e1
+    snapshot_sha256: 00863a82349eb22539f9c52a2884e75405ef91c289d9632b5519e58aa98f6d46
+    snapshot_source_commit: cd1627f60a0fba6acaa22b7b1d726846a2da40dc
     publication: false
   cockpit:
     evidence_status: final_native_candidate_staging_local_publication_hold
-    commit: dfdd4bd3d2cffc5170a9de5f813f0444f951d881
-    tree: 495d1d769ddc116a25bb1bb103a78d22b6624d3d
+    commit: a60abdc400d14ad1b7e595de4031b6b4c5cf4ef5
+    tree: 3b97132434bd68b0cad1fc59024474538474660f
+    snapshot_sha256: 00863a82349eb22539f9c52a2884e75405ef91c289d9632b5519e58aa98f6d46
+    snapshot_source_commit: cd1627f60a0fba6acaa22b7b1d726846a2da40dc
     canonical_lock_updated: false
     global_status: no_go
   capability_governance:
@@ -511,9 +540,10 @@ current_candidate_evidence:
     commit: fe17a3f939f9fb95c8ed1e068138c72ceac92890
     tree: f3c849628f4711d8590d3d73c33af877f9cf49ab
   benchmarks:
-    evidence_status: local_real_four_surface_measurement_complete_release_no_go
-    commit: 3f9be0fce0a79260a0813f964704ca1f337d47fe
-    tree: fc1152548894a4f778a257e54bb3dcf37ce1f0f3
+    evidence_status: local_real_measurement_and_soak_harness_ready_release_no_go
+    commit: 24751ea97a3e12d48ffb9f0438a4355b024e15d8
+    tree: 3c8decd2f3b28865a8093996a5bd90c1789437de
+    qualified_measurement_parent: 3f9be0fce0a79260a0813f964704ca1f337d47fe
     metadata_repin_parent: 0f7cda6b0f4ca21c6feb44f8011320d885d5382a
     measurement_commit: 5cccfe6cc50f6dde7b8b65127289dcc4f01d3e1e
     hardening_parent: f5cf5fe8e06843e86867878cec94e81e66511018
@@ -536,13 +566,17 @@ current_candidate_evidence:
         steady: 4.713
     release_eligible: false
     evidence: >-
-      Bench candidate 3f9be0fce0a79260a0813f964704ca1f337d47fe repins
+      Bench measurement candidate 3f9be0fce0a79260a0813f964704ca1f337d47fe repins
       selected candidate metadata without rerunning the unchanged PERF-001
       local_real campaign from 5cccfe6 across Python
       native, direct Rust, Studio Rust and Web WASM using the same Archive and
       matrix, and adds bounded local hardening evidence. All four surfaces
       pass, maximum prediction delta is zero and no fallback is observed. The
-      PERF gate reports 9/9 passing checks plus diff-check.
+      PERF gate reports 9/9 passing checks plus diff-check. Descendant 24751ea
+      adds the missing stdlib-only soak harness with declared argv workloads,
+      bounded output, timeout/process-group cleanup, direct-process RSS/FD and
+      integrity probes. Its six targeted tests pass; no product or sustained
+      soak is claimed.
     release_limit: >-
       This is a WSL-local measurement, not release qualification. Budgets are
       not frozen, external performance matrices remain incomplete, and no
@@ -674,8 +708,8 @@ work_items:
     owner: G
     dependencies:
       - ARCH-001
-    state: strict_dual_orchestration_oracle_selected_in_current_python_rc
-    input_sha: 71dce9d9ecfc9e872393b96f19cae8aded34df41
+    state: complete_local_oracle_release_hold
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files: []
     acceptance_tests:
       - nirs4all pytest -q tests/unit/api/test_dual_run_oracle.py
@@ -695,8 +729,10 @@ work_items:
       registry. Current Python RC 71dce9d9 selects this result. Independent
       audit executed the real in-process dual probe, inspected an exact wheel
       containing the ledger and approved promotion; 520 API/registry tests,
-      Ruff and targeted Mypy pass. No publication or remote advertisement is
-      claimed.
+      Ruff and targeted Mypy pass. Python 40421617 is a descendant of that
+      accepted strict dual-oracle evidence and preserves ledger-bounded
+      comparison, fail-closed preflight and explicit legacy selection. No
+      publication, remote advertisement or release-lock promotion is claimed.
     rollback: remove only the dual-run surface/tests/docs; preserve Python 0.12.0 oracle and existing fixtures
   - id: CAP-001
     owner: capability-ledger
@@ -1149,8 +1185,8 @@ work_items:
     dependencies:
       - CAP-001
       - DATA-003
-    state: strict_wasm_archive_v2_multitarget_replay_qualified_transitional_profile_explicit
-    input_sha: 6b17d09e7e6261ff245fa1dc7e12715d6423ed05
+    state: complete_local_code_release_hold
+    input_sha: e7b9a6384050c2c1a92dcec6aab41e9f0430be43
     owned_files:
       - nirs4all-web/web-app/src/engine/web-profile.ts
       - nirs4all-web/web-app/src/engine/main-engine.ts
@@ -1205,15 +1241,17 @@ work_items:
       Node 22/24, 186 Vitest tests, typecheck, strict build and Chromium replay
       pass with exact ownership and zero fit/fallback. The four npm high alerts
       are pre-existing dev/build-tree findings; no automatic dependency rewrite
-      was applied. GATE-001 still needs its Web evidence regenerated on 6b17d09,
-      and final staged WASM bytes remain aggregation-lock work.
+      was applied. Web 59cfffb retains that strict replay in the final
+      content-addressed WASM candidate, and e7b9a63 documents its exact shared
+      UI tarball. Registry publication, lock-driven staging and external
+      platform qualification remain held.
     rollback: revert the strict profile selector, manifest and profile-aware smoke commits together; preserve user browser storage and exported n4a artifacts.
   - id: UI-001
     owner: F + G
     dependencies:
       - WEB-001
-    state: immutable_ui_tarball_producer_qualified_studio_web_pin_and_registry_publish_pending
-    input_sha: b7cadebd0e2857c8e8a65d7e7b767a949fa60b1f
+    state: complete_local_code_registry_publication_hold
+    input_sha: 406d94d70004f27459ef12347af1e6f0079ab6ac
     owned_files:
       - nirs4all-ui/scripts/release-artifact.mjs
       - nirs4all-ui/scripts/release-artifact.test.mjs
@@ -1225,24 +1263,26 @@ work_items:
       - the publish job downloads, verifies and publishes that exact tarball instead of rebuilding or publishing from a second source tree
       - the manifest pins package name and version, forty-character source commit, clean-tree state, byte size, SHA-256, npm SHA-1, SHA-512 integrity, entry count and required public files
       - dirty tracked source, non-empty output, symlink or non-file inputs, unknown manifest fields, source-commit mismatch and tampered tarball bytes fail closed
-      - two clean builds from the selected commit produce byte-identical tarballs with SHA-256 7a232c746eeeda526a26d79ef79ab83f6b2363d2d8ec37d92e674ae61b248340
+      - two clean builds from the selected commit produce byte-identical tarballs with SHA-256 44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67
       - Node 24 typecheck, 282 Vitest tests, four artifact-contract tests, build, pack smoke and packed React 18/19 consumer smokes pass
+      - Studio and Web pin and verify that exact nirs4all-ui 0.1.13 tarball and reject altered producer receipts or package bytes
     review: >-
-      UI commit b7cadeb closes the release-producer half of UI-001. It makes
-      the tarball the immutable handoff between build and npm publication and
-      provides an offline verifier for downstream consumers. No registry
-      publication or external push was performed. Studio and Web still point
-      at their local vendor directories, so the same-version/same-hash
-      consumer pin and their full product gates remain required before UI-001
-      can be complete.
+      UI candidate 406d94d closes the local producer and consumer portions of
+      UI-001. It makes the 0.1.13 tarball the immutable handoff, and Studio
+      a6688f5 plus Web e7b9a63 consume and verify the same SHA-256
+      44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67
+      with matching source/tree/integrity receipts instead of a sibling source
+      checkout. npm and GitHub still expose 0.1.12 as latest on 2026-09-03;
+      no tag, registry publication or external push is claimed. Registry
+      publication and final downstream registry repins remain release holds.
     rollback: revert only the additive artifact builder, verifier and workflow handoff; retain the UI package source and consumer vendor copies.
   - id: GATE-001
     owner: G
     dependencies:
       - PAR-001
       - CAP-001
-    state: local_linux_four_runtime_functional_go_release_matrix_and_publication_no_go
-    input_sha: 85d9f6e211c542e8c4b193c187a8a03679d55df2
+    state: complete_local_linux_functional_release_hold
+    input_sha: 3f9be0fce0a79260a0813f964704ca1f337d47fe
     owned_files:
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/contract.py
       - nirs4all-benchmarks/src/nirs4all_benchmarks/qualification/runner.py
@@ -1467,9 +1507,11 @@ work_items:
       tests pass with one optional Node skip, Ruff and targeted Mypy pass, all
       71 artifacts are regular non-symlink files with exact digests, and the
       post-run Python inventory remains 8,274 files/949 directories with zero
-      forbidden entry. This supersedes v5/v6 only as current selection evidence;
-      those earlier reports remain immutable history. Release/platform/perf,
-      embedded Python, lock, SBOM, signature and publication claims remain open.
+      forbidden entry. Bench 3f9be0fc records the final selected local_real
+      four-surface result as 4/4 passed on the same Archive and matrix, with
+      maximum prediction delta zero and no fallback. The earlier reports remain
+      immutable history. WSL, external matrices, immutable release
+      reconstruction, signatures and publication remain holds.
     rollback: remove only the additive qualification package, CLI entry point, tests and documentation; retain historical benchmark records.
   - id: DOC-WEB-001
     owner: H + F + G
@@ -1478,7 +1520,7 @@ work_items:
       - STU-001
       - MTH-DOC-003
     state: complete_local_staging_publication_hold
-    input_sha: c82da91f3465e7ad2fd22e91d6018cda5a739f34
+    input_sha: 8cb9bee885a16bbd6c8e72eafdf565a139f143e5
     owned_files:
       - nirs4all-org/
       - nirs4all-cockpit/data/current.json
@@ -1491,14 +1533,15 @@ work_items:
       - Studio contract verifier is committed and run by CI; documentation claims only capabilities proven by the same release lock
       - Org release staging projects only public-safe version and source-SHA fields from a validated lock; absolute paths, worktrees and private URLs are rejected
       - the current incomplete R2 lock renders every component as pending with no download and falls back to Publication en cours for absent, invalid or incomplete manifests
-      - the public projection is byte-reproducible with SHA-256 3868dbe836cba25d5b681864fbbffb8178c011353800ad1310767ae461f48f32
+      - the public projection shared with Cockpit is byte-reproducible with SHA-256 00863a82349eb22539f9c52a2884e75405ef91c289d9632b5519e58aa98f6d46
       - static validation covers manifest, HTML, internal links, accessibility, SEO, JSON-LD and sitemaps; eight negative tests, Ruff, Mypy, HTTP and headless Chrome smokes pass
     review: >-
-      Org candidate c82da91f3465e7ad2fd22e91d6018cda5a739f34 closes
+      Org candidate 8cb9bee885a16bbd6c8e72eafdf565a139f143e5 closes
       the lock-driven public-safe staging work locally while preserving an
-      explicit release-in-progress page with no download. Cross-site
-      synchronization, public artifacts, publication and deployment remain
-      held; no R1/R2/R3/V1 announcement is eligible.
+      explicit release-in-progress page with no download. Its snapshot is
+      byte-identical to Cockpit at SHA-256 00863a82349eb22539f9c52a2884e75405ef91c289d9632b5519e58aa98f6d46
+      from governance cd1627f. Public artifacts, publication and deployment
+      remain held; no R1/R2/R3/V1 announcement is eligible.
     rollback: revert generated public content and deployment manifests atomically; no release, site deployment or public announcement without authorization.
   - id: DOC-WEB-001B
     owner: H + F
@@ -1506,7 +1549,7 @@ work_items:
       - DOC-WEB-001
       - REL-002
     state: complete_local_staging_publication_hold
-    input_sha: dfdd4bd3d2cffc5170a9de5f813f0444f951d881
+    input_sha: a60abdc400d14ad1b7e595de4031b6b4c5cf4ef5
     owned_files:
       - nirs4all-cockpit/.github/workflows/ci.yml
       - nirs4all-cockpit/cockpit/release_staging.py
@@ -1522,10 +1565,11 @@ work_items:
       - direct CLI execution from an external directory resolves the selected checkout rather than a stale editable cockpit package
       - the clean selected checkout passes 164 tests, Ruff, Mypy, target validation, Node syntax validation and the headless Chrome DOM smoke
     review: >-
-      Cockpit candidate dfdd4bd3d2cffc5170a9de5f813f0444f951d881 closes
+      Cockpit candidate a60abdc400d14ad1b7e595de4031b6b4c5cf4ef5 closes
       the deterministic lock-driven projection locally while retaining
-      publish=false and global no-go. Cross-site synchronization, public
-      artifacts, publication and deployment remain held; no release
+      publish=false and global no-go. Its projection is byte-identical to Org
+      at SHA-256 00863a82349eb22539f9c52a2884e75405ef91c289d9632b5519e58aa98f6d46.
+      Public artifacts, publication and deployment remain held; no release
       announcement is eligible.
     rollback: remove only the additive release-staging projection, CLI, tests and CI gate; retain the existing public cockpit snapshot and dashboard.
   - id: MTH-DOC-001
@@ -2016,8 +2060,8 @@ work_items:
     dependencies:
       - STORE-001
       - STU-001
-    state: native_store_reads_and_run_detail_owner_cpython_boundary_qualified_on_python_rc
-    input_sha: 030a9f94bba2112d2d72102c9767533b62bee1a3
+    state: complete_local_code_release_hold
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_read_v1.json
       - nirs4all/nirs4all/pipeline/storage/contracts/workspace_store_results_summary_v1.json
@@ -2097,16 +2141,19 @@ work_items:
       1053274a5d5a900bb3511afc3290c0adae5a1c2b84beacb742fd650f806c19bd.
       The isolated host receives only explicit site/dist-packages roots, not
       PYTHONPATH or sibling sources, and failures preserve child stdout/stderr.
-      This closes the Python owner materializer boundary, not the Studio route:
-      bounded Rust host invocation and response composition remain STU-005.
+      Python 40421617 retains the complete Store-v5 owner materializer and
+      bounded run-detail inputs consumed by the final Studio candidate for
+      every CAP-declared V1 native store surface. Non-promised repository
+      extensions and external release qualification remain outside this local
+      closure.
     rollback: remove only the published contract/resource/test; do not alter existing workspace databases or conversion outputs.
   - id: STU-005
     owner: D + F
     dependencies:
       - STU-001
       - STORE-002
-    state: native_store_run_detail_owner_host_route_qualified_scientific_execution_still_unselected
-    input_sha: 23d1596a7b5139b1c8c442d13a8430768539961d
+    state: complete_local_code_release_hold
+    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
     owned_files:
       - nirs4all-studio/sidecar/Cargo.toml
       - nirs4all-studio/sidecar/Cargo.lock
@@ -2209,10 +2256,12 @@ work_items:
       CPython library host, revalidate Store v5 in Rust, compose the response
       in Rust, and activate only the exact preselected target with no fallback.
       Commit 23d1596 keeps the run-detail and native-job capability assertions
-      coherent after integration. This is not Python HTTP execution and does
-      not enable scientific job submission. Scanner and repository surfaces
-      without public native contracts remain out of scope; LOCK-STUDIO, R2
-      parity, and every R3/R4 drop claim remain pending.
+      coherent after integration. Final Studio candidate a6688f5 descends from
+      that qualified route and completes the CAP-bounded native store,
+      dataset-train and prediction path under the Rust-only control plane, with
+      CPython restricted to the preflighted stdio library/plugin host. Scanner
+      and repository extensions outside the CAP promise remain out of scope;
+      installers, external platforms, locks and publication remain held.
     rollback: remove only the sidecar reader, copied public contract, fixture, and dependency additions; leave linked-workspace metadata and user workspace files unchanged.
   - id: STU-004
     owner: A + F
@@ -2421,8 +2470,8 @@ work_items:
     dependencies:
       - STU-002
       - STU-001
-    state: r2_native_startup_core_0_3_24_and_linux_methods_closure_qualified_cross_platform_archives_pending
-    input_sha: 6b0545771b7bb14e127ca4842d1a56e9b007ee42
+    state: complete_local_code_external_release_hold
+    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
     owned_files:
       - nirs4all-studio/electron/native-session-lifecycle.ts
       - nirs4all-studio/electron/scientific-plugin-lifecycle.ts
@@ -2456,7 +2505,7 @@ work_items:
       - the Linux build stages one exact non-symlink Methods library through paired build-only path and SHA-256 inputs and emits its path, size, digest and ABI 2.2 in the adjacent runtime contract
       - runtime startup advertises native Archive V2 prediction only after Core preflights that exact Methods identity; an absent, stale, tampered or dependency-incomplete library disables the capability without changing Rust sidecar ownership
       - the locally qualified Methods binary is reproducible from two clean builds but requires GLIBC 2.35 and is not a manylinux, Windows or macOS release artefact
-      - Studio 6b054577 binds the sidecar to the complete bc001e53 / nirs4all 0.3.24 snapshot and exact Methods SHA-256 847f3b23986d9f74d392169bf559c49a38ca915492286e61ada10c31f72bfdf0; the snapshot remains transition-only and is not publication evidence
+      - Studio runtime e254a1ebba578e5b1932d09079088d02eb51d411 retains the qualified Rust-only sidecar and bounded CPython host contract; final candidate a6688f53994b4bf9f612057a86b17a25f04401c3 changes documentation only
     review: >-
       Commit 2490396 removes eager BackendManager startup from Electron and
       preserves legacy backend:* IPC as lazy aliases while publishing explicit
@@ -2500,6 +2549,15 @@ work_items:
       published dependency or qualify new platforms. Exact published Core,
       target-specific Methods identities and Windows/macOS release archives
       remain required; LOCK-RELEASE, LOCK-STUDIO and publication stay NO-GO.
+      Runtime candidate e254a1ebba578e5b1932d09079088d02eb51d411
+      subsequently closes the selected local Studio control-plane path on the
+      final Rust-only architecture, with a bounded stdio CPython library/plugin
+      host and no Python HTTP, scheduler, store, jobs or fallback. Final Studio
+      candidate a6688f53994b4bf9f612057a86b17a25f04401c3 is a documentation-only
+      descendant of that measured runtime and labels every public installer as
+      historical or unavailable for the candidate train. This closes STU-006 locally without
+      claiming Windows/macOS installer execution, a rebuilt embedded-CPython
+      archive, signing, publication or either release lock.
     rollback: revert only the lazy lifecycle/IPC/UI readiness adapter; preserve sidecar state and user Python environments.
   - id: W1-001
     owner: G
@@ -2685,14 +2743,14 @@ work_items:
       - STU-001
       - SAVE-004
     state: complete_local_code_release_hold
-    input_sha: bb76f2c8833f430d26311422c9d7018592fcf6cb
+    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
     owned_files:
       - nirs4all-studio/
       - nirs4all-tools/
     acceptance_tests:
       - Conversion UI and CLI treat code 0 as verified, code 10 as preserved with warning and no activation, and code 20 as refused.
     review: >-
-      Studio bb76f2c8833f430d26311422c9d7018592fcf6cb and Tools
+      Studio a6688f53994b4bf9f612057a86b17a25f04401c3 and Tools
       6796a01a75b0b51301a693011f3e904a60598817 locally demonstrate code 0
       verified, code 10 preserved without activation, and code 20 refused.
       The accepted bounded conversion TOCTOU risks remain documented;
@@ -2854,19 +2912,19 @@ work_items:
     acceptance_tests:
       - Every R2 limitation is preflightable and documented, and Methods examples use the R2 APIs and artifacts while retaining scientific links.
     review: >-
-      Python 221a4d2 and the final Methods documentation describe the bounded
-      native capability preflight, explicit plugin/refusal dispositions,
-      conversion handoff and R2 limitations without presenting legacy or a
-      Python orchestration backend as the product path. Cross-site publication
-      and release locks remain held.
+      Python 40421617, Methods 699d33f4 and the final Studio/Web documentation
+      describe native-default execution, bounded capability preflight,
+      explicit plugin/refusal dispositions and immutable conversion without
+      presenting legacy or a Python orchestration backend as the current
+      product path. Cross-site publication and release locks remain held.
     rollback: retain the R1 documentation set and do not announce R2
   - id: WEBREL-002
     owner: H + G
     dependencies:
       - DOC-001
       - CUT-003
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: prepared_local_docs_installer_publication_hold
+    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
     owned_files:
       - nirs4all-org/
       - nirs4all-studio/
@@ -2874,7 +2932,12 @@ work_items:
       - docs/
     acceptance_tests:
       - R2 pages, downloads and changelogs state native default and legacy opt-in, show the conversion command, and name the exact supported platforms.
-    review: pending
+    review: >-
+      Native-default, explicit legacy rollback and conversion semantics are
+      prepared in the local documentation/staging set. Candidate installer
+      platforms, downloads and changelog identities remain intentionally
+      unavailable until INST-001 and the release lock close; no R2 publication
+      is claimed.
     rollback: keep all sites in release-in-progress mode and preserve R1 links
   - id: DROP-001
     owner: E
@@ -2890,8 +2953,8 @@ work_items:
     acceptance_tests:
       - Studio and Web call graphs expose no legacy runner, executor, orchestrator, selector or implicit fallback while explicit Python engine legacy remains rollback-only.
     review: >-
-      Python 4042161 keeps legacy explicit and rollback-only, Studio bb76f2c
-      keeps strict product orchestration on Rust, and Web 59cfff exposes no
+      Python 4042161 keeps legacy explicit and rollback-only, Studio a6688f5
+      keeps strict product orchestration on Rust, and Web e7b9a63 exposes no
       JavaScript or Python execution fallback. Transitional/offline diagnostics
       remain explicit non-product surfaces; publication remains held.
     rollback: restore the signed R2 product while retaining the explicit Python rollback profile
@@ -2901,13 +2964,13 @@ work_items:
       - DROP-001
       - STU-006
     state: complete_local_code_external_installer_hold
-    input_sha: bb76f2c8833f430d26311422c9d7018592fcf6cb
+    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
     owned_files:
       - nirs4all-studio/
     acceptance_tests:
       - Studio installers contain no Uvicorn, FastAPI, standalone CPython backend, PyInstaller backend or backend requirements; any CPython is a preflighted plugin host with no HTTP port or scheduler.
     review: >-
-      Studio candidate bb76f2c8833f430d26311422c9d7018592fcf6cb keeps the
+      Studio candidate a6688f53994b4bf9f612057a86b17a25f04401c3 keeps the
       control plane Rust-only and limits embedded CPython to a preflighted
       stdio plugin/library host without an HTTP port or scheduler. macOS and
       Windows installer execution, signing and final SBOM remain held.
@@ -2936,7 +2999,7 @@ work_items:
       - DROP-001
       - UI-001
     state: complete_local_code_release_hold
-    input_sha: bb76f2c8833f430d26311422c9d7018592fcf6cb
+    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
     owned_files:
       - nirs4all-studio/
       - nirs4all-ui/
@@ -2944,7 +3007,7 @@ work_items:
     acceptance_tests:
       - Product UI offers one backend, keeps diagnostics separate, and does not remove the explicit Python rollback API.
     review: >-
-      Studio candidate bb76f2c8833f430d26311422c9d7018592fcf6cb
+      Studio candidate a6688f53994b4bf9f612057a86b17a25f04401c3
       exposes one Rust product backend with diagnostics kept separate and does
       not remove Python's explicit rollback API. UI package publication remains
       held.
@@ -2957,7 +3020,7 @@ work_items:
       - DROP-004
       - REL-003
     state: complete_local_code_sbom_signature_release_hold
-    input_sha: bb76f2c8833f430d26311422c9d7018592fcf6cb
+    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
     owned_files:
       - .github/workflows/
       - nirs4all-studio/
@@ -2965,26 +3028,29 @@ work_items:
     acceptance_tests:
       - No product job installs the Python backend and licenses and SBOM match the actual package contents.
     review: >-
-      Studio candidate bb76f2c8833f430d26311422c9d7018592fcf6cb
-      locally keeps product jobs free of a Python backend. Final platform
-      artifacts, license closure, SBOM, signatures, REL-003 and publication
-      remain held.
+      Studio candidate a6688f53994b4bf9f612057a86b17a25f04401c3 keeps
+      product jobs free of a Python backend, and REL-003 records locally
+      signable Tools/Datasets evidence. Final platform artifacts, remaining
+      SBOM/signature obligations, the canonical lock and publication remain
+      held.
     rollback: restore the signed R2 jobs and packaging manifests without adding a hidden backend
   - id: SOAK-001
     owner: G + D
     dependencies:
       - DROP-005
     state: advanced_local_evidence_not_closed
-    input_sha: 3f9be0fce0a79260a0813f964704ca1f337d47fe
+    input_sha: 24751ea97a3e12d48ffb9f0438a4355b024e15d8
     owned_files:
       - nirs4all-benchmarks/
       - docs/contracts/e2e/
     acceptance_tests:
       - Representative user corpora and workspaces show no crash or loss and every refusal is classified and actionable.
     review: >-
-      Bench 3f9be0f retains bounded WSL-local hardening evidence with classified
-      four-surface outcomes. Representative user-corpus soak, non-WSL execution
-      and release qualification remain incomplete; this lot is not closed.
+      Bench 24751ea retains bounded WSL-local hardening evidence and adds a
+      fail-closed soak runner for declared workloads, integrity probes,
+      latency, RSS and FD observations. Representative user-corpus and sustained
+      product execution, non-WSL matrices and release qualification remain
+      incomplete; this lot is not closed.
     rollback: keep R3 on hold and preserve the signed R2 rollback artifacts
   - id: SEC-001
     owner: G + B + C + D
@@ -3013,17 +3079,18 @@ work_items:
       - SOAK-001
       - PERF-001
     state: advanced_local_evidence_not_closed
-    input_sha: 3f9be0fce0a79260a0813f964704ca1f337d47fe
+    input_sha: 24751ea97a3e12d48ffb9f0438a4355b024e15d8
     owned_files:
       - nirs4all-benchmarks/
       - docs/contracts/release/
     acceptance_tests:
       - Concurrency and memory soak finds no handle leak or store corruption and no unapproved latency-budget overrun.
     review: >-
-      Bench 3f9be0f retains the zero-delta four-surface WSL measurement and
-      adds bounded hardening evidence. Concurrency and memory soak, frozen
-      budgets, reference-host thresholds and external matrices remain
-      incomplete; this lot is not closed.
+      Bench 24751ea retains the zero-delta four-surface WSL measurement and
+      provides the bounded RSS/FD/latency/integrity harness needed for a real
+      campaign. Concurrency and memory soak, frozen budgets, reference-host
+      thresholds and external matrices remain incomplete; this lot is not
+      closed.
     rollback: keep R3 on hold and retain the accepted R1 budgets
   - id: INST-001
     owner: F + G
@@ -3063,8 +3130,8 @@ work_items:
       - DROP-005
       - INST-001
       - SUP-001
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: prepared_local_docs_installer_publication_hold
+    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
     owned_files:
       - nirs4all-org/
       - nirs4all-cockpit/
@@ -3073,7 +3140,12 @@ work_items:
       - docs/
     acceptance_tests:
       - R3 pages remove Python or FastAPI backend instructions and document preflight refusal, plugins, Rust-only installers, R2 rollback and archived documentation.
-    review: pending
+    review: >-
+      Studio a6688f5 and Web e7b9a63 remove current-product wording for the
+      Python/FastAPI backend, identify the Rust-only candidate and shared UI
+      tarball, and label public 0.10.1 downloads as historical. INST-001,
+      archived R2 rollback pages, exact release-lock downloads and publication
+      remain open, so WEBREL-003 is prepared but not closed.
     rollback: leave public sites on R2 and keep R3 in release-in-progress mode
   - id: RC-001
     owner: release-captain + owners
@@ -3110,17 +3182,19 @@ work_items:
       - RC-001
       - SUP-001
     state: prepared_local_docs_release_hold
-    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
+    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
     owned_files:
       - docs/
     acceptance_tests:
       - Migration, API, ABI, schema, examples and FAQ present no Python or legacy backend installation as the current product path.
     review: >-
-      The final Python/Studio/Methods documentation is locally prepared around
-      the Rust product path, native-default API, explicit legacy rollback and
-      stdio-only CPython library/plugin host. RC-001, cross-site stable
-      publication and release locks remain open, so stable documentation is not
-      published or claimed complete.
+      Python 40421617, Methods 699d33f4, Studio a6688f5 and Web e7b9a63 are
+      locally aligned around the Rust product path, native-default API,
+      explicit legacy rollback, exact shared UI tarball and stdio-only CPython
+      library/plugin host. Historical installers and Python/FastAPI diagnostics
+      are visibly separated from the unpublished candidate path. RC-001,
+      cross-site stable publication and release locks remain open, so stable
+      documentation is not published or claimed complete.
     rollback: retain the R3 documentation archive and postpone stable promotion
   - id: SUP-002
     owner: H + D
@@ -3169,14 +3243,15 @@ work_items:
     review: pending
     rollback: retain R3 pages and leave stable publication in release-in-progress mode
 next_batch:
-  gate: r2-api-studio-web-and-lock-closure
+  gate: external-matrices-publication-and-final-lock
   condition: >-
-    Use Bench 433ad714 or a corrective descendant to connect exact Python
-    56db62c1, Core 6b25b63, Studio 2ad862a and Web 20867a7 artifacts to one
-    strict GATE-001 manifest and execute the real performance comparison.
-    Publish/select DMD 0.2.10, nirs4all-io 0.1.12-dagml and n4m 0.1.4, replace
-    every local qualification patch with registry identities, and rerun the
-    promised external matrices, signing and release closures.
-    Only then regenerate a remotely advertised, reconstructible expanded
-    selected-workspace lock before CUT-001 or publication; this snapshot grants
-    no global GO.
+    Keep the exact heads recorded by current_candidate_evidence as the local
+    candidate train. Obtain the explicit Tools reader-support duration, finish
+    the real R and MATLAB/Octave IO qualification, representative corpus and
+    sustained security/concurrency/memory soak, and the promised Linux, macOS
+    and Windows installer/runtime matrices. Advertise and publish the dependency
+    chain before replacing local qualification identities with registry
+    identities. Then regenerate the expanded aggregation lock from those exact
+    remotely fetchable heads, rebuild and sign its artifacts once, and promote
+    the prepared documentation/sites atomically. Until those external gates and
+    SUP-002 are closed, canonical locks and public pages remain strict NO-GO.

@@ -108,8 +108,20 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["core"]["commit"] == "b6442dc4334c62a2b6c72526bea554a734134ac6"
     assert evidence["io"]["commit"] == "e41bf8f94a92356e98c215d4c41e907a7dfaf6ac"
     assert evidence["datasets"]["commit"] == "5b528e96af80a3566a9773a617b76f447f5c8d50"
-    assert evidence["studio"]["candidate_commit"] == "bb76f2c8833f430d26311422c9d7018592fcf6cb"
-    assert evidence["benchmarks"]["commit"] == "3f9be0fce0a79260a0813f964704ca1f337d47fe"
+    assert evidence["ui"]["commit"] == "406d94d70004f27459ef12347af1e6f0079ab6ac"
+    assert evidence["ui"]["tarball_sha256"] == "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67"
+    assert evidence["studio"]["candidate_commit"] == "a6688f53994b4bf9f612057a86b17a25f04401c3"
+    assert evidence["web"]["candidate_commit"] == "e7b9a6384050c2c1a92dcec6aab41e9f0430be43"
+    assert evidence["benchmarks"]["commit"] == "24751ea97a3e12d48ffb9f0438a4355b024e15d8"
+    assert evidence["org"]["commit"] == "8cb9bee885a16bbd6c8e72eafdf565a139f143e5"
+    assert evidence["cockpit"]["commit"] == "a60abdc400d14ad1b7e595de4031b6b4c5cf4ef5"
+    assert items["UI-001"]["state"] == "complete_local_code_registry_publication_hold"
+    assert items["STU-006"]["state"] == "complete_local_code_external_release_hold"
+    assert items["GATE-001"]["state"] == "complete_local_linux_functional_release_hold"
+    assert items["STORE-002"]["state"] == "complete_local_code_release_hold"
+    assert items["STU-005"]["state"] == "complete_local_code_release_hold"
+    assert items["WEBREL-002"]["state"] == "prepared_local_docs_installer_publication_hold"
+    assert items["WEBREL-003"]["state"] == "prepared_local_docs_installer_publication_hold"
     assert evidence["canonical_release_lock"]["updated"] is False
     assert all(
         value == "pending" or value.startswith("no_go")
