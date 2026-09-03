@@ -83,8 +83,9 @@ def test_ledger_covers_every_reviewed_phase_0_to_r4_roadmap_lot() -> None:
     assert items["DOC-002"]["state"] == "prepared_local_docs_release_hold"
     assert all(
         items[work_item_id]["state"] == "advanced_local_evidence_not_closed"
-        for work_item_id in {"SOAK-001", "SEC-001", "PERF-002"}
+        for work_item_id in {"SOAK-001", "PERF-002"}
     )
+    assert items["SEC-001"]["state"] == "prepared_local_native_fuzz_harnesses_campaign_not_closed"
 
 
 def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> None:
@@ -113,6 +114,9 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["studio"]["candidate_commit"] == "e027cbf8dea9fc2297ac91b9cd983346a44fb34f"
     assert evidence["web"]["candidate_commit"] == "e7b9a6384050c2c1a92dcec6aab41e9f0430be43"
     assert evidence["benchmarks"]["commit"] == "24751ea97a3e12d48ffb9f0438a4355b024e15d8"
+    assert evidence["security_harnesses"]["formats"]["commit"] == "892a48b38f6c94697f805524f6efd4e8ff7323b0"
+    assert evidence["security_harnesses"]["core"]["commit"] == "0218bfc8b9d9193f771d27470e7cf9d5cf578823"
+    assert evidence["security_harnesses"]["methods"]["commit"] == "530b11c632ac467e6bf54022c7241d27cd72d73c"
     assert evidence["org"]["commit"] == "ee2a1e4b83ba287c9f0b4edcb68ce70782c600be"
     assert evidence["cockpit"]["commit"] == "834005d529f7e58d69bbd82b9a695247ca87e842"
     assert items["UI-001"]["state"] == "complete_local_code_registry_publication_hold"

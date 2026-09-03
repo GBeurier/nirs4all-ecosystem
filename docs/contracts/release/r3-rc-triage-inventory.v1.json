@@ -6,7 +6,7 @@
   },
   "release": "R3",
   "work_item_count": 11,
-  "projection_sha256": "7cda37e0e01062f2a9f07f953e7819168a90cc8821b963dc8c46fbcd070c8caf",
+  "projection_sha256": "2c68a8e1d573e22033dbdbd3ea19271487fa4aef683139f11103c30fec950da6",
   "lots": [
     {
       "id": "DROP-001",
@@ -46,7 +46,7 @@
     },
     {
       "id": "SEC-001",
-      "state": "advanced_local_evidence_not_closed",
+      "state": "prepared_local_native_fuzz_harnesses_campaign_not_closed",
       "input_sha": "3f9be0fce0a79260a0813f964704ca1f337d47fe",
       "disposition": "advanced_not_closed"
     },

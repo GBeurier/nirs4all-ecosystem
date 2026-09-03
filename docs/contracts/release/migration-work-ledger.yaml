@@ -586,6 +586,33 @@ current_candidate_evidence:
       not frozen, external performance matrices remain incomplete, and no
       threshold is defined or claimed passed. Publication, lock and global GO
       remain held.
+  security_harnesses:
+    evidence_status: three_native_targets_prepared_campaign_not_run
+    formats:
+      commit: 892a48b38f6c94697f805524f6efd4e8ff7323b0
+      tree: 28e9adc8dcae49c58a0e5585dcacb821a8006f58
+      target: registry_open_bytes
+      input_limit_bytes: 1048576
+      canonical_entrypoint: nirs4all_formats::open_bytes
+    core:
+      commit: 0218bfc8b9d9193f771d27470e7cf9d5cf578823
+      tree: 0d2537d715bed3d5fd60c836f71e5a8fd041ac8b
+      target: archive_v2_bytes
+      input_limit_bytes: 2097152
+      canonical_entrypoint: nirs4all::load_archive_v2_bytes
+    methods:
+      commit: 530b11c632ac467e6bf54022c7241d27cd72d73c
+      tree: fc4c47d6f07ad01ac52da4d19f715f2c61b968e7
+      target: n4m_fuzz_n4mm_driver
+      input_limit_bytes: 1048576
+      canonical_entrypoint: public_N4MM_inspect_and_import_ABI
+    release_limit: >-
+      These commits prepare bounded harnesses and reuse canonical parsers/APIs;
+      they are not selected product-runtime heads and no fuzz campaign has run.
+      cargo-fuzz/nightly and Clang 16 are unavailable locally, the Methods smoke
+      link is blocked by the host gfortran/libm setup, and the Studio Store
+      target is not implemented. Corpus campaigns, crash triage/reproduction,
+      sanitizers and external matrices remain mandatory before SEC-001 closure.
   dependency_repin:
     status: local_patch_train_qualified_publication_pending
     selected_dag_ml_data_version: 0.2.10
@@ -3068,7 +3095,7 @@ work_items:
       - MTH-002
       - SAVE-004
       - FMT-001
-    state: advanced_local_evidence_not_closed
+    state: prepared_local_native_fuzz_harnesses_campaign_not_closed
     input_sha: 3f9be0fce0a79260a0813f964704ca1f337d47fe
     owned_files:
       - nirs4all-formats/
@@ -3079,8 +3106,14 @@ work_items:
       - Fuzzing and hostile-payload tests for formats, archives, store and ABI leave no critical or high vulnerability open.
     review: >-
       Bench 3f9be0f and Core b6442dc retain bounded hostile/schema-refusal
-      hardening evidence. The complete fuzzing matrix and critical/high
-      vulnerability closure are not established; this lot remains open.
+      hardening evidence. Formats 892a48b, Core 0218bfc and Methods 530b11c add
+      bounded fuzz harnesses over their canonical parsers/public APIs without
+      duplicating domain logic. Their source/build-contract gates pass, but no
+      fuzz or sanitizer campaign has run; cargo-fuzz/nightly and Clang 16 are
+      unavailable, the Methods smoke link is blocked by the host toolchain, and
+      the Studio Store target is absent. The complete campaign, crash triage
+      and critical/high vulnerability closure are not established; this lot
+      remains open.
     rollback: keep the release on hold and retain the prior signed artifacts
   - id: PERF-002
     owner: G
