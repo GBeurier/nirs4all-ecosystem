@@ -240,17 +240,17 @@ current_candidate_evidence:
     commit: 1f60b920d34acda7c0fbc044b593bb6af1fab4c1
     tree: f2144d861642e81758dcef4f6ee76ec32c0961ff
     version: 0.2.10
+    package_publish: false
     release_limit: >-
-      The candidate is locally qualified but unpublished. Publication is still
-      blocked on crates.io, PyPI and npm. Dag-ML, Core and IO candidate roots
-      remain unchanged on dag-ml-data 0.2.9 and must be repinned and rebuilt
-      against 0.2.10 before this candidate can enter a release lock.
+      The candidate is locally qualified but its 0.2.10 crates remain
+      publish=false and unpublished. Registry publication, external matrices
+      and exact release-lock reconstruction remain required.
   dag_ml:
-    evidence_status: local_unpublished_dual_pls_v1_v2_candidate
-    commit: 879e2af880548287fe4f5de556681ae998e25bca
-    tree: 28acb24f9d31b0900263ce45d85f2d6806380dc9
+    evidence_status: local_unpublished_data_and_conformal_v2_candidate
+    commit: dafb8b6fb98f9d380d30559a3f4b868c91e5b5c4
+    tree: 44a2c4a46911d2c49c33fe75418674bd0e129d5e
     version: 0.3.23
-    resolved_dag_ml_data_version: 0.2.9
+    resolved_dag_ml_data_version: 0.2.10_local_patch_publish_false
     resolved_n4m_rust_binding_version: 0.1.4_local_patch
     predictor_descriptor_attestation: v1_v2_content_bound_and_legacy_params_qualified
     loaded_cache_no_leak_witness:
@@ -265,37 +265,34 @@ current_candidate_evidence:
       disposition: targeted_passed
     embedded_pipeline_commit: 744827ea93d4b0792cdffe43cbc9b53158c17e27
     canonical_semantics_commit: 6800c4fd0ec8b13b171cec9ed4a9b2ccdbabca0d
+    predictor_compatibility_commit: 879e2af880548287fe4f5de556681ae998e25bca
+    conformal_v2_status: archive_bound_multitarget_presentation_targeted_passed
     evidence: >-
-      The final local DAG candidate descends from d80a5d0, 744827e and 6800c4f.
-      It validates and replays both historical PLS V1 and content-bound embedded
-      pipeline V2 descriptors, including the canonical SNV/SG profile, and the
-      final 879e2af fix preserves historical sklearn PLS default parameters.
-      Targeted descriptor, fingerprint, resume/no-leak, dual-version and legacy
-      Studio replay gates are green.
+      The final local DAG candidate descends from 879e2af, preserves historical
+      PLS V1 and content-bound N4MM V2 replay, consumes the DATA handoff and
+      adds archive-bound multi-target ConformalPresentation V2. Targeted DATA,
+      descriptor, no-leak, conformal and compatibility gates are green.
     release_limit: >-
-      The candidate still resolves dag-ml-data 0.2.9 and consumes n4m 0.1.4 by
-      local patch. Neither local patch is publication evidence; published DMD
-      and n4m identities, rebuild and exact repin remain required.
+      dag-ml-data 0.2.10 remains publish=false and n4m 0.1.4 is consumed by a
+      local patch. Registry publication, external matrices, signing and exact
+      lock reconstruction remain required.
   core:
-    evidence_status: locally_qualified_unpublished_candidate
-    commit: 46a51a4bf123f9766b363fcbfb3009ea5c5f0a62
-    tree: 3b02332cfa4cf5e3424a7697f56d85a55fd80de6
+    evidence_status: locally_qualified_data_and_conformal_candidate
+    commit: 94d712f60848df60ce6fa90f006ada09767cfd08
+    tree: e1444766493d235d13cbdf53bf7e80371a43a525
     version: 0.3.25
-    resolved_dag_ml_data_version: 0.2.9
+    resolved_dag_ml_data_version: 0.2.10_local_patch_publish_false
     resolved_n4m_rust_binding_version: 0.1.4_local_patch
     predictor_descriptor_consumption: qualified_v1_v2_rust_python_wasm
     evidence: >-
-      Core 0.3.25 transports content-bound N4MM V2 pipeline descriptors through
-      Rust, Python and WASM and keeps replay authoritative. PortableSession V2
-      sends raw X to embedded Methods without host preprocessing or double
-      application, while V1 retains external preprocessing exactly once.
-      Grouped fixture parity, ownership/fingerprint contradiction, tamper, old
-      ABI and V1 compatibility gates are green.
+      Core 0.3.25 combines the DATA package-to-training path with archive-bound
+      conformal projection while retaining authoritative Rust/Python/WASM N4MM
+      V1/V2 replay and raw-X ownership. Targeted DATA, conformal, descriptor,
+      tamper, ABI and compatibility gates are green against DAG dafb8b6.
     release_limit: >-
-      Core still resolves dag-ml-data 0.2.9; exact local patches supplied the
-      final DAG and unpublished n4m 0.1.4 sources during qualification.
-      Replace those patches with published pins, rebuild, and capture a live ABI
-      witness from selected release artifacts before lock promotion.
+      Core uses local patches for publish=false dag-ml-data 0.2.10, final DAG
+      and unpublished n4m 0.1.4. Published pins, external matrices, signing and
+      release-artifact witnesses remain required before lock promotion.
   formats:
     evidence_status: local_candidate_go_global_release_no_go
     commit: 2d46285843dc366da1d38f133131b5329c886b12
@@ -307,26 +304,24 @@ current_candidate_evidence:
       security, signing and registry gates. Formats remains globally NO-GO.
   io:
     evidence_status: locally_qualified_unpublished_datasetpackage_handoff_candidate
-    commit: 6157c994fa82be58f8b357f5a7788e36e9b84653
-    tree: 407d1fa5f71f9cc281777bccb43746b3e1ed2e86
+    commit: 54fa4f5f544f08f37317897612f78e4ee103b5a4
+    tree: c583ba2e8d2fec5376933086d4fbb765c931486f
     parent_commit: 7abd256cbad1ee4eff3b6d507dd3fd28d2caac80
     version: 0.1.12
-    resolved_dag_ml_data_version: 0.2.9
+    resolved_dag_ml_data_version: 0.2.10_local_patch_publish_false
     wasm_sha256: a99b75a6dfa3fe86c0b27d96334b8da0b4ccae5eda39084533f57a104738fc9c
     cyclonedx_sbom_sha256: 2fb93d6b81a3fa7fab9b0bf388b170f8dac4e4ac0f5a37f51b616bfb67067631
     cyclonedx_components: 55
     evidence: >-
-      DATA-002 locally wires Rust DatasetPackage.to_assembled into
-      PackageProvider and CoordinatorDataPlanEnvelope without SpectroDataset,
-      Python or duplicate serialization. Its grouped round-trip preserves
-      sample, observation, group, source, fold and target identities. The
-      parent's deterministic CycloneDX 1.6 WASM record remains prior evidence,
-      not a new artifact identity; this handoff is local-only and does not
-      replace published pins.
+      DATA-002 is consumed by the final local IO candidate: Rust
+      DatasetPackage.to_assembled feeds PackageProvider and
+      CoordinatorDataPlanEnvelope without SpectroDataset, Python or duplicate
+      serialization while preserving sample, observation, group, source, fold
+      and target identities.
     release_limit: >-
-      IO still resolves dag-ml-data 0.2.9 and must be repinned to 0.2.10 before
-      rebuild/requalification. Publication, signatures and promised platform
-      runtime evidence remain open.
+      nirs4all-io 0.1.12-dagml and dag-ml-data 0.2.10 remain publish=false.
+      Publication, registry pins, signing and promised external matrices remain
+      open.
   datasets:
     evidence_status: locally_qualified_unpublished_candidate
     commit: 53017672c82df106a17b512846425bc9e846565f
@@ -349,7 +344,7 @@ current_candidate_evidence:
       wheel candidate is local and must be published, signed and referenced by
       the support/conversion release documents before promotion.
   python_strict_profile:
-    evidence_status: locally_qualified_unpublished_candidate
+    evidence_status: locally_requalified_against_final_native_stack
     commit: 56db62c176e77afe8650b71aefb5988c0d172f87
     tree: abd855244a1b4a4e818ec3f3bcce500417f440c3
     parent_hpo_commit: e99a7ab30086ef494e9f48a4863776480c964564
@@ -359,6 +354,7 @@ current_candidate_evidence:
     predictor_descriptor_gate: targeted_passed
     native_hpo_resume_witness: 2_completed_to_4_trials_export_replay_passed
     embedded_pipeline_lowering: canonical_snv_sg_pls_v2_targeted_passed
+    final_stack_requalification: passed_without_new_python_commit
     evidence: >-
       The final Python candidate descends from the a56a870 native HPO witness
       and lowers the canonical SNV to Savitzky-Golay to PLS pipeline into the
@@ -366,7 +362,9 @@ current_candidate_evidence:
       fail-closed unreplayable preprocessing, export and fresh replay gates are
       green; the earlier two-to-four-trial witness remains valid. Public
       nirs4all.run and the explicit engine=legacy rollback profile remain
-      unchanged.
+      unchanged. The same 56db62c source was requalified green against final IO
+      54fa4f5, DAG dafb8b6, Core 94d712f and Methods 48ad1e5 without a new
+      Python commit.
     release_limit: >-
       This bounded strict-path proof does not close the general R2 API matrix:
       general run/predict/session/cache, transfer/finetune, conformal,
@@ -374,8 +372,13 @@ current_candidate_evidence:
       exact train-wide evidence.
   studio:
     evidence_status: local_product_candidate_go_external_release_hold
-    candidate_commit: 868b71e97e8d8498d8ebdfd9b11e6c132eb68295
-    candidate_tree: 0a5f64f7529d66cf5efbb74f397ff9084f559f02
+    candidate_commit: 325f6edada56da544f0b56a5a5ca7745958440ad
+    candidate_tree: 305af9ce4ab08025a9d025f9dea36b58f8eda252
+    integration_chain:
+      native_pipeline: 868b71e97e8d8498d8ebdfd9b11e6c132eb68295
+      stu_004_predict_ui: f4761c25a0992312c64c8e37a0a6f0650a48ae2d
+      stu_004_native_catalogue: 5e72fd3daafd399d96d0c47853f6e639eb262537
+      final_conformal: 325f6edada56da544f0b56a5a5ca7745958440ad
     rust_tests_passed: 191
     vitest_tests_passed: 3961
     backend_control_plane: rust_only
@@ -386,7 +389,9 @@ current_candidate_evidence:
     conversion_status: operational_local_candidate
     predictor_descriptor_gate: targeted_passed
     n4mm_pipeline_v2_gate: targeted_passed_raw_x_core_authority
-    legacy_v1_live_replay: passed_with_dag_879e2af
+    legacy_v1_live_replay: passed_with_final_stack
+    stu_004_status: closed_local_code
+    conformal_v2_status: targeted_passed_core_authority
     accepted_non_blocking_local_conversion_risks:
       disposition: >-
         Explicitly accepted by the user as non-priority for a conversion path
@@ -396,14 +401,11 @@ current_candidate_evidence:
         - content hash to process spawn mutation window
         - source mutation after validation scan
     evidence: >-
-      The integrated Studio candidate passes 191 Rust tests and 3,961 Vitest
-      tests. Its HTTP/control/store/jobs/scheduler/WebSocket backend is Rust-only,
-      the Python HTTP backend is removed, the plugin host is separately packaged,
-      and the bundle gate closes DROP-005 locally. Its exact vendored Core
-      46a51a4, DAG 879e2af and Methods 48ad1e5 candidates pass the targeted
-      content-bound V2 descriptor/raw-X contract and historical V1 live replay.
-      Core remains the inspection/replay authority; Studio adds no preprocessing
-      semantics. Qualified legacy conversion is byte-untouched and operational.
+      The final Studio chain 868b71e to f4761c2 to 5e72fd3 to 325f6ed closes
+      the native STU-004 Predict UI, Store-authorized Archive V2 catalogue and
+      conformal presentation locally against final Core/DAG/Methods. Core
+      remains inspection/replay authority; Studio adds no preprocessing or
+      conformal math. Qualified legacy conversion is byte-untouched and operational.
       The two accepted TOCTOU windows above remain documented open risks rather
       than being described as closed security properties.
     release_limit: >-
@@ -414,20 +416,19 @@ current_candidate_evidence:
       scheduler, store or fallback.
   web:
     evidence_status: local_product_candidate_go_independent_audit_accepted
-    candidate_commit: a403fd262397ec6e4a43a93b2d048cb0b6ca480d
-    candidate_tree: 9309207a90ef114808c5639faf5a236a36fae655
+    candidate_commit: 80085f6fe049b414e2fcbbde3181e2e4f8e5a701
+    candidate_tree: df00d29a0831b2120424a7b271128769884388c5
     tests_passed: 190
     available_smokes_passed: 25/25
     external_handoffs_pending: 3
     predictor_descriptor_gate: targeted_passed
     n4mm_v1_v2_smoke: targeted_passed
     evidence: >-
-      The final local Web candidate passed its independent audit, 190 tests and
-      all 25 available smokes. Its client-side Archive V2 flow also passes the
-      targeted native predictor-descriptor gate and both V1 and embedded
-      pipeline V2 replay smokes against the final locally staged Core, DAG and
-      Methods WASM artifacts. Exact component legal payloads,
-      provenance and required SBOM distribution are present in the candidate.
+      Web 80085f6 stages byte-identical A/B Core 94d712f and DAG dafb8b6 WASM
+      artifacts with exact provenance/legal digests and unchanged Methods
+      48ad1e5. The existing historical V1 and embedded-pipeline V2 Archive
+      smokes pass against that final stack without fallback; no conformal UI
+      claim is made here.
     release_limit: >-
       Web remains client-side-only. Three external artifact-dependent handoffs,
       publication, signatures and final lock-driven downstream repins remain
@@ -452,27 +453,27 @@ current_candidate_evidence:
       budgets and non-WSL evidence remain required. No definitive WSL threshold,
       publication, lock or global GO is claimed.
   dependency_repin:
-    status: pending
+    status: local_patch_train_qualified_publication_pending
     selected_dag_ml_data_version: 0.2.10
     selected_n4m_rust_binding_version: 0.1.4
     dag_ml_candidate_n4m_rust_binding_version: 0.1.4_local_patch
-    consumers_still_resolving_0_2_9:
+    local_patch_consumers:
       - dag-ml 0.3.23
       - nirs4all-core 0.3.25
-      - nirs4all-io 0.1.12
+      - nirs4all-io 0.1.12-dagml
     required_action: >-
-      Publish/select dag-ml-data 0.2.10 first, repin all consumers, rebuild and
-      requalify them, then repin Studio/Web and regenerate the canonical
-      aggregation manifest and lock from remotely reconstructible heads.
+      Publish/select dag-ml-data 0.2.10 and nirs4all-io 0.1.12-dagml after
+      removing publish=false, publish n4m 0.1.4, replace local patches with
+      registry pins, then regenerate the lock from remotely reconstructible heads.
   fields_pending_final_repin:
     - aggregation manifest member commit/tree/version and preferred exact tags
     - aggregation lock artifact digests, lockstep attestations and manifest digest
-    - dag-ml/Core/IO dag-ml-data 0.2.10 dependency resolutions
+    - publish=false DMD 0.2.10 and nirs4all-io 0.1.12-dagml closures
     - Methods n4m 0.1.4 publication and replacement of local downstream patches
     - replacement of predictor-descriptor qualification patches by published pins
     - live ABI witness from the exact selected release artifacts
-    - Studio exact Core/IO/Methods target closures and external release artifacts
-    - Web exact post-publication dependency repins and three external handoffs
+    - Studio external target/installer closure and final release artifacts
+    - Web post-publication dependency repins and external handoffs
     - Python, Tools, Studio and Web outside-lock release-surface evidence
     - PERF-001 exact four-candidate closures, executed report and reference-host budgets
     - registry URLs, SBOM/provenance digests, signatures and installer checksums
@@ -489,7 +490,8 @@ current_candidate_evidence:
       remain documented open without blocking the local product effort.
     - >-
       LOCK-RELEASE is NO-GO: candidates are local and unpublished, the
-      dag-ml-data 0.2.10 and n4m 0.1.4 publication/repin cascades are incomplete, local
+      publish=false dag-ml-data 0.2.10/nirs4all-io 0.1.12-dagml and n4m 0.1.4
+      publication/repin cascades are incomplete, local
       qualification patches have not been replaced by published pins, and the
       exact selected artifacts lack their release-environment live ABI witness.
       Registries, immutable staging, provenance/SBOM closure, signatures and
@@ -1010,7 +1012,7 @@ work_items:
       - DATA-001
       - PROV-001
       - STORE-001
-    state: core_archive_replay_e2e_qualified_studio_transport_pending
+    state: complete_local_code_release_hold
     input_sha: e0fd8021104b111a61c270671cee0529824c1aff
     owned_files:
       - dag-ml/crates/dag-ml-core/src/conformal.rs
@@ -1033,6 +1035,7 @@ work_items:
       - a clean autonomous Core wheel reopens the calibrated Archive V2 in a fresh isolated child process and returns the exact closed ConformalPresentationV1 without importing a Python conformal runtime
       - Archive V2 tamper and invalid contracts refuse before process-global libn4m configuration; Core delegates interval composition and identity/order validation to DAG-ML
       - two clean wheel builds are byte-identical at SHA-256 1006a5d96233bd457e95b19bcb3db38f09c3160d2c645e967c3520b7e34e14bd
+      - final DAG dafb8b6, Core 94d712f and Studio 325f6ed close archive-bound multi-target conformal V2 locally
     review: >-
       Two independent Sol-xhigh reviews ACCEPT the DAG-ML V2 runtime: calibration is
       PREDICT-only, relation-authoritative, distinct and identity-disjoint from development;
@@ -2139,7 +2142,7 @@ work_items:
     dependencies:
       - STU-002
       - STU-005
-    state: native_archive_v2_renderer_adapter_local_linux_qualified_ui_binding_cross_platform_and_publication_pending
+    state: complete_local_code_release_hold
     input_sha: 6b0545771b7bb14e127ca4842d1a56e9b007ee42
     owned_files:
       - nirs4all-studio/sidecar/contracts/studio_job_lifecycle_v1.json
@@ -2203,6 +2206,7 @@ work_items:
       - the complete frontend passes 544 files and 3851 Vitest tests, TypeScript, targeted ESLint and the Electron development build
       - the explicit cpython-stdio-v1 acquisition uses a fresh isolated CPython 3.11+ process, a closed JSON response, a three-second deadline and bounded stdout/stderr; interpreter bytes are identity-bound and acquisition is sticky
       - CPython host absence, tamper, timeout, malformed or oversized output, wrong implementation/version/isolation and failed socket.bind audit guard return a typed 503 before body parsing, workspace access, registry mutation, events or durable writes
+      - final chain 868b71e to f4761c2 to 5e72fd3 to 325f6ed closes native Predict UI, Store-authorized Archive V2 catalogue and conformal presentation without touching conversion
       - selected Python 3b9eb3e exposes a bounded studio_scientific_job_v1 callable from the canonical isolated wheel SHA-256 24737550768868df37dc0bf11433c7bd409ef620a8667a88b99641658b5f3e6b; selected Studio d829465 executes that exact callable through fresh-process stdio but remains unselected because it does not resolve saved dataset and pipeline identities into the closed inline matrices
       - Rust owns complete, fail and cancellation-ack callbacks, publishes the exact terminal WebSocket event and updates the durable execution record; worker cancellation and timeout kill the Unix process group and Rust removes the confined scratch tree
       - the worker revalidates interpreter and callable path, size and SHA-256, clears its environment, refuses socket bind and subprocess audit events, bounds stdin/stdout/stderr to 64 KiB/8 KiB/64 KiB and never sends workspace, path, manifest or opaque saved payload fields to Python
@@ -2546,14 +2550,15 @@ work_items:
     dependencies:
       - DATA-001
       - IO-XLG-001
-    state: pending
+    state: complete_local_code_release_hold
     input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
     owned_files:
       - nirs4all-io/
       - dag-ml-data/
     acceptance_tests:
       - Materialization uses the published Rust IO to dag-ml-data bridge without a mandatory SpectroDataset adapter and preserves identities.
-    review: pending
+      - IO 54fa4f5 consumes DatasetPackage directly into PackageProvider and CoordinatorDataPlanEnvelope while preserving sample, observation, group, source, fold and target identities.
+    review: local code closed; publish=false package and registry release closure remain held
     rollback: retain the published bridge and remove only the unaccepted consumer replug
   - id: CORE-001
     owner: E
@@ -2976,10 +2981,11 @@ next_batch:
   gate: r2-api-studio-web-and-lock-closure
   condition: >-
     Use Bench 433ad714 or a corrective descendant to connect exact Python
-    56db62c1, Core 46a51a4, Studio 868b71e9 and Web a403fd26 artifacts to one
-    strict GATE-001 manifest and execute the comparison. Publish/select DMD
-    0.2.10 and n4m 0.1.4, replace every local qualification patch with registry
-    identities, and rerun the promised target and external release closures.
+    56db62c1, Core 94d712f, Studio 325f6ed and Web 80085f6 artifacts to one
+    strict GATE-001 manifest and execute the real performance comparison.
+    Publish/select DMD 0.2.10, nirs4all-io 0.1.12-dagml and n4m 0.1.4, replace
+    every local qualification patch with registry identities, and rerun the
+    promised external matrices, signing and release closures.
     Only then regenerate a remotely advertised, reconstructible expanded
     selected-workspace lock before CUT-001 or publication; this snapshot grants
     no global GO.
