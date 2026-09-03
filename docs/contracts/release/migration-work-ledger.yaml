@@ -3160,13 +3160,23 @@ work_items:
       - SEC-001
       - PERF-002
       - INST-001
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: prepared_local_triage_external_evidence_hold
+    input_sha: b56a1d80ae3a7a3ed552fed94572b923352c4480
     owned_files:
-      - docs/contracts/release/
+      - docs/contracts/release/r3-rc-triage-inventory.v1.json
+      - docs/contracts/release/r3-rc-triage-report.md
+      - scripts/n4a_r3_rc_triage.py
+      - tests/test_r3_rc_triage.py
     acceptance_tests:
       - Every R3 report is a corrected blocker, a documented limitation, or an explicitly accepted post-V1 item.
-    review: pending
+      - python3 scripts/n4a_r3_rc_triage.py validate
+      - python3 -m pytest -q tests/test_r3_rc_triage.py
+    review: >-
+      The deterministic local inventory now accounts for all 11 reviewed R3
+      lots and refuses omissions, duplicates or state/input/disposition drift.
+      Six lots are closed locally, four are advanced but not closed and one is
+      pending; representative/external evidence and release qualification are
+      still held, so this prepares triage and does not close RC-001.
     rollback: keep the R3 candidate unpromoted while retaining all reports
   - id: RC-002
     owner: G

@@ -1,0 +1,85 @@
+{
+  "schema_version": "n4a.r3-rc-triage-inventory/v1",
+  "source": {
+    "ledger": "docs/contracts/release/migration-work-ledger.yaml",
+    "roadmap_source_sha256": "52cf12c430378d5f2e038f3cb371b87332c87c2b0a41b6f03a4be7e22a4b58f5"
+  },
+  "release": "R3",
+  "work_item_count": 11,
+  "projection_sha256": "d0409161af47722d2afe650cb0331f720dbdf256916488905aa8826f6dfe42d4",
+  "lots": [
+    {
+      "id": "DROP-001",
+      "state": "complete_local_strict_product_code_release_hold",
+      "input_sha": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
+      "disposition": "closed_local"
+    },
+    {
+      "id": "DROP-002",
+      "state": "complete_local_code_external_installer_hold",
+      "input_sha": "a6688f53994b4bf9f612057a86b17a25f04401c3",
+      "disposition": "closed_local"
+    },
+    {
+      "id": "DROP-003",
+      "state": "complete_local_code_release_hold",
+      "input_sha": "6796a01a75b0b51301a693011f3e904a60598817",
+      "disposition": "closed_local"
+    },
+    {
+      "id": "DROP-004",
+      "state": "complete_local_code_release_hold",
+      "input_sha": "a6688f53994b4bf9f612057a86b17a25f04401c3",
+      "disposition": "closed_local"
+    },
+    {
+      "id": "DROP-005",
+      "state": "complete_local_code_sbom_signature_release_hold",
+      "input_sha": "a6688f53994b4bf9f612057a86b17a25f04401c3",
+      "disposition": "closed_local"
+    },
+    {
+      "id": "SOAK-001",
+      "state": "advanced_local_evidence_not_closed",
+      "input_sha": "24751ea97a3e12d48ffb9f0438a4355b024e15d8",
+      "disposition": "advanced_not_closed"
+    },
+    {
+      "id": "SEC-001",
+      "state": "advanced_local_evidence_not_closed",
+      "input_sha": "3f9be0fce0a79260a0813f964704ca1f337d47fe",
+      "disposition": "advanced_not_closed"
+    },
+    {
+      "id": "PERF-002",
+      "state": "advanced_local_evidence_not_closed",
+      "input_sha": "24751ea97a3e12d48ffb9f0438a4355b024e15d8",
+      "disposition": "advanced_not_closed"
+    },
+    {
+      "id": "INST-001",
+      "state": "pending",
+      "input_sha": "1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf",
+      "disposition": "pending"
+    },
+    {
+      "id": "SUP-001",
+      "state": "complete_local_support_soak_release_hold",
+      "input_sha": "6796a01a75b0b51301a693011f3e904a60598817",
+      "disposition": "closed_local"
+    },
+    {
+      "id": "WEBREL-003",
+      "state": "prepared_local_docs_installer_publication_hold",
+      "input_sha": "a6688f53994b4bf9f612057a86b17a25f04401c3",
+      "disposition": "advanced_not_closed"
+    }
+  ],
+  "summary": {
+    "closed_local": 6,
+    "advanced_not_closed": 4,
+    "pending": 1,
+    "release_eligible": false,
+    "external_evidence_hold": true
+  }
+}
