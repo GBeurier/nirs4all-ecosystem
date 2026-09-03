@@ -34,7 +34,38 @@ from typing import Any
 
 LOCK_SCHEMA_VERSION = "n4a.aggregation-lock/v1"
 MANIFEST_SCHEMA_VERSION = "n4a.aggregation-manifest/v1"
+PRODUCT_TRAIN_LOCK_SCHEMA_VERSION = "n4a.aggregation-lock/v2"
+PRODUCT_TRAIN_MANIFEST_SCHEMA_VERSION = "n4a.aggregation-manifest/v2"
 FETCHABILITY_SCHEMA_VERSION = "n4a.release-lock-fetchability/v1"
+PRODUCT_TRAIN_COMPONENT_KEYS = {
+    "core",
+    "dag_ml",
+    "dag_ml_data",
+    "datasets",
+    "formats",
+    "io",
+    "methods",
+    "providers",
+    "python",
+    "studio",
+    "tools",
+    "ui",
+    "web",
+}
+PRODUCT_TRAIN_PROJECTION_KEYS = {"benchmarks", "cockpit", "org", "repository"}
+PRODUCT_TRAIN_MILESTONES = {"r1", "r2", "r3", "r4"}
+PRODUCT_TRAIN_PROMOTION_GATES = {
+    "artifact_receipts",
+    "candidate_ci",
+    "component_publications",
+    "external_matrices",
+    "product_publication",
+    "repository_surface_contract",
+    "signatures",
+    "soak",
+}
+COMMIT_RE = re.compile(r"[0-9a-f]{40}")
+SHA256_RE = re.compile(r"(?:sha256:)?[0-9a-f]{64}")
 
 
 class RelError(RuntimeError):
@@ -538,6 +569,380 @@ def collect_member(
     }
 
 
+def require_non_empty_string(value: Any, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise RelError(f"{label} must be a non-empty string")
+    return value
+
+
+def validate_remote_identity(value: Any, label: str) -> dict[str, str]:
+    if not isinstance(value, dict):
+        raise RelError(f"{label} must be an object")
+    repository = require_non_empty_string(value.get("repository"), f"{label}.repository")
+    git_url(repository)
+    remote_ref = require_non_empty_string(value.get("ref"), f"{label}.ref")
+    if not remote_ref.startswith("refs/"):
+        raise RelError(f"{label}.ref must be a fully qualified refs/... name")
+    head = require_non_empty_string(value.get("head"), f"{label}.head")
+    tree = require_non_empty_string(value.get("tree"), f"{label}.tree")
+    if not COMMIT_RE.fullmatch(head):
+        raise RelError(f"{label}.head must be a full Git commit")
+    if not COMMIT_RE.fullmatch(tree):
+        raise RelError(f"{label}.tree must be a full Git tree")
+    return {"repository": repository, "ref": remote_ref, "head": head, "tree": tree}
+
+
+def component_selected_identity(component: dict[str, Any]) -> dict[str, str] | None:
+    if component.get("release_state") == "published":
+        return component.get("publication_head")
+    return component.get("qualification_head")
+
+
+def component_repository(component: dict[str, Any]) -> str | None:
+    identity = component_selected_identity(component)
+    if isinstance(identity, dict):
+        return identity.get("repository")
+    remote = component.get("remote")
+    return remote.get("repository") if isinstance(remote, dict) else component.get("repo_url")
+
+
+def validate_artifacts_and_receipts(
+    value: dict[str, Any],
+    label: str,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    artifacts = value.get("artifacts", [])
+    if not isinstance(artifacts, list):
+        raise RelError(f"{label}.artifacts must be a list")
+    artifact_ids: set[str] = set()
+    for index, artifact in enumerate(artifacts):
+        if not isinstance(artifact, dict):
+            raise RelError(f"{label}.artifacts[{index}] must be an object")
+        artifact_id = require_non_empty_string(
+            artifact.get("id"), f"{label}.artifacts[{index}].id"
+        )
+        if artifact_id in artifact_ids:
+            raise RelError(f"{label} has duplicate artifact {artifact_id}")
+        artifact_ids.add(artifact_id)
+        require_non_empty_string(
+            artifact.get("version"), f"{label}.artifacts[{index}].version"
+        )
+        if artifact.get("state") not in {"published", "candidate"}:
+            raise RelError(f"{label} artifact {artifact_id} has invalid state")
+
+    receipts = value.get("receipts", [])
+    if not isinstance(receipts, list):
+        raise RelError(f"{label}.receipts must be a list")
+    receipt_ids: set[str] = set()
+    for index, receipt in enumerate(receipts):
+        if not isinstance(receipt, dict):
+            raise RelError(f"{label}.receipts[{index}] must be an object")
+        receipt_id = require_non_empty_string(
+            receipt.get("id"), f"{label}.receipts[{index}].id"
+        )
+        if receipt_id in receipt_ids:
+            raise RelError(f"{label} has duplicate receipt {receipt_id}")
+        receipt_ids.add(receipt_id)
+        if receipt.get("state") not in {"passed", "partial", "pending", "missing", "failed"}:
+            raise RelError(f"{label} receipt {receipt_id} has invalid state")
+    return artifacts, receipts
+
+
+def validate_product_train_manifest(manifest: dict[str, Any]) -> None:
+    """Validate an exhaustive v2 product-train candidate or final lock contract."""
+
+    manifest_status = manifest.get("status")
+    if manifest_status not in {"candidate", "final"}:
+        raise RelError("v2 product-train manifest status must be candidate or final")
+
+    components = manifest.get("components")
+    if not isinstance(components, list):
+        raise RelError("v2 product-train manifest components must be a list")
+    component_keys: list[str] = []
+    for index, component in enumerate(components):
+        if not isinstance(component, dict):
+            raise RelError(f"v2 component[{index}] must be an object")
+        key = require_non_empty_string(component.get("key"), f"v2 component[{index}].key")
+        component_keys.append(key)
+        require_non_empty_string(component.get("repo_path"), f"v2 component {key}.repo_path")
+        require_non_empty_string(component.get("role"), f"v2 component {key}.role")
+        require_non_empty_string(component.get("release_role"), f"v2 component {key}.release_role")
+        if not isinstance(component.get("artifact_receipts_complete"), bool):
+            raise RelError(f"v2 component {key}.artifact_receipts_complete must be boolean")
+        release_state = component.get("release_state")
+        if release_state not in {"published", "candidate"}:
+            raise RelError(f"v2 component {key}.release_state must be published or candidate")
+        selected_field = "publication_head" if release_state == "published" else "qualification_head"
+        remote = validate_remote_identity(component.get(selected_field), f"v2 component {key}.{selected_field}")
+        if release_state == "published" and not remote["ref"].startswith("refs/tags/"):
+            raise RelError(f"v2 published component {key} must select an immutable tag ref")
+        if "publication_head" in component and selected_field != "publication_head":
+            publication_head = validate_remote_identity(
+                component["publication_head"], f"v2 component {key}.publication_head"
+            )
+            if not publication_head["ref"].startswith("refs/tags/"):
+                raise RelError(f"v2 component {key}.publication_head must select an immutable tag ref")
+        validate_artifacts_and_receipts(component, f"v2 component {key}")
+    if len(component_keys) != len(set(component_keys)):
+        raise RelError("v2 product-train manifest has duplicate component keys")
+    if set(component_keys) != PRODUCT_TRAIN_COMPONENT_KEYS:
+        missing = sorted(PRODUCT_TRAIN_COMPONENT_KEYS - set(component_keys))
+        extra = sorted(set(component_keys) - PRODUCT_TRAIN_COMPONENT_KEYS)
+        raise RelError(f"v2 product-train component inventory diverges: missing={missing}, extra={extra}")
+
+    projections = manifest.get("projections")
+    if not isinstance(projections, list):
+        raise RelError("v2 product-train projections must be a list")
+    projection_keys: list[str] = []
+    for index, projection in enumerate(projections):
+        if not isinstance(projection, dict):
+            raise RelError(f"v2 projection[{index}] must be an object")
+        key = require_non_empty_string(projection.get("key"), f"v2 projection[{index}].key")
+        projection_keys.append(key)
+        require_non_empty_string(projection.get("repo_path"), f"v2 projection {key}.repo_path")
+        require_non_empty_string(projection.get("role"), f"v2 projection {key}.role")
+        if projection.get("required_for_promotion") is not True:
+            raise RelError(f"v2 projection {key} must be required for promotion")
+        if not isinstance(projection.get("artifact_receipts_required"), bool):
+            raise RelError(f"v2 projection {key}.artifact_receipts_required must be boolean")
+        if not isinstance(projection.get("artifact_receipts_complete"), bool):
+            raise RelError(f"v2 projection {key}.artifact_receipts_complete must be boolean")
+        if projection.get("state") not in {"candidate", "receipt", "pending_contract"}:
+            raise RelError(f"v2 projection {key} has invalid state")
+        identities = [
+            (identity_kind, projection[identity_kind])
+            for identity_kind in ("publication_head", "qualification_head")
+            if identity_kind in projection
+        ]
+        if not identities:
+            raise RelError(f"v2 projection {key} must name at least one remote identity")
+        for identity_kind, identity in identities:
+            validate_remote_identity(identity, f"v2 projection {key}.{identity_kind}")
+        validate_artifacts_and_receipts(projection, f"v2 projection {key}")
+    if len(projection_keys) != len(set(projection_keys)):
+        raise RelError("v2 product-train manifest has duplicate projection keys")
+    if set(projection_keys) != PRODUCT_TRAIN_PROJECTION_KEYS:
+        raise RelError("v2 product-train projection inventory is incomplete")
+
+    milestones = manifest.get("product_milestones")
+    if not isinstance(milestones, dict) or set(milestones) != PRODUCT_TRAIN_MILESTONES:
+        raise RelError("v2 product milestones must contain exactly r1, r2, r3 and r4")
+    for key in sorted(PRODUCT_TRAIN_MILESTONES):
+        milestone = milestones[key]
+        if not isinstance(milestone, dict) or milestone.get("state") not in {
+            "not_created",
+            "candidate",
+            "published",
+        }:
+            raise RelError(f"v2 product milestone {key} has an invalid state")
+        members = milestone.get("members", {})
+        if not isinstance(members, dict):
+            raise RelError(f"v2 product milestone {key}.members must be an object")
+        if milestone["state"] == "not_created" and members:
+            raise RelError(f"v2 product milestone {key} cannot have members before creation")
+        for member_key, member in members.items():
+            if member_key not in {"python", "studio"} or not isinstance(member, dict):
+                raise RelError(f"v2 product milestone {key} has an invalid member")
+            require_non_empty_string(member.get("version"), f"v2 milestone {key}.{member_key}.version")
+            validate_remote_identity(member.get("remote"), f"v2 milestone {key}.{member_key}.remote")
+
+    gates = manifest.get("promotion_gates")
+    if not isinstance(gates, list):
+        raise RelError("v2 promotion_gates must be a list")
+    gate_states: dict[str, str] = {}
+    for index, gate in enumerate(gates):
+        if not isinstance(gate, dict):
+            raise RelError(f"v2 promotion gate[{index}] must be an object")
+        gate_id = require_non_empty_string(gate.get("id"), f"v2 promotion gate[{index}].id")
+        if gate_id in gate_states:
+            raise RelError(f"v2 product-train manifest has duplicate promotion gate {gate_id}")
+        if gate.get("required") is not True:
+            raise RelError(f"v2 promotion gate {gate_id} must be required")
+        state = gate.get("state")
+        if state not in {"passed", "partial", "pending", "missing", "failed"}:
+            raise RelError(f"v2 promotion gate {gate_id} has invalid state {state!r}")
+        gate_states[gate_id] = state
+    if set(gate_states) != PRODUCT_TRAIN_PROMOTION_GATES:
+        raise RelError("v2 promotion gate inventory is incomplete")
+
+    promotion = manifest.get("promotion")
+    if not isinstance(promotion, dict) or promotion.get("status") not in {"no_go", "go"}:
+        raise RelError("v2 promotion.status must be no_go or go")
+    blockers = sorted(gate_id for gate_id, state in gate_states.items() if state != "passed")
+    if promotion.get("status") == "go" and blockers:
+        raise RelError(f"v2 promotion refused; required gates are not passed: {blockers}")
+    if promotion.get("status") == "go" and manifest_status != "final":
+        raise RelError("v2 promotion GO requires manifest status final")
+    if manifest_status == "final" and promotion.get("status") != "go":
+        raise RelError("v2 final manifest requires promotion status GO")
+    if manifest_status == "final":
+        if milestones["r4"]["state"] != "published":
+            raise RelError("v2 final manifest requires published R4")
+        unpublished_components = sorted(
+            component["key"]
+            for component in components
+            if component["release_state"] != "published"
+        )
+        if unpublished_components:
+            raise RelError(
+                "v2 final manifest requires published distribution members: "
+                f"{unpublished_components}"
+            )
+        incomplete_projections = sorted(
+            projection["key"]
+            for projection in projections
+            if projection["state"] != "receipt"
+        )
+        if incomplete_projections:
+            raise RelError(
+                "v2 final manifest requires completed projection receipts: "
+                f"{incomplete_projections}"
+            )
+        incomplete_artifact_receipts = sorted(
+            [
+                f"component:{component['key']}"
+                for component in components
+                if not component["artifact_receipts_complete"]
+            ]
+            + [
+                f"projection:{projection['key']}"
+                for projection in projections
+                if projection["artifact_receipts_required"]
+                and not projection["artifact_receipts_complete"]
+            ]
+        )
+        if incomplete_artifact_receipts:
+            raise RelError(
+                "v2 final manifest requires complete artifact receipts: "
+                f"{incomplete_artifact_receipts}"
+            )
+        complete_artifact_sets = list(components) + [
+            projection
+            for projection in projections
+            if projection["artifact_receipts_required"]
+        ]
+        for artifact_set in complete_artifact_sets:
+            label = artifact_set["key"]
+            artifacts, receipts = validate_artifacts_and_receipts(
+                artifact_set, f"v2 final artifact set {label}"
+            )
+            if not artifacts or not receipts:
+                raise RelError(f"v2 final artifact set {label} must include artifacts and receipts")
+            if any(artifact["state"] != "published" for artifact in artifacts):
+                raise RelError(f"v2 final artifact set {label} has unpublished artifacts")
+            if any(
+                not isinstance(artifact.get("sha256"), str)
+                or not SHA256_RE.fullmatch(artifact["sha256"])
+                for artifact in artifacts
+            ):
+                raise RelError(f"v2 final artifact set {label} has artifacts without SHA-256")
+            if any(receipt["state"] != "passed" for receipt in receipts):
+                raise RelError(f"v2 final artifact set {label} has incomplete receipts")
+        mutable_identities = sorted(
+            identity_id
+            for identity_id, identity in product_train_remote_identities(manifest).items()
+            if not identity["ref"].startswith("refs/tags/")
+        )
+        if mutable_identities:
+            raise RelError(
+                "v2 final manifest requires immutable tag identities: "
+                f"{mutable_identities}"
+            )
+
+
+def product_train_member(component: dict[str, Any]) -> dict[str, Any]:
+    remote = component_selected_identity(component)
+    if remote is None:
+        raise RelError(f"v2 component {component.get('key')} has no selected identity")
+    remote_ref = remote["ref"]
+    branch = remote_ref.removeprefix("refs/heads/") if remote_ref.startswith("refs/heads/") else None
+    exact_tag = remote_ref.removeprefix("refs/tags/").removesuffix("^{}") if remote_ref.startswith("refs/tags/") else None
+    member = {
+        "repo_path": component["repo_path"],
+        "repo_url": remote["repository"],
+        "role": component["role"],
+        "release_role": component["release_role"],
+        "release_state": component["release_state"],
+        "state": {
+            "commit": remote["head"],
+            "tree": remote["tree"],
+            "remote_ref": remote_ref,
+            "branch": branch,
+            "exact_tag": exact_tag,
+            "dirty": False,
+        },
+    }
+    for key in (
+        "version",
+        "artifacts",
+        "receipts",
+        "dependency_receipts",
+        "publication_head",
+        "qualification_head",
+    ):
+        if key in component:
+            member[key] = component[key]
+    return member
+
+
+def product_train_remote_identities(manifest: dict[str, Any]) -> dict[str, dict[str, str]]:
+    identities: dict[str, dict[str, str]] = {}
+    for component in manifest["components"]:
+        for identity_kind in ("publication_head", "qualification_head"):
+            if identity_kind in component:
+                identities[f"component:{component['key']}:{identity_kind}"] = component[identity_kind]
+    for milestone_key, milestone in manifest["product_milestones"].items():
+        for member_key, member in milestone.get("members", {}).items():
+            identities[f"milestone:{milestone_key}:{member_key}"] = member["remote"]
+    for projection in manifest["projections"]:
+        for identity_kind in ("publication_head", "qualification_head"):
+            if identity_kind in projection:
+                identities[f"projection:{projection['key']}:{identity_kind}"] = projection[identity_kind]
+    return identities
+
+
+def generate_product_train_lock(manifest_path: Path, manifest: dict[str, Any]) -> dict[str, Any]:
+    validate_product_train_manifest(manifest)
+    gate_states = {gate["id"]: gate["state"] for gate in manifest["promotion_gates"]}
+    blockers = sorted(gate_id for gate_id, state in gate_states.items() if state != "passed")
+    ecosystem_repo = manifest_path.parents[3]
+    manifest_rel = manifest_path.relative_to(ecosystem_repo).as_posix()
+    return {
+        "schema_version": PRODUCT_TRAIN_LOCK_SCHEMA_VERSION,
+        "aggregation_lock_version": 2,
+        "manifest_digest": sha256_bytes(canonical_json(manifest)),
+        "release_train": manifest.get("release_train"),
+        "status": manifest.get("status"),
+        "authority": manifest.get("authority"),
+        "generated_from": {
+            "ecosystem_repo": "nirs4all-ecosystem",
+            "manifest_path": manifest_rel,
+            "tool": "scripts/n4a_release_lock.py",
+        },
+        "members": {
+            component["key"]: product_train_member(component)
+            for component in manifest["components"]
+        },
+        "remote_identities": product_train_remote_identities(manifest),
+        "product_milestones": manifest["product_milestones"],
+        "projections": {
+            projection["key"]: projection
+            for projection in manifest["projections"]
+        },
+        "promotion": {
+            "status": manifest["promotion"]["status"],
+            "eligible": not blockers,
+            "blockers": blockers,
+            "gates": gate_states,
+        },
+        "verification": {
+            "commands": manifest.get("verification_commands", []),
+            "all_required_gates_passed": not blockers,
+            "full_product_train_inventory": True,
+            "private_repos_present": False,
+        },
+    }
+
+
 def artifact_by_id(member: dict[str, Any], artifact_id: str) -> dict[str, Any] | None:
     for artifact in member.get("contract_artifacts", []):
         if artifact.get("id") == artifact_id:
@@ -589,6 +994,8 @@ def build_lockstep_attestations(manifest: dict[str, Any], members: dict[str, Any
 
 def generate_lock(manifest_path: Path, workspace_root: Path) -> dict[str, Any]:
     manifest = load_json(manifest_path)
+    if manifest.get("schema_version") == PRODUCT_TRAIN_MANIFEST_SCHEMA_VERSION:
+        return generate_product_train_lock(manifest_path, manifest)
     if manifest.get("schema_version") != MANIFEST_SCHEMA_VERSION:
         raise RelError(f"unexpected manifest schema_version: {manifest.get('schema_version')!r}")
     if any(component.get("private") for component in manifest.get("components", [])):
@@ -657,7 +1064,10 @@ def validate_lock(manifest_path: Path, lock_path: Path, workspace_root: Path) ->
             "N4A_RELEASE_WORKSPACE_ROOT=<selected-root> for release_lock_validation. "
             "Regenerate the lock only after intentionally selecting new member commits."
         )
-    if not expected["verification"]["all_lockstep_groups_valid"]:
+    if expected.get("schema_version") == PRODUCT_TRAIN_LOCK_SCHEMA_VERSION:
+        if not expected["verification"]["all_required_gates_passed"]:
+            return
+    elif not expected["verification"]["all_lockstep_groups_valid"]:
         raise RelError("one or more lockstep groups are invalid")
 
 
@@ -672,7 +1082,7 @@ def checkout_members(manifest_path: Path, lock_path: Path, output_root: Path) ->
         component = by_key.get(key)
         if component is None:
             raise RelError(f"lock member {key!r} is absent from manifest")
-        repo_url = component.get("repo_url")
+        repo_url = component_repository(component)
         if not repo_url:
             raise RelError(f"manifest component {key!r} has no repo_url")
         selected_workspace_path = component.get("selected_workspace_path") or component["repo_path"]
@@ -708,6 +1118,7 @@ def audit_member_fetchability(
     member: dict[str, Any],
     checkout_root: Path,
 ) -> dict[str, Any]:
+    checkout_root.mkdir(parents=True, exist_ok=True)
     state = member.get("state", {})
     commit = state.get("commit")
     branch = state.get("branch")
@@ -723,7 +1134,7 @@ def audit_member_fetchability(
             "message": "member is absent from manifest",
         }
     repo_path = component.get("repo_path")
-    repo_url = component.get("repo_url")
+    repo_url = component_repository(component)
     report.update(
         {
             "repo_path": repo_path,
@@ -750,6 +1161,20 @@ def audit_member_fetchability(
         return {**report, "status": "invalid_repo_url", "message": str(exc)}
     report["resolved_url"] = resolved_url
 
+    remote_ref = state.get("remote_ref")
+    if remote_ref:
+        code, message = run_audit_command(["git", "ls-remote", resolved_url, remote_ref], checkout_root)
+        if code != 0:
+            return {**report, "status": "ref_probe_failed", "message": message}
+        rows = [line.split() for line in message.splitlines() if line.strip()]
+        observed_heads = [row[0] for row in rows if len(row) >= 2 and row[1] == remote_ref]
+        if observed_heads != [commit]:
+            return {
+                **report,
+                "status": "ref_mismatch",
+                "message": f"{remote_ref} resolved to {observed_heads or ['missing']}, expected {commit}",
+            }
+
     target = checkout_root / repo_path
     report["checkout_path"] = str(target)
     if target.exists():
@@ -773,6 +1198,17 @@ def audit_member_fetchability(
     code, message = run_audit_command(checkout_cmd, target)
     if code != 0:
         return {**report, "status": "checkout_failed", "message": message}
+    expected_tree = state.get("tree")
+    if expected_tree:
+        code, observed_tree = run_audit_command(["git", "rev-parse", "HEAD^{tree}"], target)
+        if code != 0:
+            return {**report, "status": "tree_probe_failed", "message": observed_tree}
+        if observed_tree.strip() != expected_tree:
+            return {
+                **report,
+                "status": "tree_mismatch",
+                "message": f"checked-out tree {observed_tree.strip()} does not match {expected_tree}",
+            }
     return {**report, "status": "ok", "message": "checked out locked commit"}
 
 
@@ -783,19 +1219,51 @@ def build_fetchability_report(
 ) -> dict[str, Any]:
     manifest = load_json(manifest_path)
     lock = load_json(lock_path)
-    if manifest.get("schema_version") != MANIFEST_SCHEMA_VERSION:
+    if manifest.get("schema_version") not in {
+        MANIFEST_SCHEMA_VERSION,
+        PRODUCT_TRAIN_MANIFEST_SCHEMA_VERSION,
+    }:
         raise RelError(f"unexpected manifest schema_version: {manifest.get('schema_version')!r}")
-    if lock.get("schema_version") != LOCK_SCHEMA_VERSION:
+    if lock.get("schema_version") not in {
+        LOCK_SCHEMA_VERSION,
+        PRODUCT_TRAIN_LOCK_SCHEMA_VERSION,
+    }:
         raise RelError(f"unexpected lock schema_version: {lock.get('schema_version')!r}")
     members = lock.get("members", {})
     if not isinstance(members, dict) or not members:
         raise RelError("lock must contain a non-empty members object")
-    by_key = {component["key"]: component for component in manifest.get("components", [])}
     checkout_root.mkdir(parents=True, exist_ok=True)
-    rows = [
-        audit_member_fetchability(key, by_key.get(key), member, checkout_root)
-        for key, member in members.items()
-    ]
+    if lock.get("schema_version") == PRODUCT_TRAIN_LOCK_SCHEMA_VERSION:
+        identities = lock.get("remote_identities", {})
+        if not isinstance(identities, dict) or not identities:
+            raise RelError("v2 lock must contain remote_identities")
+        rows = []
+        for key, identity in identities.items():
+            safe_key = re.sub(r"[^A-Za-z0-9_.-]", "-", key)
+            rows.append(
+                audit_member_fetchability(
+                    key,
+                    {
+                        "repo_path": f"_remote_identities/{safe_key}",
+                        "repo_url": identity.get("repository"),
+                    },
+                    {
+                        "state": {
+                            "commit": identity.get("head"),
+                            "tree": identity.get("tree"),
+                            "remote_ref": identity.get("ref"),
+                            "branch": None,
+                        }
+                    },
+                    checkout_root,
+                )
+            )
+    else:
+        by_key = {component["key"]: component for component in manifest.get("components", [])}
+        rows = [
+            audit_member_fetchability(key, by_key.get(key), member, checkout_root)
+            for key, member in members.items()
+        ]
     fetchable = sum(1 for row in rows if row["status"] == "ok")
     return {
         "schema_version": FETCHABILITY_SCHEMA_VERSION,
@@ -862,7 +1330,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
     audit = sub.add_parser(
         "audit-fetchability",
-        help="Audit that every lockfile member commit can be cloned from its configured repo_url.",
+        help="Audit every member or named remote identity against its exact ref, commit and tree.",
     )
     audit.add_argument("--manifest", type=Path, required=True)
     audit.add_argument("--lock", type=Path, required=True)

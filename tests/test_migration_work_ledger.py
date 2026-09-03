@@ -111,6 +111,8 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["core"]["commit"] == "550cb8c80708e88ac7ebbc880acb4b82d8531632"
     assert evidence["core"]["version"] == "0.3.28"
     assert evidence["io"]["commit"] == "df7f2198862c71a24aeeba08ba09ee118524b55d"
+    assert evidence["io"]["qualification_commit"] == "e6241571e2714160d2ff769030964b8924f0cbdb"
+    assert evidence["io"]["qualification_overall_complete"] is True
     assert evidence["io"]["publication_repair_commit"] == "a5f7eac50126d445f745f945ff5c770ed470254c"
     assert evidence["datasets"]["commit"] == "007d7aafe50e6e4148d5a5cefe0ad96d9da37e7b"
     assert evidence["datasets"]["product_commit"] == "285d8df2a6701e870566f66c931438b8fdf04ffb"
@@ -119,25 +121,28 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["tools"]["support_matrix_sha256"] == "85031fd02b89c16f7adc90e1faad4843cd654f0279c48332d58af3ad6b37a65b"
     assert evidence["ui"]["commit"] == "406d94d70004f27459ef12347af1e6f0079ab6ac"
     assert evidence["ui"]["tarball_sha256"] == "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67"
-    assert evidence["studio"]["candidate_commit"] == "ca4ee2afbb7596b2e4ba4b00f6d5797e553dfa39"
-    assert evidence["studio"]["release_matrix_run"] == 33777731069
+    assert evidence["studio"]["candidate_commit"] == "86d5e5033d62240815e532038b6e769b14b25c2b"
+    assert evidence["studio"]["release_matrix_run"] == 33783518197
     assert evidence["studio"]["release_matrix_status"] == "completed_success_unsigned"
     assert evidence["studio"]["published"] is False
     assert evidence["studio"]["signed"] is False
     assert evidence["web"]["candidate_commit"] == "051bf636d7c1729087e5d40061b18bd690cd33b7"
     assert evidence["web"]["published"] is True
     assert evidence["web"]["pages_published"] is True
-    assert evidence["benchmarks"]["commit"] == "9ff889a5be1bbc48a16d69a27ab743c23598f7da"
+    assert evidence["benchmarks"]["commit"] == "17f8196b26457fbd300a46d6520c3d1845d0de05"
+    assert evidence["providers"]["qualification_commit"] == "15722bd1123c887322f3bc3e0d54b145cffaf948"
+    assert evidence["providers"]["publish_job_status"] == "skipped"
+    assert evidence["repository"]["qualification_commit"] == "337caa6773c60fed94a0dfebcaf471e3a470af96"
     assert evidence["security_harnesses"]["formats"]["commit"] == "892a48b38f6c94697f805524f6efd4e8ff7323b0"
     assert evidence["security_harnesses"]["core"]["commit"] == "0218bfc8b9d9193f771d27470e7cf9d5cf578823"
     assert evidence["security_harnesses"]["methods"]["commit"] == "530b11c632ac467e6bf54022c7241d27cd72d73c"
     assert evidence["security_harnesses"]["studio_store"]["commit"] == "6d53f301830947ff85767c53c800829741af75ff"
-    assert evidence["org"]["commit"] == "b09f2768f264269d72be351d0c6282b769ec8f85"
-    assert evidence["cockpit"]["commit"] == "0abde191e91629d4d54d111f93805508de9a6639"
-    assert evidence["remote_candidate_staging"]["status"] == "components_r1_and_web_published_r2_r3_and_studio_unpublished"
+    assert evidence["org"]["commit"] == "71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"
+    assert evidence["cockpit"]["commit"] == "b612436c75adfc083506ca423a1013a0f3d663f0"
+    assert evidence["remote_candidate_staging"]["status"] == "exact_candidate_heads_recorded_providers_r2_r3_repository_and_studio_unpublished"
     assert evidence["remote_candidate_staging"]["tag_or_registry_publication"] is True
     assert evidence["remote_candidate_staging"]["all_product_milestones_published"] is False
-    assert len(evidence["remote_candidate_staging"]["heads"]) == 15
+    assert len(evidence["remote_candidate_staging"]["heads"]) == 18
     assert evidence["product_release_sequence"]["status"] == "r1_r2_r3_distinct_remote_candidates_r4_held"
     assert evidence["product_release_sequence"]["milestones"]["r1"]["default_engine"] == "legacy"
     assert evidence["product_release_sequence"]["milestones"]["r1"]["publication_repair_commit"] == "e76c834c75157f0c74fcbba7383a69a818ed6b34"

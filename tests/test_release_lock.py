@@ -440,6 +440,332 @@ def test_generate_lock_rejects_dirty_selected_member(tmp_path: Path) -> None:
         release_lock.generate_lock(manifest_path, tmp_path / "workspace")
 
 
+def _minimal_product_train_manifest(release_lock: ModuleType) -> dict:
+    components = []
+    for key in sorted(release_lock.PRODUCT_TRAIN_COMPONENT_KEYS):
+        components.append(
+            {
+                "key": key,
+                "repo_path": key,
+                "role": f"{key} role",
+                "release_role": f"{key} release role",
+                "release_state": "candidate",
+                "artifact_receipts_complete": False,
+                "qualification_head": {
+                    "repository": f"GBeurier/{key}",
+                    "ref": f"refs/heads/release/{key}",
+                    "head": "1" * 40,
+                    "tree": "2" * 40,
+                },
+            }
+        )
+    milestones = {
+        "r1": {"state": "published", "members": {}},
+        "r2": {"state": "candidate", "members": {}},
+        "r3": {"state": "candidate", "members": {}},
+        "r4": {"state": "not_created", "members": {}},
+    }
+    gates = [
+        {"id": gate_id, "required": True, "state": "passed"}
+        for gate_id in sorted(release_lock.PRODUCT_TRAIN_PROMOTION_GATES)
+    ]
+    projections = [
+        {
+            "key": key,
+            "repo_path": key,
+            "role": f"{key} projection",
+            "required_for_promotion": True,
+            "artifact_receipts_required": False,
+            "artifact_receipts_complete": False,
+            "state": "candidate",
+            "qualification_head": {
+                "repository": f"GBeurier/{key}",
+                "ref": f"refs/heads/release/{key}",
+                "head": "4" * 40,
+                "tree": "5" * 40,
+            },
+        }
+        for key in sorted(release_lock.PRODUCT_TRAIN_PROJECTION_KEYS)
+    ]
+    return {
+        "schema_version": release_lock.PRODUCT_TRAIN_MANIFEST_SCHEMA_VERSION,
+        "release_train": "test-product-train",
+        "status": "candidate",
+        "authority": {"ledger_commit": "3" * 40},
+        "promotion": {"status": "no_go"},
+        "promotion_gates": gates,
+        "product_milestones": milestones,
+        "projections": projections,
+        "components": components,
+    }
+
+
+def test_generate_v2_product_train_lock_uses_remote_identities_without_local_checkouts(
+    tmp_path: Path,
+) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    _write_json(manifest_path, manifest)
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+    assert lock["schema_version"] == release_lock.PRODUCT_TRAIN_LOCK_SCHEMA_VERSION
+    assert set(lock["members"]) == release_lock.PRODUCT_TRAIN_COMPONENT_KEYS
+    assert len(lock["remote_identities"]) == (
+        len(release_lock.PRODUCT_TRAIN_COMPONENT_KEYS)
+        + len(release_lock.PRODUCT_TRAIN_PROJECTION_KEYS)
+    )
+    assert lock["verification"]["full_product_train_inventory"] is True
+    assert lock["verification"]["all_required_gates_passed"] is True
+    assert lock["promotion"] == {
+        "status": "no_go",
+        "eligible": True,
+        "blockers": [],
+        "gates": {
+            gate_id: "passed"
+            for gate_id in sorted(release_lock.PRODUCT_TRAIN_PROMOTION_GATES)
+        },
+    }
+
+
+def test_v2_milestone_states_are_validated_generically(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    manifest["product_milestones"]["r1"]["state"] = "candidate"
+    manifest["product_milestones"]["r2"]["state"] = "published"
+    _write_json(manifest_path, manifest)
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+    assert lock["product_milestones"]["r1"]["state"] == "candidate"
+    assert lock["product_milestones"]["r2"]["state"] == "published"
+
+
+def test_v2_final_go_accepts_only_completed_immutable_train(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    manifest["status"] = "final"
+    manifest["promotion"]["status"] = "go"
+    for component in manifest["components"]:
+        identity = component.pop("qualification_head")
+        identity["ref"] = f"refs/tags/v-{component['key']}^{{}}"
+        component["publication_head"] = identity
+        component["release_state"] = "published"
+        component["artifact_receipts_complete"] = True
+        component["artifacts"] = [
+            {
+                "id": "package",
+                "version": "1.0.0",
+                "state": "published",
+                "sha256": "6" * 64,
+            }
+        ]
+        component["receipts"] = [{"id": "release", "state": "passed"}]
+    for projection in manifest["projections"]:
+        identity = projection.pop("qualification_head")
+        identity["ref"] = f"refs/tags/v-{projection['key']}^{{}}"
+        projection["publication_head"] = identity
+        projection["state"] = "receipt"
+    for milestone in manifest["product_milestones"].values():
+        milestone["state"] = "published"
+    _write_json(manifest_path, manifest)
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+    assert lock["status"] == "final"
+    assert lock["promotion"]["status"] == "go"
+    assert lock["promotion"]["eligible"] is True
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        ("r4_not_created", "requires published R4"),
+        ("candidate_component", "requires published distribution members"),
+        ("artifact_receipts", "requires complete artifact receipts"),
+        ("artifact_sha", "artifacts without SHA-256"),
+        ("mutable_projection", "requires immutable tag identities"),
+    ],
+)
+def test_v2_final_go_fails_closed_on_incomplete_train(
+    tmp_path: Path,
+    mutation: str,
+    message: str,
+) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    manifest["status"] = "final"
+    manifest["promotion"]["status"] = "go"
+    for component in manifest["components"]:
+        identity = component.pop("qualification_head")
+        identity["ref"] = f"refs/tags/v-{component['key']}^{{}}"
+        component["publication_head"] = identity
+        component["release_state"] = "published"
+        component["artifact_receipts_complete"] = True
+        component["artifacts"] = [
+            {
+                "id": "package",
+                "version": "1.0.0",
+                "state": "published",
+                "sha256": "6" * 64,
+            }
+        ]
+        component["receipts"] = [{"id": "release", "state": "passed"}]
+    for projection in manifest["projections"]:
+        identity = projection.pop("qualification_head")
+        identity["ref"] = f"refs/tags/v-{projection['key']}^{{}}"
+        projection["publication_head"] = identity
+        projection["state"] = "receipt"
+    for milestone in manifest["product_milestones"].values():
+        milestone["state"] = "published"
+    if mutation == "r4_not_created":
+        manifest["product_milestones"]["r4"]["state"] = "not_created"
+    elif mutation == "candidate_component":
+        component = manifest["components"][0]
+        component["qualification_head"] = component.pop("publication_head")
+        component["qualification_head"]["ref"] = "refs/heads/release/candidate"
+        component["release_state"] = "candidate"
+    elif mutation == "artifact_receipts":
+        manifest["components"][0]["artifact_receipts_complete"] = False
+    elif mutation == "artifact_sha":
+        manifest["components"][0]["artifacts"][0].pop("sha256")
+    else:
+        manifest["projections"][0]["publication_head"]["ref"] = "refs/heads/release/projection"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(release_lock.RelError, match=message):
+        release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+
+def test_v2_fetchability_uses_nested_remote_repository(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    remote = tmp_path / "remote"
+    _init_repo(remote)
+    (remote / "README.md").write_text("v2 remote\n", encoding="utf-8")
+    _commit_all(remote)
+    commit = _git_output(remote, "rev-parse", "HEAD")
+    tree = _git_output(remote, "rev-parse", "HEAD^{tree}")
+    branch = _git_output(remote, "branch", "--show-current")
+
+    report = release_lock.audit_member_fetchability(
+        "member",
+        {
+            "repo_path": "member",
+            "release_state": "candidate",
+            "qualification_head": {"repository": remote.resolve().as_uri()},
+        },
+        {
+            "state": {
+                "commit": commit,
+                "tree": tree,
+                "remote_ref": f"refs/heads/{branch}",
+                "branch": None,
+            }
+        },
+        tmp_path / "checkouts",
+    )
+
+    assert report["status"] == "ok"
+    assert report["repo_url"] == remote.resolve().as_uri()
+
+    bad_ref = release_lock.audit_member_fetchability(
+        "member",
+        {
+            "repo_path": "member-ref-mismatch",
+            "release_state": "candidate",
+            "qualification_head": {"repository": remote.resolve().as_uri()},
+        },
+        {
+            "state": {
+                "commit": "0" * 40,
+                "tree": tree,
+                "remote_ref": f"refs/heads/{branch}",
+                "branch": None,
+            }
+        },
+        tmp_path / "checkouts",
+    )
+    assert bad_ref["status"] == "ref_mismatch"
+
+    bad_tree = release_lock.audit_member_fetchability(
+        "member",
+        {
+            "repo_path": "member-tree-mismatch",
+            "release_state": "candidate",
+            "qualification_head": {"repository": remote.resolve().as_uri()},
+        },
+        {
+            "state": {
+                "commit": commit,
+                "tree": "0" * 40,
+                "remote_ref": f"refs/heads/{branch}",
+                "branch": None,
+            }
+        },
+        tmp_path / "checkouts",
+    )
+    assert bad_tree["status"] == "tree_mismatch"
+
+
+def test_checkout_members_supports_v2_nested_repository_identity(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    remote = tmp_path / "remote"
+    _init_repo(remote)
+    (remote / "README.md").write_text("v2 checkout\n", encoding="utf-8")
+    _commit_all(remote)
+    commit = _git_output(remote, "rev-parse", "HEAD")
+    manifest_path = tmp_path / "manifest.json"
+    lock_path = tmp_path / "lock.json"
+    _write_json(
+        manifest_path,
+        {
+            "components": [
+                {
+                    "key": "member",
+                    "repo_path": "member",
+                    "release_state": "candidate",
+                    "qualification_head": {"repository": remote.resolve().as_uri()},
+                }
+            ]
+        },
+    )
+    _write_json(lock_path, {"members": {"member": {"state": {"commit": commit, "branch": None}}}})
+
+    release_lock.checkout_members(manifest_path, lock_path, tmp_path / "external")
+
+    assert _git_output(tmp_path / "external" / "member", "rev-parse", "HEAD") == commit
+
+
+@pytest.mark.parametrize("blocked_gate", ["signatures", "soak", "product_publication"])
+def test_v2_product_train_refuses_go_with_required_evidence_missing(
+    tmp_path: Path,
+    blocked_gate: str,
+) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    manifest["promotion"]["status"] = "go"
+    next(gate for gate in manifest["promotion_gates"] if gate["id"] == blocked_gate)["state"] = "missing"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(release_lock.RelError, match="promotion refused"):
+        release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+
 def test_audit_fetchability_cli_only_fails_when_requested(tmp_path: Path) -> None:
     release_lock, manifest_path, lock_path = _write_fetchability_fixture(tmp_path)
     output_json = tmp_path / "fetchability.json"
@@ -679,3 +1005,121 @@ def test_central_manifest_declares_reproducible_methods_and_core_topology_source
     assert topology["function"] == "release_topology_manifest"
     assert topology["path"] == "bindings/python/src/nirs4all_core/_topology.py"
     assert topology["include_json"] is True
+
+
+def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> None:
+    release_lock = _load_release_lock()
+    release_dir = ROOT / "docs" / "contracts" / "release"
+    manifest_path = release_dir / "aggregation-manifest-candidate.v2.n4a.json"
+    lock_path = release_dir / "aggregation-lock-candidate.v2.n4a.lock.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    lock = json.loads(lock_path.read_text(encoding="utf-8"))
+    components = {component["key"]: component for component in manifest["components"]}
+    projections = {projection["key"]: projection for projection in manifest["projections"]}
+
+    assert manifest["authority"]["ledger_commit"] == "091b8a0f3069e7a90167f78c81bb9d414c50ade5"
+    assert set(components) == release_lock.PRODUCT_TRAIN_COMPONENT_KEYS
+    assert set(projections) == release_lock.PRODUCT_TRAIN_PROJECTION_KEYS
+    assert not ({"benchmarks", "org", "cockpit"} & set(components))
+    assert components["io"]["qualification_head"]["head"] == "e6241571e2714160d2ff769030964b8924f0cbdb"
+    assert components["io"]["release_state"] == "published"
+    assert lock["members"]["io"]["state"]["commit"] == (
+        "df7f2198862c71a24aeeba08ba09ee118524b55d"
+    )
+    assert components["studio"]["qualification_head"]["head"] == "86d5e5033d62240815e532038b6e769b14b25c2b"
+    assert projections["org"]["qualification_head"]["head"] == "71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"
+    assert projections["cockpit"]["qualification_head"]["head"] == "b612436c75adfc083506ca423a1013a0f3d663f0"
+    assert projections["benchmarks"]["qualification_head"]["head"] == (
+        "17f8196b26457fbd300a46d6520c3d1845d0de05"
+    )
+    assert projections["repository"]["publication_head"]["tree"] == (
+        "bb23a73d03abbc2e377f1494e147623265a06a3e"
+    )
+    assert projections["repository"]["qualification_head"]["head"] == (
+        "337caa6773c60fed94a0dfebcaf471e3a470af96"
+    )
+    assert components["providers"]["publication_head"]["head"] == "5a03f508374531409919fceb2f2367544c52b94d"
+    assert components["providers"]["qualification_head"]["head"] == (
+        "15722bd1123c887322f3bc3e0d54b145cffaf948"
+    )
+    assert lock["members"]["providers"]["state"]["commit"] == (
+        "15722bd1123c887322f3bc3e0d54b145cffaf948"
+    )
+    assert {artifact["id"]: artifact["version"] for artifact in components["methods"]["artifacts"]} == {
+        "methods_project": "1.0.15",
+        "n4m_c_abi": "2.5.0",
+        "n4m_rust_binding": "0.1.4",
+    }
+    assert {artifact["id"] for artifact in components["core"]["artifacts"]} == {
+        "python_nirs4all_core",
+        "rust_nirs4all",
+        "npm_nirs4all",
+        "r_nirs4all",
+        "matlab_octave_nirs4all",
+    }
+    assert {receipt["id"] for receipt in components["core"]["receipts"]} == {
+        "ci",
+        "npm",
+        "r",
+        "matlab_octave",
+        "source",
+        "python",
+        "crates",
+    }
+    io_receipt = components["io"]["receipts"][0]
+    assert io_receipt["state"] == "passed"
+    assert io_receipt["run"] == 33784472043
+    assert io_receipt["report_sha256"] == (
+        "sha256:6eb584f2866c84b034200f80522e3ec0035e726c4f512071901054d779c7fb17"
+    )
+    assert components["datasets"]["dependency_receipts"][0] == {
+        "component": "io",
+        "resolved_version": "0.1.12",
+        "train_version": "0.1.14",
+        "disposition": "compatible_published_lag",
+    }
+    assert components["web"]["dependency_receipts"][0] == {
+        "component": "core",
+        "resolved_version": "0.3.27",
+        "train_version": "0.3.28",
+        "disposition": "compatible_published_lag",
+    }
+    assert components["studio"]["receipts"][0]["state"] == "passed"
+    assert components["studio"]["receipts"][0]["github_release_created"] is False
+    assert {
+        artifact["id"]: artifact["archive_digest"]
+        for artifact in components["studio"]["artifacts"]
+    } == {
+        "pinned_plugin_wheels": "sha256:8149cce1671f4ea1cf5e99f3b4c5ef4412984ad424fa7c6075b898facf02ca6d",
+        "windows_x64_installer": "sha256:07fe1d212bb5ce16d6ab15e5250bae79260f714e51db0e6ab2cd6c7a606199df",
+        "linux_x64_appimage": "sha256:953a8014891fb80b408c2490ec1b21e10a2f873027805c875491ac215ba7c6e7",
+        "macos_x64_dmg": "sha256:ad895bb11ae7337804dd886508620a973cf2707208522923e7564aa4d6b2a050",
+        "macos_arm64_dmg": "sha256:1759fec8d37279cf9b20dce36cca8c371abecd01b29d216d9502e24d1b52e3f5",
+    }
+    assert manifest["product_milestones"]["r1"]["state"] == "published"
+    assert manifest["product_milestones"]["r2"]["state"] == "candidate"
+    assert manifest["product_milestones"]["r3"]["state"] == "candidate"
+    assert manifest["product_milestones"]["r4"]["state"] == "not_created"
+    assert manifest["product_milestones"]["r1"]["publication_receipts"] == {
+        "python": "pypi_and_ghcr",
+        "workflow_run": 33753479548,
+        "publication_repair_commit": "e76c834c75157f0c74fcbba7383a69a818ed6b34",
+        "publication_repair_tree": "49dadfb76d6995c2ab825d8cb937a864ea773fb9",
+    }
+    assert manifest["product_milestones"]["r3"]["members"]["studio"]["remote"]["head"] == (
+        "86d5e5033d62240815e532038b6e769b14b25c2b"
+    )
+    assert {gate["id"]: gate["state"] for gate in manifest["promotion_gates"]} == {
+        "artifact_receipts": "pending",
+        "candidate_ci": "passed",
+        "component_publications": "pending",
+        "external_matrices": "pending",
+        "product_publication": "partial",
+        "repository_surface_contract": "pending",
+        "signatures": "missing",
+        "soak": "missing",
+    }
+    assert lock == release_lock.generate_lock(manifest_path, ROOT.parent)
+    assert lock["promotion"]["status"] == "no_go"
+    assert lock["promotion"]["eligible"] is False
+    assert lock["verification"]["all_required_gates_passed"] is False

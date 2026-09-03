@@ -1,0 +1,1010 @@
+{
+  "aggregation_lock_version": 2,
+  "authority": {
+    "candidate_updates": [
+      "nirs4all-io@e6241571e2714160d2ff769030964b8924f0cbdb",
+      "nirs4all-studio@86d5e5033d62240815e532038b6e769b14b25c2b",
+      "nirs4all-benchmarks@17f8196b26457fbd300a46d6520c3d1845d0de05",
+      "nirs4all-providers@15722bd1123c887322f3bc3e0d54b145cffaf948",
+      "nirs4all-repository@337caa6773c60fed94a0dfebcaf471e3a470af96",
+      "nirs4all-org@71a1db5c7d808a015aa2a1c6f07e6542ca3b8571",
+      "nirs4all-cockpit@b612436c75adfc083506ca423a1013a0f3d663f0"
+    ],
+    "ledger_commit": "091b8a0f3069e7a90167f78c81bb9d414c50ade5",
+    "ledger_path": "docs/contracts/release/migration-work-ledger.yaml",
+    "ledger_state": "base_snapshot_retained_candidate_updates_not_yet_written_to_ledger",
+    "ledger_tree": "aebc80acdb0fb1c92425f744907f4d43ba251ec9"
+  },
+  "generated_from": {
+    "ecosystem_repo": "nirs4all-ecosystem",
+    "manifest_path": "docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json",
+    "tool": "scripts/n4a_release_lock.py"
+  },
+  "manifest_digest": "sha256:0c6fac21551691a6e567b9b122ce1f4da5f5ad84aa4fbd047442efd7aba0f25b",
+  "members": {
+    "core": {
+      "artifacts": [
+        {
+          "id": "python_nirs4all_core",
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "rust_nirs4all",
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "npm_nirs4all",
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "r_nirs4all",
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "matlab_octave_nirs4all",
+          "state": "published",
+          "version": "0.3.28"
+        }
+      ],
+      "publication_head": {
+        "head": "550cb8c80708e88ac7ebbc880acb4b82d8531632",
+        "ref": "refs/tags/v0.3.28^{}",
+        "repository": "GBeurier/nirs4all-core",
+        "tree": "5181e3bc65c9a3ee413bdfc8b81f34cd61450f7e"
+      },
+      "receipts": [
+        {
+          "id": "ci",
+          "run": 33773780924,
+          "state": "passed"
+        },
+        {
+          "id": "npm",
+          "run": 33773780925,
+          "state": "passed"
+        },
+        {
+          "id": "r",
+          "run": 33773780940,
+          "state": "passed"
+        },
+        {
+          "id": "matlab_octave",
+          "run": 33773780969,
+          "state": "passed"
+        },
+        {
+          "id": "source",
+          "run": 33773780974,
+          "state": "passed"
+        },
+        {
+          "id": "python",
+          "run": 33773780990,
+          "state": "passed"
+        },
+        {
+          "id": "crates",
+          "run": 33773781287,
+          "state": "passed"
+        }
+      ],
+      "release_role": "aggregate_runtime",
+      "release_state": "published",
+      "repo_path": "nirs4all-core",
+      "repo_url": "GBeurier/nirs4all-core",
+      "role": "Canonical portable aggregate bindings",
+      "state": {
+        "branch": null,
+        "commit": "550cb8c80708e88ac7ebbc880acb4b82d8531632",
+        "dirty": false,
+        "exact_tag": "v0.3.28",
+        "remote_ref": "refs/tags/v0.3.28^{}",
+        "tree": "5181e3bc65c9a3ee413bdfc8b81f34cd61450f7e"
+      }
+    },
+    "dag_ml": {
+      "publication_head": {
+        "head": "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381",
+        "ref": "refs/tags/v0.3.23^{}",
+        "repository": "GBeurier/dag-ml",
+        "tree": "8dffd6e823e214b720e1f8d715ddb7634bd4fb4e"
+      },
+      "release_role": "native_runtime",
+      "release_state": "published",
+      "repo_path": "dag-ml",
+      "repo_url": "GBeurier/dag-ml",
+      "role": "DAG runtime, orchestration and native execution contracts",
+      "state": {
+        "branch": null,
+        "commit": "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381",
+        "dirty": false,
+        "exact_tag": "v0.3.23",
+        "remote_ref": "refs/tags/v0.3.23^{}",
+        "tree": "8dffd6e823e214b720e1f8d715ddb7634bd4fb4e"
+      },
+      "version": "0.3.23"
+    },
+    "dag_ml_data": {
+      "publication_head": {
+        "head": "7d9b9fed04c135ed4c2bba472c782aca7ef85807",
+        "ref": "refs/tags/v0.2.10^{}",
+        "repository": "GBeurier/dag-ml-data",
+        "tree": "42f02fdd723239cdbc933797e01d0d48b184712e"
+      },
+      "release_role": "native_runtime",
+      "release_state": "published",
+      "repo_path": "dag-ml-data",
+      "repo_url": "GBeurier/dag-ml-data",
+      "role": "Neutral data contracts and DMD representations",
+      "state": {
+        "branch": null,
+        "commit": "7d9b9fed04c135ed4c2bba472c782aca7ef85807",
+        "dirty": false,
+        "exact_tag": "v0.2.10",
+        "remote_ref": "refs/tags/v0.2.10^{}",
+        "tree": "42f02fdd723239cdbc933797e01d0d48b184712e"
+      },
+      "version": "0.2.10"
+    },
+    "datasets": {
+      "dependency_receipts": [
+        {
+          "component": "io",
+          "disposition": "compatible_published_lag",
+          "resolved_version": "0.1.12",
+          "train_version": "0.1.14"
+        }
+      ],
+      "publication_head": {
+        "head": "007d7aafe50e6e4148d5a5cefe0ad96d9da37e7b",
+        "ref": "refs/tags/v0.3.10^{}",
+        "repository": "GBeurier/nirs4all-datasets",
+        "tree": "7e37557cff5b4d825e9837e96cb4b2ff05211678"
+      },
+      "release_role": "optional_data_surface",
+      "release_state": "published",
+      "repo_path": "nirs4all-datasets",
+      "repo_url": "GBeurier/nirs4all-datasets",
+      "role": "Reference dataset catalog and bindings",
+      "state": {
+        "branch": null,
+        "commit": "007d7aafe50e6e4148d5a5cefe0ad96d9da37e7b",
+        "dirty": false,
+        "exact_tag": "v0.3.10",
+        "remote_ref": "refs/tags/v0.3.10^{}",
+        "tree": "7e37557cff5b4d825e9837e96cb4b2ff05211678"
+      },
+      "version": "0.3.10"
+    },
+    "formats": {
+      "publication_head": {
+        "head": "3e5a05674dfab4bbcebf23fe9d615d231ca4d551",
+        "ref": "refs/tags/v0.2.9^{}",
+        "repository": "GBeurier/nirs4all-formats",
+        "tree": "3b9717258fc80791d80641633a4bbf6478e7256a"
+      },
+      "release_role": "native_runtime",
+      "release_state": "published",
+      "repo_path": "nirs4all-formats",
+      "repo_url": "GBeurier/nirs4all-formats",
+      "role": "Vendor spectroscopy readers and cross-language bindings",
+      "state": {
+        "branch": null,
+        "commit": "3e5a05674dfab4bbcebf23fe9d615d231ca4d551",
+        "dirty": false,
+        "exact_tag": "v0.2.9",
+        "remote_ref": "refs/tags/v0.2.9^{}",
+        "tree": "3b9717258fc80791d80641633a4bbf6478e7256a"
+      },
+      "version": "0.2.9"
+    },
+    "io": {
+      "publication_head": {
+        "head": "df7f2198862c71a24aeeba08ba09ee118524b55d",
+        "ref": "refs/tags/v0.1.14^{}",
+        "repository": "GBeurier/nirs4all-io",
+        "tree": "16b2910ec602cfa4fd1db2f1c1d9b2a89893b857"
+      },
+      "qualification_head": {
+        "head": "e6241571e2714160d2ff769030964b8924f0cbdb",
+        "ref": "refs/heads/release/io-0.1.14-security-candidate",
+        "repository": "GBeurier/nirs4all-io",
+        "tree": "bd133e35893c4405b59f6551d5a91d6722904219"
+      },
+      "receipts": [
+        {
+          "archive_digest": "sha256:c1ea1d8beaf9ffa9be52192a9e7f6ac8570a0fc8f58905b3f31bde5c157a6d44",
+          "artifact_id": 9905226215,
+          "artifact_name": "io-xlg-001-report",
+          "id": "io_xlg_001",
+          "job": 100745795011,
+          "overall_complete": true,
+          "report_sha256": "sha256:6eb584f2866c84b034200f80522e3ec0035e726c4f512071901054d779c7fb17",
+          "run": 33784472043,
+          "source_dirty": false,
+          "state": "passed",
+          "surfaces": [
+            "rust",
+            "python",
+            "wasm",
+            "r",
+            "matlab_octave",
+            "c_abi"
+          ]
+        }
+      ],
+      "release_role": "native_runtime",
+      "release_state": "published",
+      "repo_path": "nirs4all-io",
+      "repo_url": "GBeurier/nirs4all-io",
+      "role": "Dataset assembly and DatasetPackage bridge",
+      "state": {
+        "branch": null,
+        "commit": "df7f2198862c71a24aeeba08ba09ee118524b55d",
+        "dirty": false,
+        "exact_tag": "v0.1.14",
+        "remote_ref": "refs/tags/v0.1.14^{}",
+        "tree": "16b2910ec602cfa4fd1db2f1c1d9b2a89893b857"
+      },
+      "version": "0.1.14"
+    },
+    "methods": {
+      "artifacts": [
+        {
+          "id": "methods_project",
+          "state": "candidate",
+          "version": "1.0.15"
+        },
+        {
+          "id": "n4m_c_abi",
+          "state": "candidate",
+          "version": "2.5.0"
+        },
+        {
+          "id": "n4m_rust_binding",
+          "state": "published",
+          "version": "0.1.4"
+        }
+      ],
+      "qualification_head": {
+        "head": "e0bee1ce160cd805d3060185fd151c09230c3381",
+        "ref": "refs/tags/n4m-v0.1.4^{}",
+        "repository": "GBeurier/nirs4all-methods",
+        "tree": "7e4658658e37f77be18ef6d3d6aff150886efb5b"
+      },
+      "release_role": "native_runtime",
+      "release_state": "candidate",
+      "repo_path": "nirs4all-methods",
+      "repo_url": "GBeurier/nirs4all-methods",
+      "role": "Portable methods kernels, model replay and C ABI",
+      "state": {
+        "branch": null,
+        "commit": "e0bee1ce160cd805d3060185fd151c09230c3381",
+        "dirty": false,
+        "exact_tag": "n4m-v0.1.4",
+        "remote_ref": "refs/tags/n4m-v0.1.4^{}",
+        "tree": "7e4658658e37f77be18ef6d3d6aff150886efb5b"
+      }
+    },
+    "providers": {
+      "artifacts": [
+        {
+          "filename": "nirs4all_providers-0.2.10-py3-none-any.whl",
+          "id": "pypi_wheel",
+          "sha256": "6cab02c6b87853c90e5a5d2b0d8b3436a72967bdd4d76d78bf548356254ca89d",
+          "size": 61481,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "pypi_sdist",
+          "sha256": "347f779632cdb0b7e8c217f794b1154f2324f3ccd494aba63009427382c9f556",
+          "size": 65323,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "candidate_wheel",
+          "sha256": "e8220584e6d9e1af97b209e8e2e06326ed3071e103544968a3305bb6e2353357",
+          "state": "candidate",
+          "version": "0.2.11"
+        },
+        {
+          "id": "candidate_sdist",
+          "sha256": "690c3241aa2f0c8e01f960b4fb5667edf157780784ce8a9077cb7896fa22af00",
+          "state": "candidate",
+          "version": "0.2.11"
+        }
+      ],
+      "publication_head": {
+        "head": "5a03f508374531409919fceb2f2367544c52b94d",
+        "ref": "refs/tags/v0.2.10^{}",
+        "repository": "GBeurier/nirs4all-providers",
+        "tree": "f8ce915b4f95fbff9e27f967d1c319363d2b7881"
+      },
+      "qualification_head": {
+        "head": "15722bd1123c887322f3bc3e0d54b145cffaf948",
+        "ref": "refs/heads/release/providers-0.2.11-v1-candidate",
+        "repository": "GBeurier/nirs4all-providers",
+        "tree": "6cc1a280f4fa993226a2f66f8ed70847a2ea9b58"
+      },
+      "receipts": [
+        {
+          "id": "github_release_351621812",
+          "published_at": "2026-07-09T15:36:12Z",
+          "release_id": 351621812,
+          "state": "passed"
+        },
+        {
+          "checks": [
+            "exact_cross_repo_e2e",
+            "ruff",
+            "mypy",
+            "contracts",
+            "build",
+            "twine"
+          ],
+          "head": "d32e9df34494d44d6034c5ddd74523c41f34b087",
+          "id": "providers_0_2_11_local_qualification",
+          "publication": false,
+          "state": "passed",
+          "tests": 79
+        },
+        {
+          "conformance_tests": 8,
+          "fixtures": 5,
+          "head": "15722bd1123c887322f3bc3e0d54b145cffaf948",
+          "id": "providers_0_2_11_build_33787887613",
+          "job": 100757017147,
+          "main_suite": "81_passed_1_skipped",
+          "publication": false,
+          "publish_job": 100758697733,
+          "publish_job_state": "skipped",
+          "run": 33787887613,
+          "schemas": 5,
+          "state": "passed",
+          "twine_wheel_and_sdist": "passed",
+          "wheel_smoke": "passed"
+        }
+      ],
+      "release_role": "required_provider_contracts",
+      "release_state": "candidate",
+      "repo_path": "nirs4all-providers",
+      "repo_url": "GBeurier/nirs4all-providers",
+      "role": "Published Python provider client over neutral cross-language contracts",
+      "state": {
+        "branch": "release/providers-0.2.11-v1-candidate",
+        "commit": "15722bd1123c887322f3bc3e0d54b145cffaf948",
+        "dirty": false,
+        "exact_tag": null,
+        "remote_ref": "refs/heads/release/providers-0.2.11-v1-candidate",
+        "tree": "6cc1a280f4fa993226a2f66f8ed70847a2ea9b58"
+      },
+      "version": "0.2.11"
+    },
+    "python": {
+      "publication_head": {
+        "head": "61a66d1bd0157dd9422facc4b32fca33989d4035",
+        "ref": "refs/tags/0.13.0^{}",
+        "repository": "GBeurier/nirs4all",
+        "tree": "e0583f7287c13ace028b38708268305626a47372"
+      },
+      "qualification_head": {
+        "head": "53a0acb964bff86dc67002763d8e9b850336731f",
+        "ref": "refs/heads/release/r3-1.0.0-rc.2-candidate",
+        "repository": "GBeurier/nirs4all",
+        "tree": "2404b76783e9fc6e10723e671d274975e14756aa"
+      },
+      "release_role": "python_product",
+      "release_state": "candidate",
+      "repo_path": "nirs4all",
+      "repo_url": "GBeurier/nirs4all",
+      "role": "Full Python library, compatibility oracle and product API",
+      "state": {
+        "branch": "release/r3-1.0.0-rc.2-candidate",
+        "commit": "53a0acb964bff86dc67002763d8e9b850336731f",
+        "dirty": false,
+        "exact_tag": null,
+        "remote_ref": "refs/heads/release/r3-1.0.0-rc.2-candidate",
+        "tree": "2404b76783e9fc6e10723e671d274975e14756aa"
+      },
+      "version": "1.0.0rc2"
+    },
+    "studio": {
+      "artifacts": [
+        {
+          "archive_digest": "sha256:8149cce1671f4ea1cf5e99f3b4c5ef4412984ad424fa7c6075b898facf02ca6d",
+          "artifact_id": 9904512043,
+          "id": "pinned_plugin_wheels",
+          "size": 2673674,
+          "state": "candidate",
+          "version": "0.11.0"
+        },
+        {
+          "archive_digest": "sha256:07fe1d212bb5ce16d6ab15e5250bae79260f714e51db0e6ab2cd6c7a606199df",
+          "artifact_id": 9905321037,
+          "id": "windows_x64_installer",
+          "size": 597328231,
+          "state": "candidate",
+          "version": "0.11.0"
+        },
+        {
+          "archive_digest": "sha256:953a8014891fb80b408c2490ec1b21e10a2f873027805c875491ac215ba7c6e7",
+          "artifact_id": 9905057224,
+          "id": "linux_x64_appimage",
+          "size": 822183865,
+          "state": "candidate",
+          "version": "0.11.0"
+        },
+        {
+          "archive_digest": "sha256:ad895bb11ae7337804dd886508620a973cf2707208522923e7564aa4d6b2a050",
+          "artifact_id": 9905786569,
+          "id": "macos_x64_dmg",
+          "size": 371516175,
+          "state": "candidate",
+          "version": "0.11.0"
+        },
+        {
+          "archive_digest": "sha256:1759fec8d37279cf9b20dce36cca8c371abecd01b29d216d9502e24d1b52e3f5",
+          "artifact_id": 9904914674,
+          "id": "macos_arm64_dmg",
+          "size": 350503372,
+          "state": "candidate",
+          "version": "0.11.0"
+        }
+      ],
+      "dependency_receipts": [
+        {
+          "component": "core",
+          "disposition": "aligned",
+          "resolved_version": "0.3.28",
+          "train_version": "0.3.28"
+        },
+        {
+          "component": "io",
+          "disposition": "aligned",
+          "resolved_version": "0.1.14",
+          "train_version": "0.1.14"
+        }
+      ],
+      "publication_head": {
+        "head": "5d043ee23f0ba7f47584bc9ef18fa13755e59198",
+        "ref": "refs/tags/0.10.1^{}",
+        "repository": "GBeurier/nirs4all-studio",
+        "tree": "f7a2032653979ddee824c6c9e15ea88c571cfdfd"
+      },
+      "qualification_head": {
+        "head": "86d5e5033d62240815e532038b6e769b14b25c2b",
+        "ref": "refs/heads/release/r3-0.11.0-candidate",
+        "repository": "GBeurier/nirs4all-studio",
+        "tree": "dc61df097434c38a8d2bdd9939d3057683fc7661"
+      },
+      "receipts": [
+        {
+          "github_release_created": false,
+          "id": "release_matrix_33783518197",
+          "jobs": [
+            100742798362,
+            100742798455,
+            100742798460,
+            100742798510
+          ],
+          "notarized": false,
+          "run": 33783518197,
+          "signed": false,
+          "state": "passed"
+        }
+      ],
+      "release_role": "desktop_product",
+      "release_state": "candidate",
+      "repo_path": "nirs4all-studio",
+      "repo_url": "GBeurier/nirs4all-studio",
+      "role": "Rust control-plane desktop product with CPython plugin host",
+      "state": {
+        "branch": "release/r3-0.11.0-candidate",
+        "commit": "86d5e5033d62240815e532038b6e769b14b25c2b",
+        "dirty": false,
+        "exact_tag": null,
+        "remote_ref": "refs/heads/release/r3-0.11.0-candidate",
+        "tree": "dc61df097434c38a8d2bdd9939d3057683fc7661"
+      },
+      "version": "0.11.0"
+    },
+    "tools": {
+      "publication_head": {
+        "head": "88c2bc1e29603049cdbf1a1080a35845edf2f3c9",
+        "ref": "refs/tags/v0.0.7",
+        "repository": "GBeurier/nirs4all-tools",
+        "tree": "d46a5fd2fcb7a2e14225cf1c3ad2661f7a4ab8b3"
+      },
+      "release_role": "migration_surface",
+      "release_state": "published",
+      "repo_path": "nirs4all-tools",
+      "repo_url": "GBeurier/nirs4all-tools",
+      "role": "Legacy workspace migration and conversion tooling",
+      "state": {
+        "branch": null,
+        "commit": "88c2bc1e29603049cdbf1a1080a35845edf2f3c9",
+        "dirty": false,
+        "exact_tag": "v0.0.7",
+        "remote_ref": "refs/tags/v0.0.7",
+        "tree": "d46a5fd2fcb7a2e14225cf1c3ad2661f7a4ab8b3"
+      },
+      "version": "0.0.7"
+    },
+    "ui": {
+      "publication_head": {
+        "head": "406d94d70004f27459ef12347af1e6f0079ab6ac",
+        "ref": "refs/tags/v0.1.13^{}",
+        "repository": "GBeurier/nirs4all-ui",
+        "tree": "377722160bbf188c474aacfecc8a6825095be2ca"
+      },
+      "release_role": "shared_product_ui",
+      "release_state": "published",
+      "repo_path": "nirs4all-ui",
+      "repo_url": "GBeurier/nirs4all-ui",
+      "role": "Shared Studio and Web React components and view models",
+      "state": {
+        "branch": null,
+        "commit": "406d94d70004f27459ef12347af1e6f0079ab6ac",
+        "dirty": false,
+        "exact_tag": "v0.1.13",
+        "remote_ref": "refs/tags/v0.1.13^{}",
+        "tree": "377722160bbf188c474aacfecc8a6825095be2ca"
+      },
+      "version": "0.1.13"
+    },
+    "web": {
+      "dependency_receipts": [
+        {
+          "component": "core",
+          "disposition": "compatible_published_lag",
+          "resolved_version": "0.3.27",
+          "train_version": "0.3.28"
+        }
+      ],
+      "publication_head": {
+        "head": "051bf636d7c1729087e5d40061b18bd690cd33b7",
+        "ref": "refs/tags/v0.1.10^{}",
+        "repository": "GBeurier/nirs4all-web",
+        "tree": "e94251e350f31dbb996e1a2e477c466cfdf992ff"
+      },
+      "release_role": "browser_product",
+      "release_state": "published",
+      "repo_path": "nirs4all-web",
+      "repo_url": "GBeurier/nirs4all-web",
+      "role": "Client-side-only browser and WASM product",
+      "state": {
+        "branch": null,
+        "commit": "051bf636d7c1729087e5d40061b18bd690cd33b7",
+        "dirty": false,
+        "exact_tag": "v0.1.10",
+        "remote_ref": "refs/tags/v0.1.10^{}",
+        "tree": "e94251e350f31dbb996e1a2e477c466cfdf992ff"
+      },
+      "version": "0.1.10"
+    }
+  },
+  "product_milestones": {
+    "r1": {
+      "default_engine": "legacy",
+      "members": {
+        "python": {
+          "remote": {
+            "head": "61a66d1bd0157dd9422facc4b32fca33989d4035",
+            "ref": "refs/tags/0.13.0^{}",
+            "repository": "GBeurier/nirs4all",
+            "tree": "e0583f7287c13ace028b38708268305626a47372"
+          },
+          "version": "0.13.0"
+        },
+        "studio": {
+          "remote": {
+            "head": "65b2aa2ac80249fdbd2fb0ccb55c82ac5b5e8219",
+            "ref": "refs/heads/release/r1-0.10.1-candidate",
+            "repository": "GBeurier/nirs4all-studio",
+            "tree": "e978be82eca9df3cf44c721ea2692e6f0fc896c3"
+          },
+          "version": "0.10.1"
+        }
+      },
+      "publication_receipts": {
+        "publication_repair_commit": "e76c834c75157f0c74fcbba7383a69a818ed6b34",
+        "publication_repair_tree": "49dadfb76d6995c2ab825d8cb937a864ea773fb9",
+        "python": "pypi_and_ghcr",
+        "workflow_run": 33753479548
+      },
+      "state": "published"
+    },
+    "r2": {
+      "default_engine": "native_with_explicit_legacy_opt_in",
+      "members": {
+        "python": {
+          "remote": {
+            "head": "1de9dcb50fcdcc6273113f54a7c7235528c31ed8",
+            "ref": "refs/heads/release/r2-1.0.0-rc.1-candidate",
+            "repository": "GBeurier/nirs4all",
+            "tree": "97d348bf728144ec4324dcca6430d68eb3b9a1d5"
+          },
+          "version": "1.0.0rc1"
+        },
+        "studio": {
+          "remote": {
+            "head": "54350c688ae576bbbb393c5a24dae8d106f77322",
+            "ref": "refs/heads/release/r2-0.10.2-candidate",
+            "repository": "GBeurier/nirs4all-studio",
+            "tree": "9ecf2279039ef9b5af3d5be59be695f0dc0bc1d3"
+          },
+          "version": "0.10.2"
+        }
+      },
+      "state": "candidate"
+    },
+    "r3": {
+      "default_engine": "native_fail_closed_rust_only",
+      "members": {
+        "python": {
+          "remote": {
+            "head": "53a0acb964bff86dc67002763d8e9b850336731f",
+            "ref": "refs/heads/release/r3-1.0.0-rc.2-candidate",
+            "repository": "GBeurier/nirs4all",
+            "tree": "2404b76783e9fc6e10723e671d274975e14756aa"
+          },
+          "version": "1.0.0rc2"
+        },
+        "studio": {
+          "remote": {
+            "head": "86d5e5033d62240815e532038b6e769b14b25c2b",
+            "ref": "refs/heads/release/r3-0.11.0-candidate",
+            "repository": "GBeurier/nirs4all-studio",
+            "tree": "dc61df097434c38a8d2bdd9939d3057683fc7661"
+          },
+          "version": "0.11.0"
+        }
+      },
+      "state": "candidate"
+    },
+    "r4": {
+      "members": {},
+      "state": "not_created",
+      "target_versions": {
+        "python": "1.0.0"
+      }
+    }
+  },
+  "projections": {
+    "benchmarks": {
+      "artifact_receipts_complete": false,
+      "artifact_receipts_required": true,
+      "artifacts": [
+        {
+          "id": "current_head_product_report",
+          "sha256": "b7ff6419041ee64a94fcb58dfaad250acd81d672ee5f352ac5e87a3c46055ed1",
+          "state": "candidate",
+          "version": "2026-09-03"
+        },
+        {
+          "id": "bounded_studio_probe_report",
+          "sha256": "4c968068b5f20714ebcd98de24d791b05df9128e8311f8b6b7d1e17da8d69101",
+          "state": "candidate",
+          "version": "2026-09-03"
+        }
+      ],
+      "key": "benchmarks",
+      "qualification_head": {
+        "head": "17f8196b26457fbd300a46d6520c3d1845d0de05",
+        "ref": "refs/heads/release/native-v1-candidate",
+        "repository": "GBeurier/nirs4all-benchmarks",
+        "tree": "29ae8f56656ce59cbcc2923ad6b30680d1b50a21"
+      },
+      "receipts": [
+        {
+          "fallback": false,
+          "id": "bench_current_head_local_qualification",
+          "integrity_probes_passed": 3,
+          "maximum_prediction_delta": 0,
+          "product_surfaces_passed": 4,
+          "representative_corpus": false,
+          "state": "passed",
+          "studio_probe_passed": 3,
+          "sustained_duration": false
+        }
+      ],
+      "repo_path": "nirs4all-benchmarks",
+      "required_for_promotion": true,
+      "role": "Required performance and soak evidence receipt, not a runtime dependency",
+      "state": "candidate"
+    },
+    "cockpit": {
+      "artifact_receipts_complete": false,
+      "artifact_receipts_required": false,
+      "key": "cockpit",
+      "qualification_head": {
+        "head": "b612436c75adfc083506ca423a1013a0f3d663f0",
+        "ref": "refs/heads/release/native-v1-candidate",
+        "repository": "GBeurier/nirs4all-cockpit",
+        "tree": "44e74187956fef3003c9d94f739113e74ade8cca"
+      },
+      "repo_path": "nirs4all-cockpit",
+      "required_for_promotion": true,
+      "role": "Required release-observability projection, not a runtime dependency",
+      "state": "candidate"
+    },
+    "org": {
+      "artifact_receipts_complete": false,
+      "artifact_receipts_required": false,
+      "key": "org",
+      "qualification_head": {
+        "head": "71a1db5c7d808a015aa2a1c6f07e6542ca3b8571",
+        "ref": "refs/heads/release/native-v1-candidate",
+        "repository": "GBeurier/nirs4all-org",
+        "tree": "b37719e2b9572be61fe011a3b0b46e71f6cfccfc"
+      },
+      "repo_path": "nirs4all-org",
+      "required_for_promotion": true,
+      "role": "Required public release-disclosure projection, not a runtime dependency",
+      "state": "candidate"
+    },
+    "repository": {
+      "artifact_receipts_complete": false,
+      "artifact_receipts_required": true,
+      "artifacts": [
+        {
+          "id": "python_wheel",
+          "sha256": "c01c95483fe81f8c659451fda8c7e8e83d4f5d46a509ec13cae8ab906c1e53a7",
+          "state": "candidate",
+          "version": "0.1.11"
+        },
+        {
+          "id": "python_sdist",
+          "sha256": "034e3a0edfefceda5500bbe9f8b335a2e46342c530a790e4117619d5d70914f3",
+          "state": "candidate",
+          "version": "0.1.11"
+        }
+      ],
+      "key": "repository",
+      "publication_head": {
+        "head": "0c2595e1e7305b7969afd22984ad15e37fa7ea5d",
+        "ref": "refs/tags/v0.1.10^{}",
+        "repository": "GBeurier/nirs4all-repository",
+        "tree": "bb23a73d03abbc2e377f1494e147623265a06a3e"
+      },
+      "qualification_head": {
+        "head": "337caa6773c60fed94a0dfebcaf471e3a470af96",
+        "ref": "refs/heads/release/repository-v1-compat-candidate",
+        "repository": "GBeurier/nirs4all-repository",
+        "tree": "33f8d0cef23f24af2dbf74cade70bd17a5ad1bcb"
+      },
+      "receipts": [
+        {
+          "artifact_digest": "sha256:b6c1407e8387e7934d46e0db2c7f5375a06d9e41baaa2fc6ef6f4f61e9d4fe9d",
+          "compatibility_recipes": [
+            "r1",
+            "r2",
+            "r3"
+          ],
+          "id": "build_33786080850",
+          "published": false,
+          "scope": "build_only",
+          "state": "passed"
+        }
+      ],
+      "repo_path": "nirs4all-repository",
+      "required_for_promotion": true,
+      "role": "Mandatory R4-W3/WEBREL-004 publication projection pending addition to the public-surface contract and signed release",
+      "state": "candidate"
+    }
+  },
+  "promotion": {
+    "blockers": [
+      "artifact_receipts",
+      "component_publications",
+      "external_matrices",
+      "product_publication",
+      "repository_surface_contract",
+      "signatures",
+      "soak"
+    ],
+    "eligible": false,
+    "gates": {
+      "artifact_receipts": "pending",
+      "candidate_ci": "passed",
+      "component_publications": "pending",
+      "external_matrices": "pending",
+      "product_publication": "partial",
+      "repository_surface_contract": "pending",
+      "signatures": "missing",
+      "soak": "missing"
+    },
+    "status": "no_go"
+  },
+  "release_train": "native-v1-r1-r4",
+  "remote_identities": {
+    "component:core:publication_head": {
+      "head": "550cb8c80708e88ac7ebbc880acb4b82d8531632",
+      "ref": "refs/tags/v0.3.28^{}",
+      "repository": "GBeurier/nirs4all-core",
+      "tree": "5181e3bc65c9a3ee413bdfc8b81f34cd61450f7e"
+    },
+    "component:dag_ml:publication_head": {
+      "head": "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381",
+      "ref": "refs/tags/v0.3.23^{}",
+      "repository": "GBeurier/dag-ml",
+      "tree": "8dffd6e823e214b720e1f8d715ddb7634bd4fb4e"
+    },
+    "component:dag_ml_data:publication_head": {
+      "head": "7d9b9fed04c135ed4c2bba472c782aca7ef85807",
+      "ref": "refs/tags/v0.2.10^{}",
+      "repository": "GBeurier/dag-ml-data",
+      "tree": "42f02fdd723239cdbc933797e01d0d48b184712e"
+    },
+    "component:datasets:publication_head": {
+      "head": "007d7aafe50e6e4148d5a5cefe0ad96d9da37e7b",
+      "ref": "refs/tags/v0.3.10^{}",
+      "repository": "GBeurier/nirs4all-datasets",
+      "tree": "7e37557cff5b4d825e9837e96cb4b2ff05211678"
+    },
+    "component:formats:publication_head": {
+      "head": "3e5a05674dfab4bbcebf23fe9d615d231ca4d551",
+      "ref": "refs/tags/v0.2.9^{}",
+      "repository": "GBeurier/nirs4all-formats",
+      "tree": "3b9717258fc80791d80641633a4bbf6478e7256a"
+    },
+    "component:io:publication_head": {
+      "head": "df7f2198862c71a24aeeba08ba09ee118524b55d",
+      "ref": "refs/tags/v0.1.14^{}",
+      "repository": "GBeurier/nirs4all-io",
+      "tree": "16b2910ec602cfa4fd1db2f1c1d9b2a89893b857"
+    },
+    "component:io:qualification_head": {
+      "head": "e6241571e2714160d2ff769030964b8924f0cbdb",
+      "ref": "refs/heads/release/io-0.1.14-security-candidate",
+      "repository": "GBeurier/nirs4all-io",
+      "tree": "bd133e35893c4405b59f6551d5a91d6722904219"
+    },
+    "component:methods:qualification_head": {
+      "head": "e0bee1ce160cd805d3060185fd151c09230c3381",
+      "ref": "refs/tags/n4m-v0.1.4^{}",
+      "repository": "GBeurier/nirs4all-methods",
+      "tree": "7e4658658e37f77be18ef6d3d6aff150886efb5b"
+    },
+    "component:providers:publication_head": {
+      "head": "5a03f508374531409919fceb2f2367544c52b94d",
+      "ref": "refs/tags/v0.2.10^{}",
+      "repository": "GBeurier/nirs4all-providers",
+      "tree": "f8ce915b4f95fbff9e27f967d1c319363d2b7881"
+    },
+    "component:providers:qualification_head": {
+      "head": "15722bd1123c887322f3bc3e0d54b145cffaf948",
+      "ref": "refs/heads/release/providers-0.2.11-v1-candidate",
+      "repository": "GBeurier/nirs4all-providers",
+      "tree": "6cc1a280f4fa993226a2f66f8ed70847a2ea9b58"
+    },
+    "component:python:publication_head": {
+      "head": "61a66d1bd0157dd9422facc4b32fca33989d4035",
+      "ref": "refs/tags/0.13.0^{}",
+      "repository": "GBeurier/nirs4all",
+      "tree": "e0583f7287c13ace028b38708268305626a47372"
+    },
+    "component:python:qualification_head": {
+      "head": "53a0acb964bff86dc67002763d8e9b850336731f",
+      "ref": "refs/heads/release/r3-1.0.0-rc.2-candidate",
+      "repository": "GBeurier/nirs4all",
+      "tree": "2404b76783e9fc6e10723e671d274975e14756aa"
+    },
+    "component:studio:publication_head": {
+      "head": "5d043ee23f0ba7f47584bc9ef18fa13755e59198",
+      "ref": "refs/tags/0.10.1^{}",
+      "repository": "GBeurier/nirs4all-studio",
+      "tree": "f7a2032653979ddee824c6c9e15ea88c571cfdfd"
+    },
+    "component:studio:qualification_head": {
+      "head": "86d5e5033d62240815e532038b6e769b14b25c2b",
+      "ref": "refs/heads/release/r3-0.11.0-candidate",
+      "repository": "GBeurier/nirs4all-studio",
+      "tree": "dc61df097434c38a8d2bdd9939d3057683fc7661"
+    },
+    "component:tools:publication_head": {
+      "head": "88c2bc1e29603049cdbf1a1080a35845edf2f3c9",
+      "ref": "refs/tags/v0.0.7",
+      "repository": "GBeurier/nirs4all-tools",
+      "tree": "d46a5fd2fcb7a2e14225cf1c3ad2661f7a4ab8b3"
+    },
+    "component:ui:publication_head": {
+      "head": "406d94d70004f27459ef12347af1e6f0079ab6ac",
+      "ref": "refs/tags/v0.1.13^{}",
+      "repository": "GBeurier/nirs4all-ui",
+      "tree": "377722160bbf188c474aacfecc8a6825095be2ca"
+    },
+    "component:web:publication_head": {
+      "head": "051bf636d7c1729087e5d40061b18bd690cd33b7",
+      "ref": "refs/tags/v0.1.10^{}",
+      "repository": "GBeurier/nirs4all-web",
+      "tree": "e94251e350f31dbb996e1a2e477c466cfdf992ff"
+    },
+    "milestone:r1:python": {
+      "head": "61a66d1bd0157dd9422facc4b32fca33989d4035",
+      "ref": "refs/tags/0.13.0^{}",
+      "repository": "GBeurier/nirs4all",
+      "tree": "e0583f7287c13ace028b38708268305626a47372"
+    },
+    "milestone:r1:studio": {
+      "head": "65b2aa2ac80249fdbd2fb0ccb55c82ac5b5e8219",
+      "ref": "refs/heads/release/r1-0.10.1-candidate",
+      "repository": "GBeurier/nirs4all-studio",
+      "tree": "e978be82eca9df3cf44c721ea2692e6f0fc896c3"
+    },
+    "milestone:r2:python": {
+      "head": "1de9dcb50fcdcc6273113f54a7c7235528c31ed8",
+      "ref": "refs/heads/release/r2-1.0.0-rc.1-candidate",
+      "repository": "GBeurier/nirs4all",
+      "tree": "97d348bf728144ec4324dcca6430d68eb3b9a1d5"
+    },
+    "milestone:r2:studio": {
+      "head": "54350c688ae576bbbb393c5a24dae8d106f77322",
+      "ref": "refs/heads/release/r2-0.10.2-candidate",
+      "repository": "GBeurier/nirs4all-studio",
+      "tree": "9ecf2279039ef9b5af3d5be59be695f0dc0bc1d3"
+    },
+    "milestone:r3:python": {
+      "head": "53a0acb964bff86dc67002763d8e9b850336731f",
+      "ref": "refs/heads/release/r3-1.0.0-rc.2-candidate",
+      "repository": "GBeurier/nirs4all",
+      "tree": "2404b76783e9fc6e10723e671d274975e14756aa"
+    },
+    "milestone:r3:studio": {
+      "head": "86d5e5033d62240815e532038b6e769b14b25c2b",
+      "ref": "refs/heads/release/r3-0.11.0-candidate",
+      "repository": "GBeurier/nirs4all-studio",
+      "tree": "dc61df097434c38a8d2bdd9939d3057683fc7661"
+    },
+    "projection:benchmarks:qualification_head": {
+      "head": "17f8196b26457fbd300a46d6520c3d1845d0de05",
+      "ref": "refs/heads/release/native-v1-candidate",
+      "repository": "GBeurier/nirs4all-benchmarks",
+      "tree": "29ae8f56656ce59cbcc2923ad6b30680d1b50a21"
+    },
+    "projection:cockpit:qualification_head": {
+      "head": "b612436c75adfc083506ca423a1013a0f3d663f0",
+      "ref": "refs/heads/release/native-v1-candidate",
+      "repository": "GBeurier/nirs4all-cockpit",
+      "tree": "44e74187956fef3003c9d94f739113e74ade8cca"
+    },
+    "projection:org:qualification_head": {
+      "head": "71a1db5c7d808a015aa2a1c6f07e6542ca3b8571",
+      "ref": "refs/heads/release/native-v1-candidate",
+      "repository": "GBeurier/nirs4all-org",
+      "tree": "b37719e2b9572be61fe011a3b0b46e71f6cfccfc"
+    },
+    "projection:repository:publication_head": {
+      "head": "0c2595e1e7305b7969afd22984ad15e37fa7ea5d",
+      "ref": "refs/tags/v0.1.10^{}",
+      "repository": "GBeurier/nirs4all-repository",
+      "tree": "bb23a73d03abbc2e377f1494e147623265a06a3e"
+    },
+    "projection:repository:qualification_head": {
+      "head": "337caa6773c60fed94a0dfebcaf471e3a470af96",
+      "ref": "refs/heads/release/repository-v1-compat-candidate",
+      "repository": "GBeurier/nirs4all-repository",
+      "tree": "33f8d0cef23f24af2dbf74cade70bd17a5ad1bcb"
+    }
+  },
+  "schema_version": "n4a.aggregation-lock/v2",
+  "status": "candidate",
+  "verification": {
+    "all_required_gates_passed": false,
+    "commands": [
+      "python3 scripts/n4a_release_lock.py generate --manifest docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json --output docs/contracts/release/aggregation-lock-candidate.v2.n4a.lock.json",
+      "python3 scripts/n4a_release_lock.py validate --manifest docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json --lock docs/contracts/release/aggregation-lock-candidate.v2.n4a.lock.json",
+      "python3 scripts/n4a_release_lock.py checkout-members --manifest docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json --lock docs/contracts/release/aggregation-lock-candidate.v2.n4a.lock.json --output external-product-train",
+      "python3 scripts/n4a_release_lock.py audit-fetchability --manifest docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json --lock docs/contracts/release/aggregation-lock-candidate.v2.n4a.lock.json --fail-on-unfetchable"
+    ],
+    "full_product_train_inventory": true,
+    "private_repos_present": false
+  }
+}
