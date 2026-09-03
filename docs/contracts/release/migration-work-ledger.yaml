@@ -518,8 +518,8 @@ current_candidate_evidence:
     scope: local_code_only_no_global_go
   org:
     evidence_status: final_native_candidate_staging_local_publication_hold
-    commit: 887276ff23a330784a567e925fbce0ef5a64f101
-    tree: c79ba014b076795edb8723c530d7348950fb0ae9
+    commit: ab4dcf214c9e5c8035b69037d86b7a4bb9bea301
+    tree: da6daff72da3fa6ecb3aedb55f5a9550550e3c79
     snapshot_sha256: 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0
     snapshot_source_commit: e9d60c3a43dcf74d6318c5d165ff413452c49b1d
     publication: false
@@ -1520,7 +1520,7 @@ work_items:
       - STU-001
       - MTH-DOC-003
     state: complete_local_staging_publication_hold
-    input_sha: 887276ff23a330784a567e925fbce0ef5a64f101
+    input_sha: ab4dcf214c9e5c8035b69037d86b7a4bb9bea301
     owned_files:
       - nirs4all-org/
       - nirs4all-cockpit/data/current.json
@@ -1536,7 +1536,7 @@ work_items:
       - the public projection shared with Cockpit is byte-reproducible with SHA-256 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0
       - static validation covers manifest, HTML, internal links, accessibility, SEO, JSON-LD and sitemaps; eight negative tests, Ruff, Mypy, HTTP and headless Chrome smokes pass
     review: >-
-      Org candidate 887276ff23a330784a567e925fbce0ef5a64f101 closes
+      Org candidate ab4dcf214c9e5c8035b69037d86b7a4bb9bea301 closes
       the lock-driven public-safe staging work locally while preserving an
       explicit release-in-progress page with no download. Its snapshot is
       byte-identical to Cockpit at SHA-256 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0
@@ -2787,14 +2787,19 @@ work_items:
       - REL-003
       - MTH-DOC-003
       - STU-003
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: complete_local_staging_publication_hold
+    input_sha: ab4dcf214c9e5c8035b69037d86b7a4bb9bea301
     owned_files:
       - nirs4all-org/
       - docs/
     acceptance_tests:
       - R1 pages are built from the release lock, announce consolidation without claiming native default, and include publishable migration and Methods documentation.
-    review: pending
+    review: >-
+      Org ab4dcf2 adds a deterministic R1 archive derived exclusively from the
+      canonical baseline release manifest. It presents consolidation as
+      historical, never claims native-default or exposes a candidate artifact,
+      and links the migration centre and publishable Methods documentation.
+      The targeted site gate passes; deployment and publication remain held.
     rollback: keep sites in release-in-progress mode and retain the prior published pages
   - id: DAG-001
     owner: E + C

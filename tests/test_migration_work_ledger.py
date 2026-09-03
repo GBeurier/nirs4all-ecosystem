@@ -113,7 +113,7 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["studio"]["candidate_commit"] == "a6688f53994b4bf9f612057a86b17a25f04401c3"
     assert evidence["web"]["candidate_commit"] == "e7b9a6384050c2c1a92dcec6aab41e9f0430be43"
     assert evidence["benchmarks"]["commit"] == "24751ea97a3e12d48ffb9f0438a4355b024e15d8"
-    assert evidence["org"]["commit"] == "887276ff23a330784a567e925fbce0ef5a64f101"
+    assert evidence["org"]["commit"] == "ab4dcf214c9e5c8035b69037d86b7a4bb9bea301"
     assert evidence["cockpit"]["commit"] == "003bee587f8be65f7b157f906513479dfa744051"
     assert items["UI-001"]["state"] == "complete_local_code_registry_publication_hold"
     assert items["STU-006"]["state"] == "complete_local_code_external_release_hold"
@@ -122,6 +122,7 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert items["STU-005"]["state"] == "complete_local_code_release_hold"
     assert items["WEBREL-002"]["state"] == "prepared_local_docs_installer_publication_hold"
     assert items["WEBREL-003"]["state"] == "prepared_local_docs_installer_publication_hold"
+    assert items["WEBREL-001"]["state"] == "complete_local_staging_publication_hold"
     assert evidence["canonical_release_lock"]["updated"] is False
     assert all(
         value == "pending" or value.startswith("no_go")
