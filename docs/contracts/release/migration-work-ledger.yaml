@@ -185,7 +185,7 @@ current_candidate_evidence:
   observed_at: 2026-09-03
   authority: published_component_tags_registry_receipts_r1_and_web_with_unpublished_r2_r3_and_studio
   promotion_status: no_go
-  publication_status: no_go
+  publication_status: component_train_published_product_train_incomplete_no_go
   publication_detail: component_train_r1_and_web_published_r2_r3_and_studio_unpublished
   release_gate_status: no_go
   canonical_release_lock:
