@@ -84,6 +84,7 @@ def test_native_capability_ledger_validates_baseline_and_release_inputs() -> Non
     ledger = _validate_structural_semantics(validator, LEDGER)
 
     assert ledger["scope"]["exhaustive"] is True
+    assert "ADR-24" in ledger["scope"]["authority"]
     assert "Closed-world inventory" in ledger["scope"]["coverage"]
     assert ledger["release_context"]["release_train"] == "2026.07-refactor"
     assert {entry["id"] for entry in ledger["capabilities"]} >= set(validator.PORTABLE_CONTROLLER_KINDS)

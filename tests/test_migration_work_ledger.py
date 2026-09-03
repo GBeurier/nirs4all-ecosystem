@@ -103,17 +103,18 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert items["DOC-WEB-001"]["state"] == "complete_local_staging_publication_hold"
     assert items["DOC-WEB-001B"]["state"] == "complete_local_staging_publication_hold"
     evidence = ledger["current_candidate_evidence"]
-    assert evidence["methods"]["commit"] == "699d33f4f113b8068176e367e130951b1cf186c0"
-    assert evidence["dag_ml"]["commit"] == "b7d643f450da3018c8208a84abcabfab09d5da7d"
-    assert evidence["python_strict_profile"]["commit"] == "40421617c7f39cae6d11c4c3aecb51e9d0a582f4"
+    assert evidence["methods"]["commit"] == "e0bee1ce160cd805d3060185fd151c09230c3381"
+    assert evidence["dag_ml_data"]["commit"] == "7d9b9fed04c135ed4c2bba472c782aca7ef85807"
+    assert evidence["dag_ml"]["commit"] == "b08c62638829e0bcab741e66d44a3db66459e5a8"
+    assert evidence["python_strict_profile"]["commit"] == "3a38f589e5acbda58c5d071c95036f2572972ecd"
     assert evidence["core"]["commit"] == "b6442dc4334c62a2b6c72526bea554a734134ac6"
-    assert evidence["io"]["commit"] == "e41bf8f94a92356e98c215d4c41e907a7dfaf6ac"
+    assert evidence["io"]["commit"] == "ef36c215653e628749a24ab06d222ee0c5520f1d"
     assert evidence["datasets"]["commit"] == "5b528e96af80a3566a9773a617b76f447f5c8d50"
     assert evidence["tools"]["commit"] == "88c2bc1e29603049cdbf1a1080a35845edf2f3c9"
     assert evidence["tools"]["support_matrix_sha256"] == "85031fd02b89c16f7adc90e1faad4843cd654f0279c48332d58af3ad6b37a65b"
     assert evidence["ui"]["commit"] == "406d94d70004f27459ef12347af1e6f0079ab6ac"
     assert evidence["ui"]["tarball_sha256"] == "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67"
-    assert evidence["studio"]["candidate_commit"] == "e027cbf8dea9fc2297ac91b9cd983346a44fb34f"
+    assert evidence["studio"]["candidate_commit"] == "bb66016cf4f7578543cdc294713011881b884969"
     assert evidence["web"]["candidate_commit"] == "dbbbcaeaf5f0d0da35a5242f21e234ba92c67cf8"
     assert evidence["benchmarks"]["commit"] == "9aab2e13513b4e0a5a699a11ebc70f2bd00f10fb"
     assert evidence["security_harnesses"]["formats"]["commit"] == "892a48b38f6c94697f805524f6efd4e8ff7323b0"
@@ -122,6 +123,13 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["security_harnesses"]["studio_store"]["commit"] == "6d53f301830947ff85767c53c800829741af75ff"
     assert evidence["org"]["commit"] == "63d00bea2bd44b024e6321c195d673909006ca9d"
     assert evidence["cockpit"]["commit"] == "61ffa75fc23201e6150df62ed34034e3b60762f2"
+    assert evidence["remote_candidate_staging"]["status"] == "all_selected_component_heads_advertised_unpublished"
+    assert evidence["remote_candidate_staging"]["tag_or_registry_publication"] is False
+    assert len(evidence["remote_candidate_staging"]["heads"]) == 15
+    assert evidence["product_release_sequence"]["status"] == "r1_r2_r3_distinct_remote_candidates_r4_held"
+    assert evidence["product_release_sequence"]["milestones"]["r1"]["default_engine"] == "legacy"
+    assert evidence["product_release_sequence"]["milestones"]["r2"]["studio_commit"] == "54350c688ae576bbbb393c5a24dae8d106f77322"
+    assert evidence["product_release_sequence"]["milestones"]["r3"]["version"] == "1.0.0rc2"
     assert items["UI-001"]["state"] == "complete_local_code_registry_publication_hold"
     assert items["STU-006"]["state"] == "complete_local_code_external_release_hold"
     assert items["GATE-001"]["state"] == "complete_local_linux_functional_release_hold"
@@ -133,9 +141,11 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert items["INST-001"]["state"] == "prepared_local_linux_harness_external_matrix_hold"
     assert items["SUP-002"]["state"] == "complete_local_support_matrix_external_publication_hold"
     assert evidence["canonical_release_lock"]["updated"] is False
+    assert ledger["locks"]["LOCK-ARCH"].startswith("closed_")
     assert all(
         value == "pending" or value.startswith("no_go")
-        for value in ledger["locks"].values()
+        for key, value in ledger["locks"].items()
+        if key != "LOCK-ARCH"
     )
     assert ledger["locks"]["LOCK-RELEASE"].startswith("no_go")
 

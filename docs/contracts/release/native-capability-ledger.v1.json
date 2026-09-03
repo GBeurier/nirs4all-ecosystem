@@ -2,7 +2,7 @@
   "schema_version": "n4a.native-capability-ledger/v1",
   "status": "inventory-complete-candidate",
   "scope": {
-    "authority": "Native-backend V1 portability boundary (ADR-22)",
+    "authority": "Native-backend V1 portability boundary (ADR-22) and four-release rollback mapping (ADR-24, 833d535)",
     "coverage": "Closed-world inventory of every model, operator, format and public API promised by the V1 candidate surface matrix. Each promise has an explicit native, plugin, refused or not-promised disposition, strict preflight and candidate-bound source evidence; unlisted promises are refused.",
     "exhaustive": true
   },
