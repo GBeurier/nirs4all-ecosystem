@@ -1,34 +1,2351 @@
 {
   "schema_version": "n4a.native-capability-ledger/v1",
-  "status": "baseline",
+  "status": "inventory-complete-candidate",
   "scope": {
     "authority": "Native-backend V1 portability boundary (ADR-22)",
-    "coverage": "Evidence-backed capability dispositions only: currently proved portable Core controllers, the source-backed aggregate API, format boundary, native aggregation, and retained legacy boundary. This is not an exhaustive V1 program or product-surface inventory. Omission never excludes Studio, UI, Web, Tools, Providers, Cockpit, Org or another roadmap surface; those are accounted in the public surface matrix without inferring execution, availability or parity.",
-    "exhaustive": false
+    "coverage": "Closed-world inventory of every model, operator, format and public API promised by the V1 candidate surface matrix. Each promise has an explicit native, plugin, refused or not-promised disposition, strict preflight and candidate-bound source evidence; unlisted promises are refused.",
+    "exhaustive": true
   },
-  "strict_profile": {"name": "strict", "unknown_entry": {"disposition": "refused", "decision": "refuse", "error_code": "unknown", "before": ["scientific_data_access", "result_write", "meaningful_compute"]}, "no_implicit_executable_default": true},
-  "rollback_profile": {"name": "rollback-capable", "backend": "legacy", "native_default_release": true, "retention_releases": 2},
-  "evolution_policy": {"governed_by": "ADR-02", "v1_extension_mode": "namespaced_optional_reader_ignore", "unknown_core_fields": "refuse", "future_major_dual_read": 1, "legacy_prediction_readable_releases": 2},
-  "release_context": {"release_train": "2026.07-refactor", "inputs": {"aggregation_manifest": {"path": "docs/contracts/release/aggregation-manifest.n4a.json", "canonical_json_sha256": "sha256:27595d11c3ac9f1219e405e2888931ec9122f55fdd4c3968a2535615802ee34e"}, "aggregation_lock": {"path": "docs/contracts/release/aggregation-lock.n4a.lock.json", "canonical_json_sha256": "sha256:e6baf0c1cdff75e5a83a59b9d500d047e0b4aaa76fd7cbf642341cb1a62ae684"}, "surface_matrix": {"path": "docs/contracts/release/public-v1-surface-matrix.n4a.json", "canonical_json_sha256": "sha256:16d1a245bd97726e612f1947d239c91d74d1b339f87395cfc4c6558738dd4a4c"}}},
+  "strict_profile": {
+    "name": "strict",
+    "unknown_entry": {
+      "disposition": "refused",
+      "decision": "refuse",
+      "error_code": "unknown",
+      "before": [
+        "scientific_data_access",
+        "result_write",
+        "meaningful_compute"
+      ]
+    },
+    "no_implicit_executable_default": true
+  },
+  "rollback_profile": {
+    "name": "rollback-capable",
+    "backend": "legacy",
+    "native_default_release": true,
+    "retention_releases": 2
+  },
+  "evolution_policy": {
+    "governed_by": "ADR-02",
+    "v1_extension_mode": "namespaced_optional_reader_ignore",
+    "unknown_core_fields": "refuse",
+    "future_major_dual_read": 1,
+    "legacy_prediction_readable_releases": 2
+  },
+  "release_context": {
+    "release_train": "2026.07-refactor",
+    "inputs": {
+      "aggregation_manifest": {
+        "path": "docs/contracts/release/aggregation-manifest.n4a.json",
+        "canonical_json_sha256": "sha256:27595d11c3ac9f1219e405e2888931ec9122f55fdd4c3968a2535615802ee34e"
+      },
+      "aggregation_lock": {
+        "path": "docs/contracts/release/aggregation-lock.n4a.lock.json",
+        "canonical_json_sha256": "sha256:e6baf0c1cdff75e5a83a59b9d500d047e0b4aaa76fd7cbf642341cb1a62ae684"
+      },
+      "surface_matrix": {
+        "path": "docs/contracts/release/public-v1-surface-matrix.n4a.json",
+        "canonical_json_sha256": "sha256:a1c138ffbe7ab9f595637bf61129e8dd91e8f95d71cf02bb41661af4a5c78107"
+      }
+    }
+  },
   "capabilities": [
-    {"id": "split.kennard_stone", "kind": "operator", "aliases": ["nirs4all.operators.splitters.KennardStoneSplitter", "nirs4all.operators.splitters.splitters.KennardStoneSplitter"], "language": "portable", "runtime": "portable-methods", "disposition": "native", "owner": {"repository": "nirs4all-methods", "component": "portable-pipeline"}, "evidence": [{"component_key": "core", "source": "compat/capabilities.toml", "claim": "The locked Core controller descriptor proves Kennard-Stone execution through the portable pipeline on every aggregate runtime."}], "runtime_assertions": [{"runtime": "python", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "r", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "javascript_wasm", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "rust", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "matlab_octave", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}], "required_gates": {"core": ["core_pipeline_parity"], "methods": ["methods_cross_binding_parity"]}, "preflight": {"profile": "strict", "decision": "allow_native", "before": ["scientific_data_access", "result_write", "meaningful_compute"]}, "disposition_scope": {"profile": "strict", "runtime": "portable-methods", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"]}, "extensions": {}},
-    {"id": "preprocess.snv", "kind": "operator", "aliases": ["nirs4all.operators.transforms.SNV", "nirs4all.operators.transforms.StandardNormalVariate", "nirs4all.operators.transforms.scalers.StandardNormalVariate"], "language": "portable", "runtime": "portable-methods", "disposition": "native", "owner": {"repository": "nirs4all-methods", "component": "portable-pipeline"}, "evidence": [{"component_key": "core", "source": "compat/capabilities.toml", "claim": "The locked Core controller descriptor proves SNV execution through the portable pipeline on every aggregate runtime."}], "runtime_assertions": [{"runtime": "python", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "r", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "javascript_wasm", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "rust", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "matlab_octave", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}], "required_gates": {"core": ["core_pipeline_parity"], "methods": ["methods_cross_binding_parity"]}, "preflight": {"profile": "strict", "decision": "allow_native", "before": ["scientific_data_access", "result_write", "meaningful_compute"]}, "disposition_scope": {"profile": "strict", "runtime": "portable-methods", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"]}, "extensions": {}},
-    {"id": "preprocess.savgol", "kind": "operator", "aliases": ["nirs4all.operators.transforms.SavitzkyGolay", "nirs4all.operators.transforms.nirs.SavitzkyGolay"], "language": "portable", "runtime": "portable-methods", "disposition": "native", "owner": {"repository": "nirs4all-methods", "component": "portable-pipeline"}, "evidence": [{"component_key": "core", "source": "compat/capabilities.toml", "claim": "The locked Core controller descriptor proves Savitzky-Golay execution through the portable pipeline on every aggregate runtime."}], "runtime_assertions": [{"runtime": "python", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "r", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "javascript_wasm", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "rust", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "matlab_octave", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}], "required_gates": {"core": ["core_pipeline_parity"], "methods": ["methods_cross_binding_parity"]}, "preflight": {"profile": "strict", "decision": "allow_native", "before": ["scientific_data_access", "result_write", "meaningful_compute"]}, "disposition_scope": {"profile": "strict", "runtime": "portable-methods", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"]}, "extensions": {}},
-    {"id": "model.pls_regression", "kind": "model", "aliases": ["sklearn.cross_decomposition.PLSRegression", "sklearn.cross_decomposition._pls.PLSRegression"], "language": "cpp", "runtime": "portable-methods", "disposition": "native", "owner": {"repository": "nirs4all-methods", "component": "libn4m"}, "evidence": [{"component_key": "core", "source": "compat/capabilities.toml", "claim": "The locked Core PLS controller crosswalks both portable aliases and declares parity-validated execution on every aggregate runtime."}], "runtime_assertions": [{"runtime": "python", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "r", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "javascript_wasm", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "rust", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "matlab_octave", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}], "required_gates": {"core": ["core_pipeline_parity"], "methods": ["methods_cross_binding_parity"]}, "preflight": {"profile": "strict", "decision": "allow_native", "before": ["scientific_data_access", "result_write", "meaningful_compute"]}, "disposition_scope": {"profile": "strict", "runtime": "portable-methods", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.javascript_wasm.methods_scoped", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"]}, "extensions": {}},
-    {"id": "pipeline.portable_methods", "kind": "api", "aliases": ["run_portable_pipeline", "runPortablePipeline", "nirs4all_run_portable_pipeline", "run_portable_pipeline_with_library"], "language": "portable", "runtime": "portable-methods", "disposition": "native", "owner": {"repository": "nirs4all-core", "component": "aggregate-execution-api"}, "evidence": [{"component_key": "core", "source": "compat/capabilities.toml", "claim": "The locked Core controller and per-binding declarations prove the public portable pipeline API on every aggregate runtime."}, {"component_key": "core", "source": "bindings/python/src/nirs4all_core/_execution.py", "claim": "The Python aggregate exposes run_portable_pipeline and delegates numerical execution to nirs4all-methods."}], "runtime_assertions": [{"runtime": "python", "availability": "executable", "evidence_sources": ["compat/capabilities.toml", "bindings/python/src/nirs4all_core/_execution.py"]}, {"runtime": "r", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "javascript_wasm", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "rust", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "matlab_octave", "availability": "executable", "evidence_sources": ["compat/capabilities.toml"]}], "required_gates": {"core": ["core_pipeline_parity"]}, "preflight": {"profile": "strict", "decision": "allow_native", "before": ["scientific_data_access", "result_write", "meaningful_compute"]}, "disposition_scope": {"profile": "strict", "runtime": "portable-methods", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"]}, "extensions": {}},
-    {"id": "format.nirs4all-core.lazy-upstream", "kind": "format", "aliases": ["nirs4all_formats", "nirs4all.formats"], "language": "portable", "runtime": "nirs4all-core-lazy-upstream", "disposition": "not-promised", "owner": {"repository": "nirs4all-formats", "component": "upstream-reader-boundary"}, "evidence": [{"component_key": "core", "source": "compat/capabilities.toml", "claim": "The locked aggregate describes formats as metadata-only lazy re-exports whose execution capability is supplied by an installed upstream, so Core makes no executable format promise."}], "runtime_assertions": [{"runtime": "python", "availability": "metadata", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "r", "availability": "metadata", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "javascript_wasm", "availability": "metadata", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "rust", "availability": "metadata", "evidence_sources": ["compat/capabilities.toml"]}, {"runtime": "matlab_octave", "availability": "metadata", "evidence_sources": ["compat/capabilities.toml"]}], "required_gates": {}, "preflight": {"profile": "strict", "decision": "refuse", "before": ["scientific_data_access", "result_write", "meaningful_compute"]}, "disposition_scope": {"profile": "strict", "runtime": "nirs4all-core-lazy-upstream", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"]}, "extensions": {}},
-    {"id": "dag-ml.prediction-aggregation", "kind": "api", "aliases": [], "language": "rust", "runtime": "dag-ml-native", "disposition": "native", "owner": {"repository": "dag-ml", "component": "dag-ml-core"}, "evidence": [{"component_key": "dag_ml", "source": "crates/dag-ml-core/src/aggregation.rs", "claim": "The locked Rust native runtime owns the aggregation implementation; this source does not prove an aggregate language binding."}], "runtime_assertions": [{"runtime": "native", "availability": "executable", "evidence_sources": ["crates/dag-ml-core/src/aggregation.rs"]}], "required_gates": {"dag_ml": ["dagml_parity_oracle"]}, "preflight": {"profile": "strict", "decision": "allow_native", "before": ["scientific_data_access", "result_write", "meaningful_compute"]}, "disposition_scope": {"profile": "strict", "runtime": "dag-ml-native", "surface_ids": ["nirs4all.rust.aggregate"]}, "extensions": {}},
-    {"id": "nirs4all.python.oracle.legacy-backend", "kind": "api", "aliases": ["engine=legacy"], "language": "python", "runtime": "legacy-python", "disposition": "refused", "owner": {"repository": "nirs4all", "component": "legacy-backend-adapter"}, "evidence": [{"outside_lock_surface_id": "nirs4all.python.oracle", "commit": "56bbaf97c2cc04e8f0d14e7249ae5fc520d739d7", "source": "nirs4all/pipeline/engine.py", "claim": "The selected outside-lock Python oracle explicitly exposes and defaults the executable legacy engine selector."}, {"outside_lock_surface_id": "nirs4all.python.oracle", "commit": "56bbaf97c2cc04e8f0d14e7249ae5fc520d739d7", "source": "nirs4all/api/run.py", "claim": "The selected outside-lock Python oracle dispatches engine=legacy through its in-process legacy runner."}], "runtime_assertions": [{"runtime": "legacy-python", "availability": "executable", "evidence_sources": ["nirs4all/pipeline/engine.py", "nirs4all/api/run.py"]}], "required_gates": {}, "preflight": {"profile": "strict", "decision": "refuse", "before": ["scientific_data_access", "result_write", "meaningful_compute"]}, "legacy_retention": {"profile": "rollback-capable", "decision": "allow_legacy_retention", "runtime": "legacy-python", "before": ["scientific_data_access", "result_write", "meaningful_compute"], "native": false}, "disposition_scope": {"profile": "strict", "runtime": "legacy-python", "surface_ids": ["nirs4all.python.oracle"]}, "extensions": {}}
+    {
+      "id": "split.kennard_stone",
+      "kind": "operator",
+      "aliases": [
+        "nirs4all.operators.splitters.KennardStoneSplitter",
+        "nirs4all.operators.splitters.splitters.KennardStoneSplitter"
+      ],
+      "language": "portable",
+      "runtime": "portable-methods",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-methods",
+        "component": "portable-pipeline"
+      },
+      "evidence": [
+        {
+          "candidate_key": "core",
+          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "source": "compat/capabilities.toml",
+          "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
+          "claim": "The Core candidate descriptor limits the portable split promise to Kennard-Stone across the declared aggregate runtimes."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "r",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "matlab_octave",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        }
+      ],
+      "required_gates": {
+        "core": [
+          "core_pipeline_parity"
+        ],
+        "methods": [
+          "methods_cross_binding_parity"
+        ]
+      },
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "portable-methods",
+        "surface_ids": [
+          "nirs4all.python.core",
+          "nirs4all.r.aggregate",
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.rust.aggregate",
+          "nirs4all.matlab_octave.aggregate"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "preprocess.snv",
+      "kind": "operator",
+      "aliases": [
+        "nirs4all.operators.transforms.SNV",
+        "nirs4all.operators.transforms.StandardNormalVariate",
+        "nirs4all.operators.transforms.scalers.StandardNormalVariate"
+      ],
+      "language": "portable",
+      "runtime": "portable-methods",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-methods",
+        "component": "portable-pipeline"
+      },
+      "evidence": [
+        {
+          "candidate_key": "core",
+          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "source": "compat/capabilities.toml",
+          "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
+          "claim": "The Core candidate descriptor records native SNV execution across the declared aggregate runtimes."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "r",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "matlab_octave",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        }
+      ],
+      "required_gates": {
+        "core": [
+          "core_pipeline_parity"
+        ],
+        "methods": [
+          "methods_cross_binding_parity"
+        ]
+      },
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "portable-methods",
+        "surface_ids": [
+          "nirs4all.python.core",
+          "nirs4all.r.aggregate",
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.rust.aggregate",
+          "nirs4all.matlab_octave.aggregate"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "preprocess.savgol",
+      "kind": "operator",
+      "aliases": [
+        "nirs4all.operators.transforms.SavitzkyGolay",
+        "nirs4all.operators.transforms.nirs.SavitzkyGolay"
+      ],
+      "language": "portable",
+      "runtime": "portable-methods",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-methods",
+        "component": "portable-pipeline"
+      },
+      "evidence": [
+        {
+          "candidate_key": "core",
+          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "source": "compat/capabilities.toml",
+          "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
+          "claim": "The Core candidate descriptor records native Savitzky-Golay execution across the declared aggregate runtimes."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "r",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "matlab_octave",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        }
+      ],
+      "required_gates": {
+        "core": [
+          "core_pipeline_parity"
+        ],
+        "methods": [
+          "methods_cross_binding_parity"
+        ]
+      },
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "portable-methods",
+        "surface_ids": [
+          "nirs4all.python.core",
+          "nirs4all.r.aggregate",
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.rust.aggregate",
+          "nirs4all.matlab_octave.aggregate"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "model.pls_regression",
+      "kind": "model",
+      "aliases": [
+        "sklearn.cross_decomposition.PLSRegression",
+        "sklearn.cross_decomposition._pls.PLSRegression"
+      ],
+      "language": "portable",
+      "runtime": "portable-methods",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-methods",
+        "component": "libn4m"
+      },
+      "evidence": [
+        {
+          "candidate_key": "core",
+          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "source": "compat/capabilities.toml",
+          "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
+          "claim": "The Core candidate descriptor records native PLS regression for the exact portable aliases and declared aggregate runtimes."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "r",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "matlab_octave",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        }
+      ],
+      "required_gates": {
+        "core": [
+          "core_pipeline_parity"
+        ],
+        "methods": [
+          "methods_cross_binding_parity"
+        ]
+      },
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "portable-methods",
+        "surface_ids": [
+          "nirs4all.python.core",
+          "nirs4all.r.aggregate",
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.javascript_wasm.methods_scoped",
+          "nirs4all.rust.aggregate",
+          "nirs4all.matlab_octave.aggregate"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "pipeline.portable_methods",
+      "kind": "api",
+      "aliases": [
+        "run_portable_pipeline",
+        "runPortablePipeline",
+        "nirs4all_run_portable_pipeline",
+        "run_portable_pipeline_with_library"
+      ],
+      "language": "portable",
+      "runtime": "portable-methods",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-core",
+        "component": "aggregate-execution-api"
+      },
+      "evidence": [
+        {
+          "candidate_key": "core",
+          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "source": "compat/capabilities.toml",
+          "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
+          "claim": "The Core candidate descriptor records the bounded portable pipeline API across the declared aggregate runtimes."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "r",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "matlab_octave",
+          "availability": "executable",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        }
+      ],
+      "required_gates": {
+        "core": [
+          "core_pipeline_parity"
+        ]
+      },
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "portable-methods",
+        "surface_ids": [
+          "nirs4all.python.core",
+          "nirs4all.r.aggregate",
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.rust.aggregate",
+          "nirs4all.matlab_octave.aggregate"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "format.nirs4all-core.lazy-upstream",
+      "kind": "format",
+      "aliases": [
+        "nirs4all_formats",
+        "nirs4all.formats"
+      ],
+      "language": "portable",
+      "runtime": "nirs4all-core-lazy-upstream",
+      "disposition": "not-promised",
+      "owner": {
+        "repository": "nirs4all-formats",
+        "component": "upstream-reader-boundary"
+      },
+      "evidence": [
+        {
+          "candidate_key": "core",
+          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "source": "compat/capabilities.toml",
+          "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
+          "claim": "The Core candidate descriptor keeps upstream format readers as lazy metadata and makes no executable Core format-reader promise."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "metadata",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "r",
+          "availability": "metadata",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "metadata",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "metadata",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        },
+        {
+          "runtime": "matlab_octave",
+          "availability": "metadata",
+          "evidence_sources": [
+            "compat/capabilities.toml"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "refuse",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "nirs4all-core-lazy-upstream",
+        "surface_ids": [
+          "nirs4all.python.core",
+          "nirs4all.r.aggregate",
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.rust.aggregate",
+          "nirs4all.matlab_octave.aggregate"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "dag-ml.prediction-aggregation",
+      "kind": "api",
+      "aliases": [
+        "dag_ml.prediction_aggregation"
+      ],
+      "language": "rust",
+      "runtime": "dag-ml-native",
+      "disposition": "native",
+      "owner": {
+        "repository": "dag-ml",
+        "component": "dag-ml-core"
+      },
+      "evidence": [
+        {
+          "candidate_key": "dag_ml",
+          "commit": "ce0a1963077612b3ce2604746e77a6405d0c3002",
+          "source": "README.md",
+          "source_sha256": "sha256:d621b7f5ba9699a6cca6116a973bfa4b30a1cadc977fdfb644a357539286e286",
+          "claim": "The DAG candidate documentation records native prediction aggregation in the Rust runtime."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "native",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {
+        "dag_ml": [
+          "dagml_parity_oracle"
+        ]
+      },
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "dag-ml-native",
+        "surface_ids": [
+          "nirs4all.rust.aggregate"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "nirs4all.python.oracle.legacy-backend",
+      "kind": "api",
+      "aliases": [
+        "engine=legacy"
+      ],
+      "language": "python",
+      "runtime": "legacy-python",
+      "disposition": "refused",
+      "owner": {
+        "repository": "nirs4all",
+        "component": "legacy-backend-adapter"
+      },
+      "evidence": [
+        {
+          "candidate_key": "python",
+          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "source": "nirs4all/pipeline/engine.py",
+          "source_sha256": "sha256:b0553f5fc94a32ed0f3b7627e8e78bcd98a56aa6fa5dea4e2fee0b2b14c43494",
+          "claim": "The Python candidate retains explicit engine=legacy selection and dispatch for rollback while the strict profile refuses implicit legacy execution."
+        },
+        {
+          "candidate_key": "python",
+          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "source": "nirs4all/api/run.py",
+          "source_sha256": "sha256:2c0bb35c11f980dc147b6b30cc5115c95ca23d897d6365c6eea977df55959697",
+          "claim": "The Python candidate retains explicit engine=legacy selection and dispatch for rollback while the strict profile refuses implicit legacy execution."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "legacy-python",
+          "availability": "executable",
+          "evidence_sources": [
+            "nirs4all/pipeline/engine.py",
+            "nirs4all/api/run.py"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "refuse",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "legacy-python",
+        "surface_ids": [
+          "nirs4all.python.oracle"
+        ]
+      },
+      "extensions": {},
+      "legacy_retention": {
+        "profile": "rollback-capable",
+        "decision": "allow_legacy_retention",
+        "runtime": "legacy-python",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ],
+        "native": false
+      }
+    },
+    {
+      "id": "format.archive-v1.read",
+      "kind": "format",
+      "aliases": [
+        "N4A Archive V1"
+      ],
+      "language": "portable",
+      "runtime": "archive-reader",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-formats",
+        "component": "archive-reader"
+      },
+      "evidence": [
+        {
+          "candidate_key": "web",
+          "commit": "f1ae6c38e6c82bd7bf525c8c4a7adc8deb456eea",
+          "source": "README.md",
+          "source_sha256": "sha256:0c77e5a0bbb459de2ac879c6d962c5f5c8daa8078438681c3f81aa07eee7265e",
+          "claim": "The Web candidate documentation records bounded Archive V1 read compatibility."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "javascript_wasm",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "archive-reader",
+        "surface_ids": [
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.rust.aggregate",
+          "nirs4all.studio.product",
+          "nirs4all.web.product"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "format.archive-v2",
+      "kind": "format",
+      "aliases": [
+        "N4A Archive V2"
+      ],
+      "language": "portable",
+      "runtime": "archive-v2",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-methods",
+        "component": "archive-v2"
+      },
+      "evidence": [
+        {
+          "candidate_key": "methods",
+          "commit": "9d4e2753836eb85d61b1e7712ec6a06e627d4a5f",
+          "source": "README.md",
+          "source_sha256": "sha256:42fc5599518277ed92acc314b91d489a7b3e3c18c764fe59e2383b4b200c68bd",
+          "claim": "The Methods candidate documentation records Archive V2 support in the bounded native pipeline contract."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "archive-v2",
+        "surface_ids": [
+          "nirs4all.python.oracle",
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.javascript_wasm.methods_scoped",
+          "nirs4all.rust.aggregate",
+          "nirs4all.studio.product",
+          "nirs4all.web.product"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "format.n4mm-v1",
+      "kind": "format",
+      "aliases": [
+        "N4MM v1"
+      ],
+      "language": "portable",
+      "runtime": "n4mm-reader",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-methods",
+        "component": "n4mm"
+      },
+      "evidence": [
+        {
+          "candidate_key": "methods",
+          "commit": "9d4e2753836eb85d61b1e7712ec6a06e627d4a5f",
+          "source": "README.md",
+          "source_sha256": "sha256:42fc5599518277ed92acc314b91d489a7b3e3c18c764fe59e2383b4b200c68bd",
+          "claim": "The Methods candidate documentation records N4MM v1 compatibility."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "n4mm-reader",
+        "surface_ids": [
+          "nirs4all.python.oracle",
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.javascript_wasm.methods_scoped",
+          "nirs4all.rust.aggregate",
+          "nirs4all.web.product"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "format.n4mm-v2",
+      "kind": "format",
+      "aliases": [
+        "N4MM v2"
+      ],
+      "language": "portable",
+      "runtime": "n4mm-reader",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-methods",
+        "component": "n4mm"
+      },
+      "evidence": [
+        {
+          "candidate_key": "methods",
+          "commit": "9d4e2753836eb85d61b1e7712ec6a06e627d4a5f",
+          "source": "README.md",
+          "source_sha256": "sha256:42fc5599518277ed92acc314b91d489a7b3e3c18c764fe59e2383b4b200c68bd",
+          "claim": "The Methods candidate documentation records N4MM v2 compatibility."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "n4mm-reader",
+        "surface_ids": [
+          "nirs4all.python.oracle",
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.javascript_wasm.methods_scoped",
+          "nirs4all.rust.aggregate",
+          "nirs4all.studio.product",
+          "nirs4all.web.product"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "pipeline.native-snv-savgol-pls",
+      "kind": "api",
+      "aliases": [
+        "SNV(ddof=0)->SavitzkyGolay(mode=interp)->PLSRegression"
+      ],
+      "language": "portable",
+      "runtime": "native-python-rust",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all",
+        "component": "native-runtime"
+      },
+      "evidence": [
+        {
+          "candidate_key": "python",
+          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "source": "docs/source/reference/public_interfaces.md",
+          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "claim": "The Python candidate documents the bounded native SNV(ddof=0) to Savitzky-Golay(interp defaults) to PLS path."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "docs/source/reference/public_interfaces.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "docs/source/reference/public_interfaces.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "native-python-rust",
+        "surface_ids": [
+          "nirs4all.python.oracle",
+          "nirs4all.rust.aggregate",
+          "nirs4all.studio.product"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "hpo.native-resume",
+      "kind": "api",
+      "aliases": [
+        "nirs4all.run_tuning(resume=True)"
+      ],
+      "language": "portable",
+      "runtime": "native-hpo",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all",
+        "component": "hpo-runtime"
+      },
+      "evidence": [
+        {
+          "candidate_key": "python",
+          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "source": "docs/source/reference/public_interfaces.md",
+          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "claim": "The Python candidate documents bounded native HPO resume without widening the HPO promise."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "docs/source/reference/public_interfaces.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "docs/source/reference/public_interfaces.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "native-hpo",
+        "surface_ids": [
+          "nirs4all.python.oracle",
+          "nirs4all.rust.aggregate"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "format.dataset-package",
+      "kind": "format",
+      "aliases": [
+        "DatasetPackage"
+      ],
+      "language": "portable",
+      "runtime": "nirs4all-data-package",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-io",
+        "component": "data-package"
+      },
+      "evidence": [
+        {
+          "candidate_key": "io",
+          "commit": "e41bf8f94a92356e98c215d4c41e907a7dfaf6ac",
+          "source": "README.md",
+          "source_sha256": "sha256:b03eae9ba8795cc56fcd55a3478e17be8b32ab481ea4bb8105bbb50f381962ab",
+          "claim": "The IO candidate documents the DATA DatasetPackage format boundary."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "nirs4all-data-package",
+        "surface_ids": [
+          "nirs4all.python.core",
+          "nirs4all.rust.aggregate"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "data.dataset-package-handoff",
+      "kind": "api",
+      "aliases": [
+        "DataPlan",
+        "DatasetPackage handoff"
+      ],
+      "language": "rust",
+      "runtime": "nirs4all-data-package",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-io",
+        "component": "data-package"
+      },
+      "evidence": [
+        {
+          "candidate_key": "io",
+          "commit": "e41bf8f94a92356e98c215d4c41e907a7dfaf6ac",
+          "source": "README.md",
+          "source_sha256": "sha256:b03eae9ba8795cc56fcd55a3478e17be8b32ab481ea4bb8105bbb50f381962ab",
+          "claim": "The IO candidate documents the bounded DatasetPackage handoff into native consumers."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "nirs4all-data-package",
+        "surface_ids": [
+          "nirs4all.rust.aggregate"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "conformal.multi-target",
+      "kind": "api",
+      "aliases": [
+        "joint_max multi-target conformal"
+      ],
+      "language": "rust",
+      "runtime": "dag-ml-native",
+      "disposition": "native",
+      "owner": {
+        "repository": "dag-ml",
+        "component": "conformal"
+      },
+      "evidence": [
+        {
+          "candidate_key": "python",
+          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "source": "docs/source/reference/public_interfaces.md",
+          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "claim": "The Python candidate documents bounded native multi-target conformal behavior for the declared Rust-backed surfaces."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "docs/source/reference/public_interfaces.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "dag-ml-native",
+        "surface_ids": [
+          "nirs4all.rust.aggregate",
+          "nirs4all.studio.product"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "studio.rust-control-plane",
+      "kind": "api",
+      "aliases": [
+        "Studio Rust-only control plane"
+      ],
+      "language": "rust",
+      "runtime": "studio-rust",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-studio",
+        "component": "control-plane"
+      },
+      "evidence": [
+        {
+          "candidate_key": "studio",
+          "commit": "e254a1ebba578e5b1932d09079088d02eb51d411",
+          "source": "README.md",
+          "source_sha256": "sha256:63d30f92aa2ca6b71c5785772fc86b4c736165143c179140206b10b928a621d5",
+          "claim": "The Studio candidate documents a Rust-only control plane."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "studio-rust",
+        "surface_ids": [
+          "nirs4all.studio.product"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "studio.cpython-stdio-libraries",
+      "kind": "api",
+      "aliases": [
+        "embedded CPython stdio libraries/plugins"
+      ],
+      "language": "portable",
+      "runtime": "studio-cpython-stdio",
+      "disposition": "plugin",
+      "owner": {
+        "repository": "nirs4all-studio",
+        "component": "library-plugin-stdio"
+      },
+      "evidence": [
+        {
+          "candidate_key": "studio",
+          "commit": "e254a1ebba578e5b1932d09079088d02eb51d411",
+          "source": "README.md",
+          "source_sha256": "sha256:63d30f92aa2ca6b71c5785772fc86b4c736165143c179140206b10b928a621d5",
+          "claim": "The Studio candidate restricts embedded CPython to stdio library/plugin execution and refuses broader backend duties."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "require_plugin",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ],
+        "plugin": {
+          "id": "nirs4all-python-library",
+          "required": true,
+          "on_missing_plugin": "refuse"
+        }
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "studio-cpython-stdio",
+        "surface_ids": [
+          "nirs4all.python.oracle",
+          "nirs4all.studio.product"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "web.client-wasm-runtime",
+      "kind": "api",
+      "aliases": [
+        "Web client-only WASM runtime"
+      ],
+      "language": "portable",
+      "runtime": "web-wasm",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-web",
+        "component": "client-runtime"
+      },
+      "evidence": [
+        {
+          "candidate_key": "web",
+          "commit": "f1ae6c38e6c82bd7bf525c8c4a7adc8deb456eea",
+          "source": "README.md",
+          "source_sha256": "sha256:0c77e5a0bbb459de2ac879c6d962c5f5c8daa8078438681c3f81aa07eee7265e",
+          "claim": "The Web candidate documents a client-only WASM runtime."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "javascript_wasm",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "executable",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "web-wasm",
+        "surface_ids": [
+          "nirs4all.javascript_wasm.aggregate",
+          "nirs4all.web.product"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "methods.extended-model-catalog",
+      "kind": "model",
+      "aliases": [],
+      "language": "portable",
+      "runtime": "methods-catalog",
+      "disposition": "not-promised",
+      "owner": {
+        "repository": "nirs4all-methods",
+        "component": "model-catalog"
+      },
+      "evidence": [
+        {
+          "candidate_key": "methods",
+          "commit": "9d4e2753836eb85d61b1e7712ec6a06e627d4a5f",
+          "source": "README.md",
+          "source_sha256": "sha256:42fc5599518277ed92acc314b91d489a7b3e3c18c764fe59e2383b4b200c68bd",
+          "claim": "The Methods candidate does not promise a wider public V1 model catalog than the explicitly inventoried portable model."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "metadata",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "r",
+          "availability": "metadata",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "metadata",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "metadata",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "matlab_octave",
+          "availability": "metadata",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "refuse",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "methods-catalog",
+        "surface_ids": [
+          "nirs4all.javascript_wasm.methods_scoped"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "methods.extended-operator-catalog",
+      "kind": "operator",
+      "aliases": [],
+      "language": "portable",
+      "runtime": "methods-catalog",
+      "disposition": "not-promised",
+      "owner": {
+        "repository": "nirs4all-methods",
+        "component": "operator-catalog"
+      },
+      "evidence": [
+        {
+          "candidate_key": "methods",
+          "commit": "9d4e2753836eb85d61b1e7712ec6a06e627d4a5f",
+          "source": "README.md",
+          "source_sha256": "sha256:42fc5599518277ed92acc314b91d489a7b3e3c18c764fe59e2383b4b200c68bd",
+          "claim": "The Methods candidate does not promise a wider public V1 operator catalog than the explicitly inventoried portable operators."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "metadata",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "r",
+          "availability": "metadata",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "javascript_wasm",
+          "availability": "metadata",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "rust",
+          "availability": "metadata",
+          "evidence_sources": [
+            "README.md"
+          ]
+        },
+        {
+          "runtime": "matlab_octave",
+          "availability": "metadata",
+          "evidence_sources": [
+            "README.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "refuse",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "methods-catalog",
+        "surface_ids": [
+          "nirs4all.javascript_wasm.methods_scoped"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "python.extended-models",
+      "kind": "model",
+      "aliases": [
+        "Python extended model family"
+      ],
+      "language": "python",
+      "runtime": "python-library",
+      "disposition": "plugin",
+      "owner": {
+        "repository": "nirs4all",
+        "component": "python-library"
+      },
+      "evidence": [
+        {
+          "candidate_key": "python",
+          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "source": "docs/source/reference/public_interfaces.md",
+          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "claim": "The Python candidate keeps extended Python model families behind the explicit library/plugin boundary."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "docs/source/reference/public_interfaces.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "require_plugin",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ],
+        "plugin": {
+          "id": "nirs4all-python-library",
+          "required": true,
+          "on_missing_plugin": "refuse"
+        }
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "python-library",
+        "surface_ids": [
+          "nirs4all.python.oracle"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "python.extended-operators",
+      "kind": "operator",
+      "aliases": [
+        "Python extended operator family"
+      ],
+      "language": "python",
+      "runtime": "python-library",
+      "disposition": "plugin",
+      "owner": {
+        "repository": "nirs4all",
+        "component": "python-library"
+      },
+      "evidence": [
+        {
+          "candidate_key": "python",
+          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "source": "docs/source/reference/public_interfaces.md",
+          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "claim": "The Python candidate keeps extended Python operator families behind the explicit library/plugin boundary."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "docs/source/reference/public_interfaces.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "require_plugin",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ],
+        "plugin": {
+          "id": "nirs4all-python-library",
+          "required": true,
+          "on_missing_plugin": "refuse"
+        }
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "python-library",
+        "surface_ids": [
+          "nirs4all.python.oracle"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "python.transfer",
+      "kind": "api",
+      "aliases": [
+        "nirs4all.retrain(mode=transfer)"
+      ],
+      "language": "python",
+      "runtime": "python-library",
+      "disposition": "plugin",
+      "owner": {
+        "repository": "nirs4all",
+        "component": "python-library"
+      },
+      "evidence": [
+        {
+          "candidate_key": "python",
+          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "source": "docs/source/reference/public_interfaces.md",
+          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "claim": "The Python candidate keeps transfer workflows behind the explicit library/plugin boundary."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "docs/source/reference/public_interfaces.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "require_plugin",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ],
+        "plugin": {
+          "id": "nirs4all-python-library",
+          "required": true,
+          "on_missing_plugin": "refuse"
+        }
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "python-library",
+        "surface_ids": [
+          "nirs4all.python.oracle"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "python.finetune",
+      "kind": "api",
+      "aliases": [
+        "nirs4all.retrain(mode=finetune)"
+      ],
+      "language": "python",
+      "runtime": "python-library",
+      "disposition": "refused",
+      "owner": {
+        "repository": "nirs4all",
+        "component": "python-library"
+      },
+      "evidence": [
+        {
+          "candidate_key": "python",
+          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "source": "docs/source/reference/public_interfaces.md",
+          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "claim": "The Python candidate does not qualify finetune for V1 and the strict profile refuses it."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "docs/source/reference/public_interfaces.md"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "refuse",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "python-library",
+        "surface_ids": [
+          "nirs4all.python.oracle"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "tools.workspace-inspect",
+      "kind": "api",
+      "aliases": [
+        "nirs4all-tools workspace inspect INPUT"
+      ],
+      "language": "python",
+      "runtime": "python-cli",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-tools",
+        "component": "workspace-cli"
+      },
+      "evidence": [
+        {
+          "candidate_key": "tools",
+          "commit": "2215c9b9dcf498067ce2cad5f8bf42bf06a39285",
+          "source": "src/nirs4all_tools/cli.py",
+          "source_sha256": "sha256:0f489305b42cd2f59fcc686e339707d46cda0f8645695624278169f747432158",
+          "claim": "The Tools candidate exposes the read-only workspace inspect command."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "src/nirs4all_tools/cli.py"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "python-cli",
+        "surface_ids": [
+          "nirs4all.tools.migration"
+        ]
+      },
+      "extensions": {}
+    },
+    {
+      "id": "tools.workspace-convert",
+      "kind": "api",
+      "aliases": [
+        "nirs4all-tools workspace convert INPUT --output OUTPUT"
+      ],
+      "language": "python",
+      "runtime": "python-cli",
+      "disposition": "native",
+      "owner": {
+        "repository": "nirs4all-tools",
+        "component": "workspace-cli"
+      },
+      "evidence": [
+        {
+          "candidate_key": "tools",
+          "commit": "2215c9b9dcf498067ce2cad5f8bf42bf06a39285",
+          "source": "src/nirs4all_tools/cli.py",
+          "source_sha256": "sha256:0f489305b42cd2f59fcc686e339707d46cda0f8645695624278169f747432158",
+          "claim": "The Tools candidate exposes explicit output-only workspace conversion with documented 0/10/20 states."
+        }
+      ],
+      "runtime_assertions": [
+        {
+          "runtime": "python",
+          "availability": "executable",
+          "evidence_sources": [
+            "src/nirs4all_tools/cli.py"
+          ]
+        }
+      ],
+      "required_gates": {},
+      "preflight": {
+        "profile": "strict",
+        "decision": "allow_native",
+        "before": [
+          "scientific_data_access",
+          "result_write",
+          "meaningful_compute"
+        ]
+      },
+      "disposition_scope": {
+        "profile": "strict",
+        "runtime": "python-cli",
+        "surface_ids": [
+          "nirs4all.tools.migration"
+        ]
+      },
+      "extensions": {}
+    }
   ],
   "release_surface_crosswalk": [
-    {"capability_id": "split.kennard_stone", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"], "component_keys": ["core"], "relation": "release_accounting_only", "does_not_imply": ["execution", "availability", "parity"]},
-    {"capability_id": "preprocess.snv", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"], "component_keys": ["core"], "relation": "release_accounting_only", "does_not_imply": ["execution", "availability", "parity"]},
-    {"capability_id": "preprocess.savgol", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"], "component_keys": ["core"], "relation": "release_accounting_only", "does_not_imply": ["execution", "availability", "parity"]},
-    {"capability_id": "model.pls_regression", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.javascript_wasm.methods_scoped", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"], "component_keys": ["core", "methods"], "relation": "release_accounting_only", "does_not_imply": ["execution", "availability", "parity"]},
-    {"capability_id": "pipeline.portable_methods", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"], "component_keys": ["core"], "relation": "release_accounting_only", "does_not_imply": ["execution", "availability", "parity"]},
-    {"capability_id": "format.nirs4all-core.lazy-upstream", "surface_ids": ["nirs4all.python.core", "nirs4all.r.aggregate", "nirs4all.javascript_wasm.aggregate", "nirs4all.rust.aggregate", "nirs4all.matlab_octave.aggregate"], "component_keys": ["core"], "relation": "release_accounting_only", "does_not_imply": ["execution", "availability", "parity"]},
-    {"capability_id": "dag-ml.prediction-aggregation", "surface_ids": ["nirs4all.rust.aggregate"], "component_keys": ["core"], "relation": "release_accounting_only", "does_not_imply": ["execution", "availability", "parity"]},
-    {"capability_id": "nirs4all.python.oracle.legacy-backend", "surface_ids": ["nirs4all.python.oracle"], "component_keys": [], "relation": "release_accounting_only", "does_not_imply": ["execution", "availability", "parity"]}
+    {
+      "capability_id": "split.kennard_stone",
+      "surface_ids": [
+        "nirs4all.python.core",
+        "nirs4all.r.aggregate",
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.rust.aggregate",
+        "nirs4all.matlab_octave.aggregate"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "preprocess.snv",
+      "surface_ids": [
+        "nirs4all.python.core",
+        "nirs4all.r.aggregate",
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.rust.aggregate",
+        "nirs4all.matlab_octave.aggregate"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "preprocess.savgol",
+      "surface_ids": [
+        "nirs4all.python.core",
+        "nirs4all.r.aggregate",
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.rust.aggregate",
+        "nirs4all.matlab_octave.aggregate"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "model.pls_regression",
+      "surface_ids": [
+        "nirs4all.python.core",
+        "nirs4all.r.aggregate",
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.javascript_wasm.methods_scoped",
+        "nirs4all.rust.aggregate",
+        "nirs4all.matlab_octave.aggregate"
+      ],
+      "component_keys": [
+        "core",
+        "methods"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "pipeline.portable_methods",
+      "surface_ids": [
+        "nirs4all.python.core",
+        "nirs4all.r.aggregate",
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.rust.aggregate",
+        "nirs4all.matlab_octave.aggregate"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "format.nirs4all-core.lazy-upstream",
+      "surface_ids": [
+        "nirs4all.python.core",
+        "nirs4all.r.aggregate",
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.rust.aggregate",
+        "nirs4all.matlab_octave.aggregate"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "dag-ml.prediction-aggregation",
+      "surface_ids": [
+        "nirs4all.rust.aggregate"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "nirs4all.python.oracle.legacy-backend",
+      "surface_ids": [
+        "nirs4all.python.oracle"
+      ],
+      "component_keys": [],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "format.archive-v1.read",
+      "surface_ids": [
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.rust.aggregate",
+        "nirs4all.studio.product",
+        "nirs4all.web.product"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "format.archive-v2",
+      "surface_ids": [
+        "nirs4all.python.oracle",
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.javascript_wasm.methods_scoped",
+        "nirs4all.rust.aggregate",
+        "nirs4all.studio.product",
+        "nirs4all.web.product"
+      ],
+      "component_keys": [
+        "core",
+        "methods"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "format.n4mm-v1",
+      "surface_ids": [
+        "nirs4all.python.oracle",
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.javascript_wasm.methods_scoped",
+        "nirs4all.rust.aggregate",
+        "nirs4all.web.product"
+      ],
+      "component_keys": [
+        "core",
+        "methods"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "format.n4mm-v2",
+      "surface_ids": [
+        "nirs4all.python.oracle",
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.javascript_wasm.methods_scoped",
+        "nirs4all.rust.aggregate",
+        "nirs4all.studio.product",
+        "nirs4all.web.product"
+      ],
+      "component_keys": [
+        "core",
+        "methods"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "pipeline.native-snv-savgol-pls",
+      "surface_ids": [
+        "nirs4all.python.oracle",
+        "nirs4all.rust.aggregate",
+        "nirs4all.studio.product"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "hpo.native-resume",
+      "surface_ids": [
+        "nirs4all.python.oracle",
+        "nirs4all.rust.aggregate"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "format.dataset-package",
+      "surface_ids": [
+        "nirs4all.python.core",
+        "nirs4all.rust.aggregate"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "data.dataset-package-handoff",
+      "surface_ids": [
+        "nirs4all.rust.aggregate"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "conformal.multi-target",
+      "surface_ids": [
+        "nirs4all.rust.aggregate",
+        "nirs4all.studio.product"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "studio.rust-control-plane",
+      "surface_ids": [
+        "nirs4all.studio.product"
+      ],
+      "component_keys": [],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "studio.cpython-stdio-libraries",
+      "surface_ids": [
+        "nirs4all.python.oracle",
+        "nirs4all.studio.product"
+      ],
+      "component_keys": [],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "web.client-wasm-runtime",
+      "surface_ids": [
+        "nirs4all.javascript_wasm.aggregate",
+        "nirs4all.web.product"
+      ],
+      "component_keys": [
+        "core"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "methods.extended-model-catalog",
+      "surface_ids": [
+        "nirs4all.javascript_wasm.methods_scoped"
+      ],
+      "component_keys": [
+        "methods"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "methods.extended-operator-catalog",
+      "surface_ids": [
+        "nirs4all.javascript_wasm.methods_scoped"
+      ],
+      "component_keys": [
+        "methods"
+      ],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "python.extended-models",
+      "surface_ids": [
+        "nirs4all.python.oracle"
+      ],
+      "component_keys": [],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "python.extended-operators",
+      "surface_ids": [
+        "nirs4all.python.oracle"
+      ],
+      "component_keys": [],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "python.transfer",
+      "surface_ids": [
+        "nirs4all.python.oracle"
+      ],
+      "component_keys": [],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "python.finetune",
+      "surface_ids": [
+        "nirs4all.python.oracle"
+      ],
+      "component_keys": [],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "tools.workspace-inspect",
+      "surface_ids": [
+        "nirs4all.tools.migration"
+      ],
+      "component_keys": [],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    },
+    {
+      "capability_id": "tools.workspace-convert",
+      "surface_ids": [
+        "nirs4all.tools.migration"
+      ],
+      "component_keys": [],
+      "relation": "release_accounting_only",
+      "does_not_imply": [
+        "execution",
+        "availability",
+        "parity"
+      ]
+    }
   ],
   "extensions": {
     "nirs4all.v1_surface_scope": {
@@ -51,7 +2368,7 @@
         "nirs4all.org.site",
         "nirs4all.tools.migration"
       ],
-      "omission_semantics": "A capability missing from this bounded ledger is unknown and refused by the strict profile; it is not evidence that a required roadmap surface is outside V1."
+      "omission_semantics": "The capability inventory is exhaustive for the candidate promise set: an unlisted claim is unknown and refused, not evidence of an additional V1 promise."
     }
   }
 }

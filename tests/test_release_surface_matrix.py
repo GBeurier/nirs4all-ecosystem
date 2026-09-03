@@ -70,6 +70,41 @@ def test_public_v1_surface_matrix_is_explicitly_non_exhaustive() -> None:
     assert "does not prove" in matrix["scope"]["omission_semantics"]
 
 
+def test_candidate_capability_inventory_is_exhaustive_without_promoting_the_lock() -> None:
+    matrix = _read_matrix()
+    inventory = matrix["v1_capability_inventory"]
+
+    assert inventory["status"] == "complete-candidate-no-go"
+    assert inventory["exhaustive"] is True
+    assert inventory["unknown_promise_disposition"] == "refused"
+    assert matrix["candidate_heads"]["status"] == "unpublished-no-go"
+    assert matrix["candidate_heads"]["canonical_lock_updated"] is False
+
+
+def test_capability_inventory_rejects_duplicate_promises(tmp_path: Path) -> None:
+    surface_matrix = _load_surface_matrix()
+    matrix = _read_matrix()
+    matrix["v1_capability_inventory"]["promises"].append(
+        copy.deepcopy(matrix["v1_capability_inventory"]["promises"][0])
+    )
+    matrix_path = tmp_path / "matrix.json"
+    _write_json(matrix_path, matrix)
+
+    with pytest.raises(surface_matrix.SurfaceMatrixError, match="duplicate V1 capability promise id"):
+        surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)
+
+
+def test_capability_inventory_requires_one_coverage_row_per_surface(tmp_path: Path) -> None:
+    surface_matrix = _load_surface_matrix()
+    matrix = _read_matrix()
+    matrix["v1_capability_inventory"]["surface_coverage"].pop()
+    matrix_path = tmp_path / "matrix.json"
+    _write_json(matrix_path, matrix)
+
+    with pytest.raises(surface_matrix.SurfaceMatrixError, match="every public V1 surface exactly once"):
+        surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)
+
+
 def test_surface_matrix_rejects_a_false_exhaustivity_claim(tmp_path: Path) -> None:
     surface_matrix = _load_surface_matrix()
     matrix = _read_matrix()

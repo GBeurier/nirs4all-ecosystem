@@ -18,7 +18,7 @@
   ],
   "properties": {
     "schema_version": { "const": "n4a.native-capability-ledger/v1" },
-    "status": { "const": "baseline" },
+    "status": { "const": "inventory-complete-candidate" },
     "scope": { "$ref": "#/$defs/scope" },
     "strict_profile": { "$ref": "#/$defs/strictProfile" },
     "rollback_profile": { "$ref": "#/$defs/rollbackProfile" },
@@ -27,7 +27,7 @@
     "capabilities": {
       "type": "array",
       "minItems": 1,
-      "maxItems": 64,
+      "maxItems": 128,
       "items": { "$ref": "#/$defs/capability" }
     },
     "release_surface_crosswalk": {
@@ -51,7 +51,7 @@
       "properties": {
         "authority": { "$ref": "#/$defs/nonEmptyString" },
         "coverage": { "$ref": "#/$defs/nonEmptyString" },
-        "exhaustive": { "const": false }
+        "exhaustive": { "const": true }
       }
     },
     "strictProfile": {
@@ -182,6 +182,18 @@
               "outside_lock_surface_id": { "$ref": "#/$defs/nonEmptyString" },
               "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
               "source": { "$ref": "#/$defs/nonEmptyString" },
+              "claim": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["candidate_key", "commit", "source", "source_sha256", "claim"],
+            "properties": {
+              "candidate_key": { "$ref": "#/$defs/nonEmptyString" },
+              "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+              "source": { "$ref": "#/$defs/nonEmptyString" },
+              "source_sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
               "claim": { "$ref": "#/$defs/nonEmptyString" }
             }
           }

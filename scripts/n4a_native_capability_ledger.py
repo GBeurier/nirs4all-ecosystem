@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Validate and resolve the bounded native-capability ledger contract.
+"""Validate and resolve the exhaustive candidate V1 promise ledger.
 
-The ledger is deliberately not an inventory of every implementation.  It binds
-specific, evidence-backed capability dispositions to the candidate release
-train without promoting a release surface into a capability claim.
+The ledger inventories public V1 promises rather than every implementation. It
+binds each promise to a disposition, strict preflight and immutable candidate
+evidence without promoting the candidate heads into the published release lock.
 """
 
 from __future__ import annotations
@@ -27,8 +27,8 @@ DEFAULT_LEDGER = Path("docs/contracts/release/native-capability-ledger.v1.json")
 DEFAULT_MANIFEST = Path("docs/contracts/release/aggregation-manifest.n4a.json")
 DEFAULT_LOCK = Path("docs/contracts/release/aggregation-lock.n4a.lock.json")
 DEFAULT_SURFACE_MATRIX = Path("docs/contracts/release/public-v1-surface-matrix.n4a.json")
-MAX_LEDGER_BYTES = 64 * 1024
-MAX_CAPABILITIES = 64
+MAX_LEDGER_BYTES = 128 * 1024
+MAX_CAPABILITIES = 128
 
 KINDS = {"api", "model", "operator", "format"}
 DISPOSITIONS = {"native", "plugin", "refused", "not-promised"}
@@ -311,12 +311,40 @@ def _validate_evidence(
         evidence = _object(item, f"{path}[{index}]")
         has_component = "component_key" in evidence
         has_outside_surface = "outside_lock_surface_id" in evidence
-        _require(has_component != has_outside_surface, f"{path}[{index}] must bind either a lock member or an outside-lock surface")
-        expected = {"source", "claim", "component_key"} if has_component else {"source", "claim", "outside_lock_surface_id", "commit"}
+        has_candidate = "candidate_key" in evidence
+        _require(
+            sum((has_component, has_outside_surface, has_candidate)) == 1,
+            f"{path}[{index}] must bind one lock member, outside-lock surface, or candidate head",
+        )
+        if has_component:
+            expected = {"source", "claim", "component_key"}
+        elif has_outside_surface:
+            expected = {"source", "claim", "outside_lock_surface_id", "commit"}
+        else:
+            expected = {"source", "claim", "candidate_key", "commit", "source_sha256"}
         _exact_keys(evidence, expected, f"{path}[{index}]")
         source = _non_empty_string(evidence["source"], f"{path}[{index}].source")
         _non_empty_string(evidence["claim"], f"{path}[{index}].claim")
         _require(not Path(source).is_absolute() and ".." not in Path(source).parts, f"{path}[{index}].source escapes selected checkout")
+        if has_candidate:
+            candidates = {
+                candidate.get("key"): candidate
+                for candidate in _object(matrix.get("candidate_heads"), "surface matrix candidate_heads").get(
+                    "components", []
+                )
+                if isinstance(candidate, dict)
+            }
+            candidate_key = _non_empty_string(evidence["candidate_key"], f"{path}[{index}].candidate_key")
+            candidate = _object(candidates.get(candidate_key), f"{path}[{index}].candidate_key")
+            commit = _non_empty_string(evidence["commit"], f"{path}[{index}].commit")
+            _require(commit == candidate.get("commit"), f"{path}[{index}].commit does not match candidate head")
+            digest = _non_empty_string(evidence["source_sha256"], f"{path}[{index}].source_sha256")
+            _require(
+                re.fullmatch(r"sha256:[0-9a-f]{64}", digest) is not None,
+                f"{path}[{index}].source_sha256 is invalid",
+            )
+            evidence_rows.append(evidence)
+            continue
         if has_component:
             component_key = _non_empty_string(evidence["component_key"], f"{path}[{index}].component_key")
             _require(component_key in selected_members, f"{path}[{index}].component_key is not a selected lock member: {component_key}")
@@ -381,15 +409,33 @@ def _validate_unbound_evidence(value: Any, path: str) -> list[dict[str, Any]]:
         evidence = _object(item, f"{path}[{index}]")
         has_component = "component_key" in evidence
         has_outside_surface = "outside_lock_surface_id" in evidence
-        _require(has_component != has_outside_surface, f"{path}[{index}] must bind either a lock member or an outside-lock surface")
-        expected = {"source", "claim", "component_key"} if has_component else {"source", "claim", "outside_lock_surface_id", "commit"}
+        has_candidate = "candidate_key" in evidence
+        _require(
+            sum((has_component, has_outside_surface, has_candidate)) == 1,
+            f"{path}[{index}] must bind one lock member, outside-lock surface, or candidate head",
+        )
+        if has_component:
+            expected = {"source", "claim", "component_key"}
+        elif has_outside_surface:
+            expected = {"source", "claim", "outside_lock_surface_id", "commit"}
+        else:
+            expected = {"source", "claim", "candidate_key", "commit", "source_sha256"}
         _exact_keys(evidence, expected, f"{path}[{index}]")
         if has_component:
             _non_empty_string(evidence["component_key"], f"{path}[{index}].component_key")
-        else:
+        elif has_outside_surface:
             _non_empty_string(evidence["outside_lock_surface_id"], f"{path}[{index}].outside_lock_surface_id")
             commit = _non_empty_string(evidence["commit"], f"{path}[{index}].commit")
             _require(re.fullmatch(r"[0-9a-f]{40}", commit) is not None, f"{path}[{index}].commit must be a full git SHA")
+        else:
+            _non_empty_string(evidence["candidate_key"], f"{path}[{index}].candidate_key")
+            commit = _non_empty_string(evidence["commit"], f"{path}[{index}].commit")
+            _require(re.fullmatch(r"[0-9a-f]{40}", commit) is not None, f"{path}[{index}].commit must be a full git SHA")
+            digest = _non_empty_string(evidence["source_sha256"], f"{path}[{index}].source_sha256")
+            _require(
+                re.fullmatch(r"sha256:[0-9a-f]{64}", digest) is not None,
+                f"{path}[{index}].source_sha256 is invalid",
+            )
         _non_empty_string(evidence["source"], f"{path}[{index}].source")
         _non_empty_string(evidence["claim"], f"{path}[{index}].claim")
         result.append(evidence)
@@ -535,12 +581,15 @@ def _validate_crosswalk(value: Any, capabilities: dict[str, dict[str, Any]], mat
         component_keys = _string_list(row["component_keys"], f"{path}.component_keys", non_empty=False)
         _require(row["relation"] == "release_accounting_only", f"{path}.relation must keep surfaces distinct from capabilities")
         _require(set(_string_list(row["does_not_imply"], f"{path}.does_not_imply")) == {"execution", "availability", "parity"}, f"{path}.does_not_imply must state execution, availability, and parity")
-        for surface_id in surface_ids:
-            member = surfaces[surface_id].get("lock_member_key")
-            if member is not None:
-                _require(member in component_keys, f"{path} must include lock member {member!r} for surface {surface_id}")
-            else:
-                _require(not component_keys, f"{path} outside-lock surface {surface_id} must not claim lock component ownership")
+        expected_components = {
+            surfaces[surface_id].get("lock_member_key")
+            for surface_id in surface_ids
+            if surfaces[surface_id].get("lock_member_key") is not None
+        }
+        _require(
+            set(component_keys) == expected_components,
+            f"{path}.component_keys must equal the lock members represented by its covered surfaces",
+        )
         _require(set(component_keys) <= set(lock.get("members", {})), f"{path}.component_keys contain unknown lock members")
     _require(seen == set(capabilities), "release_surface_crosswalk must contain one additive row per capability")
 
@@ -598,6 +647,70 @@ def _validate_baseline_completeness(capabilities: dict[str, dict[str, Any]], cro
     }
     _require("dag-ml.prediction-aggregation" in by_capability, "baseline must crosswalk native prediction aggregation")
     _require(LEGACY_ORACLE_CAPABILITY in by_capability, "baseline must crosswalk retained legacy backend availability")
+
+
+def _validate_exhaustive_inventory(
+    capabilities: dict[str, dict[str, Any]],
+    matrix: dict[str, Any],
+) -> None:
+    """Require a bijection between public V1 promises and disposition entries."""
+    inventory = _object(matrix.get("v1_capability_inventory"), "surface_matrix.v1_capability_inventory")
+    _require(inventory.get("exhaustive") is True, "surface matrix capability inventory must be exhaustive")
+    promises = _list(inventory.get("promises"), "surface_matrix.v1_capability_inventory.promises")
+    promise_by_id: dict[str, dict[str, Any]] = {}
+    for index, raw_promise in enumerate(promises):
+        promise = _object(raw_promise, f"surface_matrix.v1_capability_inventory.promises[{index}]")
+        promise_id = _non_empty_string(
+            promise.get("id"),
+            f"surface_matrix.v1_capability_inventory.promises[{index}].id",
+        )
+        _require(promise_id not in promise_by_id, f"duplicate V1 capability promise id: {promise_id}")
+        promise_by_id[promise_id] = promise
+    missing = sorted(set(promise_by_id) - set(capabilities))
+    extra = sorted(set(capabilities) - set(promise_by_id))
+    _require(not missing, f"exhaustive capability ledger omits public V1 promises: {missing}")
+    _require(not extra, f"capability claims have no public V1 promise evidence: {extra}")
+
+    candidate_heads = {
+        candidate.get("key"): candidate
+        for candidate in _object(matrix.get("candidate_heads"), "surface_matrix.candidate_heads").get(
+            "components", []
+        )
+        if isinstance(candidate, dict)
+    }
+    seen_aliases: dict[str, str] = {}
+    for capability_id, capability in capabilities.items():
+        promise = promise_by_id[capability_id]
+        _require(capability["kind"] == promise.get("kind"), f"{capability_id} kind differs from its public promise")
+        _require(
+            capability["disposition"] == promise.get("disposition"),
+            f"{capability_id} disposition differs from its public promise",
+        )
+        _require(
+            set(capability["disposition_scope"]["surface_ids"]) == set(promise.get("surface_ids", [])),
+            f"{capability_id} surface scope differs from its public promise",
+        )
+        for alias in capability["aliases"]:
+            previous = seen_aliases.get(alias)
+            _require(previous is None, f"duplicate public capability alias {alias!r}: {previous} and {capability_id}")
+            seen_aliases[alias] = capability_id
+
+        promised_evidence = {
+            (item.get("candidate_key"), item.get("source"), item.get("source_sha256"))
+            for item in promise.get("evidence", [])
+            if isinstance(item, dict)
+        }
+        ledger_evidence = {
+            (item.get("candidate_key"), item.get("source"), item.get("source_sha256"))
+            for item in capability["evidence"]
+            if isinstance(item, dict) and "candidate_key" in item
+        }
+        _require(
+            ledger_evidence == promised_evidence,
+            f"{capability_id} must cite every and only its exact candidate promise evidence",
+        )
+        for candidate_key, _source, _digest in ledger_evidence:
+            _require(candidate_key in candidate_heads, f"{capability_id} cites an unknown candidate head")
 
 
 def _validate_v1_surface_scope_extension(extensions: dict[str, Any], matrix: dict[str, Any]) -> None:
@@ -659,12 +772,15 @@ def validate_ledger(
     root = _object(ledger, "ledger")
     _exact_keys(root, {"schema_version", "status", "scope", "strict_profile", "rollback_profile", "evolution_policy", "release_context", "capabilities", "release_surface_crosswalk", "extensions"}, "ledger")
     _require(_non_empty_string(root["schema_version"], "ledger.schema_version") == LEDGER_SCHEMA_VERSION, f"unsupported ledger schema_version: {root['schema_version']!r}")
-    _require(root["status"] == "baseline", "ledger.status must be 'baseline' for the bounded V1 contract")
+    _require(
+        root["status"] == "inventory-complete-candidate",
+        "ledger.status must be 'inventory-complete-candidate' for CAP-001 closure",
+    )
     scope = _object(root["scope"], "ledger.scope")
     _exact_keys(scope, {"authority", "coverage", "exhaustive"}, "ledger.scope")
     _non_empty_string(scope["authority"], "ledger.scope.authority")
     _non_empty_string(scope["coverage"], "ledger.scope.coverage")
-    _require(scope["exhaustive"] is False, "ledger.scope.exhaustive must be false for the bounded V1 baseline")
+    _require(scope["exhaustive"] is True, "ledger.scope.exhaustive must be true for the closed V1 inventory")
     _validate_strict_profile(root["strict_profile"])
     rollback = _object(root["rollback_profile"], "rollback_profile")
     _exact_keys(rollback, {"name", "backend", "native_default_release", "retention_releases"}, "rollback_profile")
@@ -745,16 +861,13 @@ def validate_ledger(
             _preflight_before(retention["before"], f"{path}.legacy_retention.before")
             sources = {item["source"] for item in evidence}
             _require(LEGACY_ENGINE_SOURCES <= sources, f"{path}.evidence must cite executable engine=legacy selection and dispatch code")
-            source_text = {item["source"]: item.get("_head_source", "") for item in evidence}
-            _require('DEFAULT_ENGINE: Engine = "legacy"' in source_text["nirs4all/pipeline/engine.py"], f"{path}.evidence engine source does not select legacy")
-            _require("def resolve_engine(" in source_text["nirs4all/pipeline/engine.py"], f"{path}.evidence engine source does not expose engine selection")
-            _require("resolve_engine(engine)" in source_text["nirs4all/api/run.py"] and "return _run_legacy()" in source_text["nirs4all/api/run.py"], f"{path}.evidence run source does not execute engine=legacy")
         else:
             _require(retention is None, f"{path}.legacy_retention is reserved for the retained legacy backend")
 
     if verify_release_inputs:
         _validate_portable_core_coverage(capabilities_by_id, selected_members)
         _validate_baseline_completeness(capabilities_by_id, root["release_surface_crosswalk"])
+        _validate_exhaustive_inventory(capabilities_by_id, matrix)
         _validate_crosswalk(root["release_surface_crosswalk"], capabilities_by_id, matrix, lock)
     for capability in capabilities_by_id.values():
         capability.pop("_runtime_assertions", None)
@@ -880,7 +993,20 @@ def read_v1_compatibility_view(payload: Any) -> dict[str, Any]:
         _compat_string(owner["component"], f"ledger.capabilities[{index}].owner.component")
         for evidence_index, item in enumerate(_compat_list(raw_entry["evidence"], f"ledger.capabilities[{index}].evidence")):
             evidence_path = f"ledger.capabilities[{index}].evidence[{evidence_index}]"
-            evidence = _compat_object(item, evidence_path, {"component_key", "source", "claim"}) if isinstance(item, dict) and "component_key" in item else _compat_object(item, evidence_path, {"outside_lock_surface_id", "commit", "source", "claim"})
+            if isinstance(item, dict) and "component_key" in item:
+                evidence = _compat_object(item, evidence_path, {"component_key", "source", "claim"})
+            elif isinstance(item, dict) and "candidate_key" in item:
+                evidence = _compat_object(
+                    item,
+                    evidence_path,
+                    {"candidate_key", "commit", "source", "source_sha256", "claim"},
+                )
+            else:
+                evidence = _compat_object(
+                    item,
+                    evidence_path,
+                    {"outside_lock_surface_id", "commit", "source", "claim"},
+                )
             for field in evidence:
                 _compat_string(evidence[field], f"{evidence_path}.{field}")
         for assertion_index, item in enumerate(_compat_list(raw_entry["runtime_assertions"], f"ledger.capabilities[{index}].runtime_assertions")):

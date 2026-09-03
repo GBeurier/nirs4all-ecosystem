@@ -55,8 +55,10 @@ def test_ledger_covers_every_reviewed_phase_0_to_r4_roadmap_lot() -> None:
     }
     assert set(validator.ROADMAP_WORK_ITEMS) <= set(items)
     assert len(PREVIOUSLY_MISSING_ROADMAP_IDS) == 29
-    assert all(items[work_item_id]["state"] == "pending" for work_item_id in PREVIOUSLY_MISSING_ROADMAP_IDS)
-    assert all(items[work_item_id]["review"] == "pending" for work_item_id in PREVIOUSLY_MISSING_ROADMAP_IDS)
+    still_pending = PREVIOUSLY_MISSING_ROADMAP_IDS - {"DATA-002"}
+    assert all(items[work_item_id]["state"] == "pending" for work_item_id in still_pending)
+    assert all(items[work_item_id]["review"] == "pending" for work_item_id in still_pending)
+    assert items["DATA-002"]["state"] == "complete_local_code_release_hold"
 
 
 def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> None:
@@ -68,8 +70,8 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert "does not mean" in semantics
     assert "completion" in semantics
     assert "publication" in semantics
-    assert items["CAP-001"]["state"].endswith("pending")
-    assert "full per-language disposition coverage" in items["CAP-001"]["review"]
+    assert items["CAP-001"]["state"] == "complete"
+    assert "bijectively mapped" in items["CAP-001"]["review"]
     assert ledger["locks"]["LOCK-RELEASE"].startswith("no_go")
 
 

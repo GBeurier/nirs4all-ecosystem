@@ -608,13 +608,17 @@ work_items:
     dependencies:
       - ARCH-001
       - PAR-001
-    state: bounded_evidence_baseline_complete_full_v1_capability_inventory_pending
-    input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
+    state: complete
+    input_sha: a3ea904799b84977bc3e5661a27799e7078f8430
     owned_files:
+      - docs/contracts/release/public-v1-surface-matrix.n4a.json
       - docs/contracts/release/native-capability-ledger.v1.json
       - docs/contracts/release/native-capability-ledger/v1.schema.json
+      - scripts/n4a_release_surface_matrix.py
       - scripts/n4a_native_capability_ledger.py
+      - tests/test_release_surface_matrix.py
       - tests/test_native_capability_ledger.py
+      - tests/test_migration_work_ledger.py
       - tests/fixtures/native-capability-ledger/
       - .github/workflows/native-capability-ledger.yml
       - docs/contracts/release/migration-work-ledger.yaml
@@ -625,13 +629,18 @@ work_items:
       - native-capability-ledger GitHub Actions workflow checks out lock-pinned selected members before validation
       - Every V1 model, operator, format and public API has an evidence-backed native, plugin, refused or not-promised disposition per applicable language.
     review: >-
-      Sol-xhigh ACCEPT (CAP R7) applies only to the bounded evidence baseline:
-      lock-pinned workspace simulation passed 60 tests and the local structural
-      suite passed 59 with one selected-workspace skip. The ledger is explicitly
-      non-exhaustive, so this does not close the roadmap CAP-001 inventory or
-      R1-W1; full per-language disposition coverage and global remote-SHA
-      fetchability remain pending.
-    rollback: remove only CAP-owned ledger/schema/validator/tests/fixtures/CI additions; do not alter the immutable lock, manifest, or surface matrix
+      CAP-001 closes the candidate V1 promise inventory without publishing it:
+      every declared model, operator, format and public API is bijectively mapped
+      to a native, plugin, refused or not-promised disposition, strict preflight,
+      per-language surface scope and source-digest evidence bound to an unpublished
+      candidate head. Unknown or extra claims fail closed; omissions, duplicate IDs
+      and aliases, and evidence drift are validator errors. Extended Methods and
+      Python catalogs are not silently promoted: wider Python models/operators and
+      transfer remain plugin-bound, finetune is refused, and explicit legacy remains
+      rollback-only through post-R4 retention. The canonical aggregation lock and
+      global NO-GO remain unchanged. Candidate remote fetchability and product-level
+      release holds are intentionally outside this structural closure.
+    rollback: remove only CAP-owned inventory/ledger/schema/validator/tests/fixtures/CI additions; do not alter the immutable lock or manifest
   - id: DATA-001
     owner: C
     dependencies:

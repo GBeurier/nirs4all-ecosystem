@@ -83,8 +83,8 @@ def test_native_capability_ledger_validates_baseline_and_release_inputs() -> Non
 
     ledger = _validate_structural_semantics(validator, LEDGER)
 
-    assert ledger["scope"]["exhaustive"] is False
-    assert "not an exhaustive V1 program" in ledger["scope"]["coverage"]
+    assert ledger["scope"]["exhaustive"] is True
+    assert "Closed-world inventory" in ledger["scope"]["coverage"]
     assert ledger["release_context"]["release_train"] == "2026.07-refactor"
     assert {entry["id"] for entry in ledger["capabilities"]} >= set(validator.PORTABLE_CONTROLLER_KINDS)
     assert {entry["kind"] for entry in ledger["capabilities"]} >= {"api", "model", "operator", "format"}
@@ -381,24 +381,22 @@ def test_release_ci_gate_validates_only_a_lock_pinned_selected_workspace() -> No
     assert "N4A_RELEASE_WORKSPACE_ROOT: ${{ runner.temp }}/n4a-selected-release-members" in workflow
 
 
-def test_outside_lock_oracle_ledger_commit_matches_the_ecosystem_gitlink() -> None:
-    """The workflow may initialise this gitlink, but may never follow an unpinned head."""
+def test_python_evidence_is_bound_to_an_unpublished_candidate_not_the_release_lock() -> None:
     ledger = _read_ledger()
+    matrix = json.loads((ROOT / "docs/contracts/release/public-v1-surface-matrix.n4a.json").read_text())
+    python_candidate = next(
+        component
+        for component in matrix["candidate_heads"]["components"]
+        if component["key"] == "python"
+    )
     commits = {
         evidence["commit"]
         for capability in ledger["capabilities"]
         for evidence in capability["evidence"]
-        if evidence.get("outside_lock_surface_id") == "nirs4all.python.oracle"
+        if evidence.get("candidate_key") == "python"
     }
-    assert len(commits) == 1
-    gitlink = subprocess.run(
-        ["git", "rev-parse", "HEAD:nirs4all"],
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    assert commits == {gitlink}
+    assert commits == {python_candidate["commit"]}
+    assert matrix["candidate_heads"]["canonical_lock_updated"] is False
 
 
 def test_selected_workspace_integration_uses_the_real_release_lock_gate() -> None:
@@ -449,17 +447,72 @@ def test_baseline_requires_crosswalks_for_native_aggregation_and_rollback_retent
         _validate_structural_semantics(validator, path)
 
 
-def test_legacy_retention_evidence_is_pinned_to_the_outside_lock_python_oracle(
+def test_legacy_retention_evidence_is_pinned_to_the_exact_python_candidate(
     tmp_path: Path
 ) -> None:
     validator = _load_validator()
     payload = _read_ledger()
     legacy = next(entry for entry in payload["capabilities"] if entry["id"] == "nirs4all.python.oracle.legacy-backend")
-    legacy["evidence"][0]["outside_lock_surface_id"] = "nirs4all.python.core"
+    legacy["evidence"][0]["candidate_key"] = "tools"
     path = tmp_path / "ledger.json"
     _write_ledger(path, payload)
 
-    with pytest.raises(validator.CapabilityLedgerError, match="must remain outside the aggregation lock"):
+    with pytest.raises(validator.CapabilityLedgerError, match="commit does not match candidate head"):
+        _validate_structural_semantics(validator, path)
+
+
+def test_exhaustive_inventory_refuses_omitted_promises(tmp_path: Path) -> None:
+    validator = _load_validator()
+    payload = _read_ledger()
+    capability_id = "tools.workspace-inspect"
+    payload["capabilities"] = [
+        entry for entry in payload["capabilities"] if entry["id"] != capability_id
+    ]
+    payload["release_surface_crosswalk"] = [
+        row
+        for row in payload["release_surface_crosswalk"]
+        if row["capability_id"] != capability_id
+    ]
+    path = tmp_path / "ledger.json"
+    _write_ledger(path, payload)
+
+    with pytest.raises(validator.CapabilityLedgerError, match="omits public V1 promises"):
+        _validate_structural_semantics(validator, path)
+
+
+def test_exhaustive_inventory_refuses_claims_without_promise_evidence(tmp_path: Path) -> None:
+    validator = _load_validator()
+    payload = _read_ledger()
+    extra = copy.deepcopy(payload["capabilities"][-1])
+    extra["id"] = "tools.unpromised-command"
+    extra["aliases"] = ["nirs4all-tools unpromised"]
+    payload["capabilities"].append(extra)
+    path = tmp_path / "ledger.json"
+    _write_ledger(path, payload)
+
+    with pytest.raises(validator.CapabilityLedgerError, match="claims have no public V1 promise evidence"):
+        _validate_structural_semantics(validator, path)
+
+
+def test_exhaustive_inventory_refuses_candidate_evidence_drift(tmp_path: Path) -> None:
+    validator = _load_validator()
+    payload = _read_ledger()
+    payload["capabilities"][-1]["evidence"][0]["source_sha256"] = "sha256:" + "0" * 64
+    path = tmp_path / "ledger.json"
+    _write_ledger(path, payload)
+
+    with pytest.raises(validator.CapabilityLedgerError, match="exact candidate promise evidence"):
+        _validate_structural_semantics(validator, path)
+
+
+def test_exhaustive_inventory_refuses_duplicate_public_aliases(tmp_path: Path) -> None:
+    validator = _load_validator()
+    payload = _read_ledger()
+    payload["capabilities"][-1]["aliases"] = payload["capabilities"][-2]["aliases"]
+    path = tmp_path / "ledger.json"
+    _write_ledger(path, payload)
+
+    with pytest.raises(validator.CapabilityLedgerError, match="duplicate public capability alias"):
         _validate_structural_semantics(validator, path)
 
 

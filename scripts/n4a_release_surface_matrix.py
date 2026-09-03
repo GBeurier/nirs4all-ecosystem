@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -48,6 +49,11 @@ PACKAGE_ECOSYSTEM_KEYS = {
     "rust": ("rust", "crates"),
     "matlab_octave": ("matlab", "archives"),
 }
+
+CAPABILITY_KINDS = {"api", "model", "operator", "format"}
+CAPABILITY_DISPOSITIONS = {"native", "plugin", "refused", "not-promised"}
+FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
+SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 
 class SurfaceMatrixError(RuntimeError):
@@ -354,6 +360,158 @@ def _validate_release_batch_semantics(matrix: dict[str, Any]) -> None:
     )
 
 
+def _validate_capability_inventory(matrix: dict[str, Any], lock: dict[str, Any]) -> None:
+    """Validate the closed candidate capability promise set without repinning the lock."""
+    candidates = matrix.get("candidate_heads")
+    _require(isinstance(candidates, dict), "matrix.candidate_heads must be an object")
+    _require(
+        set(candidates) == {"status", "canonical_lock_updated", "components"},
+        "matrix.candidate_heads must contain status, canonical_lock_updated and components",
+    )
+    _require(candidates["status"] == "unpublished-no-go", "candidate heads must remain unpublished-no-go")
+    _require(candidates["canonical_lock_updated"] is False, "candidate heads must not claim a canonical lock update")
+    candidate_rows = candidates["components"]
+    _require(isinstance(candidate_rows, list) and candidate_rows, "candidate_heads.components must be non-empty")
+    candidate_by_key: dict[str, dict[str, Any]] = {}
+    candidate_repos: set[str] = set()
+    surface_repos = {
+        surface.get("repo_path")
+        for surface in matrix.get("public_v1_surfaces", [])
+        if isinstance(surface, dict)
+    }
+    lock_repos = {
+        member.get("repo_path")
+        for member in lock.get("members", {}).values()
+        if isinstance(member, dict)
+    }
+    for index, candidate in enumerate(candidate_rows):
+        path = f"candidate_heads.components[{index}]"
+        _require(isinstance(candidate, dict), f"{path} must be an object")
+        _require(
+            set(candidate) == {"key", "repo_path", "commit", "based_on", "qualification"},
+            f"{path} has missing or unsupported fields",
+        )
+        key = candidate.get("key")
+        repo_path = candidate.get("repo_path")
+        commit = candidate.get("commit")
+        based_on = candidate.get("based_on")
+        _require(isinstance(key, str) and key, f"{path}.key must be non-empty")
+        _require(key not in candidate_by_key, f"duplicate candidate head key: {key}")
+        _require(isinstance(repo_path, str) and repo_path, f"{path}.repo_path must be non-empty")
+        _require(repo_path not in candidate_repos, f"duplicate candidate repo_path: {repo_path}")
+        _require(repo_path in surface_repos | lock_repos, f"{path}.repo_path is not a public or lock-member repository")
+        _require(isinstance(commit, str) and FULL_SHA.fullmatch(commit) is not None, f"{path}.commit must be a full SHA")
+        _require(isinstance(based_on, list) and based_on, f"{path}.based_on must be non-empty")
+        _require(
+            all(isinstance(parent, str) and FULL_SHA.fullmatch(parent) is not None for parent in based_on),
+            f"{path}.based_on must contain full SHAs",
+        )
+        _require(len(based_on) == len(set(based_on)), f"{path}.based_on must not contain duplicates")
+        _require(
+            isinstance(candidate.get("qualification"), str) and candidate["qualification"],
+            f"{path}.qualification must be non-empty",
+        )
+        candidate_by_key[key] = candidate
+        candidate_repos.add(repo_path)
+
+    inventory = matrix.get("v1_capability_inventory")
+    _require(isinstance(inventory, dict), "matrix.v1_capability_inventory must be an object")
+    _require(
+        set(inventory) == {
+            "status",
+            "exhaustive",
+            "unknown_promise_disposition",
+            "promises",
+            "surface_coverage",
+        },
+        "matrix.v1_capability_inventory has missing or unsupported fields",
+    )
+    _require(inventory["status"] == "complete-candidate-no-go", "capability inventory status must remain candidate NO-GO")
+    _require(inventory["exhaustive"] is True, "V1 capability inventory must be exhaustive")
+    _require(inventory["unknown_promise_disposition"] == "refused", "unknown V1 promises must be refused")
+    promises = inventory["promises"]
+    _require(isinstance(promises, list) and promises, "v1_capability_inventory.promises must be non-empty")
+    promise_by_id: dict[str, dict[str, Any]] = {}
+    for index, promise in enumerate(promises):
+        path = f"v1_capability_inventory.promises[{index}]"
+        _require(isinstance(promise, dict), f"{path} must be an object")
+        _require(
+            set(promise) == {"id", "kind", "languages", "surface_ids", "disposition", "evidence"},
+            f"{path} has missing or unsupported fields",
+        )
+        promise_id = promise.get("id")
+        _require(isinstance(promise_id, str) and promise_id, f"{path}.id must be non-empty")
+        _require(promise_id not in promise_by_id, f"duplicate V1 capability promise id: {promise_id}")
+        _require(promise.get("kind") in CAPABILITY_KINDS, f"{path}.kind is invalid")
+        _require(promise.get("disposition") in CAPABILITY_DISPOSITIONS, f"{path}.disposition is invalid")
+        for field in ("languages", "surface_ids"):
+            values = promise.get(field)
+            _require(
+                isinstance(values, list)
+                and bool(values)
+                and all(isinstance(value, str) and value for value in values)
+                and len(values) == len(set(values)),
+                f"{path}.{field} must be a non-empty unique string list",
+            )
+        evidence = promise.get("evidence")
+        _require(isinstance(evidence, list) and evidence, f"{path}.evidence must be non-empty")
+        seen_evidence: set[tuple[str, str]] = set()
+        for evidence_index, item in enumerate(evidence):
+            evidence_path = f"{path}.evidence[{evidence_index}]"
+            _require(isinstance(item, dict), f"{evidence_path} must be an object")
+            _require(
+                set(item) == {"candidate_key", "source", "source_sha256"},
+                f"{evidence_path} must bind one candidate source",
+            )
+            candidate_key = item.get("candidate_key")
+            source = item.get("source")
+            digest = item.get("source_sha256")
+            _require(candidate_key in candidate_by_key, f"{evidence_path}.candidate_key is unknown")
+            _require(
+                isinstance(source, str)
+                and source
+                and not Path(source).is_absolute()
+                and ".." not in Path(source).parts,
+                f"{evidence_path}.source is unsafe",
+            )
+            _require(isinstance(digest, str) and SHA256.fullmatch(digest) is not None, f"{evidence_path}.source_sha256 is invalid")
+            identity = (candidate_key, source)
+            _require(identity not in seen_evidence, f"{path}.evidence duplicates {identity}")
+            seen_evidence.add(identity)
+        promise_by_id[promise_id] = promise
+
+    surfaces = {
+        surface["id"]
+        for surface in matrix.get("public_v1_surfaces", [])
+        if isinstance(surface, dict) and isinstance(surface.get("id"), str)
+    }
+    coverage = inventory.get("surface_coverage")
+    _require(isinstance(coverage, list) and coverage, "v1_capability_inventory.surface_coverage must be non-empty")
+    seen_surfaces: set[str] = set()
+    covered_promises: set[str] = set()
+    for index, row in enumerate(coverage):
+        path = f"v1_capability_inventory.surface_coverage[{index}]"
+        _require(isinstance(row, dict), f"{path} must be an object")
+        _require(set(row) == {"surface_id", "capability_ids", "no_capability_claim"}, f"{path} has invalid fields")
+        surface_id = row.get("surface_id")
+        _require(surface_id in surfaces, f"{path}.surface_id is unknown")
+        _require(surface_id not in seen_surfaces, f"duplicate capability coverage surface: {surface_id}")
+        ids = row.get("capability_ids")
+        _require(isinstance(ids, list) and len(ids) == len(set(ids)), f"{path}.capability_ids must be a unique list")
+        _require(all(capability_id in promise_by_id for capability_id in ids), f"{path}.capability_ids contains an unknown promise")
+        reason = row.get("no_capability_claim")
+        if ids:
+            _require(reason is None, f"{path}.no_capability_claim must be null when promises are listed")
+        else:
+            _require(isinstance(reason, str) and reason, f"{path}.no_capability_claim must explain an empty promise set")
+        for capability_id in ids:
+            _require(surface_id in promise_by_id[capability_id]["surface_ids"], f"{path} lists a promise not scoped to this surface")
+        covered_promises.update(ids)
+        seen_surfaces.add(surface_id)
+    _require(seen_surfaces == surfaces, "surface_coverage must account for every public V1 surface exactly once")
+    _require(covered_promises == set(promise_by_id), "surface_coverage must account for every V1 capability promise")
+
+
 def validate_surface_matrix(matrix_path: Path, manifest_path: Path, lock_path: Path) -> dict[str, Any]:
     matrix = load_json(matrix_path)
     manifest = load_json(manifest_path)
@@ -381,6 +539,7 @@ def validate_surface_matrix(matrix_path: Path, manifest_path: Path, lock_path: P
     _validate_lock_member_list(matrix, manifest, lock)
     _validate_public_surfaces(matrix, lock)
     _validate_release_batch_semantics(matrix)
+    _validate_capability_inventory(matrix, lock)
     return {"matrix": matrix, "manifest": manifest, "lock": lock}
 
 
