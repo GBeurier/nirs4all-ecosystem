@@ -518,17 +518,17 @@ current_candidate_evidence:
     scope: local_code_only_no_global_go
   org:
     evidence_status: final_native_candidate_staging_local_publication_hold
-    commit: 8cb9bee885a16bbd6c8e72eafdf565a139f143e5
-    tree: 0e50e1bebee3b2c9d46146d91c619e66f73388e1
-    snapshot_sha256: 00863a82349eb22539f9c52a2884e75405ef91c289d9632b5519e58aa98f6d46
-    snapshot_source_commit: cd1627f60a0fba6acaa22b7b1d726846a2da40dc
+    commit: 887276ff23a330784a567e925fbce0ef5a64f101
+    tree: c79ba014b076795edb8723c530d7348950fb0ae9
+    snapshot_sha256: 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0
+    snapshot_source_commit: e9d60c3a43dcf74d6318c5d165ff413452c49b1d
     publication: false
   cockpit:
     evidence_status: final_native_candidate_staging_local_publication_hold
-    commit: a60abdc400d14ad1b7e595de4031b6b4c5cf4ef5
-    tree: 3b97132434bd68b0cad1fc59024474538474660f
-    snapshot_sha256: 00863a82349eb22539f9c52a2884e75405ef91c289d9632b5519e58aa98f6d46
-    snapshot_source_commit: cd1627f60a0fba6acaa22b7b1d726846a2da40dc
+    commit: 003bee587f8be65f7b157f906513479dfa744051
+    tree: e6ecff9a118103dfe276a14cf25e48bf3cb3a9eb
+    snapshot_sha256: 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0
+    snapshot_source_commit: e9d60c3a43dcf74d6318c5d165ff413452c49b1d
     canonical_lock_updated: false
     global_status: no_go
   capability_governance:
@@ -1520,7 +1520,7 @@ work_items:
       - STU-001
       - MTH-DOC-003
     state: complete_local_staging_publication_hold
-    input_sha: 8cb9bee885a16bbd6c8e72eafdf565a139f143e5
+    input_sha: 887276ff23a330784a567e925fbce0ef5a64f101
     owned_files:
       - nirs4all-org/
       - nirs4all-cockpit/data/current.json
@@ -1533,14 +1533,14 @@ work_items:
       - Studio contract verifier is committed and run by CI; documentation claims only capabilities proven by the same release lock
       - Org release staging projects only public-safe version and source-SHA fields from a validated lock; absolute paths, worktrees and private URLs are rejected
       - the current incomplete R2 lock renders every component as pending with no download and falls back to Publication en cours for absent, invalid or incomplete manifests
-      - the public projection shared with Cockpit is byte-reproducible with SHA-256 00863a82349eb22539f9c52a2884e75405ef91c289d9632b5519e58aa98f6d46
+      - the public projection shared with Cockpit is byte-reproducible with SHA-256 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0
       - static validation covers manifest, HTML, internal links, accessibility, SEO, JSON-LD and sitemaps; eight negative tests, Ruff, Mypy, HTTP and headless Chrome smokes pass
     review: >-
-      Org candidate 8cb9bee885a16bbd6c8e72eafdf565a139f143e5 closes
+      Org candidate 887276ff23a330784a567e925fbce0ef5a64f101 closes
       the lock-driven public-safe staging work locally while preserving an
       explicit release-in-progress page with no download. Its snapshot is
-      byte-identical to Cockpit at SHA-256 00863a82349eb22539f9c52a2884e75405ef91c289d9632b5519e58aa98f6d46
-      from governance cd1627f. Public artifacts, publication and deployment
+      byte-identical to Cockpit at SHA-256 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0
+      from governance e9d60c3. Public artifacts, publication and deployment
       remain held; no R1/R2/R3/V1 announcement is eligible.
     rollback: revert generated public content and deployment manifests atomically; no release, site deployment or public announcement without authorization.
   - id: DOC-WEB-001B
@@ -1549,7 +1549,7 @@ work_items:
       - DOC-WEB-001
       - REL-002
     state: complete_local_staging_publication_hold
-    input_sha: a60abdc400d14ad1b7e595de4031b6b4c5cf4ef5
+    input_sha: 003bee587f8be65f7b157f906513479dfa744051
     owned_files:
       - nirs4all-cockpit/.github/workflows/ci.yml
       - nirs4all-cockpit/cockpit/release_staging.py
@@ -1565,10 +1565,10 @@ work_items:
       - direct CLI execution from an external directory resolves the selected checkout rather than a stale editable cockpit package
       - the clean selected checkout passes 164 tests, Ruff, Mypy, target validation, Node syntax validation and the headless Chrome DOM smoke
     review: >-
-      Cockpit candidate a60abdc400d14ad1b7e595de4031b6b4c5cf4ef5 closes
+      Cockpit candidate 003bee587f8be65f7b157f906513479dfa744051 closes
       the deterministic lock-driven projection locally while retaining
       publish=false and global no-go. Its projection is byte-identical to Org
-      at SHA-256 00863a82349eb22539f9c52a2884e75405ef91c289d9632b5519e58aa98f6d46.
+      at SHA-256 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0.
       Public artifacts, publication and deployment remain held; no release
       announcement is eligible.
     rollback: remove only the additive release-staging projection, CLI, tests and CI gate; retain the existing public cockpit snapshot and dashboard.
