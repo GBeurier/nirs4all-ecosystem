@@ -178,43 +178,44 @@ locks:
   LOCK-API: pending
   LOCK-STUDIO: pending
   LOCK-DROP: pending
-  LOCK-RELEASE: no_go_baseline_lock_validated_remote_candidates_unlocked_unpublished_and_stable_gates_pending
+  LOCK-RELEASE: no_go_component_publications_recorded_product_lock_signatures_external_matrices_soak_and_studio_pending
   LOCK-SOAK: pending
   LOCK-DOCS: pending
 current_candidate_evidence:
   observed_at: 2026-09-03
-  authority: remote_candidate_branches_with_governance_consumer_receipts
+  authority: published_component_tags_and_registry_receipts_with_unpublished_product_candidates
   promotion_status: no_go
-  publication_status: no_go
+  publication_status: component_train_published_product_train_incomplete_no_go
   release_gate_status: no_go
   canonical_release_lock:
     updated: false
-    status: retained_published_selection_baseline
+    status: retained_published_selection_baseline_pending_expanded_regeneration
     reason: >-
       aggregation-lock.n4a.lock.json is generated from the selected release
       manifest and represents reconstructible release members. The local
-      candidates below are advertised only as mutable remote candidate branches,
-      and are not tagged, signed, published or final-lock aligned, so copying
-      their identities into that lock would create false
-      publication evidence. A release captain must regenerate it only after the
-      ordered publication/repin cascade is complete.
+      component releases below are now tagged and published, but the expanded
+      product train is not final-lock aligned and Studio remains unpublished.
+      Copying mutable repair descendants into the lock would still create false
+      release evidence. A release captain must regenerate it only after the
+      remaining product, signature and qualification gates close.
   remote_candidate_staging:
     branch: release/native-v1-candidate
-    status: all_selected_component_heads_advertised_unpublished
-    tag_or_registry_publication: false
+    status: component_releases_published_product_candidates_remain_unpublished
+    tag_or_registry_publication: true
+    all_product_milestones_published: false
     heads:
       methods: e0bee1ce160cd805d3060185fd151c09230c3381
       formats: 2d46285843dc366da1d38f133131b5329c886b12
       dag_ml_data: 7d9b9fed04c135ed4c2bba472c782aca7ef85807
-      io: ef36c215653e628749a24ab06d222ee0c5520f1d
+      io: f5a5e222f83258981cca480d45d13767b1e65c53
       datasets: 5b528e96af80a3566a9773a617b76f447f5c8d50
-      dag_ml: b08c62638829e0bcab741e66d44a3db66459e5a8
-      core: b6442dc4334c62a2b6c72526bea554a734134ac6
+      dag_ml: 1caa26dc9b90f33bc3f53b15b4d85e18f3f67381
+      core: af4b4001e7fd2d88c7f5adca238d63f2f98858ba
       tools: 88c2bc1e29603049cdbf1a1080a35845edf2f3c9
       ui: 406d94d70004f27459ef12347af1e6f0079ab6ac
       python: 3a38f589e5acbda58c5d071c95036f2572972ecd
-      studio: bb66016cf4f7578543cdc294713011881b884969
-      web: dbbbcaeaf5f0d0da35a5242f21e234ba92c67cf8
+      studio: aa84efc02cf89df6f87278777dc8df9b43ee8df3
+      web: 146e3e4632807d28c81031070fb1523b2ff13359
       benchmarks: 9ff889a5be1bbc48a16d69a27ab743c23598f7da
       org: b09f2768f264269d72be351d0c6282b769ec8f85
       cockpit: 0abde191e91629d4d54d111f93805508de9a6639
@@ -229,6 +230,9 @@ current_candidate_evidence:
         wheel_sha256: 463c141c026abcea3870575b91bac7efb378f561be854ac13d98a4c967356cfe
         default_engine: legacy
         remote_branch: release/r1-0.13.0-candidate
+        publication_status: publication_in_progress_repair_candidate_prepared
+        publication_repair_commit: c21b8bcba9e5921e206bc90d60f991e74f8fc330
+        publication_repair_tree: e105e528ad8567d94e071cbaff35ed100f4e0b17
         studio_version: 0.10.1
         studio_commit: 65b2aa2ac80249fdbd2fb0ccb55c82ac5b5e8219
         studio_tree: e978be82eca9df3cf44c721ea2692e6f0fc896c3
@@ -254,21 +258,23 @@ current_candidate_evidence:
         default_engine: native_fail_closed
         remote_branch: release/r3-1.0.0-rc.2-candidate
         studio_version: 0.11.0
-        studio_commit: bb66016cf4f7578543cdc294713011881b884969
-        studio_tree: 7535c4e0f8d6cc91d62f41f11935817e6fb7eb21
+        studio_commit: aa84efc02cf89df6f87278777dc8df9b43ee8df3
+        studio_tree: 9422188b689a7c31514a6981ec0920025b08a97c
         studio_control_plane: rust_only_fail_closed_cpython_plugin_host_only
         studio_remote_branch: release/r3-0.11.0-candidate
       r4:
         version: 1.0.0
         status: not_created_until_all_stable_gates_are_green
     release_limit: >-
-      R1, R2 and R3 now have distinct descendant release candidates with the
+      R1, R2 and R3 have distinct descendant release candidates with the
       required default-engine behavior and explicit legacy rollback retention.
-      They remain untagged and unpublished. R4 is deliberately absent until
+      R1 publication is in progress through repair descendant c21b8bcb; R2 and
+      R3 remain unpublished, and no candidate build counts as a completed
+      post-flip release. R4 is deliberately absent until
       soak, external matrices, signing, registry repins and the final lock are
       green; it may contain only blocker fixes and release metadata.
   registry_dependency_sequence:
-    status: prepared_publication_held
+    status: component_registry_cascade_published_product_publication_held
     waves:
       roots: [methods, formats, dag_ml_data]
       bridges: [io, dag_ml]
@@ -277,19 +283,19 @@ current_candidate_evidence:
       products: [python, studio, web]
       evidence_sites: [benchmarks, org, cockpit]
     release_limit: >-
-      This executable dependency order supersedes the roadmap's recommended
-      prose order where IO and Datasets precede dag-ml-data. IO-dagml and
-      Datasets cannot package cleanly until their exact dag-ml-data dependency
-      is available. No registry wave starts before the product milestones are
-      version-coherent and its own external gate is green.
+      The ordered component cascade is published through IO 0.1.13 and Core
+      0.3.26. Component publication does not promote the Python/Studio product
+      milestones or close their external gates, signatures, soak or final lock.
   methods:
-    evidence_status: locally_qualified_publishable_n4m_candidate_registry_hold
+    evidence_status: n4m_0_1_4_published_methods_external_release_hold
     commit: e0bee1ce160cd805d3060185fd151c09230c3381
     tree: 7e4658658e37f77be18ef6d3d6aff150886efb5b
     qualified_code_parent: 48ad1e5a50844f68c2b99e93b02ad6a3b491c07b
     version: 1.0.15
     c_abi_version: 2.5.0
     rust_binding_version: 0.1.4
+    rust_binding_release_tag: n4m-v0.1.4
+    rust_binding_registry_published: true
     methods_documentation_ancestor: d9c4291783381e07eae45cb2aecdad176b939731
     n4mm_pipeline_profile: snv_savgol_smooth_pls_v2_ddof0_interp_window11_poly3
     evidence: >-
@@ -305,12 +311,10 @@ current_candidate_evidence:
       the locked package has SHA-256
       ef0abf168fd77728174a7293f7ed03cf41fe6c57fb52d58b137b62b7331b5efe.
     release_limit: >-
-      n4m 0.1.4 is not published and the canonical release lock remains
-      unchanged on its published baseline. The protected crates-io GitHub
-      environment and its authorized CARGO_REGISTRY_TOKEN remain external
-      configuration prerequisites.
-      LOCK-METHODS and LOCK-RELEASE remain unclosed until publication, promised
-      platform evidence, signed artifacts and exact downstream repins pass.
+      n4m 0.1.4 is published from the recorded source and checksum. The
+      canonical release lock remains unchanged on its prior baseline;
+      LOCK-METHODS and LOCK-RELEASE remain unclosed until promised platform
+      evidence, signed artifacts and final lock reconstruction pass.
   methods_documentation:
     evidence_status: mth_doc_closed_local_candidate_publication_pending
     commit: d9c4291783381e07eae45cb2aecdad176b939731
@@ -329,25 +333,28 @@ current_candidate_evidence:
       final lock-driven cross-site publication, immutable artifacts and release
       documentation closure; no public or global GO is claimed.
   dag_ml_data:
-    evidence_status: locally_qualified_publishable_seven_crate_candidate_registry_hold
+    evidence_status: published_0_2_10_external_release_hold
     commit: 7d9b9fed04c135ed4c2bba472c782aca7ef85807
     tree: 42f02fdd723239cdbc933797e01d0d48b184712e
     version: 0.2.10
     package_publish: true
+    release_tag: v0.2.10
+    registry_published: true
     crate_order: core_then_data_then_arrow_then_cli_then_provider_then_capi_then_wasm
     release_limit: >-
-      The seven 0.2.10 crates are locally packaged and guarded against silent
-      exclusion or reordering, but remain unpublished. Registry publication,
-      external matrices and exact release-lock reconstruction remain required.
+      The guarded 0.2.10 release is published. External matrices, signatures
+      where required and exact release-lock reconstruction remain required.
   dag_ml:
-    evidence_status: local_documented_unpublished_data_conformal_and_hydration_candidate
-    commit: b08c62638829e0bcab741e66d44a3db66459e5a8
-    tree: 5b5be85d2326fcb360e05ac65572faa18c3a322d
+    evidence_status: published_0_3_23_registry_repinned_external_release_hold
+    commit: 1caa26dc9b90f33bc3f53b15b4d85e18f3f67381
+    tree: 8dffd6e823e214b720e1f8d715ddb7634bd4fb4e
     qualified_runtime_commit: b7d643f450da3018c8208a84abcabfab09d5da7d
     qualified_code_parent: dafb8b6fb98f9d380d30559a3f4b868c91e5b5c4
     version: 0.3.23
-    resolved_dag_ml_data_version: 0.2.10_local_patch_unpublished
-    resolved_n4m_rust_binding_version: 0.1.4_local_patch
+    release_tag: v0.3.23
+    registry_published: true
+    resolved_dag_ml_data_version: 0.2.10_registry
+    resolved_n4m_rust_binding_version: 0.1.4_registry
     predictor_descriptor_attestation: v1_v2_content_bound_and_legacy_params_qualified
     loaded_cache_no_leak_witness:
       commit: 7c03732297570c6093f20557c3f98e900e729fea
@@ -374,24 +381,30 @@ current_candidate_evidence:
       changes ADR documentation only and clarifies that published R3 counts
       once toward retention while unpublished candidate/CI builds do not.
     release_limit: >-
-      dag-ml-data 0.2.10 and n4m 0.1.4 remain unpublished and are consumed by
-      local patches. Registry publication, external matrices, signing and exact
-      lock reconstruction remain required.
+      The registry-only 0.3.23 release is published with dag-ml-data 0.2.10 and
+      n4m 0.1.4. External matrices, signing and exact lock reconstruction remain
+      required.
   core:
-    evidence_status: locally_qualified_aggregate_e2e_data_conformal_hardened_candidate
-    commit: b6442dc4334c62a2b6c72526bea554a734134ac6
-    tree: 6241d8497aa34ad4d015664662d4d17148d547fb
+    evidence_status: published_0_3_26_io_0_1_13_repinned_external_release_hold
+    commit: af4b4001e7fd2d88c7f5adca238d63f2f98858ba
+    tree: 41c49809f6bc08cc949b8c04bfd564ae12d4e444
     qualified_code_parent: e0f5d485eae4279f02d58fe82fad3946202e463f
     aggregate_e2e_parent: 8508c8c012331b08a344588f740d3147a881ff4b
     conformal_producer_commit: 0115c1bbf7db351b7da7ff88708cd334602d3450
     conformal_producer_tree: 24e454a636e136324489a42f461aba3d93c54252
     methods_runtime_identity_fix_commit: 6b25b63bb09adfe3c4dae8ffacc90d09a1a81e16
-    version: 0.3.25
-    resolved_dag_ml_data_version: 0.2.10_local_patch_unpublished
-    resolved_n4m_rust_binding_version: 0.1.4_local_patch
+    version: 0.3.26
+    release_tag: v0.3.26
+    registry_published: true
+    resolved_dag_ml_data_version: 0.2.10_registry
+    resolved_io_version: 0.1.13_registry
+    resolved_io_dagml_version: 0.1.13_registry
+    resolved_n4m_rust_binding_version: 0.1.4_registry
     predictor_descriptor_consumption: qualified_v1_v2_rust_python_wasm
     evidence: >-
-      Core 0.3.25 candidate b6442dc adds a schema-refusal hardening test on
+      Published Core 0.3.26 af4b400 repins the complete IO family to registry
+      version 0.1.13 without changing runtime behavior. Core 0.3.25 candidate
+      b6442dc adds a schema-refusal hardening test on
       qualified code parent e0f5d48, whose executed Rust aggregate witness runs
       Formats through IO/DatasetPackage and DAG/Methods to Archive V2 on top of
       the qualified 8508c8c aggregate, combines DATA package-to-training
@@ -401,26 +414,32 @@ current_candidate_evidence:
       and compatibility gates are green against runtime-qualified DAG candidate
       b7d643f; final descendant b08c626 changes ADR documentation only.
     release_limit: >-
-      Core uses local patches for unpublished dag-ml-data 0.2.10, final DAG and
-      n4m 0.1.4. Published pins, external matrices, signing and
-      release-artifact witnesses remain required before lock promotion.
+      Core 0.3.26 is published from registry-only IO 0.1.13 dependencies with
+      no local patch. External matrices, signing and final lock reconstruction
+      remain required before promotion.
   formats:
-    evidence_status: local_candidate_go_global_release_no_go
+    evidence_status: published_0_2_8_external_release_hold
     commit: 2d46285843dc366da1d38f133131b5329c886b12
     tree: 2ee12c035db8a78721315ee65cf684d811552aa9
     version: 0.2.8
+    release_tag: v0.2.8
+    registry_published: true
     wasm_sha256: 51c8ff57186676b30b512142f7880075432c6b1f155912858dd21f1e785f8b6e
     release_limit: >-
-      Local source/WASM qualification does not close the promised multi-OS,
-      security, signing and registry gates. Formats remains globally NO-GO.
+      Publication does not close the promised multi-OS, security, signing and
+      final-lock gates. Formats remains globally NO-GO.
   io:
-    evidence_status: locally_qualified_publishable_io_dagml_candidate_dependency_hold
-    commit: ef36c215653e628749a24ab06d222ee0c5520f1d
-    tree: 5676bfdac72c06cea23d494e7fcc2dbc1323b850
+    evidence_status: published_0_1_13_role_tagged_limits_restored_external_release_hold
+    commit: 0b7d39ee2264fb2fe13a68a540f7297658bfcd6d
+    tree: 6c34a6492ef79f66afe7b188c261658880dee7ee
     qualified_code_parent: b48323a494ac5f0af166830ec3fcb825ce3984b3
     documentation_lineage: b0fb6bafb66d6abe13237a59c5eae0258d3c6958
-    version: 0.1.12
-    resolved_dag_ml_data_version: 0.2.10_local_patch_unpublished
+    version: 0.1.13
+    release_tag: v0.1.13
+    registry_published: true
+    publication_repair_commit: f5a5e222f83258981cca480d45d13767b1e65c53
+    publication_repair_tree: e52158c7df815501ef6d5c6ece255558eccab8e2
+    resolved_dag_ml_data_version: 0.2.10_registry
     wasm_sha256: a99b75a6dfa3fe86c0b27d96334b8da0b4ccae5eda39084533f57a104738fc9c
     cyclonedx_sbom_sha256: 2fb93d6b81a3fa7fab9b0bf388b170f8dac4e4ac0f5a37f51b616bfb67067631
     cyclonedx_components: 55
@@ -431,16 +450,20 @@ current_candidate_evidence:
       serialization while preserving sample, observation, group, source, fold
       and target identities. Descendant ef36c21 makes nirs4all-io-dagml 0.1.12
       publishable and inserts it in the guarded release order between the IO
-      facade and C API.
+      facade and C API. Release 0b7d39e restores bounded RoleTaggedReadLimits
+      in 0.1.13; repair descendant f5a5e22 preserves that immutable release
+      content while correcting publication infrastructure.
     release_limit: >-
-      dag-ml-data 0.2.10 remains unpublished, so packaging without the local
-      candidate patch cannot yet resolve. Publication, registry pins, signing
-      and promised external matrices remain open.
+      IO 0.1.13 and its dag-ml bridge are published with the bounded
+      RoleTaggedReadLimits API restored. Signing, final lock reconstruction and
+      promised external matrices remain open.
   datasets:
-    evidence_status: locally_qualified_signable_source_candidate_python_sdist_dependency_hold
+    evidence_status: published_0_3_9_final_lock_and_io_0_1_13_consumer_review_hold
     commit: 5b528e96af80a3566a9773a617b76f447f5c8d50
     tree: abca4e80491020126322e76dfea52950f8101da5
     version: 0.3.9
+    release_tag: v0.3.9
+    registry_published: true
     resolved_formats_version: 0.2.8
     resolved_io_version: 0.1.12
     wasm_sha256: 9275834e88b052304b0258022956ab99373cd874b2c6167081faedf58ad20f0a
@@ -450,11 +473,11 @@ current_candidate_evidence:
     evidence: >-
       Python, R, Rust and WASM package versions are reconciled at 0.3.9, Formats
       0.2.8 and IO 0.1.12 are pinned, and SPDX/license metadata plus signable
-      source tar/zip artifacts are qualified locally. The Python sdist remains
-      blocked until dag-ml-data 0.2.10 and the IO publication cascade complete;
-      no publication or remote artifact availability is claimed.
+      source tar/zip artifacts are qualified locally. Version 0.3.9 is
+      published; its final-train IO 0.1.13 consumer repin and lock evidence
+      remain separate release work.
   tools:
-    evidence_status: locally_qualified_support_sla_and_conversion_candidate_publication_hold
+    evidence_status: published_0_0_7_support_surface_final_release_hold
     commit: 88c2bc1e29603049cdbf1a1080a35845edf2f3c9
     tree: d46a5fd2fcb7a2e14225cf1c3ad2661f7a4ab8b3
     workspace_cli_commit: 2215c9b9dcf498067ce2cad5f8bf42bf06a39285
@@ -464,31 +487,33 @@ current_candidate_evidence:
     sdist_sha256: d322194b49ab6078e3cdd8777e7720b46db3abf33df67b3a66ef153af24bc8ec
     cyclonedx_sbom_sha256: 04a757904e9cf614f5320c3fd7d2ecd0eb4c73004125b7f3086ac64ff232b431
     final_candidate_artifacts_signable: true
-    final_candidate_artifacts_published: false
+    final_candidate_artifacts_published: true
     release_limit: >-
       Tools remains an outside-aggregation-lock migration surface. Its support
       matrix guarantees legacy readers through R3 and R4, with removal only by
-      an announced post-V1 decision. The exact local artifacts must still be
-      published, signed and referenced by the final release lock.
+      an announced post-V1 decision. The 0.0.7 artifacts are published but
+      must still be referenced by the final release lock and covered by the
+      remaining signature obligations.
   ui:
-    evidence_status: locally_qualified_shared_tarball_registry_publication_hold
+    evidence_status: published_0_1_13_downstream_product_release_hold
     commit: 406d94d70004f27459ef12347af1e6f0079ab6ac
     tree: 377722160bbf188c474aacfecc8a6825095be2ca
     version: 0.1.13
     tarball_sha256: 44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67
-    studio_consumer_commit: bb66016cf4f7578543cdc294713011881b884969
-    web_consumer_commit: dbbbcaeaf5f0d0da35a5242f21e234ba92c67cf8
+    studio_consumer_commit: aa84efc02cf89df6f87278777dc8df9b43ee8df3
+    web_consumer_commit: 146e3e4632807d28c81031070fb1523b2ff13359
     registry_latest_observed_at: 2026-09-03
-    registry_latest_version: 0.1.12
+    registry_latest_version: 0.1.13
+    release_tag: v0.1.13
+    registry_published: true
     evidence: >-
       Studio and Web consume the same content-addressed nirs4all-ui 0.1.13
       tarball, verify the same producer commit, tree, SHA-256 and integrity
       receipt, and fail closed on identity or byte drift. The producer and both
       consumers are locally qualified without a sibling source dependency.
     release_limit: >-
-      Version 0.1.13 is not tagged or published to npm/GitHub; registry
-      publication, downstream registry repins and final product gates remain
-      required before UI-001 can become a public release claim.
+      Version 0.1.13 is tagged and published. Final downstream product repins,
+      Studio qualification and final product gates remain required.
   python_strict_profile:
     evidence_status: remote_r3_native_default_final_capability_docs_release_hold
     commit: 3a38f589e5acbda58c5d071c95036f2572972ecd
@@ -550,10 +575,12 @@ current_candidate_evidence:
       access. Publication, external platform matrices, signatures and the
       expanded release lock remain holds.
   studio:
-    evidence_status: locally_qualified_combined_candidate_external_release_hold
-    candidate_commit: bb66016cf4f7578543cdc294713011881b884969
-    candidate_tree: 7535c4e0f8d6cc91d62f41f11935817e6fb7eb21
+    evidence_status: registry_repinned_candidate_external_release_hold
+    candidate_commit: aa84efc02cf89df6f87278777dc8df9b43ee8df3
+    candidate_tree: 9422188b689a7c31514a6981ec0920025b08a97c
     package_version: 0.11.0
+    resolved_core_version: 0.3.26_registry
+    resolved_io_version: 0.1.13_registry
     reconciled_public_parent: 5d043ee23f0ba7f47584bc9ef18fa13755e59198
     integration_chain:
       native_pipeline: 868b71e97e8d8498d8ebdfd9b11e6c132eb68295
@@ -587,7 +614,9 @@ current_candidate_evidence:
         - content hash to process spawn mutation window
         - source mutation after validation scan
     evidence: >-
-      Studio 6ec9b08 reconciles the native candidate with public 0.10.1 and
+      Candidate aa84efc resolves Core 0.3.26 and IO 0.1.13 from their
+      registries without a local patch. Studio 6ec9b08 reconciles the native
+      candidate with public 0.10.1 and
       assigns the free 0.11.0 identity. It retains the Rust-only control plane
       on strict-runtime descendant 8bf1ca9 and preserves the 868b71e to
       f4761c2 to 5e72fd3 UI/catalogue chain, adds the 769bf9c persisted dataset
@@ -623,23 +652,25 @@ current_candidate_evidence:
       and R3 audits report zero critical/high and two documented moderate
       Router 6 findings.
     release_limit: >-
-      LOCK-STUDIO remains held for removal of local Cargo patches after exact
-      registry publication, signing, installers and promised platform/soak
-      matrices. Two moderate production React Router advisories require a
+      LOCK-STUDIO remains held for signing, installers and promised
+      platform/soak matrices. Two moderate production React Router advisories require a
       future major migration and stay explicit in SEC-001.
       Any embedded CPython remains limited to an attested stdio library/plugin
       host with no HTTP server, scheduler, store or fallback.
   web:
-    evidence_status: locally_qualified_final_wasm_candidate_external_release_hold
-    candidate_commit: dbbbcaeaf5f0d0da35a5242f21e234ba92c67cf8
-    candidate_tree: 78c0b7cbaae2939091c847f0073e565e0ad57c67
+    evidence_status: published_0_1_9_final_lock_and_core_0_3_26_refresh_hold
+    candidate_commit: 146e3e4632807d28c81031070fb1523b2ff13359
+    candidate_tree: 0713ed9f14b59f19ec2bd135b79ca505a078b2ec
     package_version: 0.1.9
+    release_tag: v0.1.9
+    published: true
     candidate_docs_parent: 59cfffbd7444a9afa9527fbaa12d078811abaf33
     wasm_artifacts_a_b: refreshed_final_candidate_with_provenance
     predictor_descriptor_gate: targeted_passed
     n4mm_v1_v2_smoke: targeted_passed
     evidence: >-
-      Web dbbbcae bumps the unpublished candidate to the free 0.1.9 identity
+      Published Web 0.1.9 at 146e3e4 descends from dbbbcae, which bumps the
+      candidate to the free 0.1.9 identity
       without changing its runtime, and descends from e7b9a63 which documents
       the exact content-addressed UI tarball on top of
       59cfffb, which refreshes final Core/Formats/IO WASM artifacts and their
@@ -647,9 +678,9 @@ current_candidate_evidence:
       Historical V1 and embedded-pipeline V2 Archive smokes pass against
       that final stack without fallback; no conformal UI claim is made here.
     release_limit: >-
-      Web remains client-side-only. Registry publication, final lock-driven
-      downstream repins, signing/SBOM if required, installers and external
-      matrices remain release holds.
+      Web remains client-side-only. Its 0.1.9 release is published, while the
+      final lock-driven Core 0.3.26 refresh, signing/SBOM if required and
+      external matrices remain release holds.
   local_code_closure:
     data_flows: closed
     conformal_flows: closed
@@ -770,29 +801,27 @@ current_candidate_evidence:
       triage/reproduction, sanitizers and external matrices remain mandatory
       before SEC-001 closure.
   dependency_repin:
-    status: local_patch_train_qualified_publication_pending
+    status: component_registry_repin_complete_product_lock_pending
     selected_dag_ml_data_version: 0.2.10
     selected_n4m_rust_binding_version: 0.1.4
-    dag_ml_candidate_n4m_rust_binding_version: 0.1.4_local_patch
-    local_patch_consumers:
-      - dag-ml 0.3.23
-      - nirs4all-core 0.3.25
-      - nirs4all-io 0.1.12-dagml
+    selected_io_version: 0.1.13
+    selected_core_version: 0.3.26
+    published_release_local_patch_consumers: []
     required_action: >-
-      Publish/select dag-ml-data 0.2.10 and nirs4all-io-dagml 0.1.12 in their
-      guarded orders, publish n4m 0.1.4, replace local patches with registry
-      pins, then regenerate the lock from remotely reconstructible heads.
+      Finish the separately governed Python and Studio product publications,
+      then regenerate the expanded lock from remotely reconstructible release
+      heads. Component publication alone does not authorize promotion.
   fields_pending_final_repin:
-    - registry publication of n4m 0.1.4, DMD 0.2.10, nirs4all-io-dagml 0.1.12 and Core/DAG packages, followed by exact downstream repins
-    - Datasets Python sdist after the dag-ml-data 0.2.10 and IO publication cascade
+    - Python R1 publication completion, followed by the separately gated R2 and R3 product releases
+    - Studio publication and installer identities from its registry-only Core 0.3.26 and IO 0.1.13 candidate
     - remotely reconstructible aggregation manifest and canonical release lock
     - signing and SBOM/provenance closure where required
     - external matrices, installers, soak and frozen reference-host performance budgets
   blockers:
     - >-
-      Registry HOLD: n4m 0.1.4, DMD 0.2.10, nirs4all-io 0.1.12-dagml and the
-      selected Core/DAG packages are not yet published and repinned; the
-      Datasets Python sdist remains blocked on that cascade.
+      Product HOLD: the component registry cascade is published through IO
+      0.1.13 and Core 0.3.26, but Python R1 publication is still in progress
+      and Studio remains an unpublished candidate. R2/R3 are not releases.
     - >-
       Release-artifact HOLD: the canonical lock is intentionally unchanged;
       signing and SBOM/provenance closure remain required where applicable.
@@ -1437,14 +1466,14 @@ work_items:
       are pre-existing dev/build-tree findings; no automatic dependency rewrite
       was applied. Web 59cfffb retains that strict replay in the final
       content-addressed WASM candidate, and e7b9a63 documents its exact shared
-      UI tarball. Registry publication, lock-driven staging and external
-      platform qualification remain held.
+      UI tarball. Web 0.1.9 is published; lock-driven restaging on Core 0.3.26
+      and external platform qualification remain held.
     rollback: revert the strict profile selector, manifest and profile-aware smoke commits together; preserve user browser storage and exported n4a artifacts.
   - id: UI-001
     owner: F + G
     dependencies:
       - WEB-001
-    state: complete_local_code_registry_publication_hold
+    state: complete_registry_publication_downstream_product_hold
     input_sha: 406d94d70004f27459ef12347af1e6f0079ab6ac
     owned_files:
       - nirs4all-ui/scripts/release-artifact.mjs
@@ -1466,10 +1495,8 @@ work_items:
       a6688f5 plus Web e7b9a63 consume and verify the same SHA-256
       44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67
       with matching source/tree/integrity receipts instead of a sibling source
-      checkout. npm still exposes 0.1.12 as latest on 2026-09-03; the exact
-      source is advertised only on the mutable candidate branch, without a tag
-      or registry publication. Registry publication and final downstream
-      registry repins remain release holds.
+      checkout. npm exposes the exact 0.1.13 package; final downstream product
+      qualification and release locks remain held.
     rollback: revert only the additive artifact builder, verifier and workflow handoff; retain the UI package source and consumer vendor copies.
   - id: GATE-001
     owner: G
@@ -2887,16 +2914,17 @@ work_items:
     dependencies:
       - CORE-001
     state: complete_local_code_release_hold
-    input_sha: b6442dc4334c62a2b6c72526bea554a734134ac6
+    input_sha: af4b4001e7fd2d88c7f5adca238d63f2f98858ba
     owned_files:
       - nirs4all-core/
     acceptance_tests:
       - Direct aggregate exposure and the datasets default-versus-optional decision are implemented and proved without duplicate domain logic.
     review: >-
-      Core candidate b6442dc4334c62a2b6c72526bea554a734134ac6 retains
+      Published Core 0.3.26 af4b4001 retains
       the direct aggregate proof from e0f5d48 without duplicating Formats, IO,
       DAG or Methods domain logic and adds schema-refusal hardening. Package
-      publication and release qualification remain held.
+      registry-only dependencies. Final product and release-lock qualification
+      remain held.
     rollback: remove only the unaccepted direct-exposure slice; retain the aggregate naming contract
   - id: DATA-002
     owner: C
@@ -2911,7 +2939,7 @@ work_items:
     acceptance_tests:
       - Materialization uses the published Rust IO to dag-ml-data bridge without a mandatory SpectroDataset adapter and preserves identities.
       - IO 54fa4f5 consumes DatasetPackage directly into PackageProvider and CoordinatorDataPlanEnvelope while preserving sample, observation, group, source, fold and target identities.
-    review: local code closed; publish=false package and registry release closure remain held
+    review: IO 0.1.13 registry handoff published; external LOCK-DATA qualification remains held
     rollback: retain the published bridge and remove only the unaccepted consumer replug
   - id: CORE-001
     owner: E
@@ -2921,16 +2949,16 @@ work_items:
       - DATA-003
       - FMT-001
     state: complete_local_code_release_hold
-    input_sha: b6442dc4334c62a2b6c72526bea554a734134ac6
+    input_sha: af4b4001e7fd2d88c7f5adca238d63f2f98858ba
     owned_files:
       - nirs4all-core/
     acceptance_tests:
       - Formats, IO, data, dag and Methods execute through Core rather than being metadata-only exposures.
     review: >-
-      Core candidate b6442dc4334c62a2b6c72526bea554a734134ac6 retains
+      Published Core 0.3.26 af4b4001 retains
       the bounded Formats to IO/DatasetPackage to DAG/Methods to Archive V2
       aggregate proof from e0f5d48 and adds schema-refusal hardening. DATA-003,
-      publication, platform and release-lock qualifications remain held.
+      platform and release-lock qualifications remain held.
     rollback: retain the prior aggregate release and remove only the unaccepted real-upstream wiring
   - id: STU-003
     owner: F + D
@@ -3336,8 +3364,8 @@ work_items:
     review: >-
       Tools candidate 6796a01a75b0b51301a693011f3e904a60598817 provides
       installed-command diagnostics, 0/10/20 handling and immutable-source
-      rollback usable without a development checkout. Candidate wheel
-      publication, representative-corpus soak and release remain held.
+      rollback usable without a development checkout. Tools 0.0.7 is
+      published; representative-corpus soak and product release remain held.
     rollback: retain R2 support instructions and keep R3 unpublished
   - id: WEBREL-003
     owner: H + G
@@ -3478,14 +3506,13 @@ work_items:
     review: pending
     rollback: retain R3 pages and leave stable publication in release-in-progress mode
 next_batch:
-  gate: external-matrices-publication-and-final-lock
+  gate: product-publication-external-matrices-and-final-lock
   condition: >-
     Keep the exact heads recorded by current_candidate_evidence as the local
     candidate train. Finish the real R and MATLAB/Octave IO qualification,
     representative corpus and sustained security/concurrency/memory soak, and
-    the promised Linux, macOS and Windows installer/runtime matrices. Advertise
-    and publish the dependency chain before replacing local qualification
-    identities with registry identities. Then regenerate the expanded
+    the promised Linux, macOS and Windows installer/runtime matrices. Complete
+    the separately gated Python and Studio product publications, then regenerate the expanded
     aggregation lock from those exact remotely fetchable heads, rebuild and
     sign its artifacts once, and promote the prepared documentation/sites
     atomically. Until those external gates are closed, canonical locks and
