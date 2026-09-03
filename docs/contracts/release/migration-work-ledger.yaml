@@ -199,37 +199,42 @@ current_candidate_evidence:
       ordered publication/repin cascade is complete.
   methods:
     evidence_status: locally_qualified_unpublished_candidate
-    commit: a71ee2927524d03482183de3d6e22661efc05d12
-    tree: f6749f4c4be7dca161f3c2677dd10a9ac4434b66
-    version: 1.0.14
-    c_abi_version: 2.4.0
-    rust_binding_version: 0.1.3
+    commit: 48ad1e5a50844f68c2b99e93b02ad6a3b491c07b
+    tree: f2eaa3c46629c26d11913a25bff723f9a9cefbc9
+    version: 1.0.15
+    c_abi_version: 2.5.0
+    rust_binding_version: 0.1.4
+    methods_documentation_ancestor: d9c4291783381e07eae45cb2aecdad176b939731
+    n4mm_pipeline_profile: snv_savgol_smooth_pls_v2_ddof0_interp_window11_poly3
     evidence: >-
-      The exact local Methods 1.0.14 source candidate exposes ABI 2.4.0 and Rust
-      binding 0.1.3, including the qualified authoritative N4MM inspector
-      surface. Its targeted C/C++, Python, Rust and JavaScript/WASM gates are
-      green. This identity is local only and is not a registry, signature or
-      multi-OS publication claim.
+      The exact local Methods train descends from the closed d9c42917 MTH-DOC
+      gate and exposes content-bound N4MM V2 SNV to Savitzky-Golay to PLS,
+      typed inspection through ABI 2.5, and RAII pipeline configuration. The
+      canonical semantic profile is SNV ddof=0 plus Savitzky-Golay interp with
+      defaults window 11 and polynomial degree 3. Targeted C/C++, Rust binding,
+      inspection, fingerprint, semantic and refusal gates are green.
     release_limit: >-
-      n4m 0.1.3 is not published and the release lock still resolves 0.1.2.
+      n4m 0.1.4 is not published and the canonical release lock remains
+      unchanged on its published baseline.
       LOCK-METHODS and LOCK-RELEASE remain unclosed until publication, promised
       platform evidence, signed artifacts and exact downstream repins pass.
   methods_documentation:
-    evidence_status: local_anti_loss_and_generation_go_scientific_release_no_go
-    commit: 325387120375ca4973238ace8a415155594dfe50
-    tree: 534be82f7a49f49e9d101b2b70882fbef286b22b
+    evidence_status: mth_doc_closed_local_candidate_publication_pending
+    commit: d9c4291783381e07eae45cb2aecdad176b939731
+    tree: a263b5fe818d7162b3e53e7eaa4a4c58898c87f2
     mapped_documentation_pages: 209/209
-    attributable_tracked_prose: 78/209
-    safe_attribution_missing: 131/209
-    reviewed_structured_method_publications: 0/209
-    reviewed_explicit_absence_status: 0/209
+    bibliography_entries: 88
+    mth_doc_status: closed
     evidence: >-
-      All 209 catalog methods have mapped documentation pages and a parity
-      disposition, and the 73-entry historical citation baseline is preserved.
-      Scientific publication attribution is not release-complete: 131 methods
-      still lack safe attribution and none of the 209 methods has reviewed
-      structured publication metadata or a reviewed explicit absence status.
-      MTH-DOC and LOCK-DOCS therefore remain NO-GO.
+      MTH-DOC-001, MTH-DOC-002 and MTH-DOC-003 are closed. The d9c42917
+      descendant restores the provenance-bound bibliography schema, migration,
+      generation, validation and CI gate while preserving the 73 historical
+      citations and 15 reviewed finetuning entries. Targeted catalog,
+      generation, tamper and documentation gates are green.
+    release_limit: >-
+      MTH-DOC closure is local evidence only. LOCK-DOCS still requires the
+      final lock-driven cross-site publication, immutable artifacts and release
+      documentation closure; no public or global GO is claimed.
   dag_ml_data:
     evidence_status: locally_qualified_unpublished_candidate
     commit: 1f60b920d34acda7c0fbc044b593bb6af1fab4c1
@@ -241,13 +246,13 @@ current_candidate_evidence:
       remain unchanged on dag-ml-data 0.2.9 and must be repinned and rebuilt
       against 0.2.10 before this candidate can enter a release lock.
   dag_ml:
-    evidence_status: local_unpublished_predictor_descriptor_candidate
-    commit: 189099119b69e74c69466f2308808cb423dc2e94
-    tree: 6ce31722bdb999482932e9d4a3884987426d1dd6
+    evidence_status: local_unpublished_dual_pls_v1_v2_candidate
+    commit: 879e2af880548287fe4f5de556681ae998e25bca
+    tree: 28acb24f9d31b0900263ce45d85f2d6806380dc9
     version: 0.3.23
     resolved_dag_ml_data_version: 0.2.9
-    resolved_n4m_rust_binding_version: 0.1.2
-    predictor_descriptor_attestation: public_attestor_and_centralized_pure_validation_qualified
+    resolved_n4m_rust_binding_version: 0.1.4_local_patch
+    predictor_descriptor_attestation: v1_v2_content_bound_and_legacy_params_qualified
     loaded_cache_no_leak_witness:
       commit: 7c03732297570c6093f20557c3f98e900e729fea
       tree: 372cdcb939474cdb2ee41f0a54eef1503d527cbf
@@ -258,33 +263,37 @@ current_candidate_evidence:
       tree: c5b9c2c0f159aeaefeb7e365a7e95ec7b5dddd66
       parent_witness_commit: 7c03732297570c6093f20557c3f98e900e729fea
       disposition: targeted_passed
+    embedded_pipeline_commit: 744827ea93d4b0792cdffe43cbc9b53158c17e27
+    canonical_semantics_commit: 6800c4fd0ec8b13b171cec9ed4a9b2ccdbabca0d
     evidence: >-
-      The final local candidate publishes the native predictor attestor and
-      centralizes pure descriptor validation. Targeted spoof, controller,
-      algorithm, capability, dimension and fingerprint gates are green. Its
-      local descendants prove loaded stacking-cache isolation without leakage,
-      then merge resumed completed evidence before validation; neither
-      descendant replaces the selected descriptor candidate or release lock.
+      The final local DAG candidate descends from d80a5d0, 744827e and 6800c4f.
+      It validates and replays both historical PLS V1 and content-bound embedded
+      pipeline V2 descriptors, including the canonical SNV/SG profile, and the
+      final 879e2af fix preserves historical sklearn PLS default parameters.
+      Targeted descriptor, fingerprint, resume/no-leak, dual-version and legacy
+      Studio replay gates are green.
     release_limit: >-
-      The official lock still resolves dag-ml-data 0.2.9 and n4m 0.1.2. The
-      candidate is local only and its qualification patch is not publication
-      evidence; published dependencies, rebuild and exact repin remain required.
+      The candidate still resolves dag-ml-data 0.2.9 and consumes n4m 0.1.4 by
+      local patch. Neither local patch is publication evidence; published DMD
+      and n4m identities, rebuild and exact repin remain required.
   core:
     evidence_status: locally_qualified_unpublished_candidate
-    commit: 3a3ce728cebf001ad25b20b3eeaed3bc76daf32f
-    tree: 57e8203bf33a6c7b0b3f049f0dcbf3efa28991b1
+    commit: 46a51a4bf123f9766b363fcbfb3009ea5c5f0a62
+    tree: 3b02332cfa4cf5e3424a7697f56d85a55fd80de6
     version: 0.3.25
     resolved_dag_ml_data_version: 0.2.9
-    resolved_n4m_rust_binding_version: 0.1.2
-    predictor_descriptor_consumption: qualified_local_candidate_rust_python_wasm
+    resolved_n4m_rust_binding_version: 0.1.4_local_patch
+    predictor_descriptor_consumption: qualified_v1_v2_rust_python_wasm
     evidence: >-
-      Core 0.3.25 exposes Archive V2 native predictor descriptors through Rust,
-      Python and WASM. Targeted backward-compatibility, tamper, controller,
-      algorithm, dimension and future-schema gates are green, including local
-      live-library content attestation. It remains an unpublished candidate.
+      Core 0.3.25 transports content-bound N4MM V2 pipeline descriptors through
+      Rust, Python and WASM and keeps replay authoritative. PortableSession V2
+      sends raw X to embedded Methods without host preprocessing or double
+      application, while V1 retains external preprocessing exactly once.
+      Grouped fixture parity, ownership/fingerprint contradiction, tamper, old
+      ABI and V1 compatibility gates are green.
     release_limit: >-
-      Core still resolves published dag-ml-data 0.2.9 and n4m 0.1.2; exact local
-      patches supplied the new Dag-ML and Methods sources during qualification.
+      Core still resolves dag-ml-data 0.2.9; exact local patches supplied the
+      final DAG and unpublished n4m 0.1.4 sources during qualification.
       Replace those patches with published pins, rebuild, and capture a live ABI
       witness from selected release artifacts before lock promotion.
   formats:
@@ -341,21 +350,23 @@ current_candidate_evidence:
       the support/conversion release documents before promotion.
   python_strict_profile:
     evidence_status: locally_qualified_unpublished_candidate
-    commit: a56a870f461ffa80c24dffba3b266725695c129f
-    tree: 28aaeb377c130a355eb5aae0ddaaa0418b27cb7f
+    commit: 56db62c176e77afe8650b71aefb5988c0d172f87
+    tree: abd855244a1b4a4e818ec3f3bcce500417f440c3
     parent_hpo_commit: e99a7ab30086ef494e9f48a4863776480c964564
+    hpo_resume_witness_commit: a56a870f461ffa80c24dffba3b266725695c129f
     predictor_descriptor_commit: 1ebe03ddbd99e691f1f0332655bee5ebf584f2e9
     predictor_descriptor_tree: e2f5d7f0df886fd29738e1b6fabb885537666540
     predictor_descriptor_gate: targeted_passed
     native_hpo_resume_witness: 2_completed_to_4_trials_export_replay_passed
+    embedded_pipeline_lowering: canonical_snv_sg_pls_v2_targeted_passed
     evidence: >-
-      The private strict product path now enforces Core native predictor
-      descriptors and passes its final native HPO package witness: resume from
-      two completed trials to four, select/refit once, export Archive V2 and
-      replay after close. It descends from HPO parent e99a7ab and preserves the
-      1ebe03d descriptor evidence. Public nirs4all.run remains unchanged. The
-      explicit engine=legacy rollback profile remains supported through R4 and
-      is unreachable only from strict product paths, as required by ADR-24.
+      The final Python candidate descends from the a56a870 native HPO witness
+      and lowers the canonical SNV to Savitzky-Golay to PLS pipeline into the
+      native V2 path without Python numerical ownership. Targeted lowering,
+      fail-closed unreplayable preprocessing, export and fresh replay gates are
+      green; the earlier two-to-four-trial witness remains valid. Public
+      nirs4all.run and the explicit engine=legacy rollback profile remain
+      unchanged.
     release_limit: >-
       This bounded strict-path proof does not close the general R2 API matrix:
       general run/predict/session/cache, transfer/finetune, conformal,
@@ -363,8 +374,8 @@ current_candidate_evidence:
       exact train-wide evidence.
   studio:
     evidence_status: local_product_candidate_go_external_release_hold
-    candidate_commit: c0ea53c33c675cdc21e3586851e0d3ece9641406
-    candidate_tree: 200df7074072275f8f3141c29fc2fa04cf464d99
+    candidate_commit: 868b71e97e8d8498d8ebdfd9b11e6c132eb68295
+    candidate_tree: 0a5f64f7529d66cf5efbb74f397ff9084f559f02
     rust_tests_passed: 191
     vitest_tests_passed: 3961
     backend_control_plane: rust_only
@@ -374,6 +385,8 @@ current_candidate_evidence:
     bundle_gate: passed_local_candidate
     conversion_status: operational_local_candidate
     predictor_descriptor_gate: targeted_passed
+    n4mm_pipeline_v2_gate: targeted_passed_raw_x_core_authority
+    legacy_v1_live_replay: passed_with_dag_879e2af
     accepted_non_blocking_local_conversion_risks:
       disposition: >-
         Explicitly accepted by the user as non-priority for a conversion path
@@ -386,11 +399,13 @@ current_candidate_evidence:
       The integrated Studio candidate passes 191 Rust tests and 3,961 Vitest
       tests. Its HTTP/control/store/jobs/scheduler/WebSocket backend is Rust-only,
       the Python HTTP backend is removed, the plugin host is separately packaged,
-      and the bundle gate closes DROP-005 locally. Its exact vendored native
-      candidates and Archive V2 path also pass the targeted predictor-descriptor
-      gate. Qualified legacy conversion is unchanged and operational. The two
-      accepted TOCTOU windows above remain documented open risks rather than
-      being described as closed security properties.
+      and the bundle gate closes DROP-005 locally. Its exact vendored Core
+      46a51a4, DAG 879e2af and Methods 48ad1e5 candidates pass the targeted
+      content-bound V2 descriptor/raw-X contract and historical V1 live replay.
+      Core remains the inspection/replay authority; Studio adds no preprocessing
+      semantics. Qualified legacy conversion is byte-untouched and operational.
+      The two accepted TOCTOU windows above remain documented open risks rather
+      than being described as closed security properties.
     release_limit: >-
       LOCK-STUDIO remains on external HOLD for authoritative Windows Job Object
       runtime evidence, Docker execution, exact target closure/installer checks,
@@ -399,17 +414,19 @@ current_candidate_evidence:
       scheduler, store or fallback.
   web:
     evidence_status: local_product_candidate_go_independent_audit_accepted
-    candidate_commit: ea842c2b910523e38c1d2761c49b20bdb8883c0d
-    candidate_tree: cda29a3616e0097f3c834ab6bc45dbae804f559b
+    candidate_commit: a403fd262397ec6e4a43a93b2d048cb0b6ca480d
+    candidate_tree: 9309207a90ef114808c5639faf5a236a36fae655
     tests_passed: 190
     available_smokes_passed: 25/25
     external_handoffs_pending: 3
     predictor_descriptor_gate: targeted_passed
+    n4mm_v1_v2_smoke: targeted_passed
     evidence: >-
       The final local Web candidate passed its independent audit, 190 tests and
       all 25 available smokes. Its client-side Archive V2 flow also passes the
-      targeted native predictor-descriptor gate against the locally staged
-      Core, Dag-ML and Methods WASM artifacts. Exact component legal payloads,
+      targeted native predictor-descriptor gate and both V1 and embedded
+      pipeline V2 replay smokes against the final locally staged Core, DAG and
+      Methods WASM artifacts. Exact component legal payloads,
       provenance and required SBOM distribution are present in the candidate.
     release_limit: >-
       Web remains client-side-only. Three external artifact-dependent handoffs,
@@ -437,8 +454,8 @@ current_candidate_evidence:
   dependency_repin:
     status: pending
     selected_dag_ml_data_version: 0.2.10
-    selected_n4m_rust_binding_version: 0.1.3
-    dag_ml_locked_n4m_rust_binding_version: 0.1.2
+    selected_n4m_rust_binding_version: 0.1.4
+    dag_ml_candidate_n4m_rust_binding_version: 0.1.4_local_patch
     consumers_still_resolving_0_2_9:
       - dag-ml 0.3.23
       - nirs4all-core 0.3.25
@@ -451,7 +468,7 @@ current_candidate_evidence:
     - aggregation manifest member commit/tree/version and preferred exact tags
     - aggregation lock artifact digests, lockstep attestations and manifest digest
     - dag-ml/Core/IO dag-ml-data 0.2.10 dependency resolutions
-    - Methods n4m 0.1.3 publication and Dag-ML replacement of locked 0.1.2
+    - Methods n4m 0.1.4 publication and replacement of local downstream patches
     - replacement of predictor-descriptor qualification patches by published pins
     - live ABI witness from the exact selected release artifacts
     - Studio exact Core/IO/Methods target closures and external release artifacts
@@ -472,15 +489,15 @@ current_candidate_evidence:
       remain documented open without blocking the local product effort.
     - >-
       LOCK-RELEASE is NO-GO: candidates are local and unpublished, the
-      dag-ml-data 0.2.10 and n4m 0.1.3 repin cascades are incomplete, local
+      dag-ml-data 0.2.10 and n4m 0.1.4 publication/repin cascades are incomplete, local
       qualification patches have not been replaced by published pins, and the
       exact selected artifacts lack their release-environment live ABI witness.
       Registries, immutable staging, provenance/SBOM closure, signatures and
       clean installs on all promised targets are not proven from one lock.
     - >-
-      LOCK-DOCS is NO-GO: MTH-DOC has 209/209 mapped pages but 131/209 methods
-      still lack safe attribution and 0/209 have reviewed structured publication
-      metadata or reviewed absence status.
+      MTH-DOC is closed locally at d9c42917, but LOCK-DOCS remains open for the
+      final lock-driven cross-site publication, immutable artifact references
+      and external release-documentation closure.
     - >-
       LOCK-SOAK is open: corpus, fuzz/security, crash recovery, concurrency,
       memory/performance, installer rollback and RC feedback evidence remain
@@ -2958,14 +2975,11 @@ work_items:
 next_batch:
   gate: r2-api-studio-web-and-lock-closure
   condition: >-
-    Use selected Bench e19c2d6 or a corrective descendant to connect the exact
-    Python oracle, Core bc001e53, Studio 6b054577 and selected Web artifacts to
-    one strict GATE-001 manifest and execute the comparison. Finish general API
-    prediction/run coverage beyond the bounded multi-target Methods PLS lane,
-    the persisted Studio UI binding and remaining data/platform matrix. Run the
-    official Core cibuildwheel matrix, produce the deterministic external Rust
-    SBOM and inter-machine path-remapped reproducibility evidence, replace
-    Studio's transient Core snapshot with the published exact 0.3.24 dependency
-    plus qualified per-target Methods closures, rebuild Web WASM from the exact
-    selected artifacts, and regenerate a remotely advertised, reconstructible
-    expanded selected-workspace lock before CUT-001 or publication.
+    Use Bench 433ad714 or a corrective descendant to connect exact Python
+    56db62c1, Core 46a51a4, Studio 868b71e9 and Web a403fd26 artifacts to one
+    strict GATE-001 manifest and execute the comparison. Publish/select DMD
+    0.2.10 and n4m 0.1.4, replace every local qualification patch with registry
+    identities, and rerun the promised target and external release closures.
+    Only then regenerate a remotely advertised, reconstructible expanded
+    selected-workspace lock before CUT-001 or publication; this snapshot grants
+    no global GO.
