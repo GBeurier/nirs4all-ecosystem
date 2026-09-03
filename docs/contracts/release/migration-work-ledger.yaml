@@ -492,24 +492,38 @@ current_candidate_evidence:
     commit: fe17a3f939f9fb95c8ed1e068138c72ceac92890
     tree: f3c849628f4711d8590d3d73c33af877f9cf49ab
   benchmarks:
-    evidence_status: local_contract_fixture_qualified_release_no_go
-    commit: 433ad714d475dd0c8fd7d4ee2664665894caaee9
-    tree: 4103609587714f1a19c6834c2e4bbf2d71ea4d97
+    evidence_status: local_real_four_surface_measurement_complete_release_no_go
+    commit: 5cccfe6cc50f6dde7b8b65127289dcc4f01d3e1e
+    tree: bcfa5133210954d4a699028edc9cf5592f5a56d2
     performance_contract: archive_v2_same_matrix_four_surfaces
-    contract_fixture_surfaces_passed: 4/4
+    local_real_surfaces_passed: 4/4
+    maximum_prediction_delta: 0
+    fallback_observed: false
+    timings_ms:
+      python:
+        startup: 1067.573
+        steady: 28.026
+      rust:
+        startup: 38.148
+        steady: 18.244
+      studio:
+        startup: 75.621
+        steady: 24.771
+      web:
+        startup: 97.810
+        steady: 4.713
     release_eligible: false
     evidence: >-
-      PERF-001 removes the obsolete Studio Python-worker and legacy comparison
-      from V1, records the exact predictor descriptor/fingerprint and candidate
-      SHAs, separates startup from steady-state, checks numeric consistency and
-      emits the Web performance-compare handoff. Its deterministic smoke passes
-      all four adapter contracts but is explicitly fixture evidence, not a
-      performance or release qualification.
+      Bench candidate 5cccfe6cc50f6dde7b8b65127289dcc4f01d3e1e records
+      one local_real campaign across Python native, direct Rust, Studio Rust
+      and Web WASM using the same Archive and matrix. All four surfaces pass,
+      maximum prediction delta is zero and no fallback is observed. The gate
+      reports 9/9 passing checks plus diff-check.
     release_limit: >-
-      Exact Python native, direct Rust and Studio packaged closures plus the Web
-      PERF adapter, one executed four-candidate report, approved reference-host
-      budgets and non-WSL evidence remain required. No definitive WSL threshold,
-      publication, lock or global GO is claimed.
+      This is a WSL-local measurement, not release qualification. Budgets are
+      not frozen, external performance matrices remain incomplete, and no
+      threshold is defined or claimed passed. Publication, lock and global GO
+      remain held.
   dependency_repin:
     status: local_patch_train_qualified_publication_pending
     selected_dag_ml_data_version: 0.2.10
@@ -527,7 +541,7 @@ current_candidate_evidence:
     - registry publication of n4m 0.1.4, DMD 0.2.10, nirs4all-io 0.1.12-dagml and Core/DAG packages, followed by exact downstream repins
     - remotely reconstructible aggregation manifest and canonical release lock
     - signing and SBOM/provenance closure where required
-    - external matrices, installers, soak and real performance closures
+    - external matrices, installers, soak and frozen reference-host performance budgets
   blockers:
     - >-
       Registry HOLD: n4m 0.1.4, DMD 0.2.10, nirs4all-io 0.1.12-dagml and the
@@ -536,10 +550,11 @@ current_candidate_evidence:
       Release-artifact HOLD: the canonical lock is intentionally unchanged;
       signing and SBOM/provenance closure remain required where applicable.
     - >-
-      External qualification HOLD: promised matrices, installers, soak and real
-      performance closures remain incomplete. Local DATA, CONF and STU code
-      flows plus aggregate/default/conversion/drop documentation are closed,
-      but this snapshot grants no global GO.
+      External qualification HOLD: promised matrices, installers, soak and
+      frozen reference-host performance budgets remain incomplete. Local DATA,
+      CONF, STU and four-surface WSL measurement flows plus
+      aggregate/default/conversion/drop documentation are closed, but this
+      snapshot grants no global GO.
 work_items:
   - id: ARCH-001
     owner: A
@@ -2702,14 +2717,21 @@ work_items:
       - GATE-001
       - STU-006
       - WEB-001
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: complete_local_measurement_release_hold
+    input_sha: 5cccfe6cc50f6dde7b8b65127289dcc4f01d3e1e
     owned_files:
       - nirs4all-benchmarks/
       - docs/contracts/release/
     acceptance_tests:
       - Oracle, direct Rust, Studio Rust and WASM satisfy the frozen R1 budgets or carry an independently approved evidenced exception.
-    review: pending
+    review: >-
+      Bench candidate 5cccfe6cc50f6dde7b8b65127289dcc4f01d3e1e
+      completes one WSL local_real four-surface measurement on the same Archive
+      and matrix: 4/4 pass, maximum delta zero and fallback false. Startup and
+      steady timings in milliseconds are Python 1067.573/28.026, Rust
+      38.148/18.244, Studio 75.621/24.771 and Web 97.810/4.713. Budgets remain
+      unfrozen, external matrices incomplete, and no threshold is defined or
+      claimed passed; release locks remain held.
     rollback: retain the last accepted budgets and keep the release on hold
   - id: CUT-001
     owner: E + G
