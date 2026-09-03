@@ -6,7 +6,7 @@
   },
   "release": "R3",
   "work_item_count": 11,
-  "projection_sha256": "b2c48910bf468b628f0deb88833359523d42517ae93e01fe4253f7d3d98853ca",
+  "projection_sha256": "7cda37e0e01062f2a9f07f953e7819168a90cc8821b963dc8c46fbcd070c8caf",
   "lots": [
     {
       "id": "DROP-001",
@@ -71,7 +71,7 @@
     {
       "id": "WEBREL-003",
       "state": "prepared_local_docs_installer_publication_hold",
-      "input_sha": "0bcf932e801db8a7176ddd206f1f7d0421dfb0e3",
+      "input_sha": "ee2a1e4b83ba287c9f0b4edcb68ce70782c600be",
       "disposition": "advanced_not_closed"
     }
   ],
