@@ -1,0 +1,10 @@
+# GOV-001 uses only the existing authoritative GitHub owner found in tracked
+# CODEOWNERS sources. Lane routing and overlap arbitration live in the ledger.
+* @GBeurier
+
+# Lane A / governance ownership contract
+/docs/contracts/governance/ @GBeurier
+/docs/contracts/release/migration-work-ledger.yaml @GBeurier
+/scripts/n4a_ownership_ledger.py @GBeurier
+/tests/test_ownership_ledger.py @GBeurier
+/.github/PULL_REQUEST_TEMPLATE/ownership-handoff.md @GBeurier

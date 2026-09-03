@@ -2512,13 +2512,29 @@ work_items:
     owner: release-captain
     dependencies:
       - ARCH-001
-    state: pending
-    input_sha: a34126d43c68e5122ba35a5ac8e2b36e4da56b61
+    state: complete
+    input_sha: cf6cd1d96c12d7043134ab0a7b4f593e19ec553b
     owned_files:
+      - docs/contracts/governance/ownership-ledger.v1.json
       - docs/contracts/release/migration-work-ledger.yaml
-    acceptance_tests: []
-    review: pending
-    rollback: ownership records are additive and reversible
+      - .github/CODEOWNERS
+      - .github/PULL_REQUEST_TEMPLATE/ownership-handoff.md
+      - scripts/n4a_ownership_ledger.py
+      - tests/test_ownership_ledger.py
+    acceptance_tests:
+      - python3 scripts/n4a_ownership_ledger.py validate
+      - python3 -m pytest -q tests/test_ownership_ledger.py tests/test_migration_work_ledger.py
+      - validator refuses absent owners, unarbitrated lane/repository overlaps, invented approvers, and handoffs without full SHAs, tests, or rollback
+    review: >-
+      Existing tracked CODEOWNERS in nirs4all, dag-ml and dag-ml-data all name
+      @GBeurier as their repository-wide owner; every inspected origin remote is
+      under the matching GBeurier personal namespace. That existing authority,
+      rather than an invented person or team, is assigned release captain. The
+      exhaustive ledger covers lanes A-H, release/work-ledger repositories,
+      contract/schema/golden precedence, approvers and change/handoff rules.
+      No second tracked approval handle or remote team slug was found, so the
+      single-approver concentration is recorded explicitly rather than hidden.
+    rollback: remove the additive ownership ledger, CODEOWNERS, handoff template, validator and tests together; restore GOV-001 to pending
   - id: CORE-002
     owner: E
     dependencies:
