@@ -376,7 +376,7 @@ current_candidate_evidence:
     tree: 377722160bbf188c474aacfecc8a6825095be2ca
     version: 0.1.13
     tarball_sha256: 44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67
-    studio_consumer_commit: a6688f53994b4bf9f612057a86b17a25f04401c3
+    studio_consumer_commit: e027cbf8dea9fc2297ac91b9cd983346a44fb34f
     web_consumer_commit: e7b9a6384050c2c1a92dcec6aab41e9f0430be43
     registry_latest_observed_at: 2026-09-03
     registry_latest_version: 0.1.12
@@ -436,8 +436,8 @@ current_candidate_evidence:
       expanded release lock remain holds.
   studio:
     evidence_status: locally_qualified_combined_candidate_external_release_hold
-    candidate_commit: a6688f53994b4bf9f612057a86b17a25f04401c3
-    candidate_tree: 3f0776a6d406a0112fa730f5cbb0e8c347d19ef6
+    candidate_commit: e027cbf8dea9fc2297ac91b9cd983346a44fb34f
+    candidate_tree: 23882f9f9a184e35331a557b9481ed3c993ba854
     integration_chain:
       native_pipeline: 868b71e97e8d8498d8ebdfd9b11e6c132eb68295
       stu_004_predict_ui: f4761c25a0992312c64c8e37a0a6f0650a48ae2d
@@ -447,6 +447,7 @@ current_candidate_evidence:
       combined_conformal_live: 2ad862aeab4048ced6c4c70fee5b2f88adaa16e8
       strict_native_runtime: 8bf1ca93aa24168ed8cbaa07cf52fce2d52cc6ad
       rust_only_documentation: a6688f53994b4bf9f612057a86b17a25f04401c3
+      linux_installer_cycle_harness: e027cbf8dea9fc2297ac91b9cd983346a44fb34f
     targeted_rust_witnesses: native_train_and_conformal_live_passed
     backend_control_plane: rust_only
     python_http_backend: removed
@@ -469,7 +470,7 @@ current_candidate_evidence:
         - content hash to process spawn mutation window
         - source mutation after validation scan
     evidence: >-
-      The final Studio candidate a6688f5 documents the Rust-only control plane
+      The final Studio candidate e027cbf retains the Rust-only control plane
       on strict-runtime descendant 8bf1ca9 and preserves the 868b71e to
       f4761c2 to 5e72fd3 UI/catalogue chain, adds the 769bf9c persisted dataset
       to native train to catalogued archive to fresh prediction path, and carries
@@ -481,7 +482,10 @@ current_candidate_evidence:
       than being described as closed security properties. Its documentation
       labels the public 0.10.1 installers as historical, keeps the unpublished
       candidate downloads unavailable, and confines every Python/FastAPI
-      instruction to explicit web-development or diagnostic use.
+      instruction to explicit web-development or diagnostic use. It adds a
+      no-download AppImage lifecycle harness requiring two explicit digest-bound
+      artifacts for install, Rust health, crash/restart, atomic update and
+      uninstall; no real candidate package has been exercised yet.
     release_limit: >-
       LOCK-STUDIO remains on external HOLD only for the release lock, signing or
       SBOM closure if required, installers and promised platform/soak matrices.
@@ -518,8 +522,8 @@ current_candidate_evidence:
     scope: local_code_only_no_global_go
   org:
     evidence_status: final_native_candidate_staging_local_publication_hold
-    commit: ab4dcf214c9e5c8035b69037d86b7a4bb9bea301
-    tree: da6daff72da3fa6ecb3aedb55f5a9550550e3c79
+    commit: 0bcf932e801db8a7176ddd206f1f7d0421dfb0e3
+    tree: d02fb0f92c881cef9bdda126fd3349cbb179baf6
     snapshot_sha256: 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0
     snapshot_source_commit: e9d60c3a43dcf74d6318c5d165ff413452c49b1d
     publication: false
@@ -1520,7 +1524,7 @@ work_items:
       - STU-001
       - MTH-DOC-003
     state: complete_local_staging_publication_hold
-    input_sha: ab4dcf214c9e5c8035b69037d86b7a4bb9bea301
+    input_sha: 0bcf932e801db8a7176ddd206f1f7d0421dfb0e3
     owned_files:
       - nirs4all-org/
       - nirs4all-cockpit/data/current.json
@@ -1536,7 +1540,7 @@ work_items:
       - the public projection shared with Cockpit is byte-reproducible with SHA-256 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0
       - static validation covers manifest, HTML, internal links, accessibility, SEO, JSON-LD and sitemaps; eight negative tests, Ruff, Mypy, HTTP and headless Chrome smokes pass
     review: >-
-      Org candidate ab4dcf214c9e5c8035b69037d86b7a4bb9bea301 closes
+      Org candidate 0bcf932e801db8a7176ddd206f1f7d0421dfb0e3 closes
       the lock-driven public-safe staging work locally while preserving an
       explicit release-in-progress page with no download. Its snapshot is
       byte-identical to Cockpit at SHA-256 92582d82c365eaa5196fe9da818a2013b281b3b77961681899bf259c99d6f7f0
@@ -2471,7 +2475,7 @@ work_items:
       - STU-002
       - STU-001
     state: complete_local_code_external_release_hold
-    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
+    input_sha: e027cbf8dea9fc2297ac91b9cd983346a44fb34f
     owned_files:
       - nirs4all-studio/electron/native-session-lifecycle.ts
       - nirs4all-studio/electron/scientific-plugin-lifecycle.ts
@@ -2505,7 +2509,7 @@ work_items:
       - the Linux build stages one exact non-symlink Methods library through paired build-only path and SHA-256 inputs and emits its path, size, digest and ABI 2.2 in the adjacent runtime contract
       - runtime startup advertises native Archive V2 prediction only after Core preflights that exact Methods identity; an absent, stale, tampered or dependency-incomplete library disables the capability without changing Rust sidecar ownership
       - the locally qualified Methods binary is reproducible from two clean builds but requires GLIBC 2.35 and is not a manylinux, Windows or macOS release artefact
-      - Studio runtime e254a1ebba578e5b1932d09079088d02eb51d411 retains the qualified Rust-only sidecar and bounded CPython host contract; final candidate a6688f53994b4bf9f612057a86b17a25f04401c3 changes documentation only
+      - Studio runtime e254a1ebba578e5b1932d09079088d02eb51d411 retains the qualified Rust-only sidecar and bounded CPython host contract; candidate e027cbf8dea9fc2297ac91b9cd983346a44fb34f adds only documentation and the explicit-artifact Linux installer-cycle harness
     review: >-
       Commit 2490396 removes eager BackendManager startup from Electron and
       preserves legacy backend:* IPC as lazy aliases while publishing explicit
@@ -2553,9 +2557,9 @@ work_items:
       subsequently closes the selected local Studio control-plane path on the
       final Rust-only architecture, with a bounded stdio CPython library/plugin
       host and no Python HTTP, scheduler, store, jobs or fallback. Final Studio
-      candidate a6688f53994b4bf9f612057a86b17a25f04401c3 is a documentation-only
-      descendant of that measured runtime and labels every public installer as
-      historical or unavailable for the candidate train. This closes STU-006 locally without
+      candidate e027cbf8dea9fc2297ac91b9cd983346a44fb34f is a non-runtime
+      descendant that labels every public installer as historical or unavailable
+      for the candidate train and adds the bounded Linux lifecycle harness. This closes STU-006 locally without
       claiming Windows/macOS installer execution, a rebuilt embedded-CPython
       archive, signing, publication or either release lock.
     rollback: revert only the lazy lifecycle/IPC/UI readiness adapter; preserve sidecar state and user Python environments.
@@ -2969,13 +2973,13 @@ work_items:
       - DROP-001
       - STU-006
     state: complete_local_code_external_installer_hold
-    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
+    input_sha: e027cbf8dea9fc2297ac91b9cd983346a44fb34f
     owned_files:
       - nirs4all-studio/
     acceptance_tests:
       - Studio installers contain no Uvicorn, FastAPI, standalone CPython backend, PyInstaller backend or backend requirements; any CPython is a preflighted plugin host with no HTTP port or scheduler.
     review: >-
-      Studio candidate a6688f53994b4bf9f612057a86b17a25f04401c3 keeps the
+      Studio candidate e027cbf8dea9fc2297ac91b9cd983346a44fb34f keeps the
       control plane Rust-only and limits embedded CPython to a preflighted
       stdio plugin/library host without an HTTP port or scheduler. macOS and
       Windows installer execution, signing and final SBOM remain held.
@@ -3102,14 +3106,22 @@ work_items:
     dependencies:
       - DROP-002
       - DROP-005
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: prepared_local_linux_harness_external_matrix_hold
+    input_sha: e027cbf8dea9fc2297ac91b9cd983346a44fb34f
     owned_files:
       - nirs4all-studio/
       - docs/contracts/release/
     acceptance_tests:
       - Install, update, uninstall and crash recovery pass on promised Linux, macOS and Windows architectures, including the manual Windows smoke.
-    review: pending
+    review: >-
+      Studio e027cbf adds a no-download, no-rebuild AppImage lifecycle harness
+      that requires two explicit regular-file artifacts and SHA-256 values,
+      refuses missing, symlinked or tampered inputs before sandbox creation,
+      and exercises install, Rust health, crash/restart, atomic update and
+      uninstall in an isolated HOME/XDG environment. Contract fixtures pass,
+      but no real candidate AppImage or deb package has run. Linux artifact
+      execution, macOS/Windows lifecycles and the manual Windows smoke remain
+      required; INST-001 is prepared, not closed.
     rollback: retain the signed R2 installers and do not promote R3
   - id: SUP-001
     owner: H + D
@@ -3136,7 +3148,7 @@ work_items:
       - INST-001
       - SUP-001
     state: prepared_local_docs_installer_publication_hold
-    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
+    input_sha: 0bcf932e801db8a7176ddd206f1f7d0421dfb0e3
     owned_files:
       - nirs4all-org/
       - nirs4all-cockpit/
@@ -3148,9 +3160,11 @@ work_items:
     review: >-
       Studio a6688f5 and Web e7b9a63 remove current-product wording for the
       Python/FastAPI backend, identify the Rust-only candidate and shared UI
-      tarball, and label public 0.10.1 downloads as historical. INST-001,
-      archived R2 rollback pages, exact release-lock downloads and publication
-      remain open, so WEBREL-003 is prepared but not closed.
+      tarball, and label public 0.10.1 downloads as historical. Org 0bcf932
+      adds the deterministic R2 native-default/legacy-opt-in rollback archive
+      without publishing candidate downloads. INST-001, exact release-lock
+      artifacts and cross-site publication remain open, so WEBREL-003 is
+      prepared but not closed.
     rollback: leave public sites on R2 and keep R3 in release-in-progress mode
   - id: RC-001
     owner: release-captain + owners
@@ -3197,13 +3211,14 @@ work_items:
       - RC-001
       - SUP-001
     state: prepared_local_docs_release_hold
-    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
+    input_sha: 0bcf932e801db8a7176ddd206f1f7d0421dfb0e3
     owned_files:
       - docs/
     acceptance_tests:
       - Migration, API, ABI, schema, examples and FAQ present no Python or legacy backend installation as the current product path.
     review: >-
-      Python 40421617, Methods 699d33f4, Studio a6688f5 and Web e7b9a63 are
+      Python 40421617, Methods 699d33f4, Studio a6688f5, Web e7b9a63 and Org
+      0bcf932 are
       locally aligned around the Rust product path, native-default API,
       explicit legacy rollback, exact shared UI tarball and stdio-only CPython
       library/plugin host. Historical installers and Python/FastAPI diagnostics

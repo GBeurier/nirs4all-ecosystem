@@ -42,8 +42,8 @@ def test_committed_inventory_and_report_match_the_ledger() -> None:
     )
     assert inventory["summary"] == {
         "closed_local": 6,
-        "advanced_not_closed": 4,
-        "pending": 1,
+        "advanced_not_closed": 5,
+        "pending": 0,
         "release_eligible": False,
         "external_evidence_hold": True,
     }

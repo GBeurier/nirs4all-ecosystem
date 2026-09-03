@@ -6,7 +6,7 @@
   },
   "release": "R3",
   "work_item_count": 11,
-  "projection_sha256": "d0409161af47722d2afe650cb0331f720dbdf256916488905aa8826f6dfe42d4",
+  "projection_sha256": "b2c48910bf468b628f0deb88833359523d42517ae93e01fe4253f7d3d98853ca",
   "lots": [
     {
       "id": "DROP-001",
@@ -17,7 +17,7 @@
     {
       "id": "DROP-002",
       "state": "complete_local_code_external_installer_hold",
-      "input_sha": "a6688f53994b4bf9f612057a86b17a25f04401c3",
+      "input_sha": "e027cbf8dea9fc2297ac91b9cd983346a44fb34f",
       "disposition": "closed_local"
     },
     {
@@ -58,9 +58,9 @@
     },
     {
       "id": "INST-001",
-      "state": "pending",
-      "input_sha": "1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf",
-      "disposition": "pending"
+      "state": "prepared_local_linux_harness_external_matrix_hold",
+      "input_sha": "e027cbf8dea9fc2297ac91b9cd983346a44fb34f",
+      "disposition": "advanced_not_closed"
     },
     {
       "id": "SUP-001",
@@ -71,14 +71,14 @@
     {
       "id": "WEBREL-003",
       "state": "prepared_local_docs_installer_publication_hold",
-      "input_sha": "a6688f53994b4bf9f612057a86b17a25f04401c3",
+      "input_sha": "0bcf932e801db8a7176ddd206f1f7d0421dfb0e3",
       "disposition": "advanced_not_closed"
     }
   ],
   "summary": {
     "closed_local": 6,
-    "advanced_not_closed": 4,
-    "pending": 1,
+    "advanced_not_closed": 5,
+    "pending": 0,
     "release_eligible": false,
     "external_evidence_hold": true
   }
