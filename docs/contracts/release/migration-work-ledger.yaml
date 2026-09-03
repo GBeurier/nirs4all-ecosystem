@@ -212,11 +212,11 @@ current_candidate_evidence:
       io: a5f7eac50126d445f745f945ff5c770ed470254c
       datasets: 007d7aafe50e6e4148d5a5cefe0ad96d9da37e7b
       dag_ml: 1caa26dc9b90f33bc3f53b15b4d85e18f3f67381
-      core: 89787477bd7883ceb26b51fa3228bca13db85f6e
+      core: 550cb8c80708e88ac7ebbc880acb4b82d8531632
       tools: 88c2bc1e29603049cdbf1a1080a35845edf2f3c9
       ui: 406d94d70004f27459ef12347af1e6f0079ab6ac
       python: 53a0acb964bff86dc67002763d8e9b850336731f
-      studio: f8e9da2ecc71a1207f92a19a1aec0535a69c02d7
+      studio: ca4ee2afbb7596b2e4ba4b00f6d5797e553dfa39
       web: 051bf636d7c1729087e5d40061b18bd690cd33b7
       benchmarks: 9ff889a5be1bbc48a16d69a27ab743c23598f7da
       org: b09f2768f264269d72be351d0c6282b769ec8f85
@@ -264,8 +264,8 @@ current_candidate_evidence:
         default_engine: native_fail_closed
         remote_branch: release/r3-1.0.0-rc.2-candidate
         studio_version: 0.11.0
-        studio_commit: f8e9da2ecc71a1207f92a19a1aec0535a69c02d7
-        studio_tree: 8db1677ec7d215def911b36d5b79a78b35e707b9
+        studio_commit: ca4ee2afbb7596b2e4ba4b00f6d5797e553dfa39
+        studio_tree: baa3b0b3aaf7c9aaa8a6331590e633f6aacee97c
         studio_control_plane: rust_only_fail_closed_cpython_plugin_host_only
         studio_remote_branch: release/r3-0.11.0-candidate
       r4:
@@ -291,7 +291,7 @@ current_candidate_evidence:
       evidence_sites: [benchmarks, org, cockpit]
     release_limit: >-
       The ordered component cascade is published through Formats 0.2.9, IO
-      0.1.14, Core 0.3.27 and Datasets 0.3.10; Python R1 and Web 0.1.10 are also
+      0.1.14, Core 0.3.28 and Datasets 0.3.10; Python R1 and Web 0.1.10 are also
       published. These publications do not promote R2/R3 or Studio and do not
       close external gates, signatures, soak or the final lock.
   methods:
@@ -393,17 +393,32 @@ current_candidate_evidence:
       n4m 0.1.4. External matrices, signing and exact lock reconstruction remain
       required.
   core:
-    evidence_status: published_0_3_27_formats_0_2_9_io_0_1_14_repinned_external_release_hold
-    commit: 89787477bd7883ceb26b51fa3228bca13db85f6e
-    tree: 7d748e79e4bef0da2a0803f9a0dd8984e28a46bb
+    evidence_status: published_0_3_28_windows_canonical_path_fix_formats_0_2_9_io_0_1_14_external_release_hold
+    commit: 550cb8c80708e88ac7ebbc880acb4b82d8531632
+    tree: 5181e3bc65c9a3ee413bdfc8b81f34cd61450f7e
+    direct_parent: 89787477bd7883ceb26b51fa3228bca13db85f6e
     qualified_code_parent: e0f5d485eae4279f02d58fe82fad3946202e463f
     aggregate_e2e_parent: 8508c8c012331b08a344588f740d3147a881ff4b
     conformal_producer_commit: 0115c1bbf7db351b7da7ff88708cd334602d3450
     conformal_producer_tree: 24e454a636e136324489a42f461aba3d93c54252
     methods_runtime_identity_fix_commit: 6b25b63bb09adfe3c4dae8ffacc90d09a1a81e16
-    version: 0.3.27
-    release_tag: v0.3.27
+    version: 0.3.28
+    release_tag: v0.3.28
+    release_tag_object: e4734ae3e060fabb2935097ef70db81a4a31245d
     registry_published: true
+    crates_registry_published: true
+    python_registry_published: true
+    npm_registry_published: true
+    github_release_published: true
+    release_workflows:
+      crates: 33773781287
+      python: 33773780990
+      source: 33773780974
+      matlab: 33773780969
+      r: 33773780940
+      npm: 33773780925
+      ci: 33773780924
+      conclusion: success
     resolved_dag_ml_data_version: 0.2.10_registry
     resolved_formats_version: 0.2.9_registry
     resolved_io_version: 0.1.14_registry
@@ -411,9 +426,13 @@ current_candidate_evidence:
     resolved_n4m_rust_binding_version: 0.1.4_registry
     predictor_descriptor_consumption: qualified_v1_v2_rust_python_wasm
     evidence: >-
-      Published Core 0.3.27 8978747 repins Formats 0.2.9 and the complete IO
-      family 0.1.14 from their public registries without changing runtime
-      behavior. Core 0.3.25 candidate
+      Published Core 0.3.28 550cb8c retains the registry-only Formats 0.2.9
+      and complete IO family 0.1.14 dependencies from Core 0.3.27 and fixes
+      ordinary Windows absolute Methods paths whose canonical form differs only
+      by the verbatim path prefix, while preserving alias rejection. All seven
+      crate, Python, source, MATLAB, R, npm and CI workflows are green, and the
+      crate, Python and npm packages are visible on their public registries.
+      Core 0.3.25 candidate
       b6442dc adds a schema-refusal hardening test on
       qualified code parent e0f5d48, whose executed Rust aggregate witness runs
       Formats through IO/DatasetPackage and DAG/Methods to Archive V2 on top of
@@ -424,7 +443,7 @@ current_candidate_evidence:
       and compatibility gates are green against runtime-qualified DAG candidate
       b7d643f; final descendant b08c626 changes ADR documentation only.
     release_limit: >-
-      Core 0.3.27 is published from registry-only Formats 0.2.9 and IO 0.1.14
+      Core 0.3.28 is published from registry-only Formats 0.2.9 and IO 0.1.14
       dependencies with no local patch. External matrices, signing and final
       lock reconstruction remain required before promotion.
   formats:
@@ -517,7 +536,7 @@ current_candidate_evidence:
     tree: 377722160bbf188c474aacfecc8a6825095be2ca
     version: 0.1.13
     tarball_sha256: 44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67
-    studio_consumer_commit: f8e9da2ecc71a1207f92a19a1aec0535a69c02d7
+    studio_consumer_commit: ca4ee2afbb7596b2e4ba4b00f6d5797e553dfa39
     web_consumer_commit: 051bf636d7c1729087e5d40061b18bd690cd33b7
     registry_latest_observed_at: 2026-09-03
     registry_latest_version: 0.1.13
@@ -595,46 +614,185 @@ current_candidate_evidence:
       access. Publication, external platform matrices, signatures and the
       expanded release lock remain holds.
   studio:
-    evidence_status: registry_repinned_candidate_platform_matrix_failed_two_of_four_installers_external_release_hold
-    candidate_commit: f8e9da2ecc71a1207f92a19a1aec0535a69c02d7
-    candidate_tree: 8db1677ec7d215def911b36d5b79a78b35e707b9
+    evidence_status: registry_repinned_core_0_3_28_wheel_reproducibility_repair_platform_matrix_green_unsigned_external_release_hold
+    candidate_commit: ca4ee2afbb7596b2e4ba4b00f6d5797e553dfa39
+    candidate_tree: baa3b0b3aaf7c9aaa8a6331590e633f6aacee97c
+    product_candidate_commit: f8e9da2ecc71a1207f92a19a1aec0535a69c02d7
+    product_candidate_tree: 8db1677ec7d215def911b36d5b79a78b35e707b9
+    previous_ci_repair_commit: b9c391faf3a226947b9eae57d7505d1f50e8a312
+    previous_ci_repair_tree: 01df38b7dd85e9903c019aee7d3af4891895eda2
+    core_repin_commit: 15cdbeb28244a0f64ac012f1bed4d55d731a18f8
+    core_repin_tree: 2087217b9d9a6b3ce2e769e13c29c4dcda20f1c3
+    wheel_reproducibility_repair_commit: ca4ee2afbb7596b2e4ba4b00f6d5797e553dfa39
+    wheel_reproducibility_repair_tree: baa3b0b3aaf7c9aaa8a6331590e633f6aacee97c
     package_version: 0.11.0
-    resolved_core_version: 0.3.27_registry
+    resolved_core_version: 0.3.28_registry
     resolved_io_version: 0.1.14_registry
-    release_matrix_run: 33765925268
-    release_matrix_url: https://github.com/GBeurier/nirs4all-studio/actions/runs/33765925268
-    release_matrix_status: completed_failure
+    release_matrix_run: 33777731069
+    release_matrix_url: https://github.com/GBeurier/nirs4all-studio/actions/runs/33777731069
+    release_matrix_status: completed_success_unsigned
     release_matrix:
+      plugin_wheels:
+        job: 100723569980
+        conclusion: success
+        artifact_sha256: 9805967705f0b95dc8f65acc066a3032c67ec5ed1ba8e5d15c50817537565ce2
+        artifact_size_bytes: 2673674
       linux_x64:
-        job: 100683720127
+        job: 100723711209
         conclusion: success
         archive_v2_qualification: passed
         plugin_runtime: passed
+        native_sidecar_smoke: passed
         installer: packaged_verified_and_uploaded
+        checksums: generated
+        artifact_sha256: a6bde2f3a7a1badae4e0aa57f8b0d46ad68f1daa8b24ceec0038181b16a6c600
+        artifact_size_bytes: 822183511
       macos_arm64:
-        job: 100683720099
+        job: 100723711082
+        conclusion: success
+        archive_v2_qualification: passed
+        plugin_runtime: passed
+        native_sidecar_smoke: passed
+        installer: packaged_verified_and_uploaded
+        checksums: generated
+        signing_and_notarization: skipped
+        artifact_sha256: 5b3057ecec6d0db09a28688d57970dc444a046438b09e34c81486b23a96c0298
+        artifact_size_bytes: 350511066
+      macos_x64:
+        job: 100723711108
+        conclusion: success
+        archive_v2_qualification: passed
+        plugin_runtime: passed
+        native_sidecar_smoke: passed
+        installer: packaged_verified_and_uploaded
+        checksums: generated
+        signing_and_notarization: skipped
+        artifact_sha256: 157fee5bfce2f7a7a8e63b249fd3806dcccbb2d6466092de2908b0419278119e
+        artifact_size_bytes: 371515534
+      windows_x64:
+        job: 100723711099
+        conclusion: success
+        archive_v2_qualification: passed
+        plugin_runtime: passed
+        native_sidecar_smoke: passed
+        installer: packaged_verified_and_uploaded
+        checksums: generated
+        authenticode_verification: skipped
+        artifact_sha256: 344bdbbc936843f7a4a42792618a4c7c1ea52ac4fecd9284e70d6e37c1cd0864
+        artifact_size_bytes: 597328278
+      create_release:
+        job: 100734050405
+        conclusion: success
+        github_release: skipped
+    previous_core_repin_matrix:
+      run: 33774781027
+      conclusion: cancelled
+      superseded_by_wheel_reproducibility_repair: ca4ee2afbb7596b2e4ba4b00f6d5797e553dfa39
+      linux_x64:
+        job: 100713703945
+        conclusion: cancelled
+        archive_v2_qualification: passed
+        plugin_runtime: passed
+        native_sidecar_smoke: passed
+        cancelled_step: package_with_electron_builder
+        installer: not_completed
+        artifact_upload: not_reached
+      macos_arm64:
+        job: 100713703737
         conclusion: success
         archive_v2_qualification: passed
         plugin_runtime: passed
         installer: packaged_verified_and_uploaded
         signing_and_notarization: skipped
       macos_x64:
-        job: 100683720149
+        job: 100713703776
+        conclusion: cancelled
+        archive_v2_qualification: passed
+        plugin_runtime: passed
+        cancelled_step: build_and_smoke_native_sidecar
+        installer: not_reached
+        artifact_upload: not_reached
+        signing_and_notarization: not_reached
+      windows_x64:
+        job: 100713703874
         conclusion: failure
         archive_v2_qualification: passed
         failed_step: build_pinned_plugin_only_cpython_runtime
-        blocker: files_pythonhosted_org_read_timeout
-        installer: not_reached
-        signing_and_notarization: not_reached
-      windows_x64:
-        job: 100683719994
-        conclusion: failure
-        failed_step: qualify_native_archive_v2_replay
-        failed_test: archive_v2_real_core_route_predicts_multitarget_without_python_or_fallback
-        blocker: exact_abi_2_5_libn4m_witness_preflight_execution_failed
+        blocker: pinned_plugin_wheel_identity_mismatch
+        expected_wheel_sha256: 906c151a80c3bbdf2ef1264b904a8fd61a2a67fbe0ded2cba92453e44fbce230
+        observed_wheel_sha256: 7d6485316305cf107153e14014105a97a5eb7c5d64dac6e3a1c17c844d9b8db1
         installer: not_reached
         authenticode_verification: not_reached
       unrequested_jobs: all_in_one_and_native_docker_skipped_by_dispatch
+    previous_ci_repair_matrix:
+      run: 33768045198
+      conclusion: failure
+      superseded_by_core_repin: 15cdbeb28244a0f64ac012f1bed4d55d731a18f8
+      targets:
+        linux_x64:
+          job: 100690949146
+          conclusion: success
+          archive_v2_qualification: passed
+          plugin_runtime: passed
+          installer: packaged_verified_and_uploaded
+        macos_arm64:
+          job: 100690948448
+          conclusion: success
+          archive_v2_qualification: passed
+          plugin_runtime: passed
+          installer: packaged_verified_and_uploaded
+          signing_and_notarization: skipped
+        macos_x64:
+          job: 100690948585
+          conclusion: success
+          archive_v2_qualification: passed
+          plugin_runtime: passed
+          installer: packaged_verified_and_uploaded
+          signing_and_notarization: skipped
+        windows_x64:
+          job: 100690948611
+          conclusion: failure
+          failed_step: qualify_native_archive_v2_replay
+          failed_test: archive_v2_real_core_route_predicts_multitarget_without_python_or_fallback
+          blocker: exact_abi_2_5_libn4m_witness_preflight_execution_failed
+          installer: not_reached
+          authenticode_verification: not_reached
+        unrequested_jobs: all_in_one_and_native_docker_skipped_by_dispatch
+    previous_release_matrix:
+      run: 33765925268
+      conclusion: failure
+      superseded_by_ci_repair: b9c391faf3a226947b9eae57d7505d1f50e8a312
+      targets:
+        linux_x64:
+          job: 100683720127
+          conclusion: success
+          archive_v2_qualification: passed
+          plugin_runtime: passed
+          installer: packaged_verified_and_uploaded
+        macos_arm64:
+          job: 100683720099
+          conclusion: success
+          archive_v2_qualification: passed
+          plugin_runtime: passed
+          installer: packaged_verified_and_uploaded
+          signing_and_notarization: skipped
+        macos_x64:
+          job: 100683720149
+          conclusion: failure
+          archive_v2_qualification: passed
+          failed_step: build_pinned_plugin_only_cpython_runtime
+          blocker: files_pythonhosted_org_read_timeout
+          installer: not_reached
+          signing_and_notarization: not_reached
+        windows_x64:
+          job: 100683719994
+          conclusion: failure
+          failed_step: qualify_native_archive_v2_replay
+          failed_test: archive_v2_real_core_route_predicts_multitarget_without_python_or_fallback
+          blocker: exact_abi_2_5_libn4m_witness_preflight_execution_failed
+          installer: not_reached
+          authenticode_verification: not_reached
+        unrequested_jobs: all_in_one_and_native_docker_skipped_by_dispatch
     published: false
     signed: false
     reconciled_public_parent: 5d043ee23f0ba7f47584bc9ef18fa13755e59198
@@ -670,16 +828,17 @@ current_candidate_evidence:
         - content hash to process spawn mutation window
         - source mutation after validation scan
     evidence: >-
-      Candidate f8e9da2 resolves Core 0.3.27 and IO 0.1.14 from their
-      registries without a local patch and carries the stable Windows file
-      identity fix. Studio 6ec9b08 reconciles the native
+      Core-repin candidate 15cdbeb resolves Core 0.3.28 and IO 0.1.14 from their
+      registries without a local patch. Core 0.3.28 carries the bounded Windows
+      canonical-path fix required by the exact Methods library identity check.
+      Studio 6ec9b08 reconciles the native
       candidate with public 0.10.1 and
       assigns the free 0.11.0 identity. It retains the Rust-only control plane
       on strict-runtime descendant 8bf1ca9 and preserves the 868b71e to
       f4761c2 to 5e72fd3 UI/catalogue chain, adds the 769bf9c persisted dataset
       to native train to catalogued archive to fresh prediction path, and carries
       the live conformal witness. The final candidate is aligned with Python
-      53a0acb, Core 8978747, DAG 1caa26d, IO df7f219, DMD 7d9b9fe and
+      53a0acb, Core 550cb8c, DAG 1caa26d, IO df7f219, DMD 7d9b9fe and
       Methods e0bee1c.
       Core remains
       inspection/replay authority; Studio adds no preprocessing or conformal
@@ -704,10 +863,14 @@ current_candidate_evidence:
       the full npm audit reports zero critical/high and two documented moderate
       React Router findings. The release-train descendants then establish a
       real R2 0.10.2 transition at 54350c6: DAG-ML is nominal and the packaged
-      FastAPI legacy engine runs only after explicit opt-in. Final R3 candidate
-      f8e9da2 retains the Rust-only tree and pins Python 53a0acb / 1.0.0rc2,
-      Core 0.3.27 and IO 0.1.14. The candidate remains unpublished and
-      unsigned. Release run 33765925268 completed with Linux x64 and macOS
+      FastAPI legacy engine runs only after explicit opt-in. R3 product
+      candidate f8e9da2 retains the Rust-only tree and pins Python 53a0acb /
+      1.0.0rc2, Core 0.3.27 and IO 0.1.14. CI-only descendant b9c391f exposes
+      the Windows Methods directory through GITHUB_PATH for child replay and
+      retains pinned setuptools 84.0.0/wheel 0.48.0 with bounded pip network
+      resilience; it does not change the product runtime profile. The candidate
+      remains unpublished and unsigned. Superseded release run 33765925268
+      completed with Linux x64 and macOS
       arm64 installer jobs green; both passed Archive V2 qualification, built
       the plugin runtime, packaged and verified the native sidecar, generated
       checksums and uploaded artifacts. macOS arm64 signing and notarization
@@ -716,12 +879,40 @@ current_candidate_evidence:
       archive_v2_real_core_route_predicts_multitarget_without_python_or_fallback.
       macOS x64 passed Archive V2 and frontend gates, then failed while building
       the plugin-only CPython runtime on a files.pythonhosted.org read timeout.
-      No Windows or macOS x64 installer or signature evidence was produced.
+      No Windows or macOS x64 installer or signature evidence was produced in
+      that run. Repair matrix 33768045198 closed Linux x64, macOS arm64 and
+      macOS x64 packaging, sidecar verification, checksums and uploads; macOS
+      signing/notarization remained skipped. Windows still failed the same
+      Archive V2 witness despite receiving the correct Methods library and
+      directory environment, isolating the remaining block to Core 0.3.27's
+      canonical-path identity check. Final descendant 15cdbeb repins the exact
+      public Core 0.3.28. In current matrix 33774781027, all four platforms pass
+      Qualify native Archive V2 replay, confirming the Core fix on Windows.
+      Windows then fails while building the pinned plugin-only CPython runtime:
+      the rebuilt nirs4all 1.0.0rc2 wheel SHA-256
+      7d6485316305cf107153e14014105a97a5eb7c5d64dac6e3a1c17c844d9b8db1 does
+      not match the pinned expected SHA-256
+      906c151a80c3bbdf2ef1264b904a8fd61a2a67fbe0ded2cba92453e44fbce230.
+      macOS arm64 completes unsigned packaging, verification, checksums and
+      upload. Linux is cancelled during electron-builder packaging after native
+      qualification, CPython and sidecar smoke passed; macOS x64 is cancelled
+      during sidecar build after native qualification and CPython passed. The
+      overall run concludes cancelled and is not a release or signature receipt.
+      Final repair candidate ca4ee2a replaces the invalid cross-platform wheel
+      byte-identity assumption with an exact prebuilt wheel handoff. Its final
+      unsigned matrix 33777731069 is green across the canonical wheel build and
+      Linux x64, Windows x64, macOS x64 and macOS arm64 installers. Every target
+      passes Archive V2 replay against public Core 0.3.28, the pinned CPython
+      plugin bake, native sidecar smoke, package verification, checksum
+      generation and artifact upload. Signing, notarization and Authenticode
+      remain skipped because the required signing identities are absent.
     release_limit: >-
-      LOCK-STUDIO remains held: only two of four installer jobs are green,
-      Windows has a functional ABI/libn4m preflight block, macOS x64 has an
-      external package-download timeout, and signing plus the promised soak
-      matrix remain open. Two moderate production React Router advisories require a
+      LOCK-STUDIO remains held despite the green unsigned five-job matrix:
+      Studio is unpublished, signing identities are absent, and the promised
+      hostile soak and remaining security closure are open. The superseded
+      matrix 33774781027 was cancelled after a Windows pinned plugin wheel
+      identity mismatch. Two moderate
+      production React Router advisories require a
       future major migration and stay explicit in SEC-001.
       Any embedded CPython remains limited to an attested stdio library/plugin
       host with no HTTP server, scheduler, store or fallback.
@@ -881,7 +1072,7 @@ current_candidate_evidence:
     selected_n4m_rust_binding_version: 0.1.4
     selected_formats_version: 0.2.9
     selected_io_version: 0.1.14
-    selected_core_version: 0.3.27
+    selected_core_version: 0.3.28
     published_release_local_patch_consumers: []
     required_action: >-
       Keep published Python R1 as the rollback baseline, finish the separately
@@ -890,7 +1081,7 @@ current_candidate_evidence:
       Component, R1 and Web publication alone do not authorize promotion.
   fields_pending_final_repin:
     - separately gated Python R2 and R3 product releases
-    - Studio publication, signing and final installer identities from its registry-only Core 0.3.27 and IO 0.1.14 candidate
+    - Studio publication and signed immutable installer identities from its green unsigned registry-only Core 0.3.28 and IO 0.1.14 candidate
     - remotely reconstructible aggregation manifest and canonical release lock
     - signing and SBOM/provenance closure where required
     - external matrices, installers, soak and frozen reference-host performance budgets
@@ -903,8 +1094,9 @@ current_candidate_evidence:
       Release-artifact HOLD: the canonical lock is intentionally unchanged;
       signing and SBOM/provenance closure remain required where applicable.
     - >-
-      External qualification HOLD: promised matrices, installers, soak and
-      frozen reference-host performance budgets remain incomplete. Local DATA,
+      External qualification HOLD: the Studio four-OS unsigned installer matrix
+      is green, but remaining external matrices, signed installers, hostile soak
+      and frozen reference-host performance budgets remain incomplete. Local DATA,
       CONF, STU and four-surface WSL measurement flows plus
       aggregate/default/conversion/drop documentation are closed, but this
       snapshot grants no global GO.
@@ -2991,13 +3183,13 @@ work_items:
     dependencies:
       - CORE-001
     state: complete_local_code_release_hold
-    input_sha: 89787477bd7883ceb26b51fa3228bca13db85f6e
+    input_sha: 550cb8c80708e88ac7ebbc880acb4b82d8531632
     owned_files:
       - nirs4all-core/
     acceptance_tests:
       - Direct aggregate exposure and the datasets default-versus-optional decision are implemented and proved without duplicate domain logic.
     review: >-
-      Published Core 0.3.27 89787477 retains
+      Published Core 0.3.28 550cb8c retains
       the direct aggregate proof from e0f5d48 without duplicating Formats, IO,
       DAG or Methods domain logic, adds schema-refusal hardening and consumes
       registry-only Formats 0.2.9 and IO 0.1.14 dependencies. Final product and
@@ -3026,13 +3218,13 @@ work_items:
       - DATA-003
       - FMT-001
     state: complete_local_code_release_hold
-    input_sha: 89787477bd7883ceb26b51fa3228bca13db85f6e
+    input_sha: 550cb8c80708e88ac7ebbc880acb4b82d8531632
     owned_files:
       - nirs4all-core/
     acceptance_tests:
       - Formats, IO, data, dag and Methods execute through Core rather than being metadata-only exposures.
     review: >-
-      Published Core 0.3.27 89787477 retains
+      Published Core 0.3.28 550cb8c retains
       the bounded Formats to IO/DatasetPackage to DAG/Methods to Archive V2
       aggregate proof from e0f5d48, adds schema-refusal hardening and repins the
       final registry-only Formats/IO train. DATA-003, platform and release-lock

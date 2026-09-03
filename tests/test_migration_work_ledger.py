@@ -108,8 +108,8 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["dag_ml"]["commit"] == "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381"
     assert evidence["python_strict_profile"]["commit"] == "53a0acb964bff86dc67002763d8e9b850336731f"
     assert evidence["python_strict_profile"]["r3_direct_parent"] == "1de9dcb50fcdcc6273113f54a7c7235528c31ed8"
-    assert evidence["core"]["commit"] == "89787477bd7883ceb26b51fa3228bca13db85f6e"
-    assert evidence["core"]["version"] == "0.3.27"
+    assert evidence["core"]["commit"] == "550cb8c80708e88ac7ebbc880acb4b82d8531632"
+    assert evidence["core"]["version"] == "0.3.28"
     assert evidence["io"]["commit"] == "df7f2198862c71a24aeeba08ba09ee118524b55d"
     assert evidence["io"]["publication_repair_commit"] == "a5f7eac50126d445f745f945ff5c770ed470254c"
     assert evidence["datasets"]["commit"] == "007d7aafe50e6e4148d5a5cefe0ad96d9da37e7b"
@@ -119,7 +119,9 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["tools"]["support_matrix_sha256"] == "85031fd02b89c16f7adc90e1faad4843cd654f0279c48332d58af3ad6b37a65b"
     assert evidence["ui"]["commit"] == "406d94d70004f27459ef12347af1e6f0079ab6ac"
     assert evidence["ui"]["tarball_sha256"] == "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67"
-    assert evidence["studio"]["candidate_commit"] == "f8e9da2ecc71a1207f92a19a1aec0535a69c02d7"
+    assert evidence["studio"]["candidate_commit"] == "ca4ee2afbb7596b2e4ba4b00f6d5797e553dfa39"
+    assert evidence["studio"]["release_matrix_run"] == 33777731069
+    assert evidence["studio"]["release_matrix_status"] == "completed_success_unsigned"
     assert evidence["studio"]["published"] is False
     assert evidence["studio"]["signed"] is False
     assert evidence["web"]["candidate_commit"] == "051bf636d7c1729087e5d40061b18bd690cd33b7"
