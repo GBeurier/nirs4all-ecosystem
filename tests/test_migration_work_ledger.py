@@ -19,8 +19,13 @@ PREVIOUSLY_MISSING_ROADMAP_IDS = {
     "RC-002", "DOC-002", "SUP-002", "REL-004", "WEBREL-004",
 }
 LOCAL_CODE_OR_SUPPORT_CLOSURES = {
-    "CORE-001", "STU-003", "CUT-001", "CUT-002", "CUT-003",
+    "CORE-001", "STU-003", "REL-003", "DAG-001", "CUT-001", "CUT-002",
+    "CUT-003", "DOC-001",
     "DROP-001", "DROP-002", "DROP-003", "DROP-004", "DROP-005", "SUP-001",
+}
+CAP_SCOPED_LOCAL_CLOSURES = {
+    "DATA-003", "SAVE-002", "API-001", "API-002", "API-003", "API-004",
+    "API-005", "PAR-002",
 }
 
 
@@ -70,8 +75,16 @@ def test_ledger_covers_every_reviewed_phase_0_to_r4_roadmap_lot() -> None:
     )
     assert items["DATA-002"]["state"] == "complete_local_code_release_hold"
     assert all(items[work_item_id]["state"].startswith("complete_local") for work_item_id in LOCAL_CODE_OR_SUPPORT_CLOSURES)
-    assert items["PERF-001"]["state"] == "pending"
-    assert items["PERF-001"]["review"] == "pending"
+    assert all(
+        items[work_item_id]["state"].startswith("complete_local")
+        for work_item_id in CAP_SCOPED_LOCAL_CLOSURES
+    )
+    assert items["PERF-001"]["state"] == "complete_local_measurement_release_hold"
+    assert items["DOC-002"]["state"] == "prepared_local_docs_release_hold"
+    assert all(
+        items[work_item_id]["state"] == "advanced_local_evidence_not_closed"
+        for work_item_id in {"SOAK-001", "SEC-001", "PERF-002"}
+    )
 
 
 def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> None:
@@ -89,9 +102,14 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert items["DOC-WEB-001"]["state"] == "complete_local_staging_publication_hold"
     assert items["DOC-WEB-001B"]["state"] == "complete_local_staging_publication_hold"
     evidence = ledger["current_candidate_evidence"]
-    assert evidence["python_strict_profile"]["commit"] == "e227244464983ea2a94ebc01b6af30d474a025df"
-    assert evidence["core"]["commit"] == "e0f5d485eae4279f02d58fe82fad3946202e463f"
+    assert evidence["methods"]["commit"] == "699d33f4f113b8068176e367e130951b1cf186c0"
+    assert evidence["dag_ml"]["commit"] == "b7d643f450da3018c8208a84abcabfab09d5da7d"
+    assert evidence["python_strict_profile"]["commit"] == "40421617c7f39cae6d11c4c3aecb51e9d0a582f4"
+    assert evidence["core"]["commit"] == "b6442dc4334c62a2b6c72526bea554a734134ac6"
     assert evidence["io"]["commit"] == "e41bf8f94a92356e98c215d4c41e907a7dfaf6ac"
+    assert evidence["datasets"]["commit"] == "5b528e96af80a3566a9773a617b76f447f5c8d50"
+    assert evidence["studio"]["candidate_commit"] == "bb76f2c8833f430d26311422c9d7018592fcf6cb"
+    assert evidence["benchmarks"]["commit"] == "3f9be0fce0a79260a0813f964704ca1f337d47fe"
     assert evidence["canonical_release_lock"]["updated"] is False
     assert all(
         value == "pending" or value.startswith("no_go")

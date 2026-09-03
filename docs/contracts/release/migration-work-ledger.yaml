@@ -199,8 +199,8 @@ current_candidate_evidence:
       ordered publication/repin cascade is complete.
   methods:
     evidence_status: locally_qualified_documented_unpublished_candidate
-    commit: 9d4e2753836eb85d61b1e7712ec6a06e627d4a5f
-    tree: 5efc7379d133885c78b168f23038d1816c9a3439
+    commit: 699d33f4f113b8068176e367e130951b1cf186c0
+    tree: f97d7debe8a8a1f88614a060d30bea3e3a7c0e8b
     qualified_code_parent: 48ad1e5a50844f68c2b99e93b02ad6a3b491c07b
     version: 1.0.15
     c_abi_version: 2.5.0
@@ -208,12 +208,13 @@ current_candidate_evidence:
     methods_documentation_ancestor: d9c4291783381e07eae45cb2aecdad176b939731
     n4mm_pipeline_profile: snv_savgol_smooth_pls_v2_ddof0_interp_window11_poly3
     evidence: >-
-      The exact local Methods train is documented by 9d4e275 on qualified code
+      The exact local Methods train is documented by 699d33f on qualified runtime
       parent 48ad1e5 and exposes content-bound N4MM V2 SNV to Savitzky-Golay to PLS,
       typed inspection through ABI 2.5, and RAII pipeline configuration. The
       canonical semantic profile is SNV ddof=0 plus Savitzky-Golay interp with
-      defaults window 11 and polynomial degree 3. Targeted C/C++, Rust binding,
-      inspection, fingerprint, semantic and refusal gates are green.
+      defaults window 11 and polynomial degree 3. Catalogue metadata and CFF
+      agree on 1.0.15 / 2026-09-03; targeted C/C++, Rust binding, inspection,
+      fingerprint, semantic, bibliography and refusal gates are green.
     release_limit: >-
       n4m 0.1.4 is not published and the canonical release lock remains
       unchanged on its published baseline.
@@ -247,9 +248,9 @@ current_candidate_evidence:
       publish=false and unpublished. Registry publication, external matrices
       and exact release-lock reconstruction remain required.
   dag_ml:
-    evidence_status: local_documented_unpublished_data_and_conformal_v2_candidate
-    commit: ce0a1963077612b3ce2604746e77a6405d0c3002
-    tree: 2e5c5d3b8a6e987b7457f69daf501ad847794be4
+    evidence_status: local_documented_unpublished_data_conformal_and_hydration_candidate
+    commit: b7d643f450da3018c8208a84abcabfab09d5da7d
+    tree: 20876a6c04c550c2f662aa58583fb7305f42ee03
     qualified_code_parent: dafb8b6fb98f9d380d30559a3f4b868c91e5b5c4
     version: 0.3.23
     resolved_dag_ml_data_version: 0.2.10_local_patch_publish_false
@@ -269,20 +270,23 @@ current_candidate_evidence:
     canonical_semantics_commit: 6800c4fd0ec8b13b171cec9ed4a9b2ccdbabca0d
     predictor_compatibility_commit: 879e2af880548287fe4f5de556681ae998e25bca
     conformal_v2_status: archive_bound_multitarget_presentation_targeted_passed
+    dag_001_status: fingerprinted_arrow_cache_hydration_closed_local_code
     evidence: >-
-      The final documented DAG candidate ce0a196 descends from qualified code
+      The final DAG candidate b7d643f descends from qualified runtime/wasm core
       dafb8b6, preserves historical
       PLS V1 and content-bound N4MM V2 replay, consumes the DATA handoff and
-      adds archive-bound multi-target ConformalPresentation V2. Targeted DATA,
-      descriptor, no-leak, conformal and compatibility gates are green.
+      adds archive-bound multi-target ConformalPresentation V2 plus persisted
+      fingerprinted Arrow-cache hydration. Targeted DATA, descriptor, no-leak,
+      hydration, conformal and compatibility gates are green.
     release_limit: >-
       dag-ml-data 0.2.10 remains publish=false and n4m 0.1.4 is consumed by a
       local patch. Registry publication, external matrices, signing and exact
       lock reconstruction remain required.
   core:
-    evidence_status: locally_qualified_aggregate_e2e_data_conformal_candidate
-    commit: e0f5d485eae4279f02d58fe82fad3946202e463f
-    tree: 3fd59b96fc5728088c6d1d207e783d826f87401f
+    evidence_status: locally_qualified_aggregate_e2e_data_conformal_hardened_candidate
+    commit: b6442dc4334c62a2b6c72526bea554a734134ac6
+    tree: 6241d8497aa34ad4d015664662d4d17148d547fb
+    qualified_code_parent: e0f5d485eae4279f02d58fe82fad3946202e463f
     aggregate_e2e_parent: 8508c8c012331b08a344588f740d3147a881ff4b
     conformal_producer_commit: 0115c1bbf7db351b7da7ff88708cd334602d3450
     conformal_producer_tree: 24e454a636e136324489a42f461aba3d93c54252
@@ -292,13 +296,14 @@ current_candidate_evidence:
     resolved_n4m_rust_binding_version: 0.1.4_local_patch
     predictor_descriptor_consumption: qualified_v1_v2_rust_python_wasm
     evidence: >-
-      Core 0.3.25 final e0f5d48 adds an executed Rust aggregate witness from
+      Core 0.3.25 candidate b6442dc adds a schema-refusal hardening test on
+      qualified code parent e0f5d48, whose executed Rust aggregate witness runs
       Formats through IO/DatasetPackage and DAG/Methods to Archive V2 on top of
       the qualified 8508c8c aggregate, combines DATA package-to-training
       with archive-bound conformal projection, and fixes shared attested Methods
       runtime identity. Rust/Python/WASM N4MM V1/V2 replay and raw-X ownership
       remain authoritative; targeted DATA, conformal, descriptor, tamper, ABI
-      and compatibility gates are green against the documented DAG candidate ce0a196.
+      and compatibility gates are green against the final DAG candidate b7d643f.
     release_limit: >-
       Core uses local patches for publish=false dag-ml-data 0.2.10, final DAG
       and unpublished n4m 0.1.4. Published pins, external matrices, signing and
@@ -334,38 +339,49 @@ current_candidate_evidence:
       Publication, registry pins, signing and promised external matrices remain
       open.
   datasets:
-    evidence_status: locally_qualified_unpublished_candidate
-    commit: 53017672c82df106a17b512846425bc9e846565f
-    tree: 68513f3b938407846a9014d0dad47f58ded09bf4
+    evidence_status: locally_qualified_signable_source_candidate_python_sdist_dependency_hold
+    commit: 5b528e96af80a3566a9773a617b76f447f5c8d50
+    tree: abca4e80491020126322e76dfea52950f8101da5
     version: 0.3.9
+    resolved_formats_version: 0.2.8
+    resolved_io_version: 0.1.12
     wasm_sha256: 9275834e88b052304b0258022956ab99373cd874b2c6167081faedf58ad20f0a
+    source_tar_gz_sha256: 58386bccc6b7642f05b4cc5587128f54dbcfa599afe58e811c87d25a711ceaba
+    source_zip_sha256: f2e419062db0d81cc373a2baa57682db31b09cd29bde46476d4cbd54b269b687
+    source_archives_signable: true
     evidence: >-
-      Python, R, Rust and WASM package versions are reconciled at 0.3.9 and the
-      recorded local package/catalog qualification passed. No publication or
-      remote artifact availability is claimed.
+      Python, R, Rust and WASM package versions are reconciled at 0.3.9, Formats
+      0.2.8 and IO 0.1.12 are pinned, and SPDX/license metadata plus signable
+      source tar/zip artifacts are qualified locally. The Python sdist remains
+      blocked until dag-ml-data 0.2.10 and the IO publication cascade complete;
+      no publication or remote artifact availability is claimed.
   tools:
     evidence_status: locally_qualified_documented_unpublished_conversion_candidate
     commit: 6796a01a75b0b51301a693011f3e904a60598817
     tree: 4e77fd5b1cb9724c21d8bff89456649ed550ddfe
     workspace_cli_commit: 2215c9b9dcf498067ce2cad5f8bf42bf06a39285
     version: 0.0.7
-    ancestor_wheel_sha256: 372ecec41b18c25c607fd660060f19780cdaf8aea378239fa5ade5a61d81c8dc
-    final_candidate_wheel_status: not_built_or_published
+    wheel_sha256: 89bbbbed7a0af713e2fa2681c0da94e784524a52266f12d65e52501e793c5575
+    sdist_sha256: 59eee7582b91885ee94a65bfe42e7ecd9db34169906f275a1ffde9eaee020665
+    cyclonedx_sbom_sha256: 92f594c0428d99bc1699bd141c6998294e96d1ba46e8da6d388fb7323c825c59
+    final_candidate_artifacts_signable: true
+    final_candidate_artifacts_published: false
     release_limit: >-
       Tools remains an outside-aggregation-lock migration surface. Its exact
       wheel candidate is local and must be published, signed and referenced by
       the support/conversion release documents before promotion.
   python_strict_profile:
-    evidence_status: local_native_default_conversion_separation_documented_release_hold
-    commit: e227244464983ea2a94ebc01b6af30d474a025df
-    tree: f142b410194e3c99190fb97685724140a5599159
+    evidence_status: local_native_default_final_capability_docs_release_hold
+    commit: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
+    tree: 884b62893a298f7fe44e20fc20b5e6c989913674
+    final_capability_docs_parent: 221a4d20108a246f87c880a7bb7d4789c34cefdb
     native_default_commit: 73cf96d9ecfc9e872393b96f19cae8aded34df41
     runtime_conversion_removal_commit: 6c71664a3fa912678cc48751f3e75c37943523b2
     migration_documentation_commit: f5e740e70e55d4603ee164f82cbd85fc8a9219ea
     legacy_usage_observability_commit: b652bba3bc903f20854a3bba65a41aefc42eb2eb
     legacy_observability_documentation_commit: e227244464983ea2a94ebc01b6af30d474a025df
     legacy_usage_counter_scope: opt_in_process_local_non_persistent_intentional
-    capability_ledger_candidate_commit: 6c71664a3fa912678cc48751f3e75c37943523b2
+    capability_ledger_candidate_commit: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     parent_hpo_commit: e99a7ab30086ef494e9f48a4863776480c964564
     hpo_resume_witness_commit: a56a870f461ffa80c24dffba3b266725695c129f
     predictor_descriptor_commit: 1ebe03ddbd99e691f1f0332655bee5ebf584f2e9
@@ -375,7 +391,7 @@ current_candidate_evidence:
     embedded_pipeline_lowering: canonical_snv_sg_pls_v2_targeted_passed
     final_stack_requalification: one_native_archive_e2e_passed_without_new_python_commit
     evidence: >-
-      The final Python candidate e227244 documents the stable JSON warning/counter
+      The final Python candidate 4042161 documents the stable JSON warning/counter
       observability added by b652bba for explicit legacy/dual use on top of
       f5e740e migration documentation,
       descends from the 73cf96d native-default cutover and 6c71664 removal of
@@ -388,7 +404,10 @@ current_candidate_evidence:
       explicit-only with no exception fallback; default/native/strict remain
       silent. The opt-in usage counter is intentionally process-local and
       non-persistent. The bounded native path remains qualified against final IO
-      e41bf8f, DAG ce0a196, Core e0f5d48 and Methods 9d4e275 lineages.
+      e41bf8f, DAG b7d643f, Core b6442dc and the final Methods lineage.
+      Public retrain now routes omitted full to native DAG-ML, exposes transfer
+      only through the declared Python-library plugin contract, and refuses
+      finetune, unknown and session-plugin requests before data access.
     release_limit: >-
       This bounded strict-path proof does not close the general R2 API matrix:
       general run/predict/session/cache, transfer/finetune, conformal,
@@ -396,8 +415,8 @@ current_candidate_evidence:
       exact train-wide evidence.
   studio:
     evidence_status: locally_qualified_combined_candidate_external_release_hold
-    candidate_commit: e254a1ebba578e5b1932d09079088d02eb51d411
-    candidate_tree: d97d2faf4e9643c2bf71cd9fb242f4a1d0db35d9
+    candidate_commit: bb76f2c8833f430d26311422c9d7018592fcf6cb
+    candidate_tree: e0560c07d34e9c5e928f44076cffdba100f17ee5
     integration_chain:
       native_pipeline: 868b71e97e8d8498d8ebdfd9b11e6c132eb68295
       stu_004_predict_ui: f4761c25a0992312c64c8e37a0a6f0650a48ae2d
@@ -406,7 +425,7 @@ current_candidate_evidence:
       native_dataset_train: 769bf9cbbec0c51e619c2a17f27001d9f8299816
       combined_conformal_live: 2ad862aeab4048ced6c4c70fee5b2f88adaa16e8
       strict_native_runtime: 8bf1ca93aa24168ed8cbaa07cf52fce2d52cc6ad
-      rust_only_documentation: e254a1ebba578e5b1932d09079088d02eb51d411
+      rust_only_documentation: bb76f2c8833f430d26311422c9d7018592fcf6cb
     targeted_rust_witnesses: native_train_and_conformal_live_passed
     backend_control_plane: rust_only
     python_http_backend: removed
@@ -429,12 +448,12 @@ current_candidate_evidence:
         - content hash to process spawn mutation window
         - source mutation after validation scan
     evidence: >-
-      The final Studio candidate e254a1e documents the Rust-only control plane
+      The final Studio candidate bb76f2c documents the Rust-only control plane
       on strict-runtime descendant 8bf1ca9 and preserves the 868b71e to
       f4761c2 to 5e72fd3 UI/catalogue chain, adds the 769bf9c persisted dataset
       to native train to catalogued archive to fresh prediction path, and carries
-      the live conformal witness. It is aligned with Core e0f5d48, DAG ce0a196,
-      IO e41bf8f, DMD 1f60b92 and Methods 9d4e275. Core remains
+      the live conformal witness. It is aligned with Core b6442dc, DAG b7d643f,
+      IO e41bf8f, DMD 1f60b92 and the final Methods candidate. Core remains
       inspection/replay authority; Studio adds no preprocessing or conformal
       math. Qualified legacy conversion is byte-untouched and operational.
       The two accepted TOCTOU windows above remain documented open risks rather
@@ -493,8 +512,11 @@ current_candidate_evidence:
     tree: f3c849628f4711d8590d3d73c33af877f9cf49ab
   benchmarks:
     evidence_status: local_real_four_surface_measurement_complete_release_no_go
-    commit: 5cccfe6cc50f6dde7b8b65127289dcc4f01d3e1e
-    tree: bcfa5133210954d4a699028edc9cf5592f5a56d2
+    commit: 3f9be0fce0a79260a0813f964704ca1f337d47fe
+    tree: fc1152548894a4f778a257e54bb3dcf37ce1f0f3
+    metadata_repin_parent: 0f7cda6b0f4ca21c6feb44f8011320d885d5382a
+    measurement_commit: 5cccfe6cc50f6dde7b8b65127289dcc4f01d3e1e
+    hardening_parent: f5cf5fe8e06843e86867878cec94e81e66511018
     performance_contract: archive_v2_same_matrix_four_surfaces
     local_real_surfaces_passed: 4/4
     maximum_prediction_delta: 0
@@ -514,11 +536,13 @@ current_candidate_evidence:
         steady: 4.713
     release_eligible: false
     evidence: >-
-      Bench candidate 5cccfe6cc50f6dde7b8b65127289dcc4f01d3e1e records
-      one local_real campaign across Python native, direct Rust, Studio Rust
-      and Web WASM using the same Archive and matrix. All four surfaces pass,
-      maximum prediction delta is zero and no fallback is observed. The gate
-      reports 9/9 passing checks plus diff-check.
+      Bench candidate 3f9be0fce0a79260a0813f964704ca1f337d47fe repins
+      selected candidate metadata without rerunning the unchanged PERF-001
+      local_real campaign from 5cccfe6 across Python
+      native, direct Rust, Studio Rust and Web WASM using the same Archive and
+      matrix, and adds bounded local hardening evidence. All four surfaces
+      pass, maximum prediction delta is zero and no fallback is observed. The
+      PERF gate reports 9/9 passing checks plus diff-check.
     release_limit: >-
       This is a WSL-local measurement, not release qualification. Budgets are
       not frozen, external performance matrices remain incomplete, and no
@@ -539,13 +563,15 @@ current_candidate_evidence:
       registry pins, then regenerate the lock from remotely reconstructible heads.
   fields_pending_final_repin:
     - registry publication of n4m 0.1.4, DMD 0.2.10, nirs4all-io 0.1.12-dagml and Core/DAG packages, followed by exact downstream repins
+    - Datasets Python sdist after the dag-ml-data 0.2.10 and IO publication cascade
     - remotely reconstructible aggregation manifest and canonical release lock
     - signing and SBOM/provenance closure where required
     - external matrices, installers, soak and frozen reference-host performance budgets
   blockers:
     - >-
       Registry HOLD: n4m 0.1.4, DMD 0.2.10, nirs4all-io 0.1.12-dagml and the
-      selected Core/DAG packages are not yet published and repinned.
+      selected Core/DAG packages are not yet published and repinned; the
+      Datasets Python sdist remains blocked on that cascade.
     - >-
       Release-artifact HOLD: the canonical lock is intentionally unchanged;
       signing and SBOM/provenance closure remain required where applicable.
@@ -736,8 +762,8 @@ work_items:
     dependencies:
       - DATA-001
       - CAP-001
-    state: native_package_provider_linux_autonomous_wheel_qualified_io_handoff_and_cross_platform_runtime_pending
-    input_sha: 96784c6c51ebad72ee6116ae27183af2c9433730
+    state: complete_local_code_release_hold
+    input_sha: e41bf8f94a92356e98c215d4c41e907a7dfaf6ac
     owned_files:
       - dag-ml-data/crates/dag-ml-data-core/
       - dag-ml-data/crates/dag-ml-data-provider/
@@ -778,11 +804,11 @@ work_items:
       and a namespace-package symlink-containment hole, then rebuilt and smoked
       the exact canonical artifact from fresh site-packages and an unrelated
       cwd. CI contains concrete macOS arm64 and Windows x64 wheel lanes, but
-      only Linux manylinux_2_34_x86_64 has local runtime evidence. LOCK-DATA
-      remains open: automatic `nirs4all-io DatasetPackage` handoff, N-D and
-      fused package stores remain absent, no real macOS/Windows/aarch64 runtime
-      was executed, no autonomous sdist is promised, and selected DMD/Dag SHAs
-      are not advertised by remote refs.
+      only Linux manylinux_2_34_x86_64 has local runtime evidence. Subsequent
+      DMD 1f60b92 and IO e41bf8f close the CAP-native DatasetPackage and
+      package-to-training handoff locally. N-D/fused-store variants are outside
+      the bounded V1 promise inventory; real macOS/Windows/aarch64 runtime,
+      registry publication, remote reconstruction and LOCK-DATA remain held.
     rollback: select the previous advertised dag-ml-data ref without modifying the dirty historical RC worktree or any user data.
   - id: IO-XLG-001
     owner: C + G
@@ -1028,8 +1054,8 @@ work_items:
       - HPO-001
       - CORE-002
       - SAVE-001
-    state: native_methods_hpo_resume_export_replay_qualified_remaining_v1_matrix_pending
-    input_sha: a56a870f461ffa80c24dffba3b266725695c129f
+    state: complete_local_code_release_hold
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/nirs4all/api/native_archive_training.py
       - nirs4all/tests/unit/api/test_native_methods_hpo.py
@@ -1054,12 +1080,12 @@ work_items:
       python -I -B process. PipelineRunner, OptunaManager and
       N4MFinetuneManager sentinels are never reached; a post-runtime fault still
       detaches the native handle. Ruff, targeted Mypy and diff-check pass.
-      This is deliberately partial: TPE/pruner/resume, conformal, multisource,
-      stacking, variants and the rest of the supported ledger remain required,
-      so API-001, DAG-001, LOCK-API and R2-W1 stay open. Descendant a56a870 on
-      parent e99a7ab adds the final local package-resume witness: 2 to 4 trials,
-      export and fresh replay are green without claiming a public N4MOPT resume
-      API or changing the selected descriptor ancestry.
+      Descendant a56a870 adds the final local package-resume witness: 2 to 4
+      trials, export and fresh replay are green. CAP cf6 and its current repin
+      bound the V1 native promise to the documented Methods pipeline and HPO
+      resume profile; multisource, stacking and arbitrary variants are not
+      promised native capabilities. Final Python 4042161 retains this evidence.
+      Publication, external matrices and LOCK-API remain held.
     rollback: revert only the a56a870 witness and prior API-001 commits; retain the selected native run/session/archive foundation.
   - id: CONF-001
     owner: E + F
@@ -1687,8 +1713,8 @@ work_items:
       - SAVE-001
       - STORE-001
       - MTH-002
-    state: minimal_methods_pls_archive_v2_run_save_close_load_predict_complete_generalization_pending
-    input_sha: 7b762bc90e7b1b48377ca0f4cc5f2265e92f2b97
+    state: complete_local_code_release_hold
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/nirs4all/api/native_archive_training.py
       - nirs4all/nirs4all/api/run.py
@@ -1709,18 +1735,18 @@ work_items:
       (SHA-256 28838128b4bc7a615cc9c4d2ef1bfffb03a3874b9b06a758d6fe7e9638a99e6a),
       plus Methods source aabdecfdd76d1a4d12cfbbade4eeee0d30a6ea47 and
       libn4m.so SHA-256 95ae3b4df320ea232a180a0e5e251abfe8f9c9ab235a11384be8ed85bfecdccf.
-      No wheel, shared library, archive or build output is tracked. This item
-      did not by itself close general API-002/API-003: preprocessing, branches,
-      HPO, conformal, multi-target and the default dag-ml producer path still
-      required separate qualification. Subsequent API-002 evidence closes only
-      the bounded Methods PLS multi-target lane.
+      No wheel, shared library, archive or build output is tracked. Subsequent
+      final Methods/DAG/Core/Python evidence closes the CAP-promised Archive V2,
+      N4MM V1/V2 and SNV-SG-PLS producer/replay path locally, including bounded
+      multi-target and conformal consumers. Unpromised generalization variants
+      create no V1 debt; publication and release locks remain held.
     rollback: remove the additive engine native producer and retain the default dag-ml plus explicit legacy profiles; never rewrite or delete user archives.
   - id: API-003
     owner: E + C
     dependencies:
       - SAVE-002
-    state: archive_v2_native_run_session_lifecycle_qualified_general_dag_data_cache_pending
-    input_sha: 5ebb0788c392e8e1e3e3538a8ab872d724d97a64
+    state: complete_local_code_release_hold
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/nirs4all/api/session.py
       - nirs4all/nirs4all/api/run.py
@@ -1769,19 +1795,20 @@ work_items:
       immediately after engine selection and returns the stable typed collision
       before charts, runtime access or mutation. API gates pass 518 tests, the
       real Core 7c3ed3f/Dag-ML 0.3.18/Methods 1.0.13 cycle passes, and Ruff plus
-      touched-file Mypy are green. The callable and canonical Studio wheel are
-      unchanged. General DAG/data caching is still API-003 work. At this checkpoint,
-      preprocessing, branches, HPO, conformal and multi-target prediction
-      remained API-002/001 work; the subsequent API-002 item closes only
-      bounded Methods PLS multi-target prediction.
+      touched-file Mypy are green. Subsequent DAG b7d643f closes fingerprinted
+      Arrow-cache hydration and the final CAP-bound Python/DAG/Core stack closes
+      the promised session/replay path. Preprocessing, HPO, conformal and
+      multi-target promises are covered by their later recorded witnesses;
+      arbitrary general DAG variants are outside the native V1 inventory.
+      Publication, external matrices and LOCK-API remain held.
     rollback: remove only the additive native Archive V2 session cache/lifecycle path; preserve archives and the explicit legacy profile.
   - id: API-002
     owner: E + C
     dependencies:
       - SAVE-002
       - API-003
-    state: native_methods_pls_archive_v2_multitarget_run_save_load_predict_qualified_general_dag_pending
-    input_sha: 80eafd53ecf786429d8a9ceb7bae844beb6abcf8
+    state: complete_local_code_release_hold
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/nirs4all/api/native_archive_training.py
       - nirs4all/nirs4all/pipeline/dagml/core_archive_replay.py
@@ -1810,19 +1837,20 @@ work_items:
       95ae3b4df320ea232a180a0e5e251abfe8f9c9ab235a11384be8ed85bfecdccf.
       The generated archive witness SHA-256 is
       994252030ff80129d0431995bae53eb473082f05825b65714379262b72af13fa.
-      This closes multi-target Methods PLS replay only. Preprocessing, branches,
-      HPO, conformal, arbitrary controllers, native multi-run reuse and the
-      default producer cutover remain open API-001/API-002/API-003 work.
-      The Core wheel's historical omission of the additive n4a Python facade
-      remains a packaging limitation and is not hidden by this evidence.
+      Later final-stack evidence closes the CAP-promised SNV-SG-PLS,
+      multi-target conformal and default native producer/replay lanes locally.
+      Arbitrary controllers and variants are not promised native V1
+      capabilities. The Core wheel's historical Python-facade omission remains
+      a packaging/release hold rather than hidden capability debt; publication,
+      external matrices and LOCK-API remain held.
     rollback: remove only the multi-target lowering/replay additions and restore the prior Core Dag-ML pins together; preserve user archives and the explicit legacy profile.
   - id: API-004
     owner: E + B
     dependencies:
       - CAP-001
       - API-002
-    state: bounded_dagml_full_bundle_retrain_qualified_transfer_finetune_core_and_plugin_pending
-    input_sha: 79f4358b0ea4829cb18f28542dfce2af50973ed1
+    state: complete_local_native_full_transfer_plugin_finetune_refused
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/nirs4all/api/retrain.py
       - nirs4all/nirs4all/api/retrain_capabilities.py
@@ -1841,21 +1869,22 @@ work_items:
       - PipelineRunner is reachable only through explicit engine legacy selection during the ADR-24 rollback window; public signatures remain frozen and preflight discovery is additive
       - independent qualification passes Ruff, focused Mypy and 27 retrain/Core/integration/parity tests; the final full inventory passes 7861 tests with 148 declared skips and four pre-existing binary sampler exclusions
     review: >-
-      Candidate 7dd25ad was independently audited and promoted as Python
-      commit 79f4358b. This closes only the concrete DAG-ML full retrain path
-      backed by an exported training specification. Transfer, finetune,
-      Core Archive V3 and plugin adapters remain typed refusals. The immutable
-      native-results manifest is written by run before retrain attaches source
-      lineage and is deliberately not backpatched; durable lineage is carried
-      by the existing public n4a export provenance contract instead. General
-      retrain, HPO-controller integration and LOCK-API therefore remain open.
+      Python candidate 40421617c7f39cae6d11c4c3aecb51e9d0a582f4 routes
+      omitted full retrain to native DAG-ML with executable retrain/lineage
+      evidence. Transfer is callable only with plugin
+      nirs4all-python-library under contract
+      nirs4all.python-library.retrain-transfer.v1; finetune, unknown and
+      session-plugin requests refuse before data access, while legacy remains
+      explicit. Thirty-seven targeted tests and the real retrain witness plus
+      Ruff/diff pass; eight pre-existing no-redef findings in __init__.py keep
+      broad Mypy outside this closure. Publication and LOCK-API remain held.
     rollback: remove the additive retrain capability router and provenance field, restoring only the explicit legacy retrain path without modifying user bundles or native result directories.
   - id: API-005
     owner: E
     dependencies:
       - CAP-001
-    state: advanced_verb_preflight_complete_native_and_plugin_execution_refused_pending_callable_contracts
-    input_sha: 48a85680c6c49fd6a293dcb45d049a3debe0c884
+    state: complete_local_by_executable_preflight_refusal
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/nirs4all/api/advanced_capabilities.py
       - nirs4all/nirs4all/api/explain.py
@@ -1872,14 +1901,12 @@ work_items:
       - public 0.9.x signatures remain unchanged and preflight discovery is additive through explain.preflight and generate.preflight
       - independent qualification passes Ruff, targeted Mypy, 489 API and public-contract tests with one opt-in live skip, plus two explicit-legacy parity explain tests
     review: >-
-      Candidate commit 0821c82 was independently rerun and promoted as Python
-      commit 48a85680. API-005 closes executable routing and early refusal, not
-      scientific implementation: the capability ledger deliberately records
-      native and plugin execution as false. The full unit inventory passed
-      7,844 tests with 148 declared skips outside four pre-existing binary
-      sampler failures unrelated to this item. A future callable Core/DAG or
-      bounded plugin contract must add new differential evidence before either
-      capability can become true.
+      Python candidate 40421617c7f39cae6d11c4c3aecb51e9d0a582f4 keeps
+      explain/generate outside the promised CAP inventory, refuses native and
+      plugin execution before data access, and leaves only explicit legacy
+      routing. This closes executable preflight refusal, not scientific
+      implementation; a future callable contract requires new evidence.
+      Publication and LOCK-API remain held.
     rollback: remove only the additive advanced-capability preflight and restore the explicit legacy calls in affected tests; retain user data and rollback distributions.
   - id: SAVE-003
     owner: D
@@ -2524,8 +2551,8 @@ work_items:
       - CAP-001
       - DATA-001
       - MTH-001
-    state: selected_bounded_native_first_dual_oracle_methods_runtime_parity_pending
-    input_sha: 71dce9d9ecfc9e872393b96f19cae8aded34df41
+    state: complete_local_parity_release_hold
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/nirs4all/api/run.py
       - nirs4all/nirs4all/api/result.py
@@ -2551,8 +2578,11 @@ work_items:
       is returned after an exact/ledger-bounded semantic comparison. The
       independently built HEAD wheel SHA-256 is
       cda2bf974c087562d3a7e5872a7a61912721f35ebd187ee1632a982a1ec58746.
-      This remains orchestration parity over Python sklearn PLS, not proof of
-      Methods/libn4m numerical execution; that broader integration stays open.
+      Final Methods/DAG/Core/Python witnesses add real libn4m execution for all
+      CAP-native promised operators and models. CAP deliberately excludes
+      arbitrary sklearn variants from the native V1 matrix, while legacy/dual
+      remain explicit rollback/oracle profiles. External platforms,
+      publication and release locks remain held.
     rollback: remove only the dual-run implementation/resource/docs/tests; preserve engine=legacy and native single-run behavior.
   - id: PROV-001
     owner: C
@@ -2604,15 +2634,16 @@ work_items:
     dependencies:
       - CORE-001
     state: complete_local_code_release_hold
-    input_sha: e0f5d485eae4279f02d58fe82fad3946202e463f
+    input_sha: b6442dc4334c62a2b6c72526bea554a734134ac6
     owned_files:
       - nirs4all-core/
     acceptance_tests:
       - Direct aggregate exposure and the datasets default-versus-optional decision are implemented and proved without duplicate domain logic.
     review: >-
-      Core candidate e0f5d485eae4279f02d58fe82fad3946202e463f proves
-      direct aggregate exposure without duplicating Formats, IO, DAG or Methods
-      domain logic. Package publication and release qualification remain held.
+      Core candidate b6442dc4334c62a2b6c72526bea554a734134ac6 retains
+      the direct aggregate proof from e0f5d48 without duplicating Formats, IO,
+      DAG or Methods domain logic and adds schema-refusal hardening. Package
+      publication and release qualification remain held.
     rollback: remove only the unaccepted direct-exposure slice; retain the aggregate naming contract
   - id: DATA-002
     owner: C
@@ -2637,16 +2668,16 @@ work_items:
       - DATA-003
       - FMT-001
     state: complete_local_code_release_hold
-    input_sha: e0f5d485eae4279f02d58fe82fad3946202e463f
+    input_sha: b6442dc4334c62a2b6c72526bea554a734134ac6
     owned_files:
       - nirs4all-core/
     acceptance_tests:
       - Formats, IO, data, dag and Methods execute through Core rather than being metadata-only exposures.
     review: >-
-      Core candidate e0f5d485eae4279f02d58fe82fad3946202e463f proves
+      Core candidate b6442dc4334c62a2b6c72526bea554a734134ac6 retains
       the bounded Formats to IO/DatasetPackage to DAG/Methods to Archive V2
-      aggregate path locally. DATA-003, publication, platform and release-lock
-      qualifications remain held.
+      aggregate proof from e0f5d48 and adds schema-refusal hardening. DATA-003,
+      publication, platform and release-lock qualifications remain held.
     rollback: retain the prior aggregate release and remove only the unaccepted real-upstream wiring
   - id: STU-003
     owner: F + D
@@ -2654,14 +2685,14 @@ work_items:
       - STU-001
       - SAVE-004
     state: complete_local_code_release_hold
-    input_sha: e254a1ebba578e5b1932d09079088d02eb51d411
+    input_sha: bb76f2c8833f430d26311422c9d7018592fcf6cb
     owned_files:
       - nirs4all-studio/
       - nirs4all-tools/
     acceptance_tests:
       - Conversion UI and CLI treat code 0 as verified, code 10 as preserved with warning and no activation, and code 20 as refused.
     review: >-
-      Studio e254a1ebba578e5b1932d09079088d02eb51d411 and Tools
+      Studio bb76f2c8833f430d26311422c9d7018592fcf6cb and Tools
       6796a01a75b0b51301a693011f3e904a60598817 locally demonstrate code 0
       verified, code 10 preserved without activation, and code 20 refused.
       The accepted bounded conversion TOCTOU risks remain documented;
@@ -2671,15 +2702,26 @@ work_items:
     owner: G
     dependencies:
       - REL-002
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: complete_local_code_release_hold
+    input_sha: 5b528e96af80a3566a9773a617b76f447f5c8d50
     owned_files:
       - nirs4all-tools/
       - nirs4all-datasets/
       - docs/contracts/release/
     acceptance_tests:
       - Tools and Datasets licenses have no manual blocker and the resulting SBOM and provenance artifacts are signable.
-    review: pending
+    review: >-
+      Tools final local artifacts are signable with wheel SHA-256
+      89bbbbed7a0af713e2fa2681c0da94e784524a52266f12d65e52501e793c5575,
+      sdist 59eee7582b91885ee94a65bfe42e7ecd9db34169906f275a1ffde9eaee020665
+      and CycloneDX SBOM
+      92f594c0428d99bc1699bd141c6998294e96d1ba46e8da6d388fb7323c825c59.
+      Datasets candidate 5b528e9 fixes SPDX/licenses and produces signable
+      source tar.gz 58386bccc6b7642f05b4cc5587128f54dbcfa599afe58e811c87d25a711ceaba
+      and zip f2e419062db0d81cc373a2baa57682db31b09cd29bde46476d4cbd54b269b687.
+      Datasets Python sdist remains blocked until dag-ml-data 0.2.10 and the IO
+      publication cascade complete; publication, signatures and release locks
+      remain held.
     rollback: retain the previous no-go release record and discard only unaccepted release artifacts
   - id: WEBREL-001
     owner: H + G
@@ -2701,15 +2743,20 @@ work_items:
     dependencies:
       - DATA-003
       - API-003
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: complete_local_code_release_hold
+    input_sha: b7d643f450da3018c8208a84abcabfab09d5da7d
     owned_files:
       - dag-ml/
       - dag-ml-data/
       - nirs4all/
     acceptance_tests:
       - Production controllers hydrate artifacts and fingerprinted Arrow cache outside the initial process while releasing all handles.
-    review: pending
+    review: >-
+      DAG candidate b7d643f450da3018c8208a84abcabfab09d5da7d locally
+      persists and hydrates fingerprinted Arrow caches outside the originating
+      process, initializes predictor descriptors and releases handles. Its
+      runtime/wasm core remains dafb8b6; publication, external matrices and
+      release locks remain held.
     rollback: disable only the unaccepted hydration path and preserve the prior native archive contract
   - id: PERF-001
     owner: G
@@ -2745,14 +2792,14 @@ work_items:
       - STU-006
       - PERF-001
     state: complete_local_code_performance_release_hold
-    input_sha: e227244464983ea2a94ebc01b6af30d474a025df
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/
       - docs/contracts/release/
     acceptance_tests:
       - DEFAULT_ENGINE is native and every test without an engine parameter exercises the native backend.
     review: >-
-      Python candidate e227244464983ea2a94ebc01b6af30d474a025df descends
+      Python candidate 40421617c7f39cae6d11c4c3aecb51e9d0a582f4 descends
       from native-default candidate 73cf96d and preserves native execution for
       calls without an engine parameter. PERF-001 remains pending and no
       release GO is claimed.
@@ -2762,13 +2809,13 @@ work_items:
     dependencies:
       - CUT-001
     state: complete_local_code_release_hold
-    input_sha: e227244464983ea2a94ebc01b6af30d474a025df
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/
     acceptance_tests:
       - Legacy fallback is opt-in and visible, with no generic exception path relaunching legacy and with a structured warning and counter.
     review: >-
-      Python candidate e227244464983ea2a94ebc01b6af30d474a025df retains the
+      Python candidate 40421617c7f39cae6d11c4c3aecb51e9d0a582f4 retains the
       b652bba stable structured JSON warning for explicit legacy/dual use and
       an opt-in process-local counter only when N4A_LEGACY_USAGE_COUNTER=true.
       Default/native/strict paths remain silent and no exception can trigger a
@@ -2799,14 +2846,19 @@ work_items:
     dependencies:
       - CUT-002
       - MTH-DOC-003
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: complete_local_docs_release_hold
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - docs/
       - nirs4all-methods/docs/
     acceptance_tests:
       - Every R2 limitation is preflightable and documented, and Methods examples use the R2 APIs and artifacts while retaining scientific links.
-    review: pending
+    review: >-
+      Python 221a4d2 and the final Methods documentation describe the bounded
+      native capability preflight, explicit plugin/refusal dispositions,
+      conversion handoff and R2 limitations without presenting legacy or a
+      Python orchestration backend as the product path. Cross-site publication
+      and release locks remain held.
     rollback: retain the R1 documentation set and do not announce R2
   - id: WEBREL-002
     owner: H + G
@@ -2830,7 +2882,7 @@ work_items:
       - CUT-002
       - API-005
     state: complete_local_strict_product_code_release_hold
-    input_sha: e227244464983ea2a94ebc01b6af30d474a025df
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - nirs4all/
       - nirs4all-studio/
@@ -2838,7 +2890,7 @@ work_items:
     acceptance_tests:
       - Studio and Web call graphs expose no legacy runner, executor, orchestrator, selector or implicit fallback while explicit Python engine legacy remains rollback-only.
     review: >-
-      Python e227244 keeps legacy explicit and rollback-only, Studio e254a1e
+      Python 4042161 keeps legacy explicit and rollback-only, Studio bb76f2c
       keeps strict product orchestration on Rust, and Web 59cfff exposes no
       JavaScript or Python execution fallback. Transitional/offline diagnostics
       remain explicit non-product surfaces; publication remains held.
@@ -2849,13 +2901,13 @@ work_items:
       - DROP-001
       - STU-006
     state: complete_local_code_external_installer_hold
-    input_sha: e254a1ebba578e5b1932d09079088d02eb51d411
+    input_sha: bb76f2c8833f430d26311422c9d7018592fcf6cb
     owned_files:
       - nirs4all-studio/
     acceptance_tests:
       - Studio installers contain no Uvicorn, FastAPI, standalone CPython backend, PyInstaller backend or backend requirements; any CPython is a preflighted plugin host with no HTTP port or scheduler.
     review: >-
-      Studio candidate e254a1ebba578e5b1932d09079088d02eb51d411 keeps the
+      Studio candidate bb76f2c8833f430d26311422c9d7018592fcf6cb keeps the
       control plane Rust-only and limits embedded CPython to a preflighted
       stdio plugin/library host without an HTTP port or scheduler. macOS and
       Windows installer execution, signing and final SBOM remain held.
@@ -2884,7 +2936,7 @@ work_items:
       - DROP-001
       - UI-001
     state: complete_local_code_release_hold
-    input_sha: e254a1ebba578e5b1932d09079088d02eb51d411
+    input_sha: bb76f2c8833f430d26311422c9d7018592fcf6cb
     owned_files:
       - nirs4all-studio/
       - nirs4all-ui/
@@ -2892,7 +2944,7 @@ work_items:
     acceptance_tests:
       - Product UI offers one backend, keeps diagnostics separate, and does not remove the explicit Python rollback API.
     review: >-
-      Studio candidate e254a1ebba578e5b1932d09079088d02eb51d411
+      Studio candidate bb76f2c8833f430d26311422c9d7018592fcf6cb
       exposes one Rust product backend with diagnostics kept separate and does
       not remove Python's explicit rollback API. UI package publication remains
       held.
@@ -2905,7 +2957,7 @@ work_items:
       - DROP-004
       - REL-003
     state: complete_local_code_sbom_signature_release_hold
-    input_sha: e254a1ebba578e5b1932d09079088d02eb51d411
+    input_sha: bb76f2c8833f430d26311422c9d7018592fcf6cb
     owned_files:
       - .github/workflows/
       - nirs4all-studio/
@@ -2913,7 +2965,7 @@ work_items:
     acceptance_tests:
       - No product job installs the Python backend and licenses and SBOM match the actual package contents.
     review: >-
-      Studio candidate e254a1ebba578e5b1932d09079088d02eb51d411
+      Studio candidate bb76f2c8833f430d26311422c9d7018592fcf6cb
       locally keeps product jobs free of a Python backend. Final platform
       artifacts, license closure, SBOM, signatures, REL-003 and publication
       remain held.
@@ -2922,14 +2974,17 @@ work_items:
     owner: G + D
     dependencies:
       - DROP-005
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: advanced_local_evidence_not_closed
+    input_sha: 3f9be0fce0a79260a0813f964704ca1f337d47fe
     owned_files:
       - nirs4all-benchmarks/
       - docs/contracts/e2e/
     acceptance_tests:
       - Representative user corpora and workspaces show no crash or loss and every refusal is classified and actionable.
-    review: pending
+    review: >-
+      Bench 3f9be0f retains bounded WSL-local hardening evidence with classified
+      four-surface outcomes. Representative user-corpus soak, non-WSL execution
+      and release qualification remain incomplete; this lot is not closed.
     rollback: keep R3 on hold and preserve the signed R2 rollback artifacts
   - id: SEC-001
     owner: G + B + C + D
@@ -2938,8 +2993,8 @@ work_items:
       - MTH-002
       - SAVE-004
       - FMT-001
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: advanced_local_evidence_not_closed
+    input_sha: 3f9be0fce0a79260a0813f964704ca1f337d47fe
     owned_files:
       - nirs4all-formats/
       - nirs4all-methods/
@@ -2947,21 +3002,28 @@ work_items:
       - docs/contracts/release/
     acceptance_tests:
       - Fuzzing and hostile-payload tests for formats, archives, store and ABI leave no critical or high vulnerability open.
-    review: pending
+    review: >-
+      Bench 3f9be0f and Core b6442dc retain bounded hostile/schema-refusal
+      hardening evidence. The complete fuzzing matrix and critical/high
+      vulnerability closure are not established; this lot remains open.
     rollback: keep the release on hold and retain the prior signed artifacts
   - id: PERF-002
     owner: G
     dependencies:
       - SOAK-001
       - PERF-001
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: advanced_local_evidence_not_closed
+    input_sha: 3f9be0fce0a79260a0813f964704ca1f337d47fe
     owned_files:
       - nirs4all-benchmarks/
       - docs/contracts/release/
     acceptance_tests:
       - Concurrency and memory soak finds no handle leak or store corruption and no unapproved latency-budget overrun.
-    review: pending
+    review: >-
+      Bench 3f9be0f retains the zero-delta four-surface WSL measurement and
+      adds bounded hardening evidence. Concurrency and memory soak, frozen
+      budgets, reference-host thresholds and external matrices remain
+      incomplete; this lot is not closed.
     rollback: keep R3 on hold and retain the accepted R1 budgets
   - id: INST-001
     owner: F + G
@@ -3047,13 +3109,18 @@ work_items:
     dependencies:
       - RC-001
       - SUP-001
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: prepared_local_docs_release_hold
+    input_sha: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
     owned_files:
       - docs/
     acceptance_tests:
       - Migration, API, ABI, schema, examples and FAQ present no Python or legacy backend installation as the current product path.
-    review: pending
+    review: >-
+      The final Python/Studio/Methods documentation is locally prepared around
+      the Rust product path, native-default API, explicit legacy rollback and
+      stdio-only CPython library/plugin host. RC-001, cross-site stable
+      publication and release locks remain open, so stable documentation is not
+      published or claimed complete.
     rollback: retain the R3 documentation archive and postpone stable promotion
   - id: SUP-002
     owner: H + D

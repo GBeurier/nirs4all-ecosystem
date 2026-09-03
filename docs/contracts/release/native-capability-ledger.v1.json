@@ -46,7 +46,7 @@
       },
       "surface_matrix": {
         "path": "docs/contracts/release/public-v1-surface-matrix.n4a.json",
-        "canonical_json_sha256": "sha256:a1c138ffbe7ab9f595637bf61129e8dd91e8f95d71cf02bb41661af4a5c78107"
+        "canonical_json_sha256": "sha256:7005b45b0117f5ee730aeb450edd484bbf2e5fb7f865b8a178ba0d71a0a5f62b"
       }
     }
   },
@@ -68,7 +68,7 @@
       "evidence": [
         {
           "candidate_key": "core",
-          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "commit": "b6442dc4334c62a2b6c72526bea554a734134ac6",
           "source": "compat/capabilities.toml",
           "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
           "claim": "The Core candidate descriptor limits the portable split promise to Kennard-Stone across the declared aggregate runtimes."
@@ -159,7 +159,7 @@
       "evidence": [
         {
           "candidate_key": "core",
-          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "commit": "b6442dc4334c62a2b6c72526bea554a734134ac6",
           "source": "compat/capabilities.toml",
           "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
           "claim": "The Core candidate descriptor records native SNV execution across the declared aggregate runtimes."
@@ -249,7 +249,7 @@
       "evidence": [
         {
           "candidate_key": "core",
-          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "commit": "b6442dc4334c62a2b6c72526bea554a734134ac6",
           "source": "compat/capabilities.toml",
           "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
           "claim": "The Core candidate descriptor records native Savitzky-Golay execution across the declared aggregate runtimes."
@@ -339,7 +339,7 @@
       "evidence": [
         {
           "candidate_key": "core",
-          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "commit": "b6442dc4334c62a2b6c72526bea554a734134ac6",
           "source": "compat/capabilities.toml",
           "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
           "claim": "The Core candidate descriptor records native PLS regression for the exact portable aliases and declared aggregate runtimes."
@@ -432,7 +432,7 @@
       "evidence": [
         {
           "candidate_key": "core",
-          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "commit": "b6442dc4334c62a2b6c72526bea554a734134ac6",
           "source": "compat/capabilities.toml",
           "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
           "claim": "The Core candidate descriptor records the bounded portable pipeline API across the declared aggregate runtimes."
@@ -519,7 +519,7 @@
       "evidence": [
         {
           "candidate_key": "core",
-          "commit": "e0f5d485eae4279f02d58fe82fad3946202e463f",
+          "commit": "b6442dc4334c62a2b6c72526bea554a734134ac6",
           "source": "compat/capabilities.toml",
           "source_sha256": "sha256:ba0d9ac83a143d1a475b0cc98df48590ee0d221c7b48f323a564a56979a46043",
           "claim": "The Core candidate descriptor keeps upstream format readers as lazy metadata and makes no executable Core format-reader promise."
@@ -601,7 +601,7 @@
       "evidence": [
         {
           "candidate_key": "dag_ml",
-          "commit": "ce0a1963077612b3ce2604746e77a6405d0c3002",
+          "commit": "b7d643f450da3018c8208a84abcabfab09d5da7d",
           "source": "README.md",
           "source_sha256": "sha256:d621b7f5ba9699a6cca6116a973bfa4b30a1cadc977fdfb644a357539286e286",
           "claim": "The DAG candidate documentation records native prediction aggregation in the Rust runtime."
@@ -655,16 +655,16 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
           "source": "nirs4all/pipeline/engine.py",
-          "source_sha256": "sha256:b0553f5fc94a32ed0f3b7627e8e78bcd98a56aa6fa5dea4e2fee0b2b14c43494",
+          "source_sha256": "sha256:b21940df060bffbbfda52c6441e6001bcf0cad9e1a422e08f12926a4d754ac6b",
           "claim": "The Python candidate retains explicit engine=legacy selection and dispatch for rollback while the strict profile refuses implicit legacy execution."
         },
         {
           "candidate_key": "python",
-          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
           "source": "nirs4all/api/run.py",
-          "source_sha256": "sha256:2c0bb35c11f980dc147b6b30cc5115c95ca23d897d6365c6eea977df55959697",
+          "source_sha256": "sha256:a83523381a3d6a422f32eac30fb54daaf577f229f2ff84a8dcfb13f91e250ca7",
           "claim": "The Python candidate retains explicit engine=legacy selection and dispatch for rollback while the strict profile refuses implicit legacy execution."
         }
       ],
@@ -784,9 +784,9 @@
       "evidence": [
         {
           "candidate_key": "methods",
-          "commit": "9d4e2753836eb85d61b1e7712ec6a06e627d4a5f",
+          "commit": "699d33f4f113b8068176e367e130951b1cf186c0",
           "source": "README.md",
-          "source_sha256": "sha256:42fc5599518277ed92acc314b91d489a7b3e3c18c764fe59e2383b4b200c68bd",
+          "source_sha256": "sha256:74a1ddf8aa2603515119abdf94aa00c6ff2213d772442277982364b81606e307",
           "claim": "The Methods candidate documentation records Archive V2 support in the bounded native pipeline contract."
         }
       ],
@@ -853,9 +853,9 @@
       "evidence": [
         {
           "candidate_key": "methods",
-          "commit": "9d4e2753836eb85d61b1e7712ec6a06e627d4a5f",
+          "commit": "699d33f4f113b8068176e367e130951b1cf186c0",
           "source": "README.md",
-          "source_sha256": "sha256:42fc5599518277ed92acc314b91d489a7b3e3c18c764fe59e2383b4b200c68bd",
+          "source_sha256": "sha256:74a1ddf8aa2603515119abdf94aa00c6ff2213d772442277982364b81606e307",
           "claim": "The Methods candidate documentation records N4MM v1 compatibility."
         }
       ],
@@ -921,9 +921,9 @@
       "evidence": [
         {
           "candidate_key": "methods",
-          "commit": "9d4e2753836eb85d61b1e7712ec6a06e627d4a5f",
+          "commit": "699d33f4f113b8068176e367e130951b1cf186c0",
           "source": "README.md",
-          "source_sha256": "sha256:42fc5599518277ed92acc314b91d489a7b3e3c18c764fe59e2383b4b200c68bd",
+          "source_sha256": "sha256:74a1ddf8aa2603515119abdf94aa00c6ff2213d772442277982364b81606e307",
           "claim": "The Methods candidate documentation records N4MM v2 compatibility."
         }
       ],
@@ -990,9 +990,9 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
           "source": "docs/source/reference/public_interfaces.md",
-          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate documents the bounded native SNV(ddof=0) to Savitzky-Golay(interp defaults) to PLS path."
         }
       ],
@@ -1049,9 +1049,9 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
           "source": "docs/source/reference/public_interfaces.md",
-          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate documents bounded native HPO resume without widening the HPO promise."
         }
       ],
@@ -1216,9 +1216,9 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
           "source": "docs/source/reference/public_interfaces.md",
-          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate documents bounded native multi-target conformal behavior for the declared Rust-backed surfaces."
         }
       ],
@@ -1267,7 +1267,7 @@
       "evidence": [
         {
           "candidate_key": "studio",
-          "commit": "e254a1ebba578e5b1932d09079088d02eb51d411",
+          "commit": "bb76f2c8833f430d26311422c9d7018592fcf6cb",
           "source": "README.md",
           "source_sha256": "sha256:63d30f92aa2ca6b71c5785772fc86b4c736165143c179140206b10b928a621d5",
           "claim": "The Studio candidate documents a Rust-only control plane."
@@ -1317,7 +1317,7 @@
       "evidence": [
         {
           "candidate_key": "studio",
-          "commit": "e254a1ebba578e5b1932d09079088d02eb51d411",
+          "commit": "bb76f2c8833f430d26311422c9d7018592fcf6cb",
           "source": "README.md",
           "source_sha256": "sha256:63d30f92aa2ca6b71c5785772fc86b4c736165143c179140206b10b928a621d5",
           "claim": "The Studio candidate restricts embedded CPython to stdio library/plugin execution and refuses broader backend duties."
@@ -1436,9 +1436,9 @@
       "evidence": [
         {
           "candidate_key": "methods",
-          "commit": "9d4e2753836eb85d61b1e7712ec6a06e627d4a5f",
+          "commit": "699d33f4f113b8068176e367e130951b1cf186c0",
           "source": "README.md",
-          "source_sha256": "sha256:42fc5599518277ed92acc314b91d489a7b3e3c18c764fe59e2383b4b200c68bd",
+          "source_sha256": "sha256:74a1ddf8aa2603515119abdf94aa00c6ff2213d772442277982364b81606e307",
           "claim": "The Methods candidate does not promise a wider public V1 model catalog than the explicitly inventoried portable model."
         }
       ],
@@ -1512,9 +1512,9 @@
       "evidence": [
         {
           "candidate_key": "methods",
-          "commit": "9d4e2753836eb85d61b1e7712ec6a06e627d4a5f",
+          "commit": "699d33f4f113b8068176e367e130951b1cf186c0",
           "source": "README.md",
-          "source_sha256": "sha256:42fc5599518277ed92acc314b91d489a7b3e3c18c764fe59e2383b4b200c68bd",
+          "source_sha256": "sha256:74a1ddf8aa2603515119abdf94aa00c6ff2213d772442277982364b81606e307",
           "claim": "The Methods candidate does not promise a wider public V1 operator catalog than the explicitly inventoried portable operators."
         }
       ],
@@ -1590,9 +1590,9 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
           "source": "docs/source/reference/public_interfaces.md",
-          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate keeps extended Python model families behind the explicit library/plugin boundary."
         }
       ],
@@ -1645,9 +1645,9 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
           "source": "docs/source/reference/public_interfaces.md",
-          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate keeps extended Python operator families behind the explicit library/plugin boundary."
         }
       ],
@@ -1700,9 +1700,9 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
           "source": "docs/source/reference/public_interfaces.md",
-          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate keeps transfer workflows behind the explicit library/plugin boundary."
         }
       ],
@@ -1755,9 +1755,9 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "6c71664a3fa912678cc48751f3e75c37943523b2",
+          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
           "source": "docs/source/reference/public_interfaces.md",
-          "source_sha256": "sha256:b34614941a53d8a06cd468203982ce07b147cb1b94e2c58dbb9e6e60e25aa481",
+          "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate does not qualify finetune for V1 and the strict profile refuses it."
         }
       ],
