@@ -183,7 +183,7 @@ locks:
   LOCK-DOCS: pending
 current_candidate_evidence:
   observed_at: 2026-09-03
-  authority: remote_component_candidate_branches_plus_local_governance_snapshot
+  authority: remote_candidate_branches_with_governance_consumer_receipts
   promotion_status: no_go
   publication_status: no_go
   release_gate_status: no_go
