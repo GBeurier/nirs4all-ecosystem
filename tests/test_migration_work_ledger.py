@@ -103,7 +103,16 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert items["DOC-WEB-001"]["state"] == "complete_local_staging_publication_hold"
     assert items["DOC-WEB-001B"]["state"] == "complete_local_staging_publication_hold"
     evidence = ledger["current_candidate_evidence"]
-    assert evidence["methods"]["commit"] == "e0bee1ce160cd805d3060185fd151c09230c3381"
+    assert evidence["methods"]["commit"] == "49aa40e90afef676f25809db1bd2a523e9582a49"
+    assert evidence["methods"]["version"] == "1.0.16"
+    assert set(evidence["methods"]["methods_release_workflows"]) == {
+        "source",
+        "matlab_octave",
+        "npm",
+        "python_pls4all",
+        "r",
+        "python_nirs4all_methods",
+    }
     assert evidence["dag_ml_data"]["commit"] == "7d9b9fed04c135ed4c2bba472c782aca7ef85807"
     assert evidence["dag_ml"]["commit"] == "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381"
     assert evidence["python_strict_profile"]["commit"] == "3567bd4abcaa64443a1946748a579f0803e91889"
@@ -156,7 +165,7 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["org"]["commit"] == "c211e1accd828a674a18be5125306e6678431825"
     assert evidence["cockpit"]["commit"] == "20d0bbab40470c06e87727d91129e4ff266794b3"
     assert evidence["remote_candidate_staging"]["status"] == (
-        "exact_candidate_heads_recorded_repository_providers_r1_r2_r3_published_r4_and_studio_unpublished"
+            "exact_candidate_heads_recorded_methods_repository_providers_r1_r2_r3_published_r4_and_studio_unpublished"
     )
     assert evidence["remote_candidate_staging"]["tag_or_registry_publication"] is True
     assert evidence["remote_candidate_staging"]["all_product_milestones_published"] is False

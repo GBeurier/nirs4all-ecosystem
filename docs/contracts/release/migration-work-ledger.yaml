@@ -203,11 +203,11 @@ current_candidate_evidence:
       candidate remains strict NO-GO until those gates close.
   remote_candidate_staging:
     branch: release/native-v1-candidate
-    status: exact_candidate_heads_recorded_repository_providers_r1_r2_r3_published_r4_and_studio_unpublished
+    status: exact_candidate_heads_recorded_methods_repository_providers_r1_r2_r3_published_r4_and_studio_unpublished
     tag_or_registry_publication: true
     all_product_milestones_published: false
     heads:
-      methods: e0bee1ce160cd805d3060185fd151c09230c3381
+      methods: 49aa40e90afef676f25809db1bd2a523e9582a49
       formats: 3e5a05674dfab4bbcebf23fe9d615d231ca4d551
       dag_ml_data: 7d9b9fed04c135ed4c2bba472c782aca7ef85807
       io: df7f2198862c71a24aeeba08ba09ee118524b55d
@@ -324,19 +324,33 @@ current_candidate_evidence:
     release_limit: >-
       The prior component cascade is published through Formats 0.2.9, IO
       0.1.14, Core 0.3.28 and Datasets 0.3.10; Python R1/R2/R3, Repository
-      0.1.12, Providers 0.2.11 and Web 0.1.10 are published. Studio and R4
+      0.1.12, Providers 0.2.11, Methods 1.0.16 and Web 0.1.10 are published. Studio and R4
       remain unpublished, and the existing publications do not close
       artifact receipts, external gates, signatures, soak or the final lock.
   methods:
-    evidence_status: n4m_0_1_4_published_r4_docs_qualified_local_external_release_hold
-    commit: e0bee1ce160cd805d3060185fd151c09230c3381
-    tree: 7e4658658e37f77be18ef6d3d6aff150886efb5b
+    evidence_status: methods_1_0_16_published_six_release_workflows_passed
+    commit: 49aa40e90afef676f25809db1bd2a523e9582a49
+    tree: 03de9a3f0b116b4d4c7446acc6cd1e4bf8814a83
     qualified_code_parent: 48ad1e5a50844f68c2b99e93b02ad6a3b491c07b
-    version: 1.0.15
+    version: 1.0.16
     c_abi_version: 2.5.0
     rust_binding_version: 0.1.4
     rust_binding_release_tag: n4m-v0.1.4
     rust_binding_registry_published: true
+    methods_release_tag: v1.0.16
+    methods_release_tag_object: a760bb581df66970c0f5b672417906850c6e37a7
+    methods_release_url: https://github.com/GBeurier/nirs4all-methods/releases/tag/v1.0.16
+    methods_release_workflows:
+      source: 33879862017
+      matlab_octave: 33879862092
+      npm: 33879862062
+      python_pls4all: 33879862040
+      r: 33879862002
+      python_nirs4all_methods: 33879862059
+    methods_registries:
+      npm: https://www.npmjs.com/package/@nirs4all/methods/v/1.0.16
+      pypi_pls4all: https://pypi.org/project/pls4all/1.0.16/
+      pypi_nirs4all_methods: https://pypi.org/project/nirs4all-methods/1.0.16/
     methods_documentation_ancestor: d9c4291783381e07eae45cb2aecdad176b939731
     r4_documentation_commit: bf2641641c8b4235201203bd338486b96964b59f
     r4_documentation_tree: e7678587d78995b15855b1738eaf0df3b71dfa4b
@@ -349,15 +363,12 @@ current_candidate_evidence:
       parent 48ad1e5 and exposes content-bound N4MM V2 SNV to Savitzky-Golay to PLS,
       typed inspection through ABI 2.5, and RAII pipeline configuration. The
       canonical semantic profile is SNV ddof=0 plus Savitzky-Golay interp with
-      defaults window 11 and polynomial degree 3. Catalogue metadata and CFF
-      agree on 1.0.15 / 2026-09-03; targeted C/C++, Rust binding, inspection,
-      fingerprint, semantic, bibliography and refusal gates are green.
-      Descendant e0bee1c adds the guarded n4m 0.1.4 release workflow: manual
-      dispatch is dry-run only, only the exact component tag may publish, and
-      the locked package has SHA-256
-      ef0abf168fd77728174a7293f7ed03cf41fe6c57fb52d58b137b62b7331b5efe.
+      defaults window 11 and polynomial degree 3. The final 1.0.16 fix-forward
+      passed the source, MATLAB/Octave, npm, pls4all Python, R and
+      nirs4all-methods wheel workflows on exact commit 49aa40e. GitHub, npm
+      and PyPI publication receipts are recorded in the candidate manifest.
     release_limit: >-
-      n4m 0.1.4 is published from the recorded source and checksum. The
+      Methods 1.0.16 and n4m 0.1.4 are published from the recorded sources. The
       canonical release lock remains unchanged on its prior baseline;
       LOCK-METHODS and LOCK-RELEASE remain unclosed until promised platform
       evidence, signed artifacts and final lock reconstruction pass.

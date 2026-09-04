@@ -1061,7 +1061,7 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "b2210ec717c0de0055fc8b9424b115a933efdb4e"
     )
     assert {artifact["id"]: artifact["version"] for artifact in components["methods"]["artifacts"]} == {
-        "methods_project": "1.0.15",
+        "methods_project": "1.0.16",
         "n4m_c_abi": "2.5.0",
         "n4m_rust_binding": "0.1.4",
     }

@@ -11,7 +11,7 @@
       "nirs4all-repository@dbd9dae1205e1905692decd9fc7243f4fbda3068",
       "nirs4all@ef39f1a53dd120b9ce28907dc372d755dd621430:docs-rebased-on-final-r3",
       "nirs4all@a5e5f93b8b1336bc58c0a23814066e5e14678d12:r4-stable-candidate",
-      "nirs4all-methods@bf2641641c8b4235201203bd338486b96964b59f:docs-qualification",
+      "nirs4all-methods@49aa40e90afef676f25809db1bd2a523e9582a49:v1.0.16-published",
       "nirs4all-tools@f4fc4a6ee9bb89f9079241e19c91ddacced3a31b:support-qualification",
       "nirs4all-org@c211e1accd828a674a18be5125306e6678431825:docs-support-projection",
       "nirs4all-cockpit@20d0bbab40470c06e87727d91129e4ff266794b3:docs-support-projection"
@@ -26,7 +26,7 @@
     "manifest_path": "docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json",
     "tool": "scripts/n4a_release_lock.py"
   },
-  "manifest_digest": "sha256:594cb422c416077c74870f962b68eaa22021327a2d076fd9629331e568dd7b3a",
+  "manifest_digest": "sha256:1f85b607af08e2080cf489f4cc42749a91214c6eb3714a327bda75f192ea1ecd",
   "members": {
     "core": {
       "artifacts": [
@@ -263,12 +263,12 @@
       "artifacts": [
         {
           "id": "methods_project",
-          "state": "candidate",
-          "version": "1.0.15"
+          "state": "published",
+          "version": "1.0.16"
         },
         {
           "id": "n4m_c_abi",
-          "state": "candidate",
+          "state": "published",
           "version": "2.5.0"
         },
         {
@@ -277,11 +277,11 @@
           "version": "0.1.4"
         }
       ],
-      "qualification_head": {
-        "head": "e0bee1ce160cd805d3060185fd151c09230c3381",
-        "ref": "refs/tags/n4m-v0.1.4^{}",
+      "publication_head": {
+        "head": "49aa40e90afef676f25809db1bd2a523e9582a49",
+        "ref": "refs/tags/v1.0.16^{}",
         "repository": "GBeurier/nirs4all-methods",
-        "tree": "7e4658658e37f77be18ef6d3d6aff150886efb5b"
+        "tree": "03de9a3f0b116b4d4c7446acc6cd1e4bf8814a83"
       },
       "receipts": [
         {
@@ -293,20 +293,244 @@
           "ref": "refs/heads/codex/r4-doc002-methods",
           "state": "passed",
           "tree": "e7678587d78995b15855b1738eaf0df3b71dfa4b"
+        },
+        {
+          "assets": [
+            {
+              "name": "nirs4all-methods-1.0.16-src.tar.gz",
+              "sha256": "f8bb9259bdfcaac8b071d93ec6b1abebf75e5015d7f6d25fa605c0da24585d08",
+              "size": 22282689
+            },
+            {
+              "name": "nirs4all-methods-1.0.16-src.zip",
+              "sha256": "4d2ac5a68bd9a9fd6d4efbaa22fef152c38223f19cbc9b8050bb8c8ac7da1b51",
+              "size": 24331570
+            },
+            {
+              "name": "nirs4all-methods-1.0.16.cdx.json",
+              "sha256": "8a580c8a78fbdcac70a01bc39b4679750e8e626d2f5de93220d081adfaf74bed",
+              "size": 105658
+            }
+          ],
+          "head": "49aa40e90afef676f25809db1bd2a523e9582a49",
+          "id": "release_source_33879862017",
+          "published": true,
+          "release_id": 382763519,
+          "release_url": "https://github.com/GBeurier/nirs4all-methods/releases/tag/v1.0.16",
+          "run": 33879862017,
+          "scope": "github_release_source_and_sbom",
+          "state": "passed",
+          "tag": "v1.0.16",
+          "tag_object": "a760bb581df66970c0f5b672417906850c6e37a7"
+        },
+        {
+          "asset": {
+            "name": "nirs4all-methods-matlab-octave-1.0.16.zip",
+            "sha256": "ca60c80b574663fc104dfac56bb0a680e6aac4111c037fbdc6a950b17e3f7934",
+            "size": 91143
+          },
+          "id": "release_matlab_33879862092",
+          "published": true,
+          "run": 33879862092,
+          "scope": "github_release_matlab_octave",
+          "state": "passed"
+        },
+        {
+          "id": "release_npm_33879862062",
+          "integrity": "sha512-l15Vuo4N9ebDo4QbCvAOJZpXg/bMJw+82YbPjcqmQUEPAWu7/ELLe5LpFjFHVh0eD5IkolA0+jyrjKUKXB/+ig==",
+          "package": "@nirs4all/methods",
+          "published": true,
+          "registry_url": "https://www.npmjs.com/package/@nirs4all/methods/v/1.0.16",
+          "run": 33879862062,
+          "scope": "npm_registry",
+          "shasum": "02cd67bb28146a4a429e7a43099141b838091ce2",
+          "state": "passed",
+          "unpacked_size": 2318316,
+          "version": "1.0.16"
+        },
+        {
+          "files": [
+            {
+              "platform": "macos_universal2",
+              "sha256": "bb048be72876afa000c7c6bcb7776682a6749b0f98d318a24223ad5a89aca7e8",
+              "size": 7952975
+            },
+            {
+              "platform": "manylinux_aarch64",
+              "sha256": "89a0518e1cb3757fa3676290e3d2157edad15485ea20a240a92bcead9933f771",
+              "size": 4078102
+            },
+            {
+              "platform": "manylinux_x86_64",
+              "sha256": "bd6069cd1a8b8609afccd46955b2bf24377db102adcaf4a65e7e915e9e8a2abc",
+              "size": 5206824
+            },
+            {
+              "platform": "musllinux_aarch64",
+              "sha256": "7b671b361b21d20632165dc3915b0dfe9f85e49999033f9e122664fa51800648",
+              "size": 4572730
+            },
+            {
+              "platform": "musllinux_x86_64",
+              "sha256": "d92fef430c6e488b9789a370e1c701a047744929b7aff7df25e16a0ae7244c24",
+              "size": 5164552
+            },
+            {
+              "platform": "windows_amd64",
+              "sha256": "80a3fb685b497056ef5cebc0df406a412d9f2a99ba47e94f08f9923abc9e5311",
+              "size": 1434019
+            },
+            {
+              "platform": "sdist",
+              "sha256": "91447604d2aacf53f17d2a28ae2a90cddc2cd82c821f64fd483bf60fa0fbc79a",
+              "size": 147712
+            }
+          ],
+          "id": "release_python_33879862040",
+          "published": true,
+          "registry_url": "https://pypi.org/project/pls4all/1.0.16/",
+          "run": 33879862040,
+          "scope": "pypi_pls4all",
+          "state": "passed"
+        },
+        {
+          "assets": [
+            {
+              "name": "n4m_1.0.16.tar.gz",
+              "sha256": "29d8b7dc63d47fb8c9617a2b39d44bb43d71b68811ad4b14fc5d61bc98348c2d",
+              "size": 859946
+            },
+            {
+              "name": "pls4all_1.0.16.tar.gz",
+              "sha256": "e90005fdc656119de7b9c7404d2d3d2e6286a385a16494a481463bffd3a27ac6",
+              "size": 856136
+            }
+          ],
+          "id": "release_r_33879862002",
+          "published": true,
+          "run": 33879862002,
+          "scope": "github_release_r_packages",
+          "state": "passed"
+        },
+        {
+          "files": [
+            {
+              "platform": "macos_universal2",
+              "python": "cp310",
+              "sha256": "2dca2e5b3e149dbb0cb3b1a4c397cb1dbc113040a19e84f72eaecfcb2edc853b",
+              "size": 8098778
+            },
+            {
+              "platform": "manylinux_aarch64",
+              "python": "cp310",
+              "sha256": "298cb7924e2ef6046ed35cc9fb5d6265dc855665d8b90beccd2431b2cd0c5837",
+              "size": 4223943
+            },
+            {
+              "platform": "manylinux_x86_64",
+              "python": "cp310",
+              "sha256": "d191623139a6713b66a07200859c97751cc2189783ec0fecc1080109bf130f9a",
+              "size": 5352691
+            },
+            {
+              "platform": "windows_amd64",
+              "python": "cp310",
+              "sha256": "4f59c9ea45824ecb4817d597b5dc8e142ef7a52cfebfe0322b568233c683c764",
+              "size": 1580593
+            },
+            {
+              "platform": "macos_universal2",
+              "python": "cp311",
+              "sha256": "9309ddae029e215b6a3d4909b17deb8f453798cd9d2a7b03335e4e036c0a81e4",
+              "size": 8098778
+            },
+            {
+              "platform": "manylinux_aarch64",
+              "python": "cp311",
+              "sha256": "8e94d9c3724aa84a3d67115acc84225c5de58e23ae11202ec19b69a18ae9344c",
+              "size": 4223943
+            },
+            {
+              "platform": "manylinux_x86_64",
+              "python": "cp311",
+              "sha256": "0a0a9076a7f7c299bb29b65353423b11ad807bf9632be1651a3d5eca69de3af2",
+              "size": 5352692
+            },
+            {
+              "platform": "windows_amd64",
+              "python": "cp311",
+              "sha256": "990223816064e25759923f6ae3b21a7ca0c22145ad27d41db1d00364ab4ac782",
+              "size": 1580591
+            },
+            {
+              "platform": "macos_universal2",
+              "python": "cp312",
+              "sha256": "8b622ff61ea0f3d1dbc7ee0aa2055ac95678f193ce1208b02878fdf426f09e16",
+              "size": 8098779
+            },
+            {
+              "platform": "manylinux_aarch64",
+              "python": "cp312",
+              "sha256": "3ae4eec955bdb12dc341a00e8cc8731d9ed62024de6d55336fa1aa3eaa88357b",
+              "size": 4223942
+            },
+            {
+              "platform": "manylinux_x86_64",
+              "python": "cp312",
+              "sha256": "603eb03e95c8818b5c6e35d3a9cb9aa39ea070f409b510c660c31e1985236660",
+              "size": 5352691
+            },
+            {
+              "platform": "windows_amd64",
+              "python": "cp312",
+              "sha256": "f32e388fe28cf3a82c978a89d8b8629b98148b37fd468a6bec039c3d4450f319",
+              "size": 1580592
+            },
+            {
+              "platform": "macos_universal2",
+              "python": "cp313",
+              "sha256": "72d5910ac920b4f81c2e005cb777cb83ea5939c8f09bc0e83e0b344595876408",
+              "size": 8098778
+            },
+            {
+              "platform": "manylinux_aarch64",
+              "python": "cp313",
+              "sha256": "7b9ea4188a2177666b785690782ab58328a38a3d6f4fc3fe600c7d1e6d05df21",
+              "size": 4223943
+            },
+            {
+              "platform": "manylinux_x86_64",
+              "python": "cp313",
+              "sha256": "2ccbf3777b1dab5f3e88d74e564c0551f23dfa0a1a44805436845dfed134336b",
+              "size": 5352690
+            },
+            {
+              "platform": "windows_amd64",
+              "python": "cp313",
+              "sha256": "aeb8d50778ab3a145f80541316624413051a66c2f62a998346e91073f3252250",
+              "size": 1580593
+            }
+          ],
+          "id": "release_wheels_33879862059",
+          "published": true,
+          "registry_url": "https://pypi.org/project/nirs4all-methods/1.0.16/",
+          "run": 33879862059,
+          "scope": "pypi_nirs4all_methods",
+          "state": "passed"
         }
       ],
       "release_role": "native_runtime",
-      "release_state": "candidate",
+      "release_state": "published",
       "repo_path": "nirs4all-methods",
       "repo_url": "GBeurier/nirs4all-methods",
       "role": "Portable methods kernels, model replay and C ABI",
       "state": {
         "branch": null,
-        "commit": "e0bee1ce160cd805d3060185fd151c09230c3381",
+        "commit": "49aa40e90afef676f25809db1bd2a523e9582a49",
         "dirty": false,
-        "exact_tag": "n4m-v0.1.4",
-        "remote_ref": "refs/tags/n4m-v0.1.4^{}",
-        "tree": "7e4658658e37f77be18ef6d3d6aff150886efb5b"
+        "exact_tag": "v1.0.16",
+        "remote_ref": "refs/tags/v1.0.16^{}",
+        "tree": "03de9a3f0b116b4d4c7446acc6cd1e4bf8814a83"
       }
     },
     "providers": {
@@ -1088,11 +1312,11 @@
       "repository": "GBeurier/nirs4all-io",
       "tree": "bd133e35893c4405b59f6551d5a91d6722904219"
     },
-    "component:methods:qualification_head": {
-      "head": "e0bee1ce160cd805d3060185fd151c09230c3381",
-      "ref": "refs/tags/n4m-v0.1.4^{}",
+    "component:methods:publication_head": {
+      "head": "49aa40e90afef676f25809db1bd2a523e9582a49",
+      "ref": "refs/tags/v1.0.16^{}",
       "repository": "GBeurier/nirs4all-methods",
-      "tree": "7e4658658e37f77be18ef6d3d6aff150886efb5b"
+      "tree": "03de9a3f0b116b4d4c7446acc6cd1e4bf8814a83"
     },
     "component:providers:publication_head": {
       "head": "b2210ec717c0de0055fc8b9424b115a933efdb4e",
