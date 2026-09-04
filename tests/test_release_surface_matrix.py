@@ -213,7 +213,7 @@ def test_public_surface_matrix_accounts_for_web_providers_and_sites() -> None:
     assert repository["repo_path"] == "nirs4all-repository"
     assert repository["lock_relation"] == "outside_aggregation_lock"
     assert repository["required_for_nirs4all_v1"] is True
-    assert repository["qualification_evidence"]["status"] == "passed_published"
+    assert repository["qualification_evidence"]["status"] == "qualified_candidate_pending_release"
     assert repository["qualification_evidence"]["contract_sha256"].startswith("sha256:")
 
     cockpit = by_id["nirs4all.cockpit.product"]

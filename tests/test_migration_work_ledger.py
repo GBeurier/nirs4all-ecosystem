@@ -80,7 +80,7 @@ def test_ledger_covers_every_reviewed_phase_0_to_r4_roadmap_lot() -> None:
         for work_item_id in CAP_SCOPED_LOCAL_CLOSURES
     )
     assert items["PERF-001"]["state"] == "complete_local_measurement_release_hold"
-    assert items["DOC-002"]["state"] == "prepared_local_docs_python_rebase_and_publication_hold"
+    assert items["DOC-002"]["state"] == "complete_local_docs_publication_hold"
     assert all(
         items[work_item_id]["state"] == "advanced_local_evidence_not_closed"
         for work_item_id in {"SOAK-001", "PERF-002"}
@@ -106,8 +106,9 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["methods"]["commit"] == "e0bee1ce160cd805d3060185fd151c09230c3381"
     assert evidence["dag_ml_data"]["commit"] == "7d9b9fed04c135ed4c2bba472c782aca7ef85807"
     assert evidence["dag_ml"]["commit"] == "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381"
-    assert evidence["python_strict_profile"]["commit"] == "53a0acb964bff86dc67002763d8e9b850336731f"
-    assert evidence["python_strict_profile"]["r3_direct_parent"] == "1de9dcb50fcdcc6273113f54a7c7235528c31ed8"
+    assert evidence["python_strict_profile"]["commit"] == "6429974a88cccc3fbf8dbe8aeb060435381f2bd4"
+    assert evidence["python_strict_profile"]["r3_direct_parent"] == "ab36667b83a329c44009c7567d8aaf1c5dedb45a"
+    assert evidence["python_strict_profile"]["r4_documentation_commit"] == "694ed336d856ca296bd2205e1be6a55a6251d950"
     assert evidence["core"]["commit"] == "550cb8c80708e88ac7ebbc880acb4b82d8531632"
     assert evidence["core"]["version"] == "0.3.28"
     assert evidence["io"]["commit"] == "df7f2198862c71a24aeeba08ba09ee118524b55d"
@@ -121,7 +122,8 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["tools"]["support_matrix_sha256"] == "85031fd02b89c16f7adc90e1faad4843cd654f0279c48332d58af3ad6b37a65b"
     assert evidence["ui"]["commit"] == "406d94d70004f27459ef12347af1e6f0079ab6ac"
     assert evidence["ui"]["tarball_sha256"] == "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67"
-    assert evidence["studio"]["candidate_commit"] == "86d5e5033d62240815e532038b6e769b14b25c2b"
+    assert evidence["studio"]["candidate_commit"] == "181f0e95a948f0e884ba48a17b7574a0bacdf7fe"
+    assert evidence["studio"]["final_candidate_ci_status"] == "pending"
     assert evidence["studio"]["release_matrix_run"] == 33783518197
     assert evidence["studio"]["release_matrix_status"] == "completed_success_unsigned"
     assert evidence["studio"]["linux_lifecycle_commit"] == "28c563082561e50b56be72fcde63f3879045088b"
@@ -132,10 +134,11 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["web"]["published"] is True
     assert evidence["web"]["pages_published"] is True
     assert evidence["benchmarks"]["commit"] == "17f8196b26457fbd300a46d6520c3d1845d0de05"
-    assert evidence["providers"]["qualification_commit"] == "15722bd1123c887322f3bc3e0d54b145cffaf948"
+    assert evidence["providers"]["qualification_commit"] == "4a84046890db04a26c43a01ca7b01f46417449ca"
     assert evidence["providers"]["publish_job_status"] == "skipped"
-    assert evidence["repository"]["qualification_commit"] == "c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac"
+    assert evidence["repository"]["qualification_commit"] == "9ea1d9ff9f72b259c349d89c4c010e3e5dad3dd0"
     assert evidence["repository"]["public_surface_id"] == "nirs4all.repository.catalog"
+    assert evidence["repository"]["public_surface_contract_sha256"] == "329cdbd7c3a413e2af25f69cdd6c19f09034d25a5eea051573615adc52082442"
     assert evidence["historical_robustness_scaffolds"]["evidence_status"] == (
         "superseded_by_functional_non_crash_scope_not_a_release_gate"
     )

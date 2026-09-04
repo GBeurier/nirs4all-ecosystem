@@ -382,7 +382,14 @@
       "required_for_nirs4all_v1": true,
       "release_batch_role": "optional_provider_contracts",
       "proof_boundary": "Published Python provider client surface; the canonical release contract remains the neutral schemas in docs/contracts/providers and must stay consumable by R/WASM/native clients without a Python dependency.",
-      "local_gate_policy": "providers_local_sibling_release plus canonical schema byte-identity and fixture validation in the providers repo."
+      "local_gate_policy": "providers_local_sibling_release plus canonical schema byte-identity and fixture validation in the providers repo.",
+      "qualification_evidence": {
+        "ref": "refs/heads/release/providers-0.2.11-repository-0.1.12-candidate",
+        "head": "4a84046890db04a26c43a01ca7b01f46417449ca",
+        "tree": "922fd2d5453a5f6416ad67a9ea6b8be2248bdbc5",
+        "repository_head": "9ea1d9ff9f72b259c349d89c4c010e3e5dad3dd0",
+        "status": "qualified_candidate_pending_release"
+      }
     },
     {
       "id": "nirs4all.repository.catalog",
@@ -398,24 +405,29 @@
       "proof_boundary": "Required R4-W3/WEBREL-004 package and static catalogue projection. Its contract freezes Repository exports, provider entry points and recipe loading against exact R1/R2/R3 Python heads without claiming scientific execution or publication.",
       "local_gate_policy": "Repository public-v1 surface checker on exact R1/R2/R3 heads, package gate and build-only artifact receipt.",
       "qualification_evidence": {
+        "ref": "refs/heads/release/repository-v1-compat-0.1.12-candidate",
+        "head": "9ea1d9ff9f72b259c349d89c4c010e3e5dad3dd0",
+        "tree": "74afdebf0f6d58020875223a1292f6f849e8f2a0",
+        "contract_path": "contracts/public-v1-surface.n4a.json",
+        "contract_sha256": "sha256:329cdbd7c3a413e2af25f69cdd6c19f09034d25a5eea051573615adc52082442",
+        "checker_path": "scripts/check_public_v1_surface.py",
+        "checker_sha256": "sha256:ac8b886c4cecf5c515c7600bc57c79c5ed28bbbf3c6782014d5ce48628095969",
+        "source_heads": {
+          "r1": "61a66d1bd0157dd9422facc4b32fca33989d4035",
+          "r2": "ab36667b83a329c44009c7567d8aaf1c5dedb45a",
+          "r3": "6429974a88cccc3fbf8dbe8aeb060435381f2bd4"
+        },
+        "status": "qualified_candidate_pending_release"
+      },
+      "publication_evidence": {
+        "version": "0.1.11",
         "ref": "refs/tags/v0.1.11^{}",
         "head": "c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac",
         "tree": "1bae2a889fdee52d8c54e19216641e7a99612fd6",
-        "contract_path": "contracts/public-v1-surface.n4a.json",
-        "contract_sha256": "sha256:613d7008c38023d2d5e94df9bc4c9936e2a321c0d9aa24bcbf7a22cb6ac5b65f",
-        "checker_path": "scripts/check_public_v1_surface.py",
-        "checker_sha256": "sha256:ac8b886c4cecf5c515c7600bc57c79c5ed28bbbf3c6782014d5ce48628095969",
-        "build_run": 33852742761,
-        "artifact_id": 9928969311,
-        "artifact_archive_sha256": "sha256:35670b439df063bf4fdf8ce66513d2630450ced025d6f7a2e04d5fc130e321ed",
-        "wheel_sha256": "sha256:5743d99c70642ecffe9c2c4f92186a706abdb03b5b7cd2d62775ee92f8f389bb",
-        "sdist_sha256": "sha256:5f911fefbc3cf7abb7651377e703113ac0c698dfefcd5c3bb9bb7cd31410ae53",
         "publication_run": 33854293363,
-        "publication_artifact_id": 9929546238,
-        "publication_artifact_archive_sha256": "sha256:67977fcc6a64f057c1a8c81870b61f02e44adfbf61e0862de320bb9eda2bd17c",
         "release_url": "https://github.com/GBeurier/nirs4all-repository/releases/tag/v0.1.11",
         "pypi_url": "https://pypi.org/project/nirs4all-repository/0.1.11/",
-        "status": "passed_published"
+        "status": "passed_published_historical"
       }
     },
     {
