@@ -69,8 +69,8 @@
       {"key": "studio", "repo_path": "nirs4all-studio", "commit": "6d249ce69d5ddf2f0c4a831f33e70e9dda905471", "based_on": ["181f0e95a948f0e884ba48a17b7574a0bacdf7fe"], "qualification": "Rust control-plane candidate pinned to final Python R3; final CI and external product holds remain"},
       {"key": "web", "repo_path": "nirs4all-web", "commit": "f1ae6c38e6c82bd7bf525c8c4a7adc8deb456eea", "based_on": ["20867a71c45731f757267a98e7928710e7c3693d"], "qualification": "client-only WASM candidate plus documentation; unpublished"},
       {"key": "tools", "repo_path": "nirs4all-tools", "commit": "2215c9b9dcf498067ce2cad5f8bf42bf06a39285", "based_on": ["e3a332633f87b4652a06f8993e63c386a3568698"], "qualification": "explicit workspace conversion CLI candidate; unpublished"},
-      {"key": "org", "repo_path": "nirs4all-org", "commit": "c604c172d744e789ce5dbe6b0bcbf3c887e9b41e", "based_on": ["71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"], "qualification": "DOC/SUP disclosure projection qualified locally; unpublished and no release promotion"},
-      {"key": "cockpit", "repo_path": "nirs4all-cockpit", "commit": "ae77551ac796d6b38f9494c7c54aa2d8548ad814", "based_on": ["b612436c75adfc083506ca423a1013a0f3d663f0"], "qualification": "DOC/SUP staging projection qualified locally; canonical lock unchanged and global status NO-GO"}
+      {"key": "org", "repo_path": "nirs4all-org", "commit": "10b2eb8a69b37eecc46947b96dff19255f91037c", "based_on": ["71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"], "qualification": "DOC/SUP disclosure projection qualified locally; unpublished and no release promotion"},
+      {"key": "cockpit", "repo_path": "nirs4all-cockpit", "commit": "61715debd1937dc99efaba3dd74fe380f5e1f14c", "based_on": ["b612436c75adfc083506ca423a1013a0f3d663f0"], "qualification": "DOC/SUP staging projection qualified locally; canonical lock unchanged and global status NO-GO"}
     ]
   },
   "v1_capability_inventory": {

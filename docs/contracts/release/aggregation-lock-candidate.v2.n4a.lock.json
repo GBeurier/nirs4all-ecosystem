@@ -13,8 +13,8 @@
       "nirs4all@a5e5f93b8b1336bc58c0a23814066e5e14678d12:r4-stable-candidate",
       "nirs4all-methods@bf2641641c8b4235201203bd338486b96964b59f:docs-qualification",
       "nirs4all-tools@f4fc4a6ee9bb89f9079241e19c91ddacced3a31b:support-qualification",
-      "nirs4all-org@c604c172d744e789ce5dbe6b0bcbf3c887e9b41e:docs-support-projection",
-      "nirs4all-cockpit@ae77551ac796d6b38f9494c7c54aa2d8548ad814:docs-support-projection"
+      "nirs4all-org@10b2eb8a69b37eecc46947b96dff19255f91037c:docs-support-projection",
+      "nirs4all-cockpit@61715debd1937dc99efaba3dd74fe380f5e1f14c:docs-support-projection"
     ],
     "ledger_commit": "091b8a0f3069e7a90167f78c81bb9d414c50ade5",
     "ledger_path": "docs/contracts/release/migration-work-ledger.yaml",
@@ -26,7 +26,7 @@
     "manifest_path": "docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json",
     "tool": "scripts/n4a_release_lock.py"
   },
-  "manifest_digest": "sha256:7372517c9f07abc8f6fd56db7aac62c2b8c3edcfdf2011d84384e5db4a247edd",
+  "manifest_digest": "sha256:55e1e4a380c7eafb6df067954820cada33eb28607b76a3dfd1d96c2c5b80e312",
   "members": {
     "core": {
       "artifacts": [
@@ -817,10 +817,10 @@
       "artifact_receipts_required": false,
       "key": "cockpit",
       "qualification_head": {
-        "head": "ae77551ac796d6b38f9494c7c54aa2d8548ad814",
+        "head": "61715debd1937dc99efaba3dd74fe380f5e1f14c",
         "ref": "refs/heads/codex/r4-final-site-sync",
         "repository": "GBeurier/nirs4all-cockpit",
-        "tree": "aaaeff563b15d6149da8ccb2acefe7494e734e2a"
+        "tree": "75e53204dd709a640d77f71136b0ded70a857739"
       },
       "repo_path": "nirs4all-cockpit",
       "required_for_promotion": true,
@@ -832,10 +832,10 @@
       "artifact_receipts_required": false,
       "key": "org",
       "qualification_head": {
-        "head": "c604c172d744e789ce5dbe6b0bcbf3c887e9b41e",
+        "head": "10b2eb8a69b37eecc46947b96dff19255f91037c",
         "ref": "refs/heads/codex/r4-final-site-sync",
         "repository": "GBeurier/nirs4all-org",
-        "tree": "afe1ad6ab64514c060aa5abfb8d9df4025eaf53b"
+        "tree": "b7ef2ce97846f7e0174be58affdc96a4e50b2251"
       },
       "repo_path": "nirs4all-org",
       "required_for_promotion": true,
@@ -1124,16 +1124,16 @@
       "tree": "29ae8f56656ce59cbcc2923ad6b30680d1b50a21"
     },
     "projection:cockpit:qualification_head": {
-      "head": "ae77551ac796d6b38f9494c7c54aa2d8548ad814",
+      "head": "61715debd1937dc99efaba3dd74fe380f5e1f14c",
       "ref": "refs/heads/codex/r4-final-site-sync",
       "repository": "GBeurier/nirs4all-cockpit",
-      "tree": "aaaeff563b15d6149da8ccb2acefe7494e734e2a"
+      "tree": "75e53204dd709a640d77f71136b0ded70a857739"
     },
     "projection:org:qualification_head": {
-      "head": "c604c172d744e789ce5dbe6b0bcbf3c887e9b41e",
+      "head": "10b2eb8a69b37eecc46947b96dff19255f91037c",
       "ref": "refs/heads/codex/r4-final-site-sync",
       "repository": "GBeurier/nirs4all-org",
-      "tree": "afe1ad6ab64514c060aa5abfb8d9df4025eaf53b"
+      "tree": "b7ef2ce97846f7e0174be58affdc96a4e50b2251"
     },
     "projection:repository:publication_head": {
       "head": "c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac",
