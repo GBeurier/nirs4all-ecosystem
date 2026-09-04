@@ -223,8 +223,8 @@ current_candidate_evidence:
       providers: b2210ec717c0de0055fc8b9424b115a933efdb4e
       repository: dbd9dae1205e1905692decd9fc7243f4fbda3068
       benchmarks: 17f8196b26457fbd300a46d6520c3d1845d0de05
-      org: c211e1accd828a674a18be5125306e6678431825
-      cockpit: 20d0bbab40470c06e87727d91129e4ff266794b3
+      org: f46fc1fbc26849a9fcb1781b9fb668517ec3a4df
+      cockpit: 7f294748c3a2e926ecbfed4f96f50d8ec300313d
   product_release_sequence:
     status: r1_r2_r3_distinct_published_releases_r4_candidate_held
     required_order: r1_0_13_0_then_r2_1_0_0_rc_1_then_r3_1_0_0_rc_2_then_r4_1_0_0
@@ -1189,8 +1189,8 @@ current_candidate_evidence:
     scope: local_code_only_no_global_go
   org:
     evidence_status: r4_docs_support_projection_with_downstream_receipts_qualified_local_publication_hold
-    commit: c211e1accd828a674a18be5125306e6678431825
-    tree: 138f6ba881fa6e980566ee0b0eb2a096aafa7ef2
+    commit: f46fc1fbc26849a9fcb1781b9fb668517ec3a4df
+    tree: e5897ac4b30f877617c5001d711ca7436cbe22b2
     qualification_ref: refs/heads/codex/r4-final-site-sync
     qualification_parent: 71a1db5c7d808a015aa2a1c6f07e6542ca3b8571
     previous_commit: b09f2768f264269d72be351d0c6282b769ec8f85
@@ -1201,8 +1201,8 @@ current_candidate_evidence:
     publication: false
   cockpit:
     evidence_status: r4_docs_support_projection_with_downstream_receipts_qualified_local_publication_hold
-    commit: 20d0bbab40470c06e87727d91129e4ff266794b3
-    tree: 39aae85ab6dc3fcd37c4ed32b03aaf72c4303906
+    commit: 7f294748c3a2e926ecbfed4f96f50d8ec300313d
+    tree: 8337cf7705407f87ec724c33026da27b54bea17a
     qualification_ref: refs/heads/codex/r4-final-site-sync
     qualification_parent: b612436c75adfc083506ca423a1013a0f3d663f0
     previous_commit: 0abde191e91629d4d54d111f93805508de9a6639
