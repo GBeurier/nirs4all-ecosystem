@@ -223,8 +223,8 @@ current_candidate_evidence:
       providers: b2210ec717c0de0055fc8b9424b115a933efdb4e
       repository: dbd9dae1205e1905692decd9fc7243f4fbda3068
       benchmarks: 17f8196b26457fbd300a46d6520c3d1845d0de05
-      org: 28523174bdbceffbb3d5c06e43796fe04073b1f5
-      cockpit: 972155b9af539a444ede5c585e8d9eb799d35fe0
+      org: bf0851e8d3f5f0feb4c4c5bd762fc6223186edf2
+      cockpit: 084e0e6fdaccd21afe812fde8a7e8806065a386f
   product_release_sequence:
     status: r1_r2_r3_distinct_remote_candidates_r4_candidate_held
     required_order: r1_0_13_0_then_r2_1_0_0_rc_1_then_r3_1_0_0_rc_2_then_r4_1_0_0
@@ -1127,26 +1127,26 @@ current_candidate_evidence:
     scope: local_code_only_no_global_go
   org:
     evidence_status: r4_docs_support_projection_qualified_local_publication_hold
-    commit: 28523174bdbceffbb3d5c06e43796fe04073b1f5
-    tree: 3e0436d6b675a3c8dd9e322748cedbb122ccb276
-    qualification_ref: refs/heads/codex/r4-docsup-org
+    commit: bf0851e8d3f5f0feb4c4c5bd762fc6223186edf2
+    tree: f1ca07e84ea365caae2870f9a4e5fa67b0ba0b70
+    qualification_ref: refs/heads/codex/r4-final-site-sync
     qualification_parent: 71a1db5c7d808a015aa2a1c6f07e6542ca3b8571
     previous_commit: b09f2768f264269d72be351d0c6282b769ec8f85
     package_version: 1.0.7
-    snapshot_sha256: 3577c320a33e3bba70a41419caef72dd25cf2405518a156a9f6e79bf4d5a18eb
-    snapshot_source_commit: 8aa4540a6b97b9e6cb8facf2f3a189f0d62f1e1b
+    snapshot_sha256: 9b16426739258d9e36fa8a4924d0fb74b52230954c73fb8bbc039dc1db88ad3e
+    snapshot_source_commit: 2d6ae20855b6eb960df07106b00d9b879238229e
     stale_benchmark_disposition: stale_not_current_evidence
     publication: false
   cockpit:
     evidence_status: r4_docs_support_projection_qualified_local_publication_hold
-    commit: 972155b9af539a444ede5c585e8d9eb799d35fe0
-    tree: 17faafd2aae758c0d0fd82174583896ba1b42d64
-    qualification_ref: refs/heads/codex/r4-docsup-cockpit
+    commit: 084e0e6fdaccd21afe812fde8a7e8806065a386f
+    tree: 87785b4c9b4b25a05d5e1e077293ac62cbc564ea
+    qualification_ref: refs/heads/codex/r4-final-site-sync
     qualification_parent: b612436c75adfc083506ca423a1013a0f3d663f0
     previous_commit: 0abde191e91629d4d54d111f93805508de9a6639
     package_version: 0.1.8
-    snapshot_sha256: da760239d31feefe813b83bf9b8e652a18f69ba9823ad015862d77a0f862e3fb
-    snapshot_source_commit: 8aa4540a6b97b9e6cb8facf2f3a189f0d62f1e1b
+    snapshot_sha256: 9b16426739258d9e36fa8a4924d0fb74b52230954c73fb8bbc039dc1db88ad3e
+    snapshot_source_commit: 2d6ae20855b6eb960df07106b00d9b879238229e
     canonical_lock_updated: false
     global_status: no_go
   capability_governance:
@@ -3881,7 +3881,7 @@ work_items:
     acceptance_tests:
       - Migration, API, ABI, schema, examples and FAQ present no Python or legacy backend installation as the current product path.
     review: >-
-      Methods bf26416 and Org 2852317 are locally qualified documentation
+      Methods bf26416 and Org bf0851e are locally qualified documentation
       descendants, including a green Methods Sphinx build and the matching
       public disclosure projection. Python docs ef39f1a reproduce the already
       qualified documentation lot on exact final R3 base 3567bd4;
@@ -3905,7 +3905,7 @@ work_items:
       Tools f4fc4a6 is the local support qualification descendant of published
       0.0.7 head 88c2bc1 and keeps the machine-readable read/write/migrate
       matrix plus matching SLA/runbook explicit through R3 and R4. Its
-      validator and targeted pytest gate pass. Org 2852317 and Cockpit 972155b
+      validator and targeted pytest gate pass. Org bf0851e and Cockpit 084e0e6
       carry the corresponding disclosure/status projections. These are local,
       unpublished qualification heads; external URLs, signatures or
       attestations and final-lock references remain release holds.
