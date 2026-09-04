@@ -223,8 +223,8 @@ current_candidate_evidence:
       providers: b2210ec717c0de0055fc8b9424b115a933efdb4e
       repository: dbd9dae1205e1905692decd9fc7243f4fbda3068
       benchmarks: 17f8196b26457fbd300a46d6520c3d1845d0de05
-      org: bf0851e8d3f5f0feb4c4c5bd762fc6223186edf2
-      cockpit: 084e0e6fdaccd21afe812fde8a7e8806065a386f
+      org: 237e611f59fc0d93aa0d69fd18860b8d331a21b2
+      cockpit: 10833ec5538508a7d7ebcf7fd0caf3c7df877083
   product_release_sequence:
     status: r1_r2_r3_distinct_remote_candidates_r4_candidate_held
     required_order: r1_0_13_0_then_r2_1_0_0_rc_1_then_r3_1_0_0_rc_2_then_r4_1_0_0
@@ -1127,25 +1127,25 @@ current_candidate_evidence:
     scope: local_code_only_no_global_go
   org:
     evidence_status: r4_docs_support_projection_qualified_local_publication_hold
-    commit: bf0851e8d3f5f0feb4c4c5bd762fc6223186edf2
-    tree: f1ca07e84ea365caae2870f9a4e5fa67b0ba0b70
+    commit: 237e611f59fc0d93aa0d69fd18860b8d331a21b2
+    tree: 521070bce609308acd4f20b726c5c032602b4717
     qualification_ref: refs/heads/codex/r4-final-site-sync
     qualification_parent: 71a1db5c7d808a015aa2a1c6f07e6542ca3b8571
     previous_commit: b09f2768f264269d72be351d0c6282b769ec8f85
     package_version: 1.0.7
-    snapshot_sha256: 9b16426739258d9e36fa8a4924d0fb74b52230954c73fb8bbc039dc1db88ad3e
+    snapshot_sha256: 4d9cec2bc577fe9f9e14a1cc4c11f9d55d1b258555e5418d5c29f526bb3aaea8
     snapshot_source_commit: 2d6ae20855b6eb960df07106b00d9b879238229e
     stale_benchmark_disposition: stale_not_current_evidence
     publication: false
   cockpit:
     evidence_status: r4_docs_support_projection_qualified_local_publication_hold
-    commit: 084e0e6fdaccd21afe812fde8a7e8806065a386f
-    tree: 87785b4c9b4b25a05d5e1e077293ac62cbc564ea
+    commit: 10833ec5538508a7d7ebcf7fd0caf3c7df877083
+    tree: b963040ca37971e734d1c3d8969f90d9ec3b4115
     qualification_ref: refs/heads/codex/r4-final-site-sync
     qualification_parent: b612436c75adfc083506ca423a1013a0f3d663f0
     previous_commit: 0abde191e91629d4d54d111f93805508de9a6639
     package_version: 0.1.8
-    snapshot_sha256: 9b16426739258d9e36fa8a4924d0fb74b52230954c73fb8bbc039dc1db88ad3e
+    snapshot_sha256: 4d9cec2bc577fe9f9e14a1cc4c11f9d55d1b258555e5418d5c29f526bb3aaea8
     snapshot_source_commit: 2d6ae20855b6eb960df07106b00d9b879238229e
     canonical_lock_updated: false
     global_status: no_go

@@ -1027,8 +1027,8 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "df7f2198862c71a24aeeba08ba09ee118524b55d"
     )
     assert components["studio"]["qualification_head"]["head"] == "6cfc807d63b0f4b9a1bf00324c00dd83471f4ba2"
-    assert projections["org"]["qualification_head"]["head"] == "bf0851e8d3f5f0feb4c4c5bd762fc6223186edf2"
-    assert projections["cockpit"]["qualification_head"]["head"] == "084e0e6fdaccd21afe812fde8a7e8806065a386f"
+    assert projections["org"]["qualification_head"]["head"] == "237e611f59fc0d93aa0d69fd18860b8d331a21b2"
+    assert projections["cockpit"]["qualification_head"]["head"] == "10833ec5538508a7d7ebcf7fd0caf3c7df877083"
     assert projections["benchmarks"]["qualification_head"]["head"] == (
         "17f8196b26457fbd300a46d6520c3d1845d0de05"
     )
