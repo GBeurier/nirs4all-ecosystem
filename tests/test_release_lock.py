@@ -1026,7 +1026,7 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
     assert lock["members"]["io"]["state"]["commit"] == (
         "df7f2198862c71a24aeeba08ba09ee118524b55d"
     )
-    assert components["studio"]["qualification_head"]["head"] == "5adad85941f2b64784384b9ebf34295a7f53fd31"
+    assert components["studio"]["qualification_head"]["head"] == "6d249ce69d5ddf2f0c4a831f33e70e9dda905471"
     assert projections["org"]["qualification_head"]["head"] == "c604c172d744e789ce5dbe6b0bcbf3c887e9b41e"
     assert projections["cockpit"]["qualification_head"]["head"] == "ae77551ac796d6b38f9494c7c54aa2d8548ad814"
     assert projections["benchmarks"]["qualification_head"]["head"] == (
@@ -1127,7 +1127,7 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "publication_repair_tree": "49dadfb76d6995c2ab825d8cb937a864ea773fb9",
     }
     assert manifest["product_milestones"]["r3"]["members"]["studio"]["remote"]["head"] == (
-        "5adad85941f2b64784384b9ebf34295a7f53fd31"
+        "6d249ce69d5ddf2f0c4a831f33e70e9dda905471"
     )
     assert {gate["id"]: gate["state"] for gate in manifest["promotion_gates"]} == {
         "artifact_receipts": "pending",

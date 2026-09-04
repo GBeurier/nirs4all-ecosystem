@@ -125,7 +125,7 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["tools"]["support_matrix_sha256"] == "85031fd02b89c16f7adc90e1faad4843cd654f0279c48332d58af3ad6b37a65b"
     assert evidence["ui"]["commit"] == "406d94d70004f27459ef12347af1e6f0079ab6ac"
     assert evidence["ui"]["tarball_sha256"] == "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67"
-    assert evidence["studio"]["candidate_commit"] == "5adad85941f2b64784384b9ebf34295a7f53fd31"
+    assert evidence["studio"]["candidate_commit"] == "6d249ce69d5ddf2f0c4a831f33e70e9dda905471"
     assert evidence["studio"]["candidate_python_r3_commit"] == "3567bd4abcaa64443a1946748a579f0803e91889"
     assert evidence["studio"]["candidate_python_wheel_sha256"] == (
         "5898aa933da2e51ad07438ae5313ade37f1dad2a363411e71e0f0a513c7b4824"

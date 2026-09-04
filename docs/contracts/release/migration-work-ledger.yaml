@@ -218,7 +218,7 @@ current_candidate_evidence:
       tools: 88c2bc1e29603049cdbf1a1080a35845edf2f3c9
       ui: 406d94d70004f27459ef12347af1e6f0079ab6ac
       python: a5e5f93b8b1336bc58c0a23814066e5e14678d12
-      studio: 5adad85941f2b64784384b9ebf34295a7f53fd31
+      studio: 6d249ce69d5ddf2f0c4a831f33e70e9dda905471
       web: 051bf636d7c1729087e5d40061b18bd690cd33b7
       providers: b2210ec717c0de0055fc8b9424b115a933efdb4e
       repository: dbd9dae1205e1905692decd9fc7243f4fbda3068
@@ -268,8 +268,8 @@ current_candidate_evidence:
         default_engine: native_fail_closed
         remote_branch: release/r3-1.0.0-rc.2-candidate
         studio_version: 0.11.0
-        studio_commit: 5adad85941f2b64784384b9ebf34295a7f53fd31
-        studio_tree: f3bd179978b701fe5849702f8bf2977c9b6c227f
+        studio_commit: 6d249ce69d5ddf2f0c4a831f33e70e9dda905471
+        studio_tree: 4815174c3b7b70932f37de6cfce6f27a87b01abf
         studio_control_plane: rust_only_fail_closed_cpython_plugin_host_only
         studio_remote_branch: release/r3-0.11.0-candidate
       r4:
@@ -752,8 +752,8 @@ current_candidate_evidence:
       expanded release lock remain holds.
   studio:
     evidence_status: final_candidate_pinned_to_python_r3_ci_publication_and_external_release_hold
-    candidate_commit: 5adad85941f2b64784384b9ebf34295a7f53fd31
-    candidate_tree: f3bd179978b701fe5849702f8bf2977c9b6c227f
+    candidate_commit: 6d249ce69d5ddf2f0c4a831f33e70e9dda905471
+    candidate_tree: 4815174c3b7b70932f37de6cfce6f27a87b01abf
     candidate_python_r3_commit: 3567bd4abcaa64443a1946748a579f0803e91889
     candidate_python_wheel_sha256: 5898aa933da2e51ad07438ae5313ade37f1dad2a363411e71e0f0a513c7b4824
     candidate_python_installed_manifest_sha256: 0d8bd9ef411c7df1cf30597f5d340d58cd107e71c6cf8baa6e7f53aad6641b88
