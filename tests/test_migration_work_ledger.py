@@ -125,7 +125,7 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["tools"]["support_matrix_sha256"] == "85031fd02b89c16f7adc90e1faad4843cd654f0279c48332d58af3ad6b37a65b"
     assert evidence["ui"]["commit"] == "406d94d70004f27459ef12347af1e6f0079ab6ac"
     assert evidence["ui"]["tarball_sha256"] == "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67"
-    assert evidence["studio"]["candidate_commit"] == "bea06a555f49c886ab0d02f626c347570f1127d3"
+    assert evidence["studio"]["candidate_commit"] == "1c905e4c51a146dcc85e017454557a7eace7209b"
     assert evidence["studio"]["candidate_python_r3_commit"] == "3567bd4abcaa64443a1946748a579f0803e91889"
     assert evidence["studio"]["candidate_python_wheel_sha256"] == (
         "5898aa933da2e51ad07438ae5313ade37f1dad2a363411e71e0f0a513c7b4824"
@@ -153,8 +153,8 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["historical_robustness_scaffolds"]["evidence_status"] == (
         "superseded_by_functional_non_crash_scope_not_a_release_gate"
     )
-    assert evidence["org"]["commit"] == "10b2eb8a69b37eecc46947b96dff19255f91037c"
-    assert evidence["cockpit"]["commit"] == "61715debd1937dc99efaba3dd74fe380f5e1f14c"
+    assert evidence["org"]["commit"] == "61e9a09957b7bef4414d08f133765f7c5f62171b"
+    assert evidence["cockpit"]["commit"] == "63039c22e4fb07697836a83569382a112de0e275"
     assert evidence["remote_candidate_staging"]["status"] == (
         "exact_candidate_heads_recorded_repository_providers_r1_r2_r3_published_r4_and_studio_unpublished"
     )

@@ -1026,9 +1026,9 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
     assert lock["members"]["io"]["state"]["commit"] == (
         "df7f2198862c71a24aeeba08ba09ee118524b55d"
     )
-    assert components["studio"]["qualification_head"]["head"] == "bea06a555f49c886ab0d02f626c347570f1127d3"
-    assert projections["org"]["qualification_head"]["head"] == "10b2eb8a69b37eecc46947b96dff19255f91037c"
-    assert projections["cockpit"]["qualification_head"]["head"] == "61715debd1937dc99efaba3dd74fe380f5e1f14c"
+    assert components["studio"]["qualification_head"]["head"] == "1c905e4c51a146dcc85e017454557a7eace7209b"
+    assert projections["org"]["qualification_head"]["head"] == "61e9a09957b7bef4414d08f133765f7c5f62171b"
+    assert projections["cockpit"]["qualification_head"]["head"] == "63039c22e4fb07697836a83569382a112de0e275"
     assert projections["benchmarks"]["qualification_head"]["head"] == (
         "17f8196b26457fbd300a46d6520c3d1845d0de05"
     )
@@ -1128,7 +1128,7 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "publication_repair_tree": "49dadfb76d6995c2ab825d8cb937a864ea773fb9",
     }
     assert manifest["product_milestones"]["r3"]["members"]["studio"]["remote"]["head"] == (
-        "bea06a555f49c886ab0d02f626c347570f1127d3"
+        "1c905e4c51a146dcc85e017454557a7eace7209b"
     )
     assert manifest["product_milestones"]["r2"]["publication_receipts"]["workflow_run"] == 33868949671
     assert manifest["product_milestones"]["r3"]["publication_receipts"]["workflow_run"] == 33873060692

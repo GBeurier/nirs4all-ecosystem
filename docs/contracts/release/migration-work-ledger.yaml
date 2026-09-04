@@ -218,13 +218,13 @@ current_candidate_evidence:
       tools: 88c2bc1e29603049cdbf1a1080a35845edf2f3c9
       ui: 406d94d70004f27459ef12347af1e6f0079ab6ac
       python: a5e5f93b8b1336bc58c0a23814066e5e14678d12
-      studio: bea06a555f49c886ab0d02f626c347570f1127d3
+      studio: 1c905e4c51a146dcc85e017454557a7eace7209b
       web: 051bf636d7c1729087e5d40061b18bd690cd33b7
       providers: b2210ec717c0de0055fc8b9424b115a933efdb4e
       repository: dbd9dae1205e1905692decd9fc7243f4fbda3068
       benchmarks: 17f8196b26457fbd300a46d6520c3d1845d0de05
-      org: 10b2eb8a69b37eecc46947b96dff19255f91037c
-      cockpit: 61715debd1937dc99efaba3dd74fe380f5e1f14c
+      org: 61e9a09957b7bef4414d08f133765f7c5f62171b
+      cockpit: 63039c22e4fb07697836a83569382a112de0e275
   product_release_sequence:
     status: r1_r2_r3_distinct_published_releases_r4_candidate_held
     required_order: r1_0_13_0_then_r2_1_0_0_rc_1_then_r3_1_0_0_rc_2_then_r4_1_0_0
@@ -292,8 +292,8 @@ current_candidate_evidence:
         default_engine: native_fail_closed
         remote_branch: release/r3-1.0.0-rc.2-candidate
         studio_version: 0.11.0
-        studio_commit: bea06a555f49c886ab0d02f626c347570f1127d3
-        studio_tree: 9a873ba2bb58d9425e4df2c06f827ef6fd701ce0
+        studio_commit: 1c905e4c51a146dcc85e017454557a7eace7209b
+        studio_tree: 50472b2f0a2f98790cc7646c253cc31146270e1c
         studio_control_plane: rust_only_fail_closed_cpython_plugin_host_only
         studio_remote_branch: release/r3-0.11.0-candidate
       r4:
@@ -803,8 +803,8 @@ current_candidate_evidence:
       expanded release lock remain holds.
   studio:
     evidence_status: final_candidate_pinned_to_python_r3_ci_publication_and_external_release_hold
-    candidate_commit: bea06a555f49c886ab0d02f626c347570f1127d3
-    candidate_tree: 9a873ba2bb58d9425e4df2c06f827ef6fd701ce0
+    candidate_commit: 1c905e4c51a146dcc85e017454557a7eace7209b
+    candidate_tree: 50472b2f0a2f98790cc7646c253cc31146270e1c
     candidate_python_r3_commit: 3567bd4abcaa64443a1946748a579f0803e91889
     candidate_python_wheel_sha256: 5898aa933da2e51ad07438ae5313ade37f1dad2a363411e71e0f0a513c7b4824
     candidate_python_installed_manifest_sha256: 0d8bd9ef411c7df1cf30597f5d340d58cd107e71c6cf8baa6e7f53aad6641b88
@@ -1177,27 +1177,27 @@ current_candidate_evidence:
     offline_conversion_support: closed_local
     scope: local_code_only_no_global_go
   org:
-    evidence_status: r4_docs_support_projection_qualified_local_publication_hold
-    commit: 10b2eb8a69b37eecc46947b96dff19255f91037c
-    tree: b7ef2ce97846f7e0174be58affdc96a4e50b2251
+    evidence_status: r4_docs_support_projection_with_downstream_receipts_qualified_local_publication_hold
+    commit: 61e9a09957b7bef4414d08f133765f7c5f62171b
+    tree: f483045ed2b78a3f2aadc40c7b8c9081ae9c6cbd
     qualification_ref: refs/heads/codex/r4-final-site-sync
     qualification_parent: 71a1db5c7d808a015aa2a1c6f07e6542ca3b8571
     previous_commit: b09f2768f264269d72be351d0c6282b769ec8f85
     package_version: 1.0.7
-    snapshot_sha256: 4435ce6bb0d104729a3659741a0d391a8e041b11148c3c862854d6fdb7d4257d
-    snapshot_source_commit: 2d6ae20855b6eb960df07106b00d9b879238229e
+    snapshot_sha256: abea5ea65ee72e8aa01b76cbefce900c3a90012c51ce45ef99377c4cc523ca1d
+    snapshot_source_commit: aae89519d4c807dab17a540328b97556c97307d3
     stale_benchmark_disposition: stale_not_current_evidence
     publication: false
   cockpit:
-    evidence_status: r4_docs_support_projection_qualified_local_publication_hold
-    commit: 61715debd1937dc99efaba3dd74fe380f5e1f14c
-    tree: 75e53204dd709a640d77f71136b0ded70a857739
+    evidence_status: r4_docs_support_projection_with_downstream_receipts_qualified_local_publication_hold
+    commit: 63039c22e4fb07697836a83569382a112de0e275
+    tree: 61fe8e87d225c1b2d2bd8f3eaecfbb4942489b03
     qualification_ref: refs/heads/codex/r4-final-site-sync
     qualification_parent: b612436c75adfc083506ca423a1013a0f3d663f0
     previous_commit: 0abde191e91629d4d54d111f93805508de9a6639
     package_version: 0.1.8
-    snapshot_sha256: 4435ce6bb0d104729a3659741a0d391a8e041b11148c3c862854d6fdb7d4257d
-    snapshot_source_commit: 2d6ae20855b6eb960df07106b00d9b879238229e
+    snapshot_sha256: abea5ea65ee72e8aa01b76cbefce900c3a90012c51ce45ef99377c4cc523ca1d
+    snapshot_source_commit: aae89519d4c807dab17a540328b97556c97307d3
     canonical_lock_updated: false
     global_status: no_go
   capability_governance:
