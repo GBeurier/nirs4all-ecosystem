@@ -20,7 +20,7 @@
     "manifest_path": "docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json",
     "tool": "scripts/n4a_release_lock.py"
   },
-  "manifest_digest": "sha256:0c6fac21551691a6e567b9b122ce1f4da5f5ad84aa4fbd047442efd7aba0f25b",
+  "manifest_digest": "sha256:d15c865fa454d16e2c4f1ab3e03d96563cdad7393d0263b98e2362b88db4dc39",
   "members": {
     "core": {
       "artifacts": [

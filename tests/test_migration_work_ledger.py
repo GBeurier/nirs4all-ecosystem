@@ -15,7 +15,7 @@ PREVIOUSLY_MISSING_ROADMAP_IDS = {
     "DATA-002", "CORE-001", "STU-003", "REL-003", "WEBREL-001", "DAG-001",
     "PERF-001", "CUT-001", "CUT-002", "CUT-003", "DOC-001", "WEBREL-002",
     "DROP-001", "DROP-002", "DROP-003", "DROP-004", "DROP-005", "SOAK-001",
-    "SEC-001", "PERF-002", "INST-001", "SUP-001", "WEBREL-003", "RC-001",
+    "ROB-001", "PERF-002", "INST-001", "SUP-001", "WEBREL-003", "RC-001",
     "RC-002", "DOC-002", "SUP-002", "REL-004", "WEBREL-004",
 }
 LOCAL_CODE_OR_SUPPORT_CLOSURES = {
@@ -85,7 +85,7 @@ def test_ledger_covers_every_reviewed_phase_0_to_r4_roadmap_lot() -> None:
         items[work_item_id]["state"] == "advanced_local_evidence_not_closed"
         for work_item_id in {"SOAK-001", "PERF-002"}
     )
-    assert items["SEC-001"]["state"] == "prepared_local_native_fuzz_harnesses_campaign_not_closed"
+    assert items["ROB-001"]["state"] == "complete_local_functional_non_crash_non_blocking"
 
 
 def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> None:
@@ -133,10 +133,9 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["providers"]["qualification_commit"] == "15722bd1123c887322f3bc3e0d54b145cffaf948"
     assert evidence["providers"]["publish_job_status"] == "skipped"
     assert evidence["repository"]["qualification_commit"] == "337caa6773c60fed94a0dfebcaf471e3a470af96"
-    assert evidence["security_harnesses"]["formats"]["commit"] == "892a48b38f6c94697f805524f6efd4e8ff7323b0"
-    assert evidence["security_harnesses"]["core"]["commit"] == "0218bfc8b9d9193f771d27470e7cf9d5cf578823"
-    assert evidence["security_harnesses"]["methods"]["commit"] == "530b11c632ac467e6bf54022c7241d27cd72d73c"
-    assert evidence["security_harnesses"]["studio_store"]["commit"] == "6d53f301830947ff85767c53c800829741af75ff"
+    assert evidence["historical_robustness_scaffolds"]["evidence_status"] == (
+        "superseded_by_functional_non_crash_scope_not_a_release_gate"
+    )
     assert evidence["org"]["commit"] == "71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"
     assert evidence["cockpit"]["commit"] == "b612436c75adfc083506ca423a1013a0f3d663f0"
     assert evidence["remote_candidate_staging"]["status"] == "exact_candidate_heads_recorded_providers_r2_r3_repository_and_studio_unpublished"

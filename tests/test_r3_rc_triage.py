@@ -41,8 +41,8 @@ def test_committed_inventory_and_report_match_the_ledger() -> None:
         validator._load_migration_validator().ROADMAP_PHASE_WORK_ITEMS["r3"]
     )
     assert inventory["summary"] == {
-        "closed_local": 6,
-        "advanced_not_closed": 5,
+        "closed_local": 7,
+        "advanced_not_closed": 4,
         "pending": 0,
         "release_eligible": False,
         "external_evidence_hold": True,

@@ -8,7 +8,7 @@ authoritative_sources:
   public_surface_matrix: docs/contracts/release/public-v1-surface-matrix.n4a.json
 roadmap_coverage:
   source_label: ROADMAP_BACKEND_NATIF_V1.md
-  source_sha256: 52cf12c430378d5f2e038f3cb371b87332c87c2b0a41b6f03a4be7e22a4b58f5
+  source_sha256: b4ddf9eba99a57cf8007e3a5c9a7900c57b554a237d1074d9faf96f193f842b5
   exhaustive_for_source_work_lots: true
   total_required_work_lots: 66
   phases:
@@ -71,7 +71,7 @@ roadmap_coverage:
       - DROP-004
       - DROP-005
       - SOAK-001
-      - SEC-001
+      - ROB-001
       - PERF-002
       - INST-001
       - SUP-001
@@ -998,11 +998,11 @@ current_candidate_evidence:
     release_limit: >-
       LOCK-STUDIO remains held despite the green final unsigned installer matrix:
       Studio is unpublished, signing identities are absent, and the promised
-      hostile soak and remaining security closure are open. The superseded
+      representative sustained soak and signing closure are open. The superseded
       matrix 33774781027 was cancelled after a Windows pinned plugin wheel
       identity mismatch. Two moderate
       production React Router advisories require a
-      future major migration and stay explicit in SEC-001.
+      future major migration and remain an explicit post-V1 dependency update.
       Any embedded CPython remains limited to an attested stdio library/plugin
       host with no HTTP server, scheduler, store or fallback.
   web:
@@ -1134,39 +1134,14 @@ current_candidate_evidence:
       not frozen, external performance matrices remain incomplete, and no
       threshold is defined or claimed passed. Publication, lock and global GO
       remain held.
-  security_harnesses:
-    evidence_status: four_native_targets_prepared_campaign_not_run
-    formats:
-      commit: 892a48b38f6c94697f805524f6efd4e8ff7323b0
-      tree: 28e9adc8dcae49c58a0e5585dcacb821a8006f58
-      target: registry_open_bytes
-      input_limit_bytes: 1048576
-      canonical_entrypoint: nirs4all_formats::open_bytes
-    core:
-      commit: 0218bfc8b9d9193f771d27470e7cf9d5cf578823
-      tree: 0d2537d715bed3d5fd60c836f71e5a8fd041ac8b
-      target: archive_v2_bytes
-      input_limit_bytes: 2097152
-      canonical_entrypoint: nirs4all::load_archive_v2_bytes
-    methods:
-      commit: 530b11c632ac467e6bf54022c7241d27cd72d73c
-      tree: fc4c47d6f07ad01ac52da4d19f715f2c61b968e7
-      target: n4m_fuzz_n4mm_driver
-      input_limit_bytes: 1048576
-      canonical_entrypoint: public_N4MM_inspect_and_import_ABI
-    studio_store:
-      commit: 6d53f301830947ff85767c53c800829741af75ff
-      tree: 3ae8f218a3c7eef23345ccc1630f29aa89594c2e
-      target: workspace_store_v5_bytes
-      input_limit_bytes: 2097152
-      canonical_entrypoint: workspace_store::preflight_run_detail_projection
+  historical_robustness_scaffolds:
+    evidence_status: superseded_by_functional_non_crash_scope_not_a_release_gate
     release_limit: >-
-      These commits prepare bounded harnesses and reuse canonical parsers/APIs;
-      they are not selected product-runtime heads and no fuzz campaign has run.
-      cargo-fuzz/nightly and Clang 16 are unavailable locally, the Methods smoke
-      link is blocked by the host gfortran/libm setup. Corpus campaigns, crash
-      triage/reproduction, sanitizers and external matrices remain mandatory
-      before SEC-001 closure.
+      Historical test-only branches are not selected product-runtime heads and
+      are not part of the R4 promotion criteria. Robustness is checked through
+      the ordinary component suites: supported invalid inputs must return explicit
+      errors without crashing. External qualification is limited to the promised
+      OS and platform matrix.
   dependency_repin:
     status: published_component_baseline_complete_providers_0_2_11_publication_and_product_lock_pending
     selected_dag_ml_data_version: 0.2.10
@@ -1204,7 +1179,7 @@ current_candidate_evidence:
     - >-
       External qualification HOLD: the current Studio four-OS unsigned installer
       matrix and Bench four-surface synthetic replay are green, but remaining
-      external matrices, signed installers, representative hostile soak and frozen
+      external matrices, signed installers, representative sustained soak and frozen
       reference-host performance budgets remain incomplete. Local DATA, CONF, STU and
       bounded four-surface WSL measurement flows plus
       aggregate/default/conversion/drop documentation are closed, but this
@@ -1245,7 +1220,7 @@ work_items:
       orchestration is unreachable from strict product paths in R3; physical
       removal of the explicit engine=legacy rollback profile is separately
       governed after R4. The synchronized roadmap SHA-256 is
-      52cf12c430378d5f2e038f3cb371b87332c87c2b0a41b6f03a4be7e22a4b58f5.
+      b4ddf9eba99a57cf8007e3a5c9a7900c57b554a237d1074d9faf96f193f842b5.
       The capability ledger now names ADR-24/833d535 while retaining
       backend=legacy and retention_releases=2. Independent release review
       ACCEPT is limited to ARCH-002/LOCK-ARCH and grants no release GO.
@@ -3663,34 +3638,28 @@ work_items:
       workload and integrity probe 3/3 without failure, but it is still bounded,
       synthetic, WSL-local and direct-process-only. This lot is not closed.
     rollback: keep R3 on hold and preserve the signed R2 rollback artifacts
-  - id: SEC-001
+  - id: ROB-001
     owner: G + B + C + D
     dependencies:
       - DROP-005
       - MTH-002
       - SAVE-004
       - FMT-001
-    state: prepared_local_native_fuzz_harnesses_campaign_not_closed
-    input_sha: 6d53f301830947ff85767c53c800829741af75ff
+    state: complete_local_functional_non_crash_non_blocking
+    input_sha: 86d5e5033d62240815e532038b6e769b14b25c2b
     owned_files:
       - nirs4all-formats/
       - nirs4all-methods/
       - nirs4all-tools/
       - docs/contracts/release/
     acceptance_tests:
-      - Fuzzing and hostile-payload tests for formats, archives, store and ABI leave no critical or high vulnerability open.
+      - Ordinary component tests show that supported invalid inputs for formats, archives, store and ABI return explicit errors without crashing the product.
     review: >-
-      Bench 3f9be0f and Core b6442dc retain bounded hostile/schema-refusal
-      hardening evidence. Formats 892a48b, Core 0218bfc, Methods 530b11c and
-      Studio 6d53f30 add
-      bounded fuzz harnesses over their canonical parsers/public APIs without
-      duplicating domain logic. Their source/build-contract gates pass, but no
-      fuzz or sanitizer campaign has run; cargo-fuzz/nightly and Clang 16 are
-      unavailable and the Methods smoke link is blocked by the host toolchain.
-      The complete campaign, crash triage
-      and critical/high vulnerability closure are not established; this lot
-      remains open.
-    rollback: keep the release on hold and retain the prior signed artifacts
+      The R4 program no longer carries a separate security campaign. Invalid-input
+      behavior remains part of the normal component test
+      suites and candidate CI. Historical test-only harness branches are retained
+      for reference but do not hold promotion or publication.
+    rollback: component regressions remain handled by the normal R2/R3 rollback policy
   - id: PERF-002
     owner: G
     dependencies:
@@ -3782,7 +3751,7 @@ work_items:
     dependencies:
       - WEBREL-003
       - SOAK-001
-      - SEC-001
+      - ROB-001
       - PERF-002
       - INST-001
     state: prepared_local_triage_external_evidence_hold

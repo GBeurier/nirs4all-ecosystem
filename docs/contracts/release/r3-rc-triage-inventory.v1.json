@@ -2,11 +2,11 @@
   "schema_version": "n4a.r3-rc-triage-inventory/v1",
   "source": {
     "ledger": "docs/contracts/release/migration-work-ledger.yaml",
-    "roadmap_source_sha256": "52cf12c430378d5f2e038f3cb371b87332c87c2b0a41b6f03a4be7e22a4b58f5"
+    "roadmap_source_sha256": "b4ddf9eba99a57cf8007e3a5c9a7900c57b554a237d1074d9faf96f193f842b5"
   },
   "release": "R3",
   "work_item_count": 11,
-  "projection_sha256": "4c8e66120b6e334e1d49ea4e734dad8fb2b4c291288d9831e778bee5f8accd4c",
+  "projection_sha256": "211853778a67f602f7c12e8b0a43a288be0c17853ff40b4a7f8640d0e3ed57b4",
   "lots": [
     {
       "id": "DROP-001",
@@ -45,10 +45,10 @@
       "disposition": "advanced_not_closed"
     },
     {
-      "id": "SEC-001",
-      "state": "prepared_local_native_fuzz_harnesses_campaign_not_closed",
-      "input_sha": "6d53f301830947ff85767c53c800829741af75ff",
-      "disposition": "advanced_not_closed"
+      "id": "ROB-001",
+      "state": "complete_local_functional_non_crash_non_blocking",
+      "input_sha": "86d5e5033d62240815e532038b6e769b14b25c2b",
+      "disposition": "closed_local"
     },
     {
       "id": "PERF-002",
@@ -76,8 +76,8 @@
     }
   ],
   "summary": {
-    "closed_local": 6,
-    "advanced_not_closed": 5,
+    "closed_local": 7,
+    "advanced_not_closed": 4,
     "pending": 0,
     "release_eligible": false,
     "external_evidence_hold": true

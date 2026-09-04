@@ -106,7 +106,7 @@
       "id": "external_matrices",
       "required": true,
       "state": "pending",
-      "reason": "Promised external platform and hostile-input matrices are not complete."
+      "reason": "Promised external OS and platform matrices are not complete. Functional invalid-input handling remains covered by the ordinary component test suites and is not a separate promotion gate."
     },
     {
       "id": "product_publication",

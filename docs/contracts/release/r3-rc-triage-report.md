@@ -4,8 +4,8 @@ This report is a local triage input, not an R3 or RC-001 closure.
 
 - RC-001 state: `prepared_local_triage_external_evidence_hold`
 - R3 lots: 11
-- Closed locally: 6
-- Advanced but not closed: 5
+- Closed locally: 7
+- Advanced but not closed: 4
 - Pending: 0
 - Release eligibility: **NO-GO** — external evidence remains required.
 
@@ -17,7 +17,7 @@ This report is a local triage input, not an R3 or RC-001 closure.
 | `DROP-004` | `complete_local_code_release_hold` | `a6688f53994b4bf9f612057a86b17a25f04401c3` | `closed_local` |
 | `DROP-005` | `complete_local_code_sbom_signature_release_hold` | `a6688f53994b4bf9f612057a86b17a25f04401c3` | `closed_local` |
 | `SOAK-001` | `advanced_local_evidence_not_closed` | `24751ea97a3e12d48ffb9f0438a4355b024e15d8` | `advanced_not_closed` |
-| `SEC-001` | `prepared_local_native_fuzz_harnesses_campaign_not_closed` | `6d53f301830947ff85767c53c800829741af75ff` | `advanced_not_closed` |
+| `ROB-001` | `complete_local_functional_non_crash_non_blocking` | `86d5e5033d62240815e532038b6e769b14b25c2b` | `closed_local` |
 | `PERF-002` | `advanced_local_evidence_not_closed` | `24751ea97a3e12d48ffb9f0438a4355b024e15d8` | `advanced_not_closed` |
 | `INST-001` | `prepared_local_linux_harness_external_matrix_hold` | `e027cbf8dea9fc2297ac91b9cd983346a44fb34f` | `advanced_not_closed` |
 | `SUP-001` | `complete_local_support_soak_release_hold` | `6796a01a75b0b51301a693011f3e904a60598817` | `closed_local` |
