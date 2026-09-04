@@ -46,7 +46,7 @@
       },
       "surface_matrix": {
         "path": "docs/contracts/release/public-v1-surface-matrix.n4a.json",
-        "canonical_json_sha256": "sha256:78b33e0f552ca4a3fa2e40f47d2cce0ee18a4473e5cccb7b7ec15dc3bc0ffcae"
+        "canonical_json_sha256": "sha256:6118c42c6c414e4a14159d038fcb64d8e117dcdc7c24f404b23e63ed1f22ee26"
       }
     }
   },

@@ -69,8 +69,8 @@
       {"key": "studio", "repo_path": "nirs4all-studio", "commit": "1c905e4c51a146dcc85e017454557a7eace7209b", "based_on": ["181f0e95a948f0e884ba48a17b7574a0bacdf7fe"], "qualification": "Rust control-plane candidate pinned to final Python R3 and Methods 1.0.16 candidate; CI and external product holds remain"},
       {"key": "web", "repo_path": "nirs4all-web", "commit": "f1ae6c38e6c82bd7bf525c8c4a7adc8deb456eea", "based_on": ["20867a71c45731f757267a98e7928710e7c3693d"], "qualification": "client-only WASM candidate plus documentation; unpublished"},
       {"key": "tools", "repo_path": "nirs4all-tools", "commit": "2215c9b9dcf498067ce2cad5f8bf42bf06a39285", "based_on": ["e3a332633f87b4652a06f8993e63c386a3568698"], "qualification": "explicit workspace conversion CLI candidate; unpublished"},
-      {"key": "org", "repo_path": "nirs4all-org", "commit": "61e9a09957b7bef4414d08f133765f7c5f62171b", "based_on": ["71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"], "qualification": "DOC/SUP disclosure projection with downstream receipts qualified locally; unpublished and no release promotion"},
-      {"key": "cockpit", "repo_path": "nirs4all-cockpit", "commit": "63039c22e4fb07697836a83569382a112de0e275", "based_on": ["b612436c75adfc083506ca423a1013a0f3d663f0"], "qualification": "DOC/SUP staging projection with downstream receipts qualified locally; canonical lock unchanged and global status NO-GO"}
+      {"key": "org", "repo_path": "nirs4all-org", "commit": "c211e1accd828a674a18be5125306e6678431825", "based_on": ["71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"], "qualification": "DOC/SUP disclosure projection with downstream receipts qualified locally; unpublished and no release promotion"},
+      {"key": "cockpit", "repo_path": "nirs4all-cockpit", "commit": "20d0bbab40470c06e87727d91129e4ff266794b3", "based_on": ["b612436c75adfc083506ca423a1013a0f3d663f0"], "qualification": "DOC/SUP staging projection with downstream receipts qualified locally; canonical lock unchanged and global status NO-GO"}
     ]
   },
   "v1_capability_inventory": {

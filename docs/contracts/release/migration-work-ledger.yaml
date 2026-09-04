@@ -223,8 +223,8 @@ current_candidate_evidence:
       providers: b2210ec717c0de0055fc8b9424b115a933efdb4e
       repository: dbd9dae1205e1905692decd9fc7243f4fbda3068
       benchmarks: 17f8196b26457fbd300a46d6520c3d1845d0de05
-      org: 61e9a09957b7bef4414d08f133765f7c5f62171b
-      cockpit: 63039c22e4fb07697836a83569382a112de0e275
+      org: c211e1accd828a674a18be5125306e6678431825
+      cockpit: 20d0bbab40470c06e87727d91129e4ff266794b3
   product_release_sequence:
     status: r1_r2_r3_distinct_published_releases_r4_candidate_held
     required_order: r1_0_13_0_then_r2_1_0_0_rc_1_then_r3_1_0_0_rc_2_then_r4_1_0_0
@@ -1178,26 +1178,26 @@ current_candidate_evidence:
     scope: local_code_only_no_global_go
   org:
     evidence_status: r4_docs_support_projection_with_downstream_receipts_qualified_local_publication_hold
-    commit: 61e9a09957b7bef4414d08f133765f7c5f62171b
-    tree: f483045ed2b78a3f2aadc40c7b8c9081ae9c6cbd
+    commit: c211e1accd828a674a18be5125306e6678431825
+    tree: 138f6ba881fa6e980566ee0b0eb2a096aafa7ef2
     qualification_ref: refs/heads/codex/r4-final-site-sync
     qualification_parent: 71a1db5c7d808a015aa2a1c6f07e6542ca3b8571
     previous_commit: b09f2768f264269d72be351d0c6282b769ec8f85
     package_version: 1.0.7
-    snapshot_sha256: abea5ea65ee72e8aa01b76cbefce900c3a90012c51ce45ef99377c4cc523ca1d
-    snapshot_source_commit: aae89519d4c807dab17a540328b97556c97307d3
+    snapshot_sha256: c3b4f20a6649ccf88e5895d91f46f17440a578b2a425389ea71d1e180f40285b
+    snapshot_source_commit: 8edd28e7428f9492387e537329fe3167eb6babbf
     stale_benchmark_disposition: stale_not_current_evidence
     publication: false
   cockpit:
     evidence_status: r4_docs_support_projection_with_downstream_receipts_qualified_local_publication_hold
-    commit: 63039c22e4fb07697836a83569382a112de0e275
-    tree: 61fe8e87d225c1b2d2bd8f3eaecfbb4942489b03
+    commit: 20d0bbab40470c06e87727d91129e4ff266794b3
+    tree: 39aae85ab6dc3fcd37c4ed32b03aaf72c4303906
     qualification_ref: refs/heads/codex/r4-final-site-sync
     qualification_parent: b612436c75adfc083506ca423a1013a0f3d663f0
     previous_commit: 0abde191e91629d4d54d111f93805508de9a6639
     package_version: 0.1.8
-    snapshot_sha256: abea5ea65ee72e8aa01b76cbefce900c3a90012c51ce45ef99377c4cc523ca1d
-    snapshot_source_commit: aae89519d4c807dab17a540328b97556c97307d3
+    snapshot_sha256: c3b4f20a6649ccf88e5895d91f46f17440a578b2a425389ea71d1e180f40285b
+    snapshot_source_commit: 8edd28e7428f9492387e537329fe3167eb6babbf
     canonical_lock_updated: false
     global_status: no_go
   capability_governance:

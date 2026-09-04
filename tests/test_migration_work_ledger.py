@@ -153,8 +153,8 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["historical_robustness_scaffolds"]["evidence_status"] == (
         "superseded_by_functional_non_crash_scope_not_a_release_gate"
     )
-    assert evidence["org"]["commit"] == "61e9a09957b7bef4414d08f133765f7c5f62171b"
-    assert evidence["cockpit"]["commit"] == "63039c22e4fb07697836a83569382a112de0e275"
+    assert evidence["org"]["commit"] == "c211e1accd828a674a18be5125306e6678431825"
+    assert evidence["cockpit"]["commit"] == "20d0bbab40470c06e87727d91129e4ff266794b3"
     assert evidence["remote_candidate_staging"]["status"] == (
         "exact_candidate_heads_recorded_repository_providers_r1_r2_r3_published_r4_and_studio_unpublished"
     )
