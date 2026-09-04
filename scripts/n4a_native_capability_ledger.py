@@ -84,6 +84,7 @@ ROADMAP_REQUIRED_SURFACE_IDS = {
     "nirs4all.web.product",
     "nirs4all.tools.migration",
     "nirs4all.providers.contracts",
+    "nirs4all.repository.catalog",
     "nirs4all.cockpit.product",
     "nirs4all.org.site",
 }

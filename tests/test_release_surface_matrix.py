@@ -57,6 +57,7 @@ def test_public_v1_surface_matrix_validates_current_contracts() -> None:
         "nirs4all.ui.package",
         "nirs4all.web.product",
         "nirs4all.providers.contracts",
+        "nirs4all.repository.catalog",
         "nirs4all.cockpit.product",
         "nirs4all.org.site",
         "nirs4all.tools.migration",
@@ -207,6 +208,14 @@ def test_public_surface_matrix_accounts_for_web_providers_and_sites() -> None:
     assert "neutral schemas" in providers["proof_boundary"]
     assert "R/WASM/native" in providers["proof_boundary"]
 
+    repository = by_id["nirs4all.repository.catalog"]
+    assert repository["distribution"] == "nirs4all-repository"
+    assert repository["repo_path"] == "nirs4all-repository"
+    assert repository["lock_relation"] == "outside_aggregation_lock"
+    assert repository["required_for_nirs4all_v1"] is True
+    assert repository["qualification_evidence"]["status"] == "passed_published"
+    assert repository["qualification_evidence"]["contract_sha256"].startswith("sha256:")
+
     cockpit = by_id["nirs4all.cockpit.product"]
     assert cockpit["distribution"] == "nirs4all-cockpit"
     assert cockpit["required_for_nirs4all_v1"] is True
@@ -234,6 +243,7 @@ def test_public_surface_matrix_accounts_for_web_providers_and_sites() -> None:
         "nirs4all.web.product",
         "nirs4all.tools.migration",
         "nirs4all.providers.contracts",
+        "nirs4all.repository.catalog",
         "nirs4all.cockpit.product",
         "nirs4all.org.site",
     ],

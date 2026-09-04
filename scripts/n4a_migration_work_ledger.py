@@ -23,7 +23,7 @@ import yaml
 LEDGER_SCHEMA_VERSION = "n4a.migration-work-ledger/v1"
 DEFAULT_LEDGER = Path("docs/contracts/release/migration-work-ledger.yaml")
 ROADMAP_SOURCE_LABEL = "ROADMAP_BACKEND_NATIF_V1.md"
-ROADMAP_SOURCE_SHA256 = "b4ddf9eba99a57cf8007e3a5c9a7900c57b554a237d1074d9faf96f193f842b5"
+ROADMAP_SOURCE_SHA256 = "cd63adb6a915f851d947ab471c8abbbdd51c5c9f4312e53fcd8906901c083e79"
 ROADMAP_PHASE_WORK_ITEMS = {
     "phase_0": (
         "ARCH-001", "ARCH-002", "REL-001", "REL-002", "PAR-001",

@@ -19,6 +19,6 @@ This report is a local triage input, not an R3 or RC-001 closure.
 | `SOAK-001` | `advanced_local_evidence_not_closed` | `24751ea97a3e12d48ffb9f0438a4355b024e15d8` | `advanced_not_closed` |
 | `ROB-001` | `complete_local_functional_non_crash_non_blocking` | `86d5e5033d62240815e532038b6e769b14b25c2b` | `closed_local` |
 | `PERF-002` | `advanced_local_evidence_not_closed` | `24751ea97a3e12d48ffb9f0438a4355b024e15d8` | `advanced_not_closed` |
-| `INST-001` | `prepared_local_linux_harness_external_matrix_hold` | `e027cbf8dea9fc2297ac91b9cd983346a44fb34f` | `advanced_not_closed` |
+| `INST-001` | `advanced_local_linux_appimage_lifecycle_complete_macos_windows_hold` | `28c563082561e50b56be72fcde63f3879045088b` | `advanced_not_closed` |
 | `SUP-001` | `complete_local_support_soak_release_hold` | `6796a01a75b0b51301a693011f3e904a60598817` | `closed_local` |
 | `WEBREL-003` | `prepared_local_docs_installer_publication_hold` | `ee2a1e4b83ba287c9f0b4edcb68ce70782c600be` | `advanced_not_closed` |

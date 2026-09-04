@@ -46,7 +46,7 @@
       },
       "surface_matrix": {
         "path": "docs/contracts/release/public-v1-surface-matrix.n4a.json",
-        "canonical_json_sha256": "sha256:7005b45b0117f5ee730aeb450edd484bbf2e5fb7f865b8a178ba0d71a0a5f62b"
+        "canonical_json_sha256": "sha256:83518e0e9121c43bcda69c5c2cb88c8c8734a6891e5eccce51608f5c3ed06c7e"
       }
     }
   },
@@ -2364,6 +2364,7 @@
         "nirs4all.ui.package",
         "nirs4all.web.product",
         "nirs4all.providers.contracts",
+        "nirs4all.repository.catalog",
         "nirs4all.cockpit.product",
         "nirs4all.org.site",
         "nirs4all.tools.migration"

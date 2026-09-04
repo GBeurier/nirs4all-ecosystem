@@ -1027,17 +1027,31 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "df7f2198862c71a24aeeba08ba09ee118524b55d"
     )
     assert components["studio"]["qualification_head"]["head"] == "86d5e5033d62240815e532038b6e769b14b25c2b"
-    assert projections["org"]["qualification_head"]["head"] == "71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"
-    assert projections["cockpit"]["qualification_head"]["head"] == "b612436c75adfc083506ca423a1013a0f3d663f0"
+    assert projections["org"]["qualification_head"]["head"] == "28523174bdbceffbb3d5c06e43796fe04073b1f5"
+    assert projections["cockpit"]["qualification_head"]["head"] == "972155b9af539a444ede5c585e8d9eb799d35fe0"
     assert projections["benchmarks"]["qualification_head"]["head"] == (
         "17f8196b26457fbd300a46d6520c3d1845d0de05"
     )
     assert projections["repository"]["publication_head"]["tree"] == (
-        "bb23a73d03abbc2e377f1494e147623265a06a3e"
+        "1bae2a889fdee52d8c54e19216641e7a99612fd6"
     )
     assert projections["repository"]["qualification_head"]["head"] == (
-        "337caa6773c60fed94a0dfebcaf471e3a470af96"
+        "c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac"
     )
+    assert {
+        artifact["id"]: artifact["sha256"]
+        for artifact in projections["repository"]["artifacts"]
+    } == {
+        "python_wheel": "5743d99c70642ecffe9c2c4f92186a706abdb03b5b7cd2d62775ee92f8f389bb",
+        "python_sdist": "5f911fefbc3cf7abb7651377e703113ac0c698dfefcd5c3bb9bb7cd31410ae53",
+        "public_v1_surface_contract": "613d7008c38023d2d5e94df9bc4c9936e2a321c0d9aa24bcbf7a22cb6ac5b65f",
+        "public_v1_surface_checker": "ac8b886c4cecf5c515c7600bc57c79c5ed28bbbf3c6782014d5ce48628095969",
+    }
+    assert {receipt["id"]: receipt["state"] for receipt in projections["repository"]["receipts"]} == {
+        "build_33852742761": "passed",
+        "exact_r1_r2_r3_surface_contract": "passed",
+        "publication_33854293363": "passed",
+    }
     assert components["providers"]["publication_head"]["head"] == "5a03f508374531409919fceb2f2367544c52b94d"
     assert components["providers"]["qualification_head"]["head"] == (
         "15722bd1123c887322f3bc3e0d54b145cffaf948"

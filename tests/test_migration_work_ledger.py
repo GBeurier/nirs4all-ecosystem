@@ -80,7 +80,7 @@ def test_ledger_covers_every_reviewed_phase_0_to_r4_roadmap_lot() -> None:
         for work_item_id in CAP_SCOPED_LOCAL_CLOSURES
     )
     assert items["PERF-001"]["state"] == "complete_local_measurement_release_hold"
-    assert items["DOC-002"]["state"] == "prepared_local_docs_release_hold"
+    assert items["DOC-002"]["state"] == "prepared_local_docs_python_rebase_and_publication_hold"
     assert all(
         items[work_item_id]["state"] == "advanced_local_evidence_not_closed"
         for work_item_id in {"SOAK-001", "PERF-002"}
@@ -124,6 +124,8 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["studio"]["candidate_commit"] == "86d5e5033d62240815e532038b6e769b14b25c2b"
     assert evidence["studio"]["release_matrix_run"] == 33783518197
     assert evidence["studio"]["release_matrix_status"] == "completed_success_unsigned"
+    assert evidence["studio"]["linux_lifecycle_commit"] == "28c563082561e50b56be72fcde63f3879045088b"
+    assert evidence["studio"]["linux_lifecycle_status"] == "complete_two_real_appimages"
     assert evidence["studio"]["published"] is False
     assert evidence["studio"]["signed"] is False
     assert evidence["web"]["candidate_commit"] == "051bf636d7c1729087e5d40061b18bd690cd33b7"
@@ -132,13 +134,16 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["benchmarks"]["commit"] == "17f8196b26457fbd300a46d6520c3d1845d0de05"
     assert evidence["providers"]["qualification_commit"] == "15722bd1123c887322f3bc3e0d54b145cffaf948"
     assert evidence["providers"]["publish_job_status"] == "skipped"
-    assert evidence["repository"]["qualification_commit"] == "337caa6773c60fed94a0dfebcaf471e3a470af96"
+    assert evidence["repository"]["qualification_commit"] == "c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac"
+    assert evidence["repository"]["public_surface_id"] == "nirs4all.repository.catalog"
     assert evidence["historical_robustness_scaffolds"]["evidence_status"] == (
         "superseded_by_functional_non_crash_scope_not_a_release_gate"
     )
-    assert evidence["org"]["commit"] == "71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"
-    assert evidence["cockpit"]["commit"] == "b612436c75adfc083506ca423a1013a0f3d663f0"
-    assert evidence["remote_candidate_staging"]["status"] == "exact_candidate_heads_recorded_providers_r2_r3_repository_and_studio_unpublished"
+    assert evidence["org"]["commit"] == "28523174bdbceffbb3d5c06e43796fe04073b1f5"
+    assert evidence["cockpit"]["commit"] == "972155b9af539a444ede5c585e8d9eb799d35fe0"
+    assert evidence["remote_candidate_staging"]["status"] == (
+        "exact_candidate_heads_recorded_repository_published_providers_r2_r3_and_studio_unpublished"
+    )
     assert evidence["remote_candidate_staging"]["tag_or_registry_publication"] is True
     assert evidence["remote_candidate_staging"]["all_product_milestones_published"] is False
     assert len(evidence["remote_candidate_staging"]["heads"]) == 18
@@ -157,8 +162,9 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert items["WEBREL-002"]["state"] == "prepared_local_docs_installer_publication_hold"
     assert items["WEBREL-003"]["state"] == "prepared_local_docs_installer_publication_hold"
     assert items["WEBREL-001"]["state"] == "complete_local_staging_publication_hold"
-    assert items["INST-001"]["state"] == "prepared_local_linux_harness_external_matrix_hold"
+    assert items["INST-001"]["state"] == "advanced_local_linux_appimage_lifecycle_complete_macos_windows_hold"
     assert items["SUP-002"]["state"] == "complete_local_support_matrix_external_publication_hold"
+    assert items["SUP-002"]["input_sha"] == "f4fc4a6ee9bb89f9079241e19c91ddacced3a31b"
     assert evidence["canonical_release_lock"]["updated"] is False
     assert ledger["locks"]["LOCK-ARCH"].startswith("closed_")
     assert all(

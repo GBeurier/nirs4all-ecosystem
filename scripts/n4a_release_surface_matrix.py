@@ -37,6 +37,7 @@ ROADMAP_REQUIRED_V1_SURFACES = {
     "nirs4all.web.product": "nirs4all-web",
     "nirs4all.tools.migration": "nirs4all-tools",
     "nirs4all.providers.contracts": "nirs4all-providers",
+    "nirs4all.repository.catalog": "nirs4all-repository",
     "nirs4all.cockpit.product": "nirs4all-cockpit",
     "nirs4all.org.site": "nirs4all-org",
 }

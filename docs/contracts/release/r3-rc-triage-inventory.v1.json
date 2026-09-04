@@ -2,11 +2,11 @@
   "schema_version": "n4a.r3-rc-triage-inventory/v1",
   "source": {
     "ledger": "docs/contracts/release/migration-work-ledger.yaml",
-    "roadmap_source_sha256": "b4ddf9eba99a57cf8007e3a5c9a7900c57b554a237d1074d9faf96f193f842b5"
+    "roadmap_source_sha256": "cd63adb6a915f851d947ab471c8abbbdd51c5c9f4312e53fcd8906901c083e79"
   },
   "release": "R3",
   "work_item_count": 11,
-  "projection_sha256": "211853778a67f602f7c12e8b0a43a288be0c17853ff40b4a7f8640d0e3ed57b4",
+  "projection_sha256": "067666c5a3ba154527f820c05111023643e3248a0bcd51ad67be0aa7a2422cad",
   "lots": [
     {
       "id": "DROP-001",
@@ -58,8 +58,8 @@
     },
     {
       "id": "INST-001",
-      "state": "prepared_local_linux_harness_external_matrix_hold",
-      "input_sha": "e027cbf8dea9fc2297ac91b9cd983346a44fb34f",
+      "state": "advanced_local_linux_appimage_lifecycle_complete_macos_windows_hold",
+      "input_sha": "28c563082561e50b56be72fcde63f3879045088b",
       "disposition": "advanced_not_closed"
     },
     {

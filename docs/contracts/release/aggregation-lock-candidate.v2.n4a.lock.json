@@ -6,9 +6,12 @@
       "nirs4all-studio@86d5e5033d62240815e532038b6e769b14b25c2b",
       "nirs4all-benchmarks@17f8196b26457fbd300a46d6520c3d1845d0de05",
       "nirs4all-providers@15722bd1123c887322f3bc3e0d54b145cffaf948",
-      "nirs4all-repository@337caa6773c60fed94a0dfebcaf471e3a470af96",
-      "nirs4all-org@71a1db5c7d808a015aa2a1c6f07e6542ca3b8571",
-      "nirs4all-cockpit@b612436c75adfc083506ca423a1013a0f3d663f0"
+      "nirs4all-repository@c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac",
+      "nirs4all@651816e1647716ca2133504e09016af848b3e09f:docs-needs-rebase-on-final-r3",
+      "nirs4all-methods@bf2641641c8b4235201203bd338486b96964b59f:docs-qualification",
+      "nirs4all-tools@f4fc4a6ee9bb89f9079241e19c91ddacced3a31b:support-qualification",
+      "nirs4all-org@28523174bdbceffbb3d5c06e43796fe04073b1f5:docs-support-projection",
+      "nirs4all-cockpit@972155b9af539a444ede5c585e8d9eb799d35fe0:docs-support-projection"
     ],
     "ledger_commit": "091b8a0f3069e7a90167f78c81bb9d414c50ade5",
     "ledger_path": "docs/contracts/release/migration-work-ledger.yaml",
@@ -20,7 +23,7 @@
     "manifest_path": "docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json",
     "tool": "scripts/n4a_release_lock.py"
   },
-  "manifest_digest": "sha256:d15c865fa454d16e2c4f1ab3e03d96563cdad7393d0263b98e2362b88db4dc39",
+  "manifest_digest": "sha256:860d91187bfc8ccea2f3bac77bffeafed95b84fe6a27d29781832681ddabad69",
   "members": {
     "core": {
       "artifacts": [
@@ -277,6 +280,18 @@
         "repository": "GBeurier/nirs4all-methods",
         "tree": "7e4658658e37f77be18ef6d3d6aff150886efb5b"
       },
+      "receipts": [
+        {
+          "gate": "sphinx",
+          "head": "bf2641641c8b4235201203bd338486b96964b59f",
+          "id": "r4_doc002_local_qualification",
+          "parent": "e0bee1ce160cd805d3060185fd151c09230c3381",
+          "published": false,
+          "ref": "refs/heads/codex/r4-doc002-methods",
+          "state": "passed",
+          "tree": "e7678587d78995b15855b1738eaf0df3b71dfa4b"
+        }
+      ],
       "release_role": "native_runtime",
       "release_state": "candidate",
       "repo_path": "nirs4all-methods",
@@ -400,6 +415,20 @@
         "repository": "GBeurier/nirs4all",
         "tree": "2404b76783e9fc6e10723e671d274975e14756aa"
       },
+      "receipts": [
+        {
+          "disposition": "needs_rebase_on_final_r3",
+          "gate": "sphinx",
+          "head": "651816e1647716ca2133504e09016af848b3e09f",
+          "id": "r4_doc002_python_local_qualification",
+          "parent": "53a0acb964bff86dc67002763d8e9b850336731f",
+          "published": false,
+          "ref": "refs/heads/codex/r4-doc002-python",
+          "selected_as_member": false,
+          "state": "partial",
+          "tree": "895d50c5550102eebae233f2649815a28feff5c3"
+        }
+      ],
       "release_role": "python_product",
       "release_state": "candidate",
       "repo_path": "nirs4all",
@@ -522,6 +551,18 @@
         "repository": "GBeurier/nirs4all-tools",
         "tree": "d46a5fd2fcb7a2e14225cf1c3ad2661f7a4ab8b3"
       },
+      "receipts": [
+        {
+          "gate": "support_validator_and_pytest",
+          "head": "f4fc4a6ee9bb89f9079241e19c91ddacced3a31b",
+          "id": "r4_sup002_local_qualification",
+          "parent": "88c2bc1e29603049cdbf1a1080a35845edf2f3c9",
+          "published": false,
+          "ref": "refs/heads/codex/r4-sup002-tools",
+          "state": "passed",
+          "tree": "f906fe849c50363e2c8ef8e2bad0379743310bc6"
+        }
+      ],
       "release_role": "migration_surface",
       "release_state": "published",
       "repo_path": "nirs4all-tools",
@@ -725,10 +766,10 @@
       "artifact_receipts_required": false,
       "key": "cockpit",
       "qualification_head": {
-        "head": "b612436c75adfc083506ca423a1013a0f3d663f0",
-        "ref": "refs/heads/release/native-v1-candidate",
+        "head": "972155b9af539a444ede5c585e8d9eb799d35fe0",
+        "ref": "refs/heads/codex/r4-docsup-cockpit",
         "repository": "GBeurier/nirs4all-cockpit",
-        "tree": "44e74187956fef3003c9d94f739113e74ade8cca"
+        "tree": "17faafd2aae758c0d0fd82174583896ba1b42d64"
       },
       "repo_path": "nirs4all-cockpit",
       "required_for_promotion": true,
@@ -740,10 +781,10 @@
       "artifact_receipts_required": false,
       "key": "org",
       "qualification_head": {
-        "head": "71a1db5c7d808a015aa2a1c6f07e6542ca3b8571",
-        "ref": "refs/heads/release/native-v1-candidate",
+        "head": "28523174bdbceffbb3d5c06e43796fe04073b1f5",
+        "ref": "refs/heads/codex/r4-docsup-org",
         "repository": "GBeurier/nirs4all-org",
-        "tree": "b37719e2b9572be61fe011a3b0b46e71f6cfccfc"
+        "tree": "3e0436d6b675a3c8dd9e322748cedbb122ccb276"
       },
       "repo_path": "nirs4all-org",
       "required_for_promotion": true,
@@ -756,48 +797,102 @@
       "artifacts": [
         {
           "id": "python_wheel",
-          "sha256": "c01c95483fe81f8c659451fda8c7e8e83d4f5d46a509ec13cae8ab906c1e53a7",
-          "state": "candidate",
+          "sha256": "5743d99c70642ecffe9c2c4f92186a706abdb03b5b7cd2d62775ee92f8f389bb",
+          "state": "published",
           "version": "0.1.11"
         },
         {
           "id": "python_sdist",
-          "sha256": "034e3a0edfefceda5500bbe9f8b335a2e46342c530a790e4117619d5d70914f3",
-          "state": "candidate",
+          "sha256": "5f911fefbc3cf7abb7651377e703113ac0c698dfefcd5c3bb9bb7cd31410ae53",
+          "state": "published",
           "version": "0.1.11"
+        },
+        {
+          "id": "public_v1_surface_contract",
+          "sha256": "613d7008c38023d2d5e94df9bc4c9936e2a321c0d9aa24bcbf7a22cb6ac5b65f",
+          "state": "published",
+          "version": "1"
+        },
+        {
+          "id": "public_v1_surface_checker",
+          "sha256": "ac8b886c4cecf5c515c7600bc57c79c5ed28bbbf3c6782014d5ce48628095969",
+          "state": "published",
+          "version": "1"
         }
       ],
       "key": "repository",
       "publication_head": {
-        "head": "0c2595e1e7305b7969afd22984ad15e37fa7ea5d",
-        "ref": "refs/tags/v0.1.10^{}",
+        "head": "c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac",
+        "ref": "refs/tags/v0.1.11^{}",
         "repository": "GBeurier/nirs4all-repository",
-        "tree": "bb23a73d03abbc2e377f1494e147623265a06a3e"
+        "tree": "1bae2a889fdee52d8c54e19216641e7a99612fd6"
       },
       "qualification_head": {
-        "head": "337caa6773c60fed94a0dfebcaf471e3a470af96",
+        "head": "c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac",
         "ref": "refs/heads/release/repository-v1-compat-candidate",
         "repository": "GBeurier/nirs4all-repository",
-        "tree": "33f8d0cef23f24af2dbf74cade70bd17a5ad1bcb"
+        "tree": "1bae2a889fdee52d8c54e19216641e7a99612fd6"
       },
       "receipts": [
         {
-          "artifact_digest": "sha256:b6c1407e8387e7934d46e0db2c7f5375a06d9e41baaa2fc6ef6f4f61e9d4fe9d",
+          "artifact_digest": "sha256:35670b439df063bf4fdf8ce66513d2630450ced025d6f7a2e04d5fc130e321ed",
+          "artifact_id": 9928969311,
           "compatibility_recipes": [
             "r1",
             "r2",
             "r3"
           ],
-          "id": "build_33786080850",
+          "id": "build_33852742761",
+          "job": 100959002867,
           "published": false,
+          "run": 33852742761,
           "scope": "build_only",
           "state": "passed"
+        },
+        {
+          "checker_path": "scripts/check_public_v1_surface.py",
+          "compatibility_recipes": [
+            "r1",
+            "r2",
+            "r3"
+          ],
+          "contract_path": "contracts/public-v1-surface.n4a.json",
+          "id": "exact_r1_r2_r3_surface_contract",
+          "published": false,
+          "scope": "local_exact_source_compatibility",
+          "source_heads": {
+            "r1": "61a66d1bd0157dd9422facc4b32fca33989d4035",
+            "r2": "053a05e34184afb32310023f572094946df29bdb",
+            "r3": "2096f36633c22ff08a36650b7dd10c6bc0b177c9"
+          },
+          "source_trees": {
+            "r1": "e0583f7287c13ace028b38708268305626a47372",
+            "r2": "be3bd8e9523979536c6fc25c15d385762c9d3159",
+            "r3": "3d80ae52c9547053a521942c1f861b408ffa4775"
+          },
+          "state": "passed"
+        },
+        {
+          "artifact_digest": "sha256:67977fcc6a64f057c1a8c81870b61f02e44adfbf61e0862de320bb9eda2bd17c",
+          "artifact_id": 9929546238,
+          "build_job": 100963896276,
+          "id": "publication_33854293363",
+          "publish_job": 100964169768,
+          "published": true,
+          "pypi_url": "https://pypi.org/project/nirs4all-repository/0.1.11/",
+          "release_assets_job": 100963971428,
+          "release_url": "https://github.com/GBeurier/nirs4all-repository/releases/tag/v0.1.11",
+          "run": 33854293363,
+          "scope": "github_release_assets_and_pypi",
+          "state": "passed",
+          "tag": "v0.1.11",
+          "tag_object": "ae8b54da5f759d087e4e6ae590bf53a9816f2035"
         }
       ],
       "repo_path": "nirs4all-repository",
       "required_for_promotion": true,
-      "role": "Mandatory R4-W3/WEBREL-004 publication projection pending addition to the public-surface contract and signed release",
-      "state": "candidate"
+      "role": "Mandatory R4-W3/WEBREL-004 catalogue and publication projection with a qualified public-surface contract and published unsigned 0.1.11 artifacts",
+      "state": "receipt"
     }
   },
   "promotion": {
@@ -970,28 +1065,28 @@
       "tree": "29ae8f56656ce59cbcc2923ad6b30680d1b50a21"
     },
     "projection:cockpit:qualification_head": {
-      "head": "b612436c75adfc083506ca423a1013a0f3d663f0",
-      "ref": "refs/heads/release/native-v1-candidate",
+      "head": "972155b9af539a444ede5c585e8d9eb799d35fe0",
+      "ref": "refs/heads/codex/r4-docsup-cockpit",
       "repository": "GBeurier/nirs4all-cockpit",
-      "tree": "44e74187956fef3003c9d94f739113e74ade8cca"
+      "tree": "17faafd2aae758c0d0fd82174583896ba1b42d64"
     },
     "projection:org:qualification_head": {
-      "head": "71a1db5c7d808a015aa2a1c6f07e6542ca3b8571",
-      "ref": "refs/heads/release/native-v1-candidate",
+      "head": "28523174bdbceffbb3d5c06e43796fe04073b1f5",
+      "ref": "refs/heads/codex/r4-docsup-org",
       "repository": "GBeurier/nirs4all-org",
-      "tree": "b37719e2b9572be61fe011a3b0b46e71f6cfccfc"
+      "tree": "3e0436d6b675a3c8dd9e322748cedbb122ccb276"
     },
     "projection:repository:publication_head": {
-      "head": "0c2595e1e7305b7969afd22984ad15e37fa7ea5d",
-      "ref": "refs/tags/v0.1.10^{}",
+      "head": "c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac",
+      "ref": "refs/tags/v0.1.11^{}",
       "repository": "GBeurier/nirs4all-repository",
-      "tree": "bb23a73d03abbc2e377f1494e147623265a06a3e"
+      "tree": "1bae2a889fdee52d8c54e19216641e7a99612fd6"
     },
     "projection:repository:qualification_head": {
-      "head": "337caa6773c60fed94a0dfebcaf471e3a470af96",
+      "head": "c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac",
       "ref": "refs/heads/release/repository-v1-compat-candidate",
       "repository": "GBeurier/nirs4all-repository",
-      "tree": "33f8d0cef23f24af2dbf74cade70bd17a5ad1bcb"
+      "tree": "1bae2a889fdee52d8c54e19216641e7a99612fd6"
     }
   },
   "schema_version": "n4a.aggregation-lock/v2",

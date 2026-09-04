@@ -69,8 +69,8 @@
       {"key": "studio", "repo_path": "nirs4all-studio", "commit": "bb76f2c8833f430d26311422c9d7018592fcf6cb", "based_on": ["e254a1ebba578e5b1932d09079088d02eb51d411"], "qualification": "Rust control-plane and final documentation candidate; external product holds remain"},
       {"key": "web", "repo_path": "nirs4all-web", "commit": "f1ae6c38e6c82bd7bf525c8c4a7adc8deb456eea", "based_on": ["20867a71c45731f757267a98e7928710e7c3693d"], "qualification": "client-only WASM candidate plus documentation; unpublished"},
       {"key": "tools", "repo_path": "nirs4all-tools", "commit": "2215c9b9dcf498067ce2cad5f8bf42bf06a39285", "based_on": ["e3a332633f87b4652a06f8993e63c386a3568698"], "qualification": "explicit workspace conversion CLI candidate; unpublished"},
-      {"key": "org", "repo_path": "nirs4all-org", "commit": "c82da91f3465e7ad2fd22e91d6018cda5a739f34", "based_on": ["427ffb34268955aa7a785479a9c7f4232aa77edb"], "qualification": "candidate-status disclosure site; no release promotion"},
-      {"key": "cockpit", "repo_path": "nirs4all-cockpit", "commit": "dfdd4bd3d2cffc5170a9de5f813f0444f951d881", "based_on": ["669cc81ceb4eebfc1b5249dec20fb91caa3ac28a"], "qualification": "candidate staging dashboard; canonical lock unchanged and global status NO-GO"}
+      {"key": "org", "repo_path": "nirs4all-org", "commit": "28523174bdbceffbb3d5c06e43796fe04073b1f5", "based_on": ["71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"], "qualification": "DOC/SUP disclosure projection qualified locally; unpublished and no release promotion"},
+      {"key": "cockpit", "repo_path": "nirs4all-cockpit", "commit": "972155b9af539a444ede5c585e8d9eb799d35fe0", "based_on": ["b612436c75adfc083506ca423a1013a0f3d663f0"], "qualification": "DOC/SUP staging projection qualified locally; canonical lock unchanged and global status NO-GO"}
     ]
   },
   "v1_capability_inventory": {
@@ -121,6 +121,7 @@
       {"surface_id": "nirs4all.web.product", "capability_ids": ["format.archive-v1.read", "format.archive-v2", "format.n4mm-v1", "format.n4mm-v2", "web.client-wasm-runtime"], "no_capability_claim": null},
       {"surface_id": "nirs4all.quality.product", "capability_ids": [], "no_capability_claim": "The optional quality application has no V1 native scientific capability promise in this candidate."},
       {"surface_id": "nirs4all.providers.contracts", "capability_ids": [], "no_capability_claim": "Provider contracts remain optional integration surfaces and do not authorize native execution."},
+      {"surface_id": "nirs4all.repository.catalog", "capability_ids": [], "no_capability_claim": "Repository catalogue lookup and recipe transport are publication/integration surfaces; they do not themselves authorize native scientific execution."},
       {"surface_id": "nirs4all.cockpit.product", "capability_ids": [], "no_capability_claim": "Cockpit reports candidate and publication state; it does not execute scientific capabilities."},
       {"surface_id": "nirs4all.org.site", "capability_ids": [], "no_capability_claim": "The organization site publishes disclosure content only; it does not execute scientific capabilities."},
       {"surface_id": "nirs4all.tools.migration", "capability_ids": ["tools.workspace-inspect", "tools.workspace-convert"], "no_capability_claim": null},
@@ -193,6 +194,7 @@
     "nirs4all.ui.package",
     "nirs4all.web.product",
     "nirs4all.providers.contracts",
+    "nirs4all.repository.catalog",
     "nirs4all.cockpit.product",
     "nirs4all.org.site",
     "nirs4all.tools.migration"
@@ -381,6 +383,40 @@
       "release_batch_role": "optional_provider_contracts",
       "proof_boundary": "Published Python provider client surface; the canonical release contract remains the neutral schemas in docs/contracts/providers and must stay consumable by R/WASM/native clients without a Python dependency.",
       "local_gate_policy": "providers_local_sibling_release plus canonical schema byte-identity and fixture validation in the providers repo."
+    },
+    {
+      "id": "nirs4all.repository.catalog",
+      "display_name": "nirs4all Repository package and catalogue",
+      "ecosystem": "python_catalog",
+      "distribution": "nirs4all-repository",
+      "namespace": "nirs4all_repository",
+      "repo_path": "nirs4all-repository",
+      "lock_relation": "outside_aggregation_lock",
+      "lock_member_key": null,
+      "required_for_nirs4all_v1": true,
+      "release_batch_role": "pipeline_catalogue_projection",
+      "proof_boundary": "Required R4-W3/WEBREL-004 package and static catalogue projection. Its contract freezes Repository exports, provider entry points and recipe loading against exact R1/R2/R3 Python heads without claiming scientific execution or publication.",
+      "local_gate_policy": "Repository public-v1 surface checker on exact R1/R2/R3 heads, package gate and build-only artifact receipt.",
+      "qualification_evidence": {
+        "ref": "refs/tags/v0.1.11^{}",
+        "head": "c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac",
+        "tree": "1bae2a889fdee52d8c54e19216641e7a99612fd6",
+        "contract_path": "contracts/public-v1-surface.n4a.json",
+        "contract_sha256": "sha256:613d7008c38023d2d5e94df9bc4c9936e2a321c0d9aa24bcbf7a22cb6ac5b65f",
+        "checker_path": "scripts/check_public_v1_surface.py",
+        "checker_sha256": "sha256:ac8b886c4cecf5c515c7600bc57c79c5ed28bbbf3c6782014d5ce48628095969",
+        "build_run": 33852742761,
+        "artifact_id": 9928969311,
+        "artifact_archive_sha256": "sha256:35670b439df063bf4fdf8ce66513d2630450ced025d6f7a2e04d5fc130e321ed",
+        "wheel_sha256": "sha256:5743d99c70642ecffe9c2c4f92186a706abdb03b5b7cd2d62775ee92f8f389bb",
+        "sdist_sha256": "sha256:5f911fefbc3cf7abb7651377e703113ac0c698dfefcd5c3bb9bb7cd31410ae53",
+        "publication_run": 33854293363,
+        "publication_artifact_id": 9929546238,
+        "publication_artifact_archive_sha256": "sha256:67977fcc6a64f057c1a8c81870b61f02e44adfbf61e0862de320bb9eda2bd17c",
+        "release_url": "https://github.com/GBeurier/nirs4all-repository/releases/tag/v0.1.11",
+        "pypi_url": "https://pypi.org/project/nirs4all-repository/0.1.11/",
+        "status": "passed_published"
+      }
     },
     {
       "id": "nirs4all.cockpit.product",
