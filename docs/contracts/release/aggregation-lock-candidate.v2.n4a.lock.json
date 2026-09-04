@@ -5,7 +5,7 @@
       "nirs4all-io@e6241571e2714160d2ff769030964b8924f0cbdb",
       "nirs4all@d351785dbc17290cdc85a797ead299ffce58f257:r2-candidate",
       "nirs4all@3567bd4abcaa64443a1946748a579f0803e91889:r3-candidate",
-      "nirs4all-studio@6cfc807d63b0f4b9a1bf00324c00dd83471f4ba2",
+      "nirs4all-studio@5adad85941f2b64784384b9ebf34295a7f53fd31",
       "nirs4all-benchmarks@17f8196b26457fbd300a46d6520c3d1845d0de05",
       "nirs4all-providers@b2210ec717c0de0055fc8b9424b115a933efdb4e",
       "nirs4all-repository@dbd9dae1205e1905692decd9fc7243f4fbda3068",
@@ -26,7 +26,7 @@
     "manifest_path": "docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json",
     "tool": "scripts/n4a_release_lock.py"
   },
-  "manifest_digest": "sha256:a68777853d2ff75fe6734c18fe497f5e206c617089d468dc585a90a875a8d3f1",
+  "manifest_digest": "sha256:18c336bdd6c212e762e9a3f616aedc4b384f3704a638a33e240e330e11576c0e",
   "members": {
     "core": {
       "artifacts": [
@@ -537,10 +537,10 @@
         "tree": "f7a2032653979ddee824c6c9e15ea88c571cfdfd"
       },
       "qualification_head": {
-        "head": "6cfc807d63b0f4b9a1bf00324c00dd83471f4ba2",
+        "head": "5adad85941f2b64784384b9ebf34295a7f53fd31",
         "ref": "refs/heads/release/r3-0.11.0-candidate",
         "repository": "GBeurier/nirs4all-studio",
-        "tree": "ae7c286b83e68cc2ce09909d70a28fbd960f8272"
+        "tree": "f3bd179978b701fe5849702f8bf2977c9b6c227f"
       },
       "receipts": [
         {
@@ -559,14 +559,14 @@
         },
         {
           "callable_sha256": "7eb38aacfee0964db24d5bf2be577078883018d0f8bd603cda10cddd2a61df19",
-          "head": "6cfc807d63b0f4b9a1bf00324c00dd83471f4ba2",
+          "head": "5adad85941f2b64784384b9ebf34295a7f53fd31",
           "id": "final_candidate_ci",
           "installed_manifest_sha256": "0d8bd9ef411c7df1cf30597f5d340d58cd107e71c6cf8baa6e7f53aad6641b88",
           "publication": false,
           "python_r3_head": "3567bd4abcaa64443a1946748a579f0803e91889",
           "python_wheel_sha256": "5898aa933da2e51ad07438ae5313ade37f1dad2a363411e71e0f0a513c7b4824",
           "state": "pending",
-          "tree": "ae7c286b83e68cc2ce09909d70a28fbd960f8272"
+          "tree": "f3bd179978b701fe5849702f8bf2977c9b6c227f"
         }
       ],
       "release_role": "desktop_product",
@@ -576,11 +576,11 @@
       "role": "Rust control-plane desktop product with CPython plugin host",
       "state": {
         "branch": "release/r3-0.11.0-candidate",
-        "commit": "6cfc807d63b0f4b9a1bf00324c00dd83471f4ba2",
+        "commit": "5adad85941f2b64784384b9ebf34295a7f53fd31",
         "dirty": false,
         "exact_tag": null,
         "remote_ref": "refs/heads/release/r3-0.11.0-candidate",
-        "tree": "ae7c286b83e68cc2ce09909d70a28fbd960f8272"
+        "tree": "f3bd179978b701fe5849702f8bf2977c9b6c227f"
       },
       "version": "0.11.0"
     },
@@ -740,10 +740,10 @@
         },
         "studio": {
           "remote": {
-            "head": "6cfc807d63b0f4b9a1bf00324c00dd83471f4ba2",
+            "head": "5adad85941f2b64784384b9ebf34295a7f53fd31",
             "ref": "refs/heads/release/r3-0.11.0-candidate",
             "repository": "GBeurier/nirs4all-studio",
-            "tree": "ae7c286b83e68cc2ce09909d70a28fbd960f8272"
+            "tree": "f3bd179978b701fe5849702f8bf2977c9b6c227f"
           },
           "version": "0.11.0"
         }
@@ -1052,10 +1052,10 @@
       "tree": "f7a2032653979ddee824c6c9e15ea88c571cfdfd"
     },
     "component:studio:qualification_head": {
-      "head": "6cfc807d63b0f4b9a1bf00324c00dd83471f4ba2",
+      "head": "5adad85941f2b64784384b9ebf34295a7f53fd31",
       "ref": "refs/heads/release/r3-0.11.0-candidate",
       "repository": "GBeurier/nirs4all-studio",
-      "tree": "ae7c286b83e68cc2ce09909d70a28fbd960f8272"
+      "tree": "f3bd179978b701fe5849702f8bf2977c9b6c227f"
     },
     "component:tools:publication_head": {
       "head": "88c2bc1e29603049cdbf1a1080a35845edf2f3c9",
@@ -1106,10 +1106,10 @@
       "tree": "a06c4015a26124df1e529f82108ee7bd115236cb"
     },
     "milestone:r3:studio": {
-      "head": "6cfc807d63b0f4b9a1bf00324c00dd83471f4ba2",
+      "head": "5adad85941f2b64784384b9ebf34295a7f53fd31",
       "ref": "refs/heads/release/r3-0.11.0-candidate",
       "repository": "GBeurier/nirs4all-studio",
-      "tree": "ae7c286b83e68cc2ce09909d70a28fbd960f8272"
+      "tree": "f3bd179978b701fe5849702f8bf2977c9b6c227f"
     },
     "milestone:r4:python": {
       "head": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
