@@ -1,7 +1,7 @@
 {
   "schema_version": "n4a.public-v1-surface-matrix/v1",
   "release_train": "2026.07-refactor",
-  "status": "candidate",
+  "status": "final",
   "purpose": "Bound the known V1 release-accounting surfaces without confusing aggregation-lock membership with V1 program scope or claiming an exhaustive capability inventory.",
   "scope": {
     "authority": "Known package, product, migration, provider and publication surfaces required by ROADMAP_BACKEND_NATIF_V1.md",
@@ -57,8 +57,8 @@
     "docs/agent_reports/WAVE_10L_CORE_WEB_STUDIO_QUALITY_TOPOLOGY.md"
   ],
   "candidate_heads": {
-    "status": "unpublished-no-go",
-    "canonical_lock_updated": false,
+    "status": "published-go",
+    "canonical_lock_updated": true,
     "components": [
       {"key": "methods", "repo_path": "nirs4all-methods", "commit": "49aa40e90afef676f25809db1bd2a523e9582a49", "based_on": ["699d33f4f113b8068176e367e130951b1cf186c0", "bf2641641c8b4235201203bd338486b96964b59f"], "qualification": "Methods 1.0.16 / ABI 2.5 / n4m 0.1.4 published from the exact tagged head with all six release workflows passed"},
       {"key": "dag_ml", "repo_path": "dag-ml", "commit": "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381", "based_on": ["b7d643f450da3018c8208a84abcabfab09d5da7d"], "qualification": "dag-ml 0.3.23 published with PyPI, crates.io and npm receipts"},

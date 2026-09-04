@@ -178,7 +178,7 @@ locks:
   LOCK-API: closed_bounded_v1_surface_matrix_and_refusal_contracts_recorded
   LOCK-STUDIO: closed_studio_0_11_0_publication_with_bounded_signature_and_windows_installed_path_waivers
   LOCK-DROP: closed_rust_control_plane_and_explicit_python_plugin_boundary_recorded
-  LOCK-RELEASE: final_site_tag_seal_pending_after_all_product_publications
+  LOCK-RELEASE: closed_immutable_product_and_projection_receipts_sealed
   LOCK-SOAK: closed_functional_campaign_passed
   LOCK-DOCS: closed_release_documentation_and_final_snapshot_content_complete
 current_candidate_evidence:
@@ -189,8 +189,8 @@ current_candidate_evidence:
   publication_detail: all_selected_components_and_r1_r2_r3_r4_studio_web_repository_providers_published
   release_gate_status: go
   canonical_release_lock:
-    updated: false
-    status: v1_retained_expanded_v2_final_content_prepared_site_tag_seal_pending
+    updated: true
+    status: expanded_v2_final_lock_generated_and_immutable_projection_seal_recorded
     reason: >-
       aggregation-lock.n4a.lock.json is generated from the selected release
       manifest and represents reconstructible release members. The local
@@ -200,8 +200,8 @@ current_candidate_evidence:
       final path. Studio 0.11.0 is published.
       Studio signatures and the installed/manual Windows path are explicitly
       waived with bounded scope; SOAK-001 is passed. The v1 lock is byte-untouched and the v2
-      content is complete; the final lock commit follows the immutable Org,
-      Cockpit and soak tag seal.
+      content is complete and the immutable Org, Cockpit and soak tag seal is
+      recorded by the final lock.
   remote_candidate_staging:
     branch: release/native-v1-candidate
     status: exact_published_heads_recorded_for_complete_native_v1_train
@@ -224,8 +224,8 @@ current_candidate_evidence:
       providers: b2210ec717c0de0055fc8b9424b115a933efdb4e
       repository: dbd9dae1205e1905692decd9fc7243f4fbda3068
       benchmarks: 1649cdfb253a0eb0efec2c15b5e21a5c6219dc80
-      org: f46fc1fbc26849a9fcb1781b9fb668517ec3a4df
-      cockpit: 7f294748c3a2e926ecbfed4f96f50d8ec300313d
+      org: f5990f549b59e541ae042bc449bb6aae7754e866
+      cockpit: 2bf7d5b451086e104179db04e2aaf186f3d23698
   product_release_sequence:
     status: r1_r2_r3_r4_distinct_published_releases
     required_order: r1_0_13_0_then_r2_1_0_0_rc_1_then_r3_1_0_0_rc_2_then_r4_1_0_0
@@ -1231,29 +1231,29 @@ current_candidate_evidence:
     offline_conversion_support: closed_local
     scope: local_code_only_no_global_go
   org:
-    evidence_status: r4_docs_support_projection_with_downstream_receipts_qualified_local_publication_hold
-    commit: f46fc1fbc26849a9fcb1781b9fb668517ec3a4df
-    tree: e5897ac4b30f877617c5001d711ca7436cbe22b2
-    qualification_ref: refs/heads/codex/r4-final-site-sync
+    evidence_status: final_v1_public_release_projection_immutable_tag_sealed
+    commit: f5990f549b59e541ae042bc449bb6aae7754e866
+    tree: 3b84176748385ff8601121c592c6ba0e81c89b4c
+    qualification_ref: refs/tags/n4a-v1-2026.09-native-release^{}
     qualification_parent: 71a1db5c7d808a015aa2a1c6f07e6542ca3b8571
     previous_commit: b09f2768f264269d72be351d0c6282b769ec8f85
     package_version: 1.0.7
-    snapshot_sha256: c3b4f20a6649ccf88e5895d91f46f17440a578b2a425389ea71d1e180f40285b
-    snapshot_source_commit: 8edd28e7428f9492387e537329fe3167eb6babbf
-    stale_benchmark_disposition: stale_not_current_evidence
-    publication: false
+    snapshot_sha256: 83d90148cbb42bfd41b14a9dc68fe69e10a295ba0400edf1247c7c88b0d91ac3
+    snapshot_source_commit: d7d62825e5aa5ab5554ec7d084fab29be66acd74
+    stale_benchmark_disposition: final_functional_soak_recorded
+    publication: true
   cockpit:
-    evidence_status: r4_docs_support_projection_with_downstream_receipts_qualified_local_publication_hold
-    commit: 7f294748c3a2e926ecbfed4f96f50d8ec300313d
-    tree: 8337cf7705407f87ec724c33026da27b54bea17a
-    qualification_ref: refs/heads/codex/r4-final-site-sync
+    evidence_status: final_v1_public_release_projection_immutable_tag_sealed
+    commit: 2bf7d5b451086e104179db04e2aaf186f3d23698
+    tree: 83768355ae98512c681c57d9567512909596a92b
+    qualification_ref: refs/tags/n4a-v1-2026.09-native-release^{}
     qualification_parent: b612436c75adfc083506ca423a1013a0f3d663f0
     previous_commit: 0abde191e91629d4d54d111f93805508de9a6639
     package_version: 0.1.8
-    snapshot_sha256: c3b4f20a6649ccf88e5895d91f46f17440a578b2a425389ea71d1e180f40285b
-    snapshot_source_commit: 8edd28e7428f9492387e537329fe3167eb6babbf
-    canonical_lock_updated: false
-    global_status: no_go
+    snapshot_sha256: 83d90148cbb42bfd41b14a9dc68fe69e10a295ba0400edf1247c7c88b0d91ac3
+    snapshot_source_commit: d7d62825e5aa5ab5554ec7d084fab29be66acd74
+    canonical_lock_updated: true
+    global_status: go
   capability_governance:
     evidence_status: exhaustive_candidate_inventory_complete_no_go
     commit: cf6cd1d96c12d7043134ab0a7b4f593e19ec553b
@@ -4028,7 +4028,7 @@ work_items:
       - RC-002
       - DOC-002
       - SUP-002
-    state: advanced_expanded_v2_candidate_no_go_artifact_and_publication_holds
+    state: complete_final_lock_and_receipts_sealed
     input_sha: b2210ec717c0de0055fc8b9424b115a933efdb4e
     owned_files:
       - docs/contracts/release/
@@ -4042,13 +4042,13 @@ work_items:
       exact commit and tree. Generic promotion validation refuses GO until R4,
       publication, per-artifact SHA/receipt completeness, signatures, external
       matrices and soak are closed. The published v1 lock is byte-untouched;
-      this advances REL-004 without completing it.
+      immutable projection tags and all product receipts close REL-004.
     rollback: retain the R3 lock and refuse stable promotion
   - id: WEBREL-004
     owner: H + G
     dependencies:
       - REL-004
-    state: pending
+    state: complete_final_projection_prepared_and_validated
     input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
     owned_files:
       - nirs4all-org/
@@ -4060,17 +4060,13 @@ work_items:
       - docs/
     acceptance_tests:
       - Org, package documentation, Methods, Studio, Web, Repository, Benchmarks and Cockpit pages are generated from the final lock with redirects, SEO, JSON-LD, sitemap and downloads validated.
-    review: pending
+    review: >-
+      Org and Cockpit carry the same receipt-complete projection, preserve the
+      historical R1/R2 archives, and pass their focused static validators.
     rollback: retain R3 pages and leave stable publication in release-in-progress mode
 next_batch:
-  gate: product-publication-external-matrices-and-final-lock
+  gate: post_v1_deferred_improvements
   condition: >-
-    Keep the exact heads recorded by current_candidate_evidence as the local
-    candidate train. After the final Python tag receipts, publish qualified
-    Repository 0.1.12 and then its repinned Providers 0.2.11 consumer. Finish the representative
-    corpus and sustained functional non-crash workloads, and complete the remaining external
-    installer/runtime matrices. Complete the separately gated Python and Studio
-    product publications, fill the v2 artifact/SBOM/signature receipts, then
-    promote the expanded candidate from exact immutable heads and publish the
-    prepared documentation/sites atomically. Until those gates are closed, the
-    v2 candidate and public pages remain strict NO-GO; the v1 lock is retained.
+    Retain the exact immutable V1 train. Post-V1 work may add signing and
+    notarization credentials, an independent installed-NSIS Windows smoke, and
+    sustained cross-platform performance budgets without rewriting V1 receipts.

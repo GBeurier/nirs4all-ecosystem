@@ -5,53 +5,111 @@
       "nirs4all-io@e6241571e2714160d2ff769030964b8924f0cbdb",
       "nirs4all@d351785dbc17290cdc85a797ead299ffce58f257:r2-candidate",
       "nirs4all@3567bd4abcaa64443a1946748a579f0803e91889:r3-candidate",
-      "nirs4all-studio@1c905e4c51a146dcc85e017454557a7eace7209b",
-      "nirs4all-benchmarks@17f8196b26457fbd300a46d6520c3d1845d0de05",
+      "nirs4all-studio@1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b:0.11.0-published",
+      "nirs4all-benchmarks@1649cdfb253a0eb0efec2c15b5e21a5c6219dc80:soak-pass",
       "nirs4all-providers@b2210ec717c0de0055fc8b9424b115a933efdb4e",
       "nirs4all-repository@dbd9dae1205e1905692decd9fc7243f4fbda3068",
       "nirs4all@ef39f1a53dd120b9ce28907dc372d755dd621430:docs-rebased-on-final-r3",
-      "nirs4all@a5e5f93b8b1336bc58c0a23814066e5e14678d12:r4-stable-candidate",
+      "nirs4all@a5e5f93b8b1336bc58c0a23814066e5e14678d12:1.0.0-published",
       "nirs4all-methods@49aa40e90afef676f25809db1bd2a523e9582a49:v1.0.16-published",
       "nirs4all-tools@f4fc4a6ee9bb89f9079241e19c91ddacced3a31b:support-qualification",
       "nirs4all-org@f46fc1fbc26849a9fcb1781b9fb668517ec3a4df:methods-1.0.16-projection",
       "nirs4all-cockpit@7f294748c3a2e926ecbfed4f96f50d8ec300313d:methods-1.0.16-projection"
     ],
-    "ledger_commit": "091b8a0f3069e7a90167f78c81bb9d414c50ade5",
+    "ledger_commit": "d7d62825e5aa5ab5554ec7d084fab29be66acd74",
     "ledger_path": "docs/contracts/release/migration-work-ledger.yaml",
-    "ledger_state": "base_snapshot_retained_candidate_updates_recorded_pending_final_receipts",
-    "ledger_tree": "aebc80acdb0fb1c92425f744907f4d43ba251ec9"
+    "ledger_state": "receipt_complete_snapshot_preceding_immutable_projection_seal",
+    "ledger_tree": "52316e7150f6a778b3982a1aef5fc7627389f8b4"
   },
   "generated_from": {
     "ecosystem_repo": "nirs4all-ecosystem",
     "manifest_path": "docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json",
     "tool": "scripts/n4a_release_lock.py"
   },
-  "manifest_digest": "sha256:d5cc0ab63d5dd09a0d9803ba5a859194b44c6fc3a1aa2f6247dd2024b347a3f7",
+  "manifest_digest": "sha256:8ca511cdaea6b1cd6987adb7800f7a35a016fa2ed8f1dd43ab4b3d8dfb3d5a8d",
   "members": {
     "core": {
       "artifacts": [
         {
-          "id": "python_nirs4all_core",
+          "id": "source_tgz",
+          "sha256": "caa649f61c99188ac4c8cbdb76359a61ad97a511447e6c7e89f3d2ba715ba1de",
+          "size": 788389,
           "state": "published",
           "version": "0.3.28"
         },
         {
-          "id": "rust_nirs4all",
+          "id": "source_zip",
+          "sha256": "e4904c63e2a4a0249c2e8c626d5183592cf205752d6b32cae19a2019e54b8eb1",
+          "size": 918085,
           "state": "published",
           "version": "0.3.28"
         },
         {
-          "id": "npm_nirs4all",
+          "id": "cyclonedx_sbom",
+          "sha256": "fd5e7f6dc97aec552b12f9d2d25bf3aae798932992c26063da1d089bc3e9a06e",
+          "size": 305478,
           "state": "published",
           "version": "0.3.28"
         },
         {
-          "id": "r_nirs4all",
+          "id": "matlab",
+          "sha256": "05ff3ade87a54ce1d2bccf62536f7ba4a6e13eb8fe4f67dd2ad8ca9183a85e74",
+          "size": 51998,
           "state": "published",
           "version": "0.3.28"
         },
         {
-          "id": "matlab_octave_nirs4all",
+          "id": "r",
+          "sha256": "cbd9971f53f734361472a99d4ba2b1a46462c4e760abe57beffffb0334848ef3",
+          "size": 42524,
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "sha256sums",
+          "sha256": "e8f67481ebc238021de4a15bb6334ca75c0eb09e9d3c1f7e080945e2d0b16f43",
+          "size": 289,
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "pypi_macos_wheel",
+          "sha256": "a93876def98f0df905baa733a739998e11e5117b0e4fdc6075505d740a18301e",
+          "size": 2737082,
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "pypi_linux_wheel",
+          "sha256": "0a50c444dad06812126170cf7469c6b0a9abddfd6d02f8cee0dc7e401f5e28bc",
+          "size": 3425353,
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "pypi_windows_wheel",
+          "sha256": "e0ebd5e569344c6d021bb1f2b374a8018f132b873fc9af9bbd7be29563568e91",
+          "size": 2802704,
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "pypi_sdist",
+          "sha256": "8c92e0aba6603148ae77c4dfe2d4cec3ab4cfc4f4834da4e718c1951703cbd03",
+          "size": 227110,
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "crate_aggregate",
+          "sha256": "93c2f92ae6a96e62ab6c0e43781c487d67aa517c68f07f51d9269f69e41bd725",
+          "size": 170188,
+          "state": "published",
+          "version": "0.3.28"
+        },
+        {
+          "id": "npm_aggregate",
+          "sha256": "4c2261ef86d903138e8d4cf0bd7cc8719f4cb55fac82592b8295f9d51284a9a2",
           "state": "published",
           "version": "0.3.28"
         }
@@ -63,6 +121,13 @@
         "tree": "5181e3bc65c9a3ee413bdfc8b81f34cd61450f7e"
       },
       "receipts": [
+        {
+          "id": "release_v0_3_28",
+          "published": true,
+          "release_id": 382139965,
+          "state": "passed",
+          "tag_object": "e4734ae3e060fabb2935097ef70db81a4a31245d"
+        },
         {
           "id": "ci",
           "run": 33773780924,
@@ -114,12 +179,111 @@
       }
     },
     "dag_ml": {
+      "artifacts": [
+        {
+          "id": "pypi_macos_x64_wheel",
+          "sha256": "c7e9a4bcf3984727bd3cdebe6aa5f19f6422df9dc19c15ec77455fca833e5b35",
+          "size": 9288750,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "pypi_macos_arm64_wheel",
+          "sha256": "9f6d3569f92f2c7758f3b8a77dd348af091d5098b5acced437dc3c8596208f1e",
+          "size": 8837050,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "pypi_linux_arm64_wheel",
+          "sha256": "2adc1a4cb483af61343f1d9cc5942a4189afa23d3951475091cf462d98840dc7",
+          "size": 9853413,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "pypi_linux_x64_wheel",
+          "sha256": "3e543c0db6fe802941be1842c940c020b3a0693c8e5a963c29807f21c4046d94",
+          "size": 9812354,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "pypi_windows_wheel",
+          "sha256": "2aeca6278773b4ba4ae3fec17acc5e709dbba280655a7b1cabd2881e2a7988e4",
+          "size": 9105496,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "pypi_sdist",
+          "sha256": "03fca0374720314119f1d1306adb62152d30a02fe395ec0ad61ac3d4a97c1193",
+          "size": 873487,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "crate_facade",
+          "sha256": "70f5f0bb78275c12320a96d3484d455399e6e2426777dc53f58a8c2dab9bd14f",
+          "size": 3556,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "crate_core",
+          "sha256": "d80e4942216da18b5b48798b4d34bb9e5b77c0027c60e909ced0635e83f8e19c",
+          "size": 732587,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "crate_arrow",
+          "sha256": "c058a759ff66321a5ba6a146d0facae1bdec90c944da657b0a415f5ff835398e",
+          "size": 16221,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "crate_capi",
+          "sha256": "670aa54b3bac27649daccf545334e6e08e7c2f92d5d8e74d04462e7564da3029",
+          "size": 91629,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "crate_cli",
+          "sha256": "6e5a9565bbbfc341b3bafe984eb1f5846fae1c6b9652e10a62fd9abeee797900",
+          "size": 76868,
+          "state": "published",
+          "version": "0.3.23"
+        },
+        {
+          "id": "npm_wasm",
+          "sha256": "257e4eb4347f11e12d524f29a48ffdf613631b523bfd269a72ba3a8fabb58849",
+          "state": "published",
+          "version": "0.3.23"
+        }
+      ],
       "publication_head": {
         "head": "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381",
         "ref": "refs/tags/v0.3.23^{}",
         "repository": "GBeurier/dag-ml",
         "tree": "8dffd6e823e214b720e1f8d715ddb7634bd4fb4e"
       },
+      "receipts": [
+        {
+          "id": "release_v0_3_23",
+          "published": true,
+          "release_id": 381928168,
+          "runs": [
+            33743414971,
+            33743414992,
+            33743414991
+          ],
+          "state": "passed",
+          "tag_object": "63baa9e42902aa402eae475551cd0265a606f136"
+        }
+      ],
       "release_role": "native_runtime",
       "release_state": "published",
       "repo_path": "dag-ml",
@@ -136,12 +300,118 @@
       "version": "0.3.23"
     },
     "dag_ml_data": {
+      "artifacts": [
+        {
+          "id": "pypi_macos_x64_wheel",
+          "sha256": "6c2b5bdcb0d04183b771368add55af09a41003a841537a246cae347d880578a0",
+          "size": 686342,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "pypi_macos_arm64_wheel",
+          "sha256": "90bfc46248d93a5b5ebf4e15a2dcf92b81f2180acb9550703e3b355af0aada4a",
+          "size": 660190,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "pypi_linux_arm64_wheel",
+          "sha256": "a964ed28422f737702a5e81077acbe75f8763a601df6869f6159b6288046ba8c",
+          "size": 722216,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "pypi_linux_x64_wheel",
+          "sha256": "ef46e8b238c5fb1e99e3ad92e75d5eb279ee355dfbf42d4299250d904a38e8f6",
+          "size": 752224,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "pypi_windows_wheel",
+          "sha256": "58e104466fa8d7b50377f7442e6e8eb884667cdbac74edc1185352e3530ceb6e",
+          "size": 565170,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "pypi_sdist",
+          "sha256": "9a596fea1f0fdce7b795252a83f932afd6eff17ff61fcd2bd8caa64998528f92",
+          "size": 131015,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "crate_facade",
+          "sha256": "8e51066de9e2cc9010af68575564b0fa739ff263dba58e2ad9d09ba59dd86216",
+          "size": 2570,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "crate_core",
+          "sha256": "b0ec55a00085033a8249018eb8e145f03d43e301c91227e8adf0f0dc30bde3ea",
+          "size": 99433,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "crate_arrow",
+          "sha256": "d571db8c08b7b736cede8b5185fe29eb03f70a44a1c4d094b69f4131ef175a80",
+          "size": 11163,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "crate_capi",
+          "sha256": "4f6f7beddbd7308810fc80d1929f467e0dd0b11e71b58b7e738312cbc52adab9",
+          "size": 80975,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "crate_cli",
+          "sha256": "387f9ae4167329b3ead306e22ca64ed5abfbb6266da8e3bef192dd6b5a5b7d4f",
+          "size": 5695,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "crate_provider",
+          "sha256": "21d3821e935412ef77484a51b555abf7685735f5aa77f990f0d621a48d3a2a7e",
+          "size": 13427,
+          "state": "published",
+          "version": "0.2.10"
+        },
+        {
+          "id": "npm_wasm",
+          "sha256": "3b872418c8163bc136a53333f9ca25321e60f1a78acdc61d39bb3eb7952eb1fa",
+          "state": "published",
+          "version": "0.2.10"
+        }
+      ],
       "publication_head": {
         "head": "7d9b9fed04c135ed4c2bba472c782aca7ef85807",
         "ref": "refs/tags/v0.2.10^{}",
         "repository": "GBeurier/dag-ml-data",
         "tree": "42f02fdd723239cdbc933797e01d0d48b184712e"
       },
+      "receipts": [
+        {
+          "id": "release_v0_2_10",
+          "published": true,
+          "release_id": 381911157,
+          "runs": [
+            33741627209,
+            33741627205,
+            33741627317
+          ],
+          "state": "passed",
+          "tag_object": "fa2c57c7fbc067574dee7f442184f4f8d645359b"
+        }
+      ],
       "release_role": "native_runtime",
       "release_state": "published",
       "repo_path": "dag-ml-data",
@@ -158,6 +428,126 @@
       "version": "0.2.10"
     },
     "datasets": {
+      "artifacts": [
+        {
+          "id": "source_tgz",
+          "sha256": "33ceea6e50815138a5e7c35242e74d21c9a6de1eb94feee8e743b8e37bc30883",
+          "size": 7808827,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "source_zip",
+          "sha256": "b05e90f9190d01ff3415813f0c3ec4baa3eea6f7cd613a67164f26581f49f464",
+          "size": 8826379,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "cyclonedx_sbom",
+          "sha256": "617223b6a741786f7c70fff409aad05247914a1ae8e67a72bd68a37861c2198f",
+          "size": 748563,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "capi_macos",
+          "sha256": "e22936c555cf0a75ecae8821820ce99ca5d01289be9b019c9220ae7004ee76d4",
+          "size": 30342637,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "capi_linux",
+          "sha256": "5a249d0d973d87771f40d8de577132d4c9ab5ad9263569edd09691baa8501459",
+          "size": 34771428,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "capi_windows",
+          "sha256": "2a3db134e4f1ce0e8add7adf1233e2992cf474af2a2cf0e38d89a61e0890976a",
+          "size": 35782543,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "matlab",
+          "sha256": "19d0dc74837da3b774d27f8cb26897eba1030bb588e0a52805dac7f13ac7fd87",
+          "size": 7647,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "r",
+          "sha256": "672d2959cf58f30e0dfd625b8e3409904898c640808930e583385d56a96be234",
+          "size": 24458797,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "pypi_macos_wheel",
+          "sha256": "4ff6a784891f9eb619f2f2e4ad64ef11c374388ceb496efd1650b0ac322117a9",
+          "size": 7229755,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "pypi_linux_wheel",
+          "sha256": "15fd3dac58448cea97f9b4575ba62e1ca50ab865d2be6b834fed1776f5acaa32",
+          "size": 8511679,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "pypi_windows_wheel",
+          "sha256": "0345f6116258b742c1d416fa4a222e518f5f5b0d3c89cc98efb5d285e2bffd8c",
+          "size": 7349654,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "pypi_sdist",
+          "sha256": "a9cbc3108e54463e05f55d7a3874bd05861652a615a9d9121c888c7db1dcc39f",
+          "size": 1523919,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "sha256sums",
+          "sha256": "2d234287f638a82b4b4e4ecaaa8bd43e61888e83b60b55ee4f2914342cf69621",
+          "size": 301,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "crate_core",
+          "sha256": "ec204c66afd5d61992fa48460b7febe2cca842bb734f87ebeec171758e310cf8",
+          "size": 53644,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "crate_capi",
+          "sha256": "69e90a33ac936c15d2eb35c1923b94ce3d069ba88ba5eb34ca0c4c0be592bbd7",
+          "size": 26348,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "crate_cli",
+          "sha256": "de83003231885ea791b8a64c1d6f61f37f79d1c6d454f337c9075ceb03716fda",
+          "size": 21515,
+          "state": "published",
+          "version": "0.3.10"
+        },
+        {
+          "id": "npm_wasm",
+          "sha256": "0885a6aebf547fe4ae3f99360661bb368bc3d7711353afce098a4a0a8e006bfb",
+          "state": "published",
+          "version": "0.3.10"
+        }
+      ],
       "dependency_receipts": [
         {
           "component": "io",
@@ -172,6 +562,23 @@
         "repository": "GBeurier/nirs4all-datasets",
         "tree": "7e37557cff5b4d825e9837e96cb4b2ff05211678"
       },
+      "receipts": [
+        {
+          "id": "published_tag_and_registries",
+          "published": true,
+          "release_id": 382046331,
+          "runs": [
+            33761414558,
+            33761414624,
+            33761414454,
+            33761414569,
+            33761414515,
+            33761414564
+          ],
+          "state": "passed",
+          "tag_object": "ac440faf9c485592656495fd604a7750289f006a"
+        }
+      ],
       "release_role": "optional_data_surface",
       "release_state": "published",
       "repo_path": "nirs4all-datasets",
@@ -188,12 +595,161 @@
       "version": "0.3.10"
     },
     "formats": {
+      "artifacts": [
+        {
+          "id": "source_tgz",
+          "sha256": "11a06a46a3beddf0810c0dd9cd0ed0f530887a1e29756a5e1feb0d16edb56118",
+          "size": 76055653,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "source_zip",
+          "sha256": "8f64e2e555275437374546343ffa9a0c7fcf1b5f97b077f2015150d420535179",
+          "size": 76594428,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "cyclonedx_sbom",
+          "sha256": "d8dbc7167710b37fb5e3a4df36a55cbd41e6f4e965031e0724b99db5c88f4117",
+          "size": 300630,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "capi_macos_arm64",
+          "sha256": "5bcc92d3ac127bf9372b1214787f739c53cf4965ebcea17556c39e0e3297eca2",
+          "size": 6069480,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "capi_macos_x64",
+          "sha256": "f97a1796ad526b4bf8d77b5ff31a33d84910b910fb52c285ebd1765e1a7baab2",
+          "size": 6198540,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "capi_windows",
+          "sha256": "90af49bb82a158d918d346bb2a00fe1430fbd9d516f2b3a1da0dd109b95fe071",
+          "size": 99239,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "capi_linux",
+          "sha256": "2050f2dc51fe6343b5663d018c14aee57868beac6895c9b49042fb01400e83ef",
+          "size": 6279715,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "r_lite",
+          "sha256": "a3e35b24c7fe33f1ee5ee41a251cb4ca7067f25b02543a917374975e5dac734a",
+          "size": 10504053,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "r_full",
+          "sha256": "bcf6fd24f4041a352bc2aeff498254807f221e451a07ab9e4fed7ed9aa432635",
+          "size": 13338161,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "pypi_linux_wheel",
+          "sha256": "e47467a8d7a7b53d4267a6d9be717f616c1a51bbe2ea1e93841a0ab14ecb288e",
+          "size": 4725769,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "pypi_windows_wheel",
+          "sha256": "fa654776182c65102813654e1425c06ad520fce5d00ba31052d660839dce7852",
+          "size": 4217923,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "pypi_sdist",
+          "sha256": "09a1b4f211f916c8d08c8104206447f22889973c8d57ad45677702d5d7f5bdcd",
+          "size": 770037,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "sha256sums",
+          "sha256": "3161398355a17537cde79513c4adf4009b63c682a7411daec95dc7d4ddb13f1e",
+          "size": 295,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "web_wasm",
+          "sha256": "de0881dfc3ee53729b8c39c4214461660d4bec863a2e39455d797e09c2fffcd0",
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "crate_facade",
+          "sha256": "855e869d8ab4ac5bdc52fbeb6196786b7ad780834d3c4b4f89fb56728c8699fc",
+          "size": 587737,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "crate_core",
+          "sha256": "8636d5dc1569feb4182164ffd890fcf20cb1bc458ad5c2375ad31b8c19f517c4",
+          "size": 26630,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "crate_capi",
+          "sha256": "3a28afb6faf76f5e97e046b905516c260475dee170e3ddc243624477c65a61bb",
+          "size": 35705,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "crate_cli",
+          "sha256": "053bcc0eea53cfdf6c72d4bf7d5f8e08bcfbff975e2716046a4f754e57a46337",
+          "size": 36674,
+          "state": "published",
+          "version": "0.2.9"
+        },
+        {
+          "id": "npm_formats_wasm",
+          "sha256": "aff204986cf28270585aa9b82b92305516672da9e3f5367ea4be551b18c14f13",
+          "state": "published",
+          "version": "0.2.9"
+        }
+      ],
       "publication_head": {
         "head": "3e5a05674dfab4bbcebf23fe9d615d231ca4d551",
         "ref": "refs/tags/v0.2.9^{}",
         "repository": "GBeurier/nirs4all-formats",
         "tree": "3b9717258fc80791d80641633a4bbf6478e7256a"
       },
+      "receipts": [
+        {
+          "id": "release_v0_2_9",
+          "published": true,
+          "release_id": 382012921,
+          "runs": [
+            33756823916,
+            33756823910,
+            33756823948,
+            33756823824,
+            33756823823
+          ],
+          "state": "passed",
+          "tag_object": "08d3673abe0f6e0d21662704cddbe5ccab28179c"
+        }
+      ],
       "release_role": "native_runtime",
       "release_state": "published",
       "repo_path": "nirs4all-formats",
@@ -210,19 +766,173 @@
       "version": "0.2.9"
     },
     "io": {
+      "artifacts": [
+        {
+          "id": "source_tgz",
+          "sha256": "8733ce27bdfa0513a0fd949e314aeb600be3111f063c93615fc0f4ba788c696a",
+          "size": 3941323,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "source_zip",
+          "sha256": "14d72c82056fe678c438882cc3741c0f5fc729d7a454ee7566fb8e36e771bc0a",
+          "size": 4184612,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "release_sbom",
+          "sha256": "0bc375f07d6c38a095392f799d345c3222978347049dda901ef45e2071a397e6",
+          "size": 930191,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "capi_macos",
+          "sha256": "f2821da06aa079a4b8f7c1ac3dd7be4b9252f5629321745d3d6f27832e8c5dd6",
+          "size": 3041299,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "capi_windows",
+          "sha256": "a9fdf4fe43c1675e68abffbf19e8e8dc9af45907daa2e06ea42973741af93e28",
+          "size": 2969066,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "capi_linux",
+          "sha256": "ca80382de97cc809ca20ea4b7c7b55b6a6b2d86e8a9bc18fb6a74bfa99271b0c",
+          "size": 3687303,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "matlab",
+          "sha256": "c407cac21f9081d398f0a83f16719d9e6cf01891e2f684a94984ba77fae25060",
+          "size": 56064,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "r",
+          "sha256": "b9b9f6f8e841db93c8c1672ed66c9c4b8a373b7731f877530f127a6f6b2017e3",
+          "size": 15737943,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "pypi_macos_wheel",
+          "sha256": "c59eb8d8ecf40269b76064eddb4d8aee8ce9661649ebc356fb6ded707fe45f52",
+          "size": 3160606,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "pypi_linux_wheel",
+          "sha256": "24298b9e53b67e1a2bde7639871bf0de8fa7f2eb95e4f3b68afececc895454e1",
+          "size": 3809089,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "pypi_windows_wheel",
+          "sha256": "63f7ed1366b7bac4c26ca1e49b67d06ea52554aa5b6b99387010106ceef78009",
+          "size": 3062188,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "pypi_sdist",
+          "sha256": "960ad7946d446f8dd011a2ffcb493c479092b638f13b08241debb23e33653ae8",
+          "size": 364716,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "sha256sums",
+          "sha256": "66a0faac49290882115acd847bf0923a950d946b74fe5b0aa77b6d23f727a3ee",
+          "size": 283,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "web_wasm",
+          "sha256": "a99b75a6dfa3fe86c0b27d96334b8da0b4ccae5eda39084533f57a104738fc9c",
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "qualification_sbom",
+          "sha256": "2fb93d6b81a3fa7fab9b0bf388b170f8dac4e4ac0f5a37f51b616bfb67067631",
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "crate_facade",
+          "sha256": "88884dde80720c482d8db1eda66319925320c8280a1dee9092b29c75caaa54ee",
+          "size": 84850,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "crate_core",
+          "sha256": "a8c67c186f2226d19a5b4db65b35366d6ef96527bc594aaaa579e08508ec2720",
+          "size": 186176,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "crate_capi",
+          "sha256": "106b1de8c8bcbba8be2e97ef79bfeb0a8d20a27f5b5faac0e70b1568160a6e16",
+          "size": 61287,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "crate_cli",
+          "sha256": "a9264a5be9fcbd5c3d15ba3b33e7aa33deb4540f0fdc30a5c5085e00cbf55412",
+          "size": 54486,
+          "state": "published",
+          "version": "0.1.14"
+        },
+        {
+          "id": "npm_wasm",
+          "sha256": "9832b1da865e3ffa640acb8175e03f2e140d409879713277fa068bac64c83b0a",
+          "state": "published",
+          "version": "0.1.14"
+        }
+      ],
       "publication_head": {
         "head": "df7f2198862c71a24aeeba08ba09ee118524b55d",
         "ref": "refs/tags/v0.1.14^{}",
         "repository": "GBeurier/nirs4all-io",
         "tree": "16b2910ec602cfa4fd1db2f1c1d9b2a89893b857"
       },
-      "qualification_head": {
-        "head": "e6241571e2714160d2ff769030964b8924f0cbdb",
-        "ref": "refs/heads/release/io-0.1.14-security-candidate",
-        "repository": "GBeurier/nirs4all-io",
-        "tree": "bd133e35893c4405b59f6551d5a91d6722904219"
-      },
       "receipts": [
+        {
+          "id": "release_v0_1_14",
+          "npm_fix_forward_conclusion": "success",
+          "npm_fix_forward_head": "a5f7eac50126d445f745f945ff5c770ed470254c",
+          "npm_fix_forward_run": 33759116148,
+          "npm_fix_forward_tree": "9c5588ea2932ff8b387e9ca87954c2bbb42317f0",
+          "npm_registry_published": true,
+          "npm_release_run": 33758741078,
+          "npm_release_run_conclusion": "failure",
+          "published": true,
+          "release_id": 382026014,
+          "state": "passed",
+          "successful_runs": [
+            33758741064,
+            33758741058,
+            33758741122,
+            33758741192,
+            33758741196
+          ],
+          "tag_object": "810e8989d5df9120013c4e56051eb7c79bccacd5"
+        },
         {
           "archive_digest": "sha256:c1ea1d8beaf9ffa9be52192a9e7f6ac8570a0fc8f58905b3f31bde5c157a6d44",
           "artifact_id": 9905226215,
@@ -262,19 +972,22 @@
     "methods": {
       "artifacts": [
         {
-          "id": "methods_project",
+          "id": "source_tarball",
+          "sha256": "f8bb9259bdfcaac8b071d93ec6b1abebf75e5015d7f6d25fa605c0da24585d08",
           "state": "published",
           "version": "1.0.16"
         },
         {
-          "id": "n4m_c_abi",
+          "id": "sbom",
+          "sha256": "8a580c8a78fbdcac70a01bc39b4679750e8e626d2f5de93220d081adfaf74bed",
           "state": "published",
-          "version": "2.5.0"
+          "version": "1.0.16"
         },
         {
-          "id": "n4m_rust_binding",
+          "id": "matlab_octave",
+          "sha256": "ca60c80b574663fc104dfac56bb0a680e6aac4111c037fbdc6a950b17e3f7934",
           "state": "published",
-          "version": "0.1.4"
+          "version": "1.0.16"
         }
       ],
       "publication_head": {
@@ -574,12 +1287,6 @@
         "repository": "GBeurier/nirs4all-providers",
         "tree": "23a4a70513a33118c19923a47647a0a362c85f18"
       },
-      "qualification_head": {
-        "head": "b2210ec717c0de0055fc8b9424b115a933efdb4e",
-        "ref": "refs/heads/release/providers-0.2.11-repository-0.1.12-candidate",
-        "repository": "GBeurier/nirs4all-providers",
-        "tree": "23a4a70513a33118c19923a47647a0a362c85f18"
-      },
       "receipts": [
         {
           "id": "github_release_351621812",
@@ -667,20 +1374,56 @@
       "version": "0.2.11"
     },
     "python": {
+      "artifacts": [
+        {
+          "id": "pypi_wheel",
+          "sha256": "fb02ef000368f9d46c228214d2c8e19f71b6b6cf52cb1d52fd66b9220be1d002",
+          "state": "published",
+          "version": "1.0.0"
+        },
+        {
+          "id": "pypi_sdist",
+          "sha256": "11feaca3b442c536e0baf0db58209c62cd76c180af2e2b229b270fd31ae06f59",
+          "state": "published",
+          "version": "1.0.0"
+        },
+        {
+          "id": "installed_record",
+          "sha256": "6c1b938ec4b26f83e998de60d446648d9e013a56f39ce89b11312b301246e736",
+          "state": "published",
+          "version": "1.0.0"
+        },
+        {
+          "id": "installed_manifest",
+          "sha256": "caa89ad16dd77a4528f80965e66a03fed71101a4cf5cedb1fcd15a79c60be7ee",
+          "state": "published",
+          "version": "1.0.0"
+        },
+        {
+          "id": "ghcr_image",
+          "sha256": "c0a7420e1c63fc8bef403c673aefc46f62dc86cff45d28dff9b2e9c96f60ed9e",
+          "state": "published",
+          "version": "1.0.0"
+        }
+      ],
       "publication_head": {
-        "head": "61a66d1bd0157dd9422facc4b32fca33989d4035",
-        "ref": "refs/tags/0.13.0^{}",
-        "repository": "GBeurier/nirs4all",
-        "tree": "e0583f7287c13ace028b38708268305626a47372"
-      },
-      "qualification_head": {
         "head": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
-        "parent": "ef39f1a53dd120b9ce28907dc372d755dd621430",
-        "ref": "refs/heads/release/r4-1.0.0-candidate-v3",
+        "ref": "refs/tags/1.0.0^{}",
         "repository": "GBeurier/nirs4all",
         "tree": "1f566f81f5309ed0b73872fbc01db00a40d4e3e2"
       },
       "receipts": [
+        {
+          "ghcr_published": true,
+          "id": "r4_1_0_0_publication_33885659321",
+          "jobs": "10/10",
+          "pypi_published": true,
+          "release_id": 382803888,
+          "release_url": "https://github.com/GBeurier/nirs4all/releases/tag/1.0.0",
+          "run": 33885659321,
+          "state": "passed",
+          "tag_object": "a1fc8123e03840624f459b0078fdf104955c7800"
+        },
         {
           "base_r3": "3567bd4abcaa64443a1946748a579f0803e91889",
           "disposition": "rebased_on_final_r3_publication_hold",
@@ -716,16 +1459,16 @@
         }
       ],
       "release_role": "python_product",
-      "release_state": "candidate",
+      "release_state": "published",
       "repo_path": "nirs4all",
       "repo_url": "GBeurier/nirs4all",
       "role": "Full Python library, compatibility oracle and product API",
       "state": {
-        "branch": "release/r4-1.0.0-candidate-v3",
+        "branch": null,
         "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
         "dirty": false,
-        "exact_tag": null,
-        "remote_ref": "refs/heads/release/r4-1.0.0-candidate-v3",
+        "exact_tag": "1.0.0",
+        "remote_ref": "refs/tags/1.0.0^{}",
         "tree": "1f566f81f5309ed0b73872fbc01db00a40d4e3e2"
       },
       "version": "1.0.0"
@@ -733,43 +1476,169 @@
     "studio": {
       "artifacts": [
         {
-          "archive_digest": "sha256:8149cce1671f4ea1cf5e99f3b4c5ef4412984ad424fa7c6075b898facf02ca6d",
-          "artifact_id": 9904512043,
-          "id": "pinned_plugin_wheels",
-          "size": 2673674,
-          "state": "candidate",
+          "filename": "nirs4all.Studio-0.11.0-all-in-one-linux-x64.tar.gz",
+          "id": "all_in_one_linux_x64",
+          "sha256": "f415acd2b05cce6d26b49a3fd59b506c53a57e037473171d86df8210062e6f0a",
+          "size": 457626609,
+          "state": "published",
           "version": "0.11.0"
         },
         {
-          "archive_digest": "sha256:07fe1d212bb5ce16d6ab15e5250bae79260f714e51db0e6ab2cd6c7a606199df",
-          "artifact_id": 9905321037,
-          "id": "windows_x64_installer",
-          "size": 597328231,
-          "state": "candidate",
+          "filename": "nirs4all.Studio-0.11.0-all-in-one-linux-x64.tar.gz.sha256",
+          "id": "all_in_one_linux_x64_checksum",
+          "sha256": "c2bdc1e9d47c0d51a48c3db0fcb8032cf18ecd4c0193595125c8c8041cb20558",
+          "size": 175,
+          "state": "published",
           "version": "0.11.0"
         },
         {
-          "archive_digest": "sha256:953a8014891fb80b408c2490ec1b21e10a2f873027805c875491ac215ba7c6e7",
-          "artifact_id": 9905057224,
-          "id": "linux_x64_appimage",
-          "size": 822183865,
-          "state": "candidate",
+          "filename": "nirs4all.Studio-0.11.0-all-in-one-mac-arm64.zip",
+          "id": "all_in_one_macos_arm64",
+          "sha256": "e042b06bece4d118b6c5108f791185535ea67a91c5ca239c540bf843238b388a",
+          "size": 319335645,
+          "state": "published",
           "version": "0.11.0"
         },
         {
-          "archive_digest": "sha256:ad895bb11ae7337804dd886508620a973cf2707208522923e7564aa4d6b2a050",
-          "artifact_id": 9905786569,
-          "id": "macos_x64_dmg",
-          "size": 371516175,
-          "state": "candidate",
+          "filename": "nirs4all.Studio-0.11.0-all-in-one-mac-arm64.zip.sha256",
+          "id": "all_in_one_macos_arm64_checksum",
+          "sha256": "87b0d8330af29edcd0cf69c60f8d716f37913352ddeabc9b8fdc23b81f9b6bb2",
+          "size": 173,
+          "state": "published",
           "version": "0.11.0"
         },
         {
-          "archive_digest": "sha256:1759fec8d37279cf9b20dce36cca8c371abecd01b29d216d9502e24d1b52e3f5",
-          "artifact_id": 9904914674,
+          "filename": "nirs4all.Studio-0.11.0-all-in-one-mac-x64.zip",
+          "id": "all_in_one_macos_x64",
+          "sha256": "13fe38ba625e9288adedb6bb8e058b03ff14ebf09a8b904b929251f3997f0f64",
+          "size": 340879843,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-all-in-one-mac-x64.zip.sha256",
+          "id": "all_in_one_macos_x64_checksum",
+          "sha256": "eeb44bea3653865e7ed5dcceec31ce7198ce5510bbda34baeca8b526f33ecd1a",
+          "size": 171,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-all-in-one-win-x64.zip",
+          "id": "all_in_one_windows_x64",
+          "sha256": "8091ca079236581a0fa8620ee24e43059094cffd85bc5b6f87e43de9de22159d",
+          "size": 373732236,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-all-in-one-win-x64.zip.sha256",
+          "id": "all_in_one_windows_x64_checksum",
+          "sha256": "a3aad53c50a33537662133a6318b3e00f44595d38fac6c9fb8556cd64152a075",
+          "size": 111,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-linux-amd64.deb",
+          "id": "linux_deb",
+          "sha256": "4cebea1be58dc5ef4d45b68bf17c6dcd2cbc9b0bd97cde14599cc1ed960cb2d4",
+          "size": 368522448,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-linux-amd64.deb.sha256",
+          "id": "linux_deb_checksum",
+          "sha256": "317e1c9650c693fe0a44c6f28c67c15ab12c9c2e07016d2a17d87b4c0a0da0e3",
+          "size": 105,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-linux-x86_64.AppImage",
+          "id": "linux_appimage",
+          "sha256": "e2c621cc81f801779e58c925dd544ffcb0254724a95758859c1a3d51066b8b80",
+          "size": 455506658,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-linux-x86_64.AppImage.sha256",
+          "id": "linux_appimage_checksum",
+          "sha256": "9c2c9413a74710536ea902fdda8f8b9531448b273c3bb3c1539699dd311fe982",
+          "size": 111,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-mac-arm64.dmg",
           "id": "macos_arm64_dmg",
-          "size": 350503372,
-          "state": "candidate",
+          "sha256": "fd881079959f88cc89a4e7a42a0258d168ce6d7fc88dde394f322d74a0155dc6",
+          "size": 351653233,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-mac-arm64.dmg.sha256",
+          "id": "macos_arm64_dmg_checksum",
+          "sha256": "0d3434833be73ce6faf6624bfc7f9bed9008a65f756453d08a890ded9090c984",
+          "size": 103,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-mac-x64.dmg",
+          "id": "macos_x64_dmg",
+          "sha256": "ae4a9942b0b9c070f074e62318d470fb70e197c7112279c2d92957638f509e49",
+          "size": 372623383,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-mac-x64.dmg.sha256",
+          "id": "macos_x64_dmg_checksum",
+          "sha256": "28e4ca736f01b52bf65f68e962727d38f12b6df46dc8abb5485fbc5a07296cfe",
+          "size": 101,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-win-x64-portable.exe",
+          "id": "windows_portable",
+          "sha256": "0748c716e1272009bb6fdeb9253987c3cdf53dbd95955d651d953ba0a21942ef",
+          "size": 298699895,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-win-x64-portable.exe.sha256",
+          "id": "windows_portable_checksum",
+          "sha256": "6355eb120348c5a9437f98c71ddc8ef24b30af4b82454987c536543a56fea9d5",
+          "size": 109,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-win-x64.exe",
+          "id": "windows_nsis",
+          "sha256": "e1810f3b2b4db329e9043f0d6fe346d8d78cca4609b39fccba7624e9b6288cf6",
+          "size": 298945458,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "filename": "nirs4all.Studio-0.11.0-win-x64.exe.sha256",
+          "id": "windows_nsis_checksum",
+          "sha256": "efcf75dd6c1d1f7e8b80b50384d60d0cf3235e43d9980f5d635e7333a32288a7",
+          "size": 100,
+          "state": "published",
+          "version": "0.11.0"
+        },
+        {
+          "id": "ghcr_image",
+          "sha256": "06db667567fcc8d3a0cc728024b28ddb2d82cdb988c2204a7c6c448f95fb6489",
+          "state": "published",
           "version": "0.11.0"
         }
       ],
@@ -788,16 +1657,10 @@
         }
       ],
       "publication_head": {
-        "head": "5d043ee23f0ba7f47584bc9ef18fa13755e59198",
-        "ref": "refs/tags/0.10.1^{}",
+        "head": "1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b",
+        "ref": "refs/tags/0.11.0^{}",
         "repository": "GBeurier/nirs4all-studio",
-        "tree": "f7a2032653979ddee824c6c9e15ea88c571cfdfd"
-      },
-      "qualification_head": {
-        "head": "1c905e4c51a146dcc85e017454557a7eace7209b",
-        "ref": "refs/heads/release/r3-0.11.0-candidate",
-        "repository": "GBeurier/nirs4all-studio",
-        "tree": "50472b2f0a2f98790cc7646c253cc31146270e1c"
+        "tree": "e6bdb63b994a276336e976d5b0a37904abc87731"
       },
       "receipts": [
         {
@@ -816,32 +1679,84 @@
         },
         {
           "callable_sha256": "7eb38aacfee0964db24d5bf2be577078883018d0f8bd603cda10cddd2a61df19",
-          "head": "1c905e4c51a146dcc85e017454557a7eace7209b",
-          "id": "final_candidate_ci",
+          "head": "1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b",
+          "id": "studio_0_11_0_publication_33882504444",
           "installed_manifest_sha256": "0d8bd9ef411c7df1cf30597f5d340d58cd107e71c6cf8baa6e7f53aad6641b88",
-          "publication": false,
+          "jobs": [
+            101054284635,
+            101054326213,
+            101054326238,
+            101054454910,
+            101054454994,
+            101054454995,
+            101054454997,
+            101054455009,
+            101054455017,
+            101054455031,
+            101054455047,
+            101064280313
+          ],
+          "libn4m_sha256": "4e0fe10eb516d036cf72c051830c20177d8beecf1f601bfd8f69e2255c5e8770",
+          "notarized": false,
+          "publication": true,
           "python_r3_head": "3567bd4abcaa64443a1946748a579f0803e91889",
           "python_wheel_sha256": "5898aa933da2e51ad07438ae5313ade37f1dad2a363411e71e0f0a513c7b4824",
-          "state": "pending",
-          "tree": "50472b2f0a2f98790cc7646c253cc31146270e1c"
+          "release_id": 382803640,
+          "release_url": "https://github.com/GBeurier/nirs4all-studio/releases/tag/0.11.0",
+          "runtime_contract_sha256": "7b76c079af5907b947a267c67e7e3f1579e13b8248d76eaf19ec9239590b790a",
+          "self_update_all_in_one": "4/4",
+          "signed": false,
+          "state": "passed",
+          "studio_sidecar_sha256": "f82d421775668be210c4926ed287ee2a99a074da12215b1d47ccaad5015722f3",
+          "tag": "0.11.0",
+          "tag_object": "1250621d72d7a729e414ae1bc8c210192d6ef994",
+          "tree": "e6bdb63b994a276336e976d5b0a37904abc87731"
         }
       ],
       "release_role": "desktop_product",
-      "release_state": "candidate",
+      "release_state": "published",
       "repo_path": "nirs4all-studio",
       "repo_url": "GBeurier/nirs4all-studio",
       "role": "Rust control-plane desktop product with CPython plugin host",
       "state": {
-        "branch": "release/r3-0.11.0-candidate",
-        "commit": "1c905e4c51a146dcc85e017454557a7eace7209b",
+        "branch": null,
+        "commit": "1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b",
         "dirty": false,
-        "exact_tag": null,
-        "remote_ref": "refs/heads/release/r3-0.11.0-candidate",
-        "tree": "50472b2f0a2f98790cc7646c253cc31146270e1c"
+        "exact_tag": "0.11.0",
+        "remote_ref": "refs/tags/0.11.0^{}",
+        "tree": "e6bdb63b994a276336e976d5b0a37904abc87731"
       },
       "version": "0.11.0"
     },
     "tools": {
+      "artifacts": [
+        {
+          "id": "pypi_wheel",
+          "sha256": "794258bc1ad4ebacdd67d124641745b41dcbe5523088f50cf8941d288fa3de73",
+          "size": 125249,
+          "state": "published",
+          "version": "0.0.7"
+        },
+        {
+          "id": "pypi_sdist",
+          "sha256": "d322194b49ab6078e3cdd8777e7720b46db3abf33df67b3a66ef153af24bc8ec",
+          "size": 161797,
+          "state": "published",
+          "version": "0.0.7"
+        },
+        {
+          "id": "cyclonedx_sbom",
+          "sha256": "04a757904e9cf614f5320c3fd7d2ecd0eb4c73004125b7f3086ac64ff232b431",
+          "state": "published",
+          "version": "0.0.7"
+        },
+        {
+          "id": "support_matrix",
+          "sha256": "85031fd02b89c16f7adc90e1faad4843cd654f0279c48332d58af3ad6b37a65b",
+          "state": "published",
+          "version": "0.0.7"
+        }
+      ],
       "publication_head": {
         "head": "88c2bc1e29603049cdbf1a1080a35845edf2f3c9",
         "ref": "refs/tags/v0.0.7",
@@ -849,6 +1764,16 @@
         "tree": "d46a5fd2fcb7a2e14225cf1c3ad2661f7a4ab8b3"
       },
       "receipts": [
+        {
+          "id": "published_pypi_and_release",
+          "ordinary_ci_all_green": false,
+          "publish_run": 33746030136,
+          "published": true,
+          "release_id": 381938636,
+          "state": "passed",
+          "tag_kind": "lightweight",
+          "version_guard_run": 33746017318
+        },
         {
           "gate": "support_validator_and_pytest",
           "head": "f4fc4a6ee9bb89f9079241e19c91ddacced3a31b",
@@ -876,12 +1801,37 @@
       "version": "0.0.7"
     },
     "ui": {
+      "artifacts": [
+        {
+          "id": "npm_tarball",
+          "sha256": "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67",
+          "size": 3120473,
+          "state": "published",
+          "version": "0.1.13"
+        }
+      ],
       "publication_head": {
         "head": "406d94d70004f27459ef12347af1e6f0079ab6ac",
         "ref": "refs/tags/v0.1.13^{}",
         "repository": "GBeurier/nirs4all-ui",
         "tree": "377722160bbf188c474aacfecc8a6825095be2ca"
       },
+      "receipts": [
+        {
+          "github_release_created": false,
+          "id": "published_npm_and_tag",
+          "npm_fix_forward_conclusion": "success",
+          "npm_fix_forward_head": "22148e9bd65a0d43453204537922cb1259dcbb0b",
+          "npm_fix_forward_run": 33746614005,
+          "npm_fix_forward_tree": "ea4ca7f3ed90ca4e039362efc5fd77ee86af4f37",
+          "published": true,
+          "registry_tarball_matches_reproducible_receipt": true,
+          "release_npm_run": 33745968998,
+          "release_npm_run_conclusion": "failure",
+          "state": "passed",
+          "tag_object": "550b72e9270f2df18936075032d875cea6b0b9ee"
+        }
+      ],
       "release_role": "shared_product_ui",
       "release_state": "published",
       "repo_path": "nirs4all-ui",
@@ -898,6 +1848,26 @@
       "version": "0.1.13"
     },
     "web": {
+      "artifacts": [
+        {
+          "id": "core_tarball",
+          "sha256": "dd55134aa9439ac4ac194bbcd7b5aa3ac5364de789672546c64e76cf4500b177",
+          "state": "published",
+          "version": "0.3.27"
+        },
+        {
+          "id": "core_native_wasm",
+          "sha256": "ace0b9079d98f6411bf02a483ea27f0767b6a1ebb1415740e31b12a892a80f44",
+          "state": "published",
+          "version": "0.3.27"
+        },
+        {
+          "id": "deployed_core_provenance",
+          "sha256": "2f1b6a228323c76c2a14e105b36db2a24fab3c77275526819afe48eca82feac3",
+          "state": "published",
+          "version": "0.1.10"
+        }
+      ],
       "dependency_receipts": [
         {
           "component": "core",
@@ -912,6 +1882,19 @@
         "repository": "GBeurier/nirs4all-web",
         "tree": "e94251e350f31dbb996e1a2e477c466cfdf992ff"
       },
+      "receipts": [
+        {
+          "github_release_created": false,
+          "id": "pages_publication",
+          "published": true,
+          "run": 33763349836,
+          "site_url": "https://web.nirs4all.org/",
+          "state": "passed",
+          "tag_object": "4e3e907321b6262fe9f896d38514dd078acff971",
+          "version_guard_run": 33763349812,
+          "web_ci_run": 33763349684
+        }
+      ],
       "release_role": "browser_product",
       "release_state": "published",
       "repo_path": "nirs4all-web",
@@ -940,15 +1923,6 @@
             "tree": "e0583f7287c13ace028b38708268305626a47372"
           },
           "version": "0.13.0"
-        },
-        "studio": {
-          "remote": {
-            "head": "65b2aa2ac80249fdbd2fb0ccb55c82ac5b5e8219",
-            "ref": "refs/heads/release/r1-0.10.1-candidate",
-            "repository": "GBeurier/nirs4all-studio",
-            "tree": "e978be82eca9df3cf44c721ea2692e6f0fc896c3"
-          },
-          "version": "0.10.1"
         }
       },
       "publication_receipts": {
@@ -970,15 +1944,6 @@
             "tree": "364c9e63a0ef667c62e8d7223af632c5783b880a"
           },
           "version": "1.0.0rc1"
-        },
-        "studio": {
-          "remote": {
-            "head": "54350c688ae576bbbb393c5a24dae8d106f77322",
-            "ref": "refs/heads/release/r2-0.10.2-candidate",
-            "repository": "GBeurier/nirs4all-studio",
-            "tree": "9ecf2279039ef9b5af3d5be59be695f0dc0bc1d3"
-          },
-          "version": "0.10.2"
         }
       },
       "publication_receipts": {
@@ -1009,10 +1974,10 @@
         },
         "studio": {
           "remote": {
-            "head": "1c905e4c51a146dcc85e017454557a7eace7209b",
-            "ref": "refs/heads/release/r3-0.11.0-candidate",
+            "head": "1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b",
+            "ref": "refs/tags/0.11.0^{}",
             "repository": "GBeurier/nirs4all-studio",
-            "tree": "50472b2f0a2f98790cc7646c253cc31146270e1c"
+            "tree": "e6bdb63b994a276336e976d5b0a37904abc87731"
           },
           "version": "0.11.0"
         }
@@ -1025,6 +1990,13 @@
         "release_id": 382709680,
         "release_url": "https://github.com/GBeurier/nirs4all/releases/tag/1.0.0-rc.2",
         "sdist_sha256": "6a6d41dc828919f0cc0cb14d06735e6d712e672edf5b7d9a00533ddb01c0949c",
+        "studio": {
+          "ghcr_oci_index": "sha256:06db667567fcc8d3a0cc728024b28ddb2d82cdb988c2204a7c6c448f95fb6489",
+          "release_id": 382803640,
+          "release_url": "https://github.com/GBeurier/nirs4all-studio/releases/tag/0.11.0",
+          "tag_object": "1250621d72d7a729e414ae1bc8c210192d6ef994",
+          "workflow_run": 33882504444
+        },
         "tag_object": "5d82fcd06b440dc8e3668716658e7c50393f485f",
         "wheel_sha256": "bb6f7a1f3a0de0fb9986e685b02bf48d7998f2d9261f8cdb7be35ed13bc4bdd0",
         "workflow_run": 33873060692
@@ -1037,14 +2009,26 @@
           "parent": "ef39f1a53dd120b9ce28907dc372d755dd621430",
           "remote": {
             "head": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
-            "ref": "refs/heads/release/r4-1.0.0-candidate-v3",
+            "ref": "refs/tags/1.0.0^{}",
             "repository": "GBeurier/nirs4all",
             "tree": "1f566f81f5309ed0b73872fbc01db00a40d4e3e2"
           },
           "version": "1.0.0"
         }
       },
-      "state": "candidate",
+      "publication_receipts": {
+        "ghcr_oci_index": "sha256:c0a7420e1c63fc8bef403c673aefc46f62dc86cff45d28dff9b2e9c96f60ed9e",
+        "installed_manifest_sha256": "caa89ad16dd77a4528f80965e66a03fed71101a4cf5cedb1fcd15a79c60be7ee",
+        "python": "pypi_and_ghcr",
+        "record_sha256": "6c1b938ec4b26f83e998de60d446648d9e013a56f39ce89b11312b301246e736",
+        "release_id": 382803888,
+        "release_url": "https://github.com/GBeurier/nirs4all/releases/tag/1.0.0",
+        "sdist_sha256": "11feaca3b442c536e0baf0db58209c62cd76c180af2e2b229b270fd31ae06f59",
+        "tag_object": "a1fc8123e03840624f459b0078fdf104955c7800",
+        "wheel_sha256": "fb02ef000368f9d46c228214d2c8e19f71b6b6cf52cb1d52fd66b9220be1d002",
+        "workflow_run": 33885659321
+      },
+      "state": "published",
       "target_versions": {
         "python": "1.0.0"
       }
@@ -1052,28 +2036,40 @@
   },
   "projections": {
     "benchmarks": {
-      "artifact_receipts_complete": false,
+      "artifact_receipts_complete": true,
       "artifact_receipts_required": true,
       "artifacts": [
         {
           "id": "current_head_product_report",
           "sha256": "b7ff6419041ee64a94fcb58dfaad250acd81d672ee5f352ac5e87a3c46055ed1",
-          "state": "candidate",
+          "state": "published",
           "version": "2026-09-03"
         },
         {
           "id": "bounded_studio_probe_report",
           "sha256": "4c968068b5f20714ebcd98de24d791b05df9128e8311f8b6b7d1e17da8d69101",
-          "state": "candidate",
+          "state": "published",
           "version": "2026-09-03"
+        },
+        {
+          "id": "soak_r3_functional_plan",
+          "sha256": "6b913b0a195ba84704ac47da1f03b4738a8958fb8b1a8bb4ffdc87b9dba12fe4",
+          "state": "published",
+          "version": "2026-09-04"
+        },
+        {
+          "id": "soak_r3_functional_report",
+          "sha256": "33a2d52cd60af8a03f2d092973a05c2b8442a775b5aa9a904f93603e70a1de91",
+          "state": "published",
+          "version": "2026-09-04"
         }
       ],
       "key": "benchmarks",
-      "qualification_head": {
-        "head": "17f8196b26457fbd300a46d6520c3d1845d0de05",
-        "ref": "refs/heads/release/native-v1-candidate",
+      "publication_head": {
+        "head": "1649cdfb253a0eb0efec2c15b5e21a5c6219dc80",
+        "ref": "refs/tags/n4a-v1-2026.09-native-soak^{}",
         "repository": "GBeurier/nirs4all-benchmarks",
-        "tree": "29ae8f56656ce59cbcc2923ad6b30680d1b50a21"
+        "tree": "f577ae2459266dacfa0dace1ec185409344c12c9"
       },
       "receipts": [
         {
@@ -1086,42 +2082,53 @@
           "state": "passed",
           "studio_probe_passed": 3,
           "sustained_duration": false
+        },
+        {
+          "id": "soak_r3_functional_final",
+          "published": true,
+          "python_checks": "21/21",
+          "python_cycles": "3/3",
+          "python_head": "3567bd4abcaa64443a1946748a579f0803e91889",
+          "state": "passed",
+          "studio_checks": "90/90",
+          "studio_head": "1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b",
+          "studio_repetitions": "30/30"
         }
       ],
       "repo_path": "nirs4all-benchmarks",
       "required_for_promotion": true,
       "role": "Required performance and soak evidence receipt, not a runtime dependency",
-      "state": "candidate"
+      "state": "receipt"
     },
     "cockpit": {
-      "artifact_receipts_complete": false,
+      "artifact_receipts_complete": true,
       "artifact_receipts_required": false,
       "key": "cockpit",
-      "qualification_head": {
-        "head": "7f294748c3a2e926ecbfed4f96f50d8ec300313d",
-        "ref": "refs/heads/codex/r4-final-site-sync",
+      "publication_head": {
+        "head": "2bf7d5b451086e104179db04e2aaf186f3d23698",
+        "ref": "refs/tags/n4a-v1-2026.09-native-release^{}",
         "repository": "GBeurier/nirs4all-cockpit",
-        "tree": "8337cf7705407f87ec724c33026da27b54bea17a"
+        "tree": "83768355ae98512c681c57d9567512909596a92b"
       },
       "repo_path": "nirs4all-cockpit",
       "required_for_promotion": true,
       "role": "Required release-observability projection, not a runtime dependency",
-      "state": "candidate"
+      "state": "receipt"
     },
     "org": {
-      "artifact_receipts_complete": false,
+      "artifact_receipts_complete": true,
       "artifact_receipts_required": false,
       "key": "org",
-      "qualification_head": {
-        "head": "f46fc1fbc26849a9fcb1781b9fb668517ec3a4df",
-        "ref": "refs/heads/codex/r4-final-site-sync",
+      "publication_head": {
+        "head": "f5990f549b59e541ae042bc449bb6aae7754e866",
+        "ref": "refs/tags/n4a-v1-2026.09-native-release^{}",
         "repository": "GBeurier/nirs4all-org",
-        "tree": "e5897ac4b30f877617c5001d711ca7436cbe22b2"
+        "tree": "3b84176748385ff8601121c592c6ba0e81c89b4c"
       },
       "repo_path": "nirs4all-org",
       "required_for_promotion": true,
       "role": "Required public release-disclosure projection, not a runtime dependency",
-      "state": "candidate"
+      "state": "receipt"
     },
     "repository": {
       "artifact_receipts_complete": true,
@@ -1158,12 +2165,6 @@
       "publication_head": {
         "head": "dbd9dae1205e1905692decd9fc7243f4fbda3068",
         "ref": "refs/tags/v0.1.12^{}",
-        "repository": "GBeurier/nirs4all-repository",
-        "tree": "c37878a2f83baf90fcfb222944d4d06178164a71"
-      },
-      "qualification_head": {
-        "head": "dbd9dae1205e1905692decd9fc7243f4fbda3068",
-        "ref": "refs/heads/release/repository-v1-compat-0.1.12-candidate",
         "repository": "GBeurier/nirs4all-repository",
         "tree": "c37878a2f83baf90fcfb222944d4d06178164a71"
       },
@@ -1247,26 +2248,19 @@
     }
   },
   "promotion": {
-    "blockers": [
-      "artifact_receipts",
-      "candidate_ci",
-      "external_matrices",
-      "product_publication",
-      "signatures",
-      "soak"
-    ],
-    "eligible": false,
+    "blockers": [],
+    "eligible": true,
     "gates": {
-      "artifact_receipts": "pending",
-      "candidate_ci": "pending",
+      "artifact_receipts": "passed",
+      "candidate_ci": "passed",
       "component_publications": "passed",
-      "external_matrices": "pending",
-      "product_publication": "partial",
+      "external_matrices": "waived",
+      "product_publication": "passed",
       "repository_surface_contract": "passed",
-      "signatures": "missing",
-      "soak": "missing"
+      "signatures": "waived",
+      "soak": "passed"
     },
-    "status": "no_go"
+    "status": "go"
   },
   "release_train": "native-v1-r1-r4",
   "remote_identities": {
@@ -1306,12 +2300,6 @@
       "repository": "GBeurier/nirs4all-io",
       "tree": "16b2910ec602cfa4fd1db2f1c1d9b2a89893b857"
     },
-    "component:io:qualification_head": {
-      "head": "e6241571e2714160d2ff769030964b8924f0cbdb",
-      "ref": "refs/heads/release/io-0.1.14-security-candidate",
-      "repository": "GBeurier/nirs4all-io",
-      "tree": "bd133e35893c4405b59f6551d5a91d6722904219"
-    },
     "component:methods:publication_head": {
       "head": "49aa40e90afef676f25809db1bd2a523e9582a49",
       "ref": "refs/tags/v1.0.16^{}",
@@ -1324,36 +2312,17 @@
       "repository": "GBeurier/nirs4all-providers",
       "tree": "23a4a70513a33118c19923a47647a0a362c85f18"
     },
-    "component:providers:qualification_head": {
-      "head": "b2210ec717c0de0055fc8b9424b115a933efdb4e",
-      "ref": "refs/heads/release/providers-0.2.11-repository-0.1.12-candidate",
-      "repository": "GBeurier/nirs4all-providers",
-      "tree": "23a4a70513a33118c19923a47647a0a362c85f18"
-    },
     "component:python:publication_head": {
-      "head": "61a66d1bd0157dd9422facc4b32fca33989d4035",
-      "ref": "refs/tags/0.13.0^{}",
-      "repository": "GBeurier/nirs4all",
-      "tree": "e0583f7287c13ace028b38708268305626a47372"
-    },
-    "component:python:qualification_head": {
       "head": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
-      "parent": "ef39f1a53dd120b9ce28907dc372d755dd621430",
-      "ref": "refs/heads/release/r4-1.0.0-candidate-v3",
+      "ref": "refs/tags/1.0.0^{}",
       "repository": "GBeurier/nirs4all",
       "tree": "1f566f81f5309ed0b73872fbc01db00a40d4e3e2"
     },
     "component:studio:publication_head": {
-      "head": "5d043ee23f0ba7f47584bc9ef18fa13755e59198",
-      "ref": "refs/tags/0.10.1^{}",
+      "head": "1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b",
+      "ref": "refs/tags/0.11.0^{}",
       "repository": "GBeurier/nirs4all-studio",
-      "tree": "f7a2032653979ddee824c6c9e15ea88c571cfdfd"
-    },
-    "component:studio:qualification_head": {
-      "head": "1c905e4c51a146dcc85e017454557a7eace7209b",
-      "ref": "refs/heads/release/r3-0.11.0-candidate",
-      "repository": "GBeurier/nirs4all-studio",
-      "tree": "50472b2f0a2f98790cc7646c253cc31146270e1c"
+      "tree": "e6bdb63b994a276336e976d5b0a37904abc87731"
     },
     "component:tools:publication_head": {
       "head": "88c2bc1e29603049cdbf1a1080a35845edf2f3c9",
@@ -1379,23 +2348,11 @@
       "repository": "GBeurier/nirs4all",
       "tree": "e0583f7287c13ace028b38708268305626a47372"
     },
-    "milestone:r1:studio": {
-      "head": "65b2aa2ac80249fdbd2fb0ccb55c82ac5b5e8219",
-      "ref": "refs/heads/release/r1-0.10.1-candidate",
-      "repository": "GBeurier/nirs4all-studio",
-      "tree": "e978be82eca9df3cf44c721ea2692e6f0fc896c3"
-    },
     "milestone:r2:python": {
       "head": "d351785dbc17290cdc85a797ead299ffce58f257",
       "ref": "refs/tags/1.0.0-rc.1^{}",
       "repository": "GBeurier/nirs4all",
       "tree": "364c9e63a0ef667c62e8d7223af632c5783b880a"
-    },
-    "milestone:r2:studio": {
-      "head": "54350c688ae576bbbb393c5a24dae8d106f77322",
-      "ref": "refs/heads/release/r2-0.10.2-candidate",
-      "repository": "GBeurier/nirs4all-studio",
-      "tree": "9ecf2279039ef9b5af3d5be59be695f0dc0bc1d3"
     },
     "milestone:r3:python": {
       "head": "3567bd4abcaa64443a1946748a579f0803e91889",
@@ -1404,52 +2361,47 @@
       "tree": "a06c4015a26124df1e529f82108ee7bd115236cb"
     },
     "milestone:r3:studio": {
-      "head": "1c905e4c51a146dcc85e017454557a7eace7209b",
-      "ref": "refs/heads/release/r3-0.11.0-candidate",
+      "head": "1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b",
+      "ref": "refs/tags/0.11.0^{}",
       "repository": "GBeurier/nirs4all-studio",
-      "tree": "50472b2f0a2f98790cc7646c253cc31146270e1c"
+      "tree": "e6bdb63b994a276336e976d5b0a37904abc87731"
     },
     "milestone:r4:python": {
       "head": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
-      "ref": "refs/heads/release/r4-1.0.0-candidate-v3",
+      "ref": "refs/tags/1.0.0^{}",
       "repository": "GBeurier/nirs4all",
       "tree": "1f566f81f5309ed0b73872fbc01db00a40d4e3e2"
     },
-    "projection:benchmarks:qualification_head": {
-      "head": "17f8196b26457fbd300a46d6520c3d1845d0de05",
-      "ref": "refs/heads/release/native-v1-candidate",
+    "projection:benchmarks:publication_head": {
+      "head": "1649cdfb253a0eb0efec2c15b5e21a5c6219dc80",
+      "ref": "refs/tags/n4a-v1-2026.09-native-soak^{}",
       "repository": "GBeurier/nirs4all-benchmarks",
-      "tree": "29ae8f56656ce59cbcc2923ad6b30680d1b50a21"
+      "tree": "f577ae2459266dacfa0dace1ec185409344c12c9"
     },
-    "projection:cockpit:qualification_head": {
-      "head": "7f294748c3a2e926ecbfed4f96f50d8ec300313d",
-      "ref": "refs/heads/codex/r4-final-site-sync",
+    "projection:cockpit:publication_head": {
+      "head": "2bf7d5b451086e104179db04e2aaf186f3d23698",
+      "ref": "refs/tags/n4a-v1-2026.09-native-release^{}",
       "repository": "GBeurier/nirs4all-cockpit",
-      "tree": "8337cf7705407f87ec724c33026da27b54bea17a"
+      "tree": "83768355ae98512c681c57d9567512909596a92b"
     },
-    "projection:org:qualification_head": {
-      "head": "f46fc1fbc26849a9fcb1781b9fb668517ec3a4df",
-      "ref": "refs/heads/codex/r4-final-site-sync",
+    "projection:org:publication_head": {
+      "head": "f5990f549b59e541ae042bc449bb6aae7754e866",
+      "ref": "refs/tags/n4a-v1-2026.09-native-release^{}",
       "repository": "GBeurier/nirs4all-org",
-      "tree": "e5897ac4b30f877617c5001d711ca7436cbe22b2"
+      "tree": "3b84176748385ff8601121c592c6ba0e81c89b4c"
     },
     "projection:repository:publication_head": {
       "head": "dbd9dae1205e1905692decd9fc7243f4fbda3068",
       "ref": "refs/tags/v0.1.12^{}",
       "repository": "GBeurier/nirs4all-repository",
       "tree": "c37878a2f83baf90fcfb222944d4d06178164a71"
-    },
-    "projection:repository:qualification_head": {
-      "head": "dbd9dae1205e1905692decd9fc7243f4fbda3068",
-      "ref": "refs/heads/release/repository-v1-compat-0.1.12-candidate",
-      "repository": "GBeurier/nirs4all-repository",
-      "tree": "c37878a2f83baf90fcfb222944d4d06178164a71"
     }
   },
   "schema_version": "n4a.aggregation-lock/v2",
-  "status": "candidate",
+  "status": "final",
   "verification": {
     "all_required_gates_passed": false,
+    "all_required_gates_satisfied": true,
     "commands": [
       "python3 scripts/n4a_release_lock.py generate --manifest docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json --output docs/contracts/release/aggregation-lock-candidate.v2.n4a.lock.json",
       "python3 scripts/n4a_release_lock.py validate --manifest docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json --lock docs/contracts/release/aggregation-lock-candidate.v2.n4a.lock.json",

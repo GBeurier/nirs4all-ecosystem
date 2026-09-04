@@ -2,12 +2,12 @@
   "schema_version": "n4a.aggregation-manifest/v2",
   "aggregate_id": "nirs4all-v1-product-train",
   "release_train": "native-v1-r1-r4",
-  "status": "candidate",
+  "status": "final",
   "authority": {
     "ledger_path": "docs/contracts/release/migration-work-ledger.yaml",
-    "ledger_commit": "091b8a0f3069e7a90167f78c81bb9d414c50ade5",
-    "ledger_tree": "aebc80acdb0fb1c92425f744907f4d43ba251ec9",
-    "ledger_state": "base_snapshot_retained_candidate_updates_recorded_pending_final_receipts",
+    "ledger_commit": "d7d62825e5aa5ab5554ec7d084fab29be66acd74",
+    "ledger_tree": "52316e7150f6a778b3982a1aef5fc7627389f8b4",
+    "ledger_state": "receipt_complete_snapshot_preceding_immutable_projection_seal",
     "candidate_updates": [
       "nirs4all-io@e6241571e2714160d2ff769030964b8924f0cbdb",
       "nirs4all@d351785dbc17290cdc85a797ead299ffce58f257:r2-candidate",
@@ -42,8 +42,8 @@
     }
   },
   "promotion": {
-    "status": "no_go",
-    "reason": "All product artifacts are published with complete receipts. Final promotion waits only for immutable Org, Cockpit and soak projection tags; Studio signature and manual-Windows requirements remain explicit bounded waivers."
+    "status": "go",
+    "reason": "All product artifacts and immutable projections are sealed. Studio signature and manual-Windows requirements remain explicit bounded waivers."
   },
   "promotion_gates": [
     {
@@ -196,15 +196,6 @@
             "head": "61a66d1bd0157dd9422facc4b32fca33989d4035",
             "tree": "e0583f7287c13ace028b38708268305626a47372"
           }
-        },
-        "studio": {
-          "version": "0.10.1",
-          "remote": {
-            "repository": "GBeurier/nirs4all-studio",
-            "ref": "refs/heads/release/r1-0.10.1-candidate",
-            "head": "65b2aa2ac80249fdbd2fb0ccb55c82ac5b5e8219",
-            "tree": "e978be82eca9df3cf44c721ea2692e6f0fc896c3"
-          }
         }
       },
       "publication_receipts": {
@@ -225,15 +216,6 @@
             "ref": "refs/tags/1.0.0-rc.1^{}",
             "head": "d351785dbc17290cdc85a797ead299ffce58f257",
             "tree": "364c9e63a0ef667c62e8d7223af632c5783b880a"
-          }
-        },
-        "studio": {
-          "version": "0.10.2",
-          "remote": {
-            "repository": "GBeurier/nirs4all-studio",
-            "ref": "refs/heads/release/r2-0.10.2-candidate",
-            "head": "54350c688ae576bbbb393c5a24dae8d106f77322",
-            "tree": "9ecf2279039ef9b5af3d5be59be695f0dc0bc1d3"
           }
         }
       },
@@ -339,9 +321,9 @@
       "artifact_receipts_required": true,
       "artifact_receipts_complete": true,
       "state": "receipt",
-      "qualification_head": {
+      "publication_head": {
         "repository": "GBeurier/nirs4all-benchmarks",
-        "ref": "refs/heads/codex/soak001-r3-functional",
+        "ref": "refs/tags/n4a-v1-2026.09-native-soak^{}",
         "head": "1649cdfb253a0eb0efec2c15b5e21a5c6219dc80",
         "tree": "f577ae2459266dacfa0dace1ec185409344c12c9"
       },
@@ -349,25 +331,25 @@
         {
           "id": "current_head_product_report",
           "version": "2026-09-03",
-          "state": "candidate",
+          "state": "published",
           "sha256": "b7ff6419041ee64a94fcb58dfaad250acd81d672ee5f352ac5e87a3c46055ed1"
         },
         {
           "id": "bounded_studio_probe_report",
           "version": "2026-09-03",
-          "state": "candidate",
+          "state": "published",
           "sha256": "4c968068b5f20714ebcd98de24d791b05df9128e8311f8b6b7d1e17da8d69101"
         },
         {
           "id": "soak_r3_functional_plan",
           "version": "2026-09-04",
-          "state": "candidate",
+          "state": "published",
           "sha256": "6b913b0a195ba84704ac47da1f03b4738a8958fb8b1a8bb4ffdc87b9dba12fe4"
         },
         {
           "id": "soak_r3_functional_report",
           "version": "2026-09-04",
-          "state": "candidate",
+          "state": "published",
           "sha256": "33a2d52cd60af8a03f2d092973a05c2b8442a775b5aa9a904f93603e70a1de91"
         }
       ],
@@ -392,7 +374,7 @@
           "python_checks": "21/21",
           "studio_repetitions": "30/30",
           "studio_checks": "90/90",
-          "published": false
+          "published": true
         }
       ]
     },
@@ -402,13 +384,13 @@
       "role": "Required public release-disclosure projection, not a runtime dependency",
       "required_for_promotion": true,
       "artifact_receipts_required": false,
-      "artifact_receipts_complete": false,
-      "state": "candidate",
-      "qualification_head": {
+      "artifact_receipts_complete": true,
+      "state": "receipt",
+      "publication_head": {
         "repository": "GBeurier/nirs4all-org",
-        "ref": "refs/heads/codex/r4-final-site-sync",
-        "head": "f46fc1fbc26849a9fcb1781b9fb668517ec3a4df",
-        "tree": "e5897ac4b30f877617c5001d711ca7436cbe22b2"
+        "ref": "refs/tags/n4a-v1-2026.09-native-release^{}",
+        "head": "f5990f549b59e541ae042bc449bb6aae7754e866",
+        "tree": "3b84176748385ff8601121c592c6ba0e81c89b4c"
       }
     },
     {
@@ -417,13 +399,13 @@
       "role": "Required release-observability projection, not a runtime dependency",
       "required_for_promotion": true,
       "artifact_receipts_required": false,
-      "artifact_receipts_complete": false,
-      "state": "candidate",
-      "qualification_head": {
+      "artifact_receipts_complete": true,
+      "state": "receipt",
+      "publication_head": {
         "repository": "GBeurier/nirs4all-cockpit",
-        "ref": "refs/heads/codex/r4-final-site-sync",
-        "head": "7f294748c3a2e926ecbfed4f96f50d8ec300313d",
-        "tree": "8337cf7705407f87ec724c33026da27b54bea17a"
+        "ref": "refs/tags/n4a-v1-2026.09-native-release^{}",
+        "head": "2bf7d5b451086e104179db04e2aaf186f3d23698",
+        "tree": "83768355ae98512c681c57d9567512909596a92b"
       }
     },
     {
@@ -566,6 +548,26 @@
           "id": "n4m_rust_binding",
           "version": "0.1.4",
           "state": "published"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": "source_tarball",
+          "version": "1.0.16",
+          "state": "published",
+          "sha256": "f8bb9259bdfcaac8b071d93ec6b1abebf75e5015d7f6d25fa605c0da24585d08"
+        },
+        {
+          "id": "sbom",
+          "version": "1.0.16",
+          "state": "published",
+          "sha256": "8a580c8a78fbdcac70a01bc39b4679750e8e626d2f5de93220d081adfaf74bed"
+        },
+        {
+          "id": "matlab_octave",
+          "version": "1.0.16",
+          "state": "published",
+          "sha256": "ca60c80b574663fc104dfac56bb0a680e6aac4111c037fbdc6a950b17e3f7934"
         }
       ],
       "publication_head": {

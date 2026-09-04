@@ -1065,7 +1065,7 @@ def test_central_manifest_declares_reproducible_methods_and_core_topology_source
     assert topology["include_json"] is True
 
 
-def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> None:
+def test_final_v2_manifest_is_exhaustive_current_and_promotable() -> None:
     release_lock = _load_release_lock()
     release_dir = ROOT / "docs" / "contracts" / "release"
     manifest_path = release_dir / "aggregation-manifest-candidate.v2.n4a.json"
@@ -1075,7 +1075,7 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
     components = {component["key"]: component for component in manifest["components"]}
     projections = {projection["key"]: projection for projection in manifest["projections"]}
 
-    assert manifest["authority"]["ledger_commit"] == "091b8a0f3069e7a90167f78c81bb9d414c50ade5"
+    assert manifest["authority"]["ledger_commit"] == "d7d62825e5aa5ab5554ec7d084fab29be66acd74"
     assert set(components) == release_lock.PRODUCT_TRAIN_COMPONENT_KEYS
     assert set(projections) == release_lock.PRODUCT_TRAIN_PROJECTION_KEYS
     assert not ({"benchmarks", "org", "cockpit"} & set(components))
@@ -1085,9 +1085,9 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "df7f2198862c71a24aeeba08ba09ee118524b55d"
     )
     assert components["studio"]["publication_head"]["head"] == "1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b"
-    assert projections["org"]["qualification_head"]["head"] == "f46fc1fbc26849a9fcb1781b9fb668517ec3a4df"
-    assert projections["cockpit"]["qualification_head"]["head"] == "7f294748c3a2e926ecbfed4f96f50d8ec300313d"
-    assert projections["benchmarks"]["qualification_head"]["head"] == (
+    assert projections["org"]["publication_head"]["head"] == "f5990f549b59e541ae042bc449bb6aae7754e866"
+    assert projections["cockpit"]["publication_head"]["head"] == "2bf7d5b451086e104179db04e2aaf186f3d23698"
+    assert projections["benchmarks"]["publication_head"]["head"] == (
         "1649cdfb253a0eb0efec2c15b5e21a5c6219dc80"
     )
     assert projections["repository"]["publication_head"]["tree"] == (
@@ -1169,11 +1169,11 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
     assert manifest["product_milestones"]["r1"]["state"] == "published"
     assert manifest["product_milestones"]["r2"]["state"] == "published"
     assert manifest["product_milestones"]["r3"]["state"] == "published"
-    assert manifest["product_milestones"]["r4"]["state"] == "candidate"
+    assert manifest["product_milestones"]["r4"]["state"] == "published"
     assert manifest["product_milestones"]["r4"]["members"]["python"]["remote"]["head"] == (
         "a5e5f93b8b1336bc58c0a23814066e5e14678d12"
     )
-    assert components["python"]["qualification_head"]["head"] == (
+    assert components["python"]["publication_head"]["head"] == (
         "a5e5f93b8b1336bc58c0a23814066e5e14678d12"
     )
     assert manifest["product_milestones"]["r1"]["publication_receipts"] == {
@@ -1188,17 +1188,17 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
     assert manifest["product_milestones"]["r2"]["publication_receipts"]["workflow_run"] == 33868949671
     assert manifest["product_milestones"]["r3"]["publication_receipts"]["workflow_run"] == 33873060692
     assert {gate["id"]: gate["state"] for gate in manifest["promotion_gates"]} == {
-        "artifact_receipts": "pending",
+        "artifact_receipts": "passed",
         "candidate_ci": "passed",
         "component_publications": "passed",
         "external_matrices": "waived",
-        "product_publication": "partial",
+        "product_publication": "passed",
         "repository_surface_contract": "passed",
         "signatures": "waived",
         "soak": "passed",
     }
     assert lock == release_lock.generate_lock(manifest_path, ROOT.parent)
-    assert lock["promotion"]["status"] == "no_go"
-    assert lock["promotion"]["eligible"] is False
+    assert lock["promotion"]["status"] == "go"
+    assert lock["promotion"]["eligible"] is True
     assert lock["verification"]["all_required_gates_passed"] is False
-    assert lock["verification"]["all_required_gates_satisfied"] is False
+    assert lock["verification"]["all_required_gates_satisfied"] is True

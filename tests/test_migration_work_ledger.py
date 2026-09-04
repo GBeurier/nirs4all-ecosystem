@@ -115,7 +115,7 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     }
     assert evidence["dag_ml_data"]["commit"] == "7d9b9fed04c135ed4c2bba472c782aca7ef85807"
     assert evidence["dag_ml"]["commit"] == "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381"
-    assert evidence["python_strict_profile"]["commit"] == "3567bd4abcaa64443a1946748a579f0803e91889"
+    assert evidence["python_strict_profile"]["commit"] == "a5e5f93b8b1336bc58c0a23814066e5e14678d12"
     assert evidence["python_strict_profile"]["r3_direct_parent"] == "d351785dbc17290cdc85a797ead299ffce58f257"
     assert evidence["python_strict_profile"]["r4_documentation_commit"] == "ef39f1a53dd120b9ce28907dc372d755dd621430"
     assert evidence["python_strict_profile"]["r4_stable_candidate_commit"] == (
@@ -166,15 +166,15 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["historical_robustness_scaffolds"]["evidence_status"] == (
         "superseded_by_functional_non_crash_scope_not_a_release_gate"
     )
-    assert evidence["org"]["commit"] == "f46fc1fbc26849a9fcb1781b9fb668517ec3a4df"
-    assert evidence["cockpit"]["commit"] == "7f294748c3a2e926ecbfed4f96f50d8ec300313d"
+    assert evidence["org"]["commit"] == "f5990f549b59e541ae042bc449bb6aae7754e866"
+    assert evidence["cockpit"]["commit"] == "2bf7d5b451086e104179db04e2aaf186f3d23698"
     assert evidence["remote_candidate_staging"]["status"] == (
-        "exact_candidate_heads_recorded_methods_repository_providers_studio_r1_r2_r3_published_r4_unpublished"
+        "exact_published_heads_recorded_for_complete_native_v1_train"
     )
     assert evidence["remote_candidate_staging"]["tag_or_registry_publication"] is True
-    assert evidence["remote_candidate_staging"]["all_product_milestones_published"] is False
+    assert evidence["remote_candidate_staging"]["all_product_milestones_published"] is True
     assert len(evidence["remote_candidate_staging"]["heads"]) == 18
-    assert evidence["product_release_sequence"]["status"] == "r1_r2_r3_distinct_published_releases_r4_candidate_held"
+    assert evidence["product_release_sequence"]["status"] == "r1_r2_r3_r4_distinct_published_releases"
     assert evidence["product_release_sequence"]["milestones"]["r1"]["default_engine"] == "legacy"
     assert evidence["product_release_sequence"]["milestones"]["r1"]["publication_repair_commit"] == "e76c834c75157f0c74fcbba7383a69a818ed6b34"
     assert evidence["product_release_sequence"]["milestones"]["r1"]["pypi_published"] is True
@@ -194,13 +194,8 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert items["INST-001"]["state"] == "complete_with_bounded_windows_installed_path_waiver"
     assert items["SUP-002"]["state"] == "complete_local_support_matrix_external_publication_hold"
     assert items["SUP-002"]["input_sha"] == "f4fc4a6ee9bb89f9079241e19c91ddacced3a31b"
-    assert evidence["canonical_release_lock"]["updated"] is False
-    assert all(
-        value.startswith("closed_")
-        for key, value in ledger["locks"].items()
-        if key != "LOCK-RELEASE"
-    )
-    assert ledger["locks"]["LOCK-RELEASE"].startswith("no_go")
+    assert evidence["canonical_release_lock"]["updated"] is True
+    assert all(value.startswith("closed_") for value in ledger["locks"].values())
 
 
 def test_validator_refuses_a_missing_roadmap_lot(tmp_path: Path) -> None:
