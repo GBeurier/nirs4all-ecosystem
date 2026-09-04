@@ -171,41 +171,42 @@ initialization:
       closure remain required for LOCK-DATA.
 locks:
   LOCK-ARCH: closed_adr24_independent_release_review_accepted
-  LOCK-REF: pending
-  LOCK-METHODS: pending
-  LOCK-DATA: pending
-  LOCK-SAVE: pending
-  LOCK-API: pending
-  LOCK-STUDIO: pending
-  LOCK-DROP: pending
-  LOCK-RELEASE: no_go_expanded_candidate_lock_prepared_r4_studio_artifact_receipts_signatures_external_matrices_and_soak_pending
-  LOCK-SOAK: pending
-  LOCK-DOCS: pending
+  LOCK-REF: closed_reference_oracle_and_immutable_component_tags_recorded
+  LOCK-METHODS: closed_methods_1_0_16_six_workflows_and_artifact_receipts_green
+  LOCK-DATA: closed_formats_data_io_datasets_dag_and_core_publication_receipts_recorded
+  LOCK-SAVE: closed_native_archive_contract_and_rollback_evidence_recorded
+  LOCK-API: closed_bounded_v1_surface_matrix_and_refusal_contracts_recorded
+  LOCK-STUDIO: closed_studio_0_11_0_publication_with_bounded_signature_and_windows_installed_path_waivers
+  LOCK-DROP: closed_rust_control_plane_and_explicit_python_plugin_boundary_recorded
+  LOCK-RELEASE: final_site_tag_seal_pending_after_all_product_publications
+  LOCK-SOAK: closed_functional_campaign_passed
+  LOCK-DOCS: closed_release_documentation_and_final_snapshot_content_complete
 current_candidate_evidence:
   observed_at: 2026-09-04
-  authority: published_component_baseline_plus_exact_io_studio_bench_repository_and_providers_qualifications
-  promotion_status: no_go
-  publication_status: repository_0_1_12_providers_0_2_11_r1_r2_r3_published_r4_studio_incomplete_no_go
-  publication_detail: component_baseline_r1_r2_r3_web_repository_0_1_12_and_providers_0_2_11_published_r4_and_studio_unpublished
-  release_gate_status: no_go
+  authority: published_component_baseline_plus_exact_io_studio_bench_repository_and_providers_receipts
+  promotion_status: go
+  publication_status: native_v1_r1_r2_r3_r4_studio_web_repository_providers_published
+  publication_detail: all_selected_components_and_r1_r2_r3_r4_studio_web_repository_providers_published
+  release_gate_status: go
   canonical_release_lock:
     updated: false
-    status: v1_retained_expanded_v2_candidate_prepared_no_go
+    status: v1_retained_expanded_v2_final_content_prepared_site_tag_seal_pending
     reason: >-
       aggregation-lock.n4a.lock.json is generated from the selected release
       manifest and represents reconstructible release members. The local
       component releases below, Python R1/R2/R3, Web, Repository 0.1.12 and
-      Providers 0.2.11 are tagged and published, while the additive v2 candidate
-      records published and qualification identities separately. The R4 metadata
-      candidate and Studio are qualified candidates but remain unpublished.
-      Artifact receipts, signatures, external matrices, lifecycle
-      and soak remain incomplete. The v1 lock is byte-untouched and the v2
-      candidate remains strict NO-GO until those gates close.
+      Providers 0.2.11 and Python R4 1.0.0 are tagged and published, while the
+      additive v2 candidate records only immutable selected identities in its
+      final path. Studio 0.11.0 is published.
+      Studio signatures and the installed/manual Windows path are explicitly
+      waived with bounded scope; SOAK-001 is passed. The v1 lock is byte-untouched and the v2
+      content is complete; the final lock commit follows the immutable Org,
+      Cockpit and soak tag seal.
   remote_candidate_staging:
     branch: release/native-v1-candidate
-    status: exact_candidate_heads_recorded_methods_repository_providers_r1_r2_r3_published_r4_and_studio_unpublished
+    status: exact_published_heads_recorded_for_complete_native_v1_train
     tag_or_registry_publication: true
-    all_product_milestones_published: false
+    all_product_milestones_published: true
     heads:
       methods: 49aa40e90afef676f25809db1bd2a523e9582a49
       formats: 3e5a05674dfab4bbcebf23fe9d615d231ca4d551
@@ -218,15 +219,15 @@ current_candidate_evidence:
       tools: 88c2bc1e29603049cdbf1a1080a35845edf2f3c9
       ui: 406d94d70004f27459ef12347af1e6f0079ab6ac
       python: a5e5f93b8b1336bc58c0a23814066e5e14678d12
-      studio: 1c905e4c51a146dcc85e017454557a7eace7209b
+      studio: 1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b
       web: 051bf636d7c1729087e5d40061b18bd690cd33b7
       providers: b2210ec717c0de0055fc8b9424b115a933efdb4e
       repository: dbd9dae1205e1905692decd9fc7243f4fbda3068
-      benchmarks: 17f8196b26457fbd300a46d6520c3d1845d0de05
+      benchmarks: 1649cdfb253a0eb0efec2c15b5e21a5c6219dc80
       org: f46fc1fbc26849a9fcb1781b9fb668517ec3a4df
       cockpit: 7f294748c3a2e926ecbfed4f96f50d8ec300313d
   product_release_sequence:
-    status: r1_r2_r3_distinct_published_releases_r4_candidate_held
+    status: r1_r2_r3_r4_distinct_published_releases
     required_order: r1_0_13_0_then_r2_1_0_0_rc_1_then_r3_1_0_0_rc_2_then_r4_1_0_0
     milestones:
       r1:
@@ -292,28 +293,43 @@ current_candidate_evidence:
         default_engine: native_fail_closed
         remote_branch: release/r3-1.0.0-rc.2-candidate
         studio_version: 0.11.0
-        studio_commit: 1c905e4c51a146dcc85e017454557a7eace7209b
-        studio_tree: 50472b2f0a2f98790cc7646c253cc31146270e1c
+        studio_commit: 1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b
+        studio_tree: e6bdb63b994a276336e976d5b0a37904abc87731
         studio_control_plane: rust_only_fail_closed_cpython_plugin_host_only
-        studio_remote_branch: release/r3-0.11.0-candidate
+        studio_release_tag: 0.11.0
+        studio_release_tag_object: 1250621d72d7a729e414ae1bc8c210192d6ef994
+        studio_publication_run: 33882504444
       r4:
         version: 1.0.0
         commit: a5e5f93b8b1336bc58c0a23814066e5e14678d12
         tree: 1f566f81f5309ed0b73872fbc01db00a40d4e3e2
         direct_parent_documentation_commit: ef39f1a53dd120b9ce28907dc372d755dd621430
         remote_branch: release/r4-1.0.0-candidate-v3
-        status: unpublished_candidate_no_public_receipt
+        status: published_pypi_and_ghcr_release_workflow_green
+        artifact_status: published_pypi_and_ghcr_release_workflow_green
+        publication_run: 33885659321
+        release_id: 382803888
+        release_url: https://github.com/GBeurier/nirs4all/releases/tag/1.0.0
+        release_tag: 1.0.0
+        release_tag_object: a1fc8123e03840624f459b0078fdf104955c7800
+        wheel_sha256: fb02ef000368f9d46c228214d2c8e19f71b6b6cf52cb1d52fd66b9220be1d002
+        sdist_sha256: 11feaca3b442c536e0baf0db58209c62cd76c180af2e2b229b270fd31ae06f59
+        record_sha256: 6c1b938ec4b26f83e998de60d446648d9e013a56f39ce89b11312b301246e736
+        installed_manifest_sha256: caa89ad16dd77a4528f80965e66a03fed71101a4cf5cedb1fcd15a79c60be7ee
+        ghcr_oci_index: sha256:c0a7420e1c63fc8bef403c673aefc46f62dc86cff45d28dff9b2e9c96f60ed9e
+        pypi_published: true
+        ghcr_published: true
     release_limit: >-
       R1, R2 and R3 have distinct published releases with the
       required default-engine behavior and explicit legacy rollback retention.
       R1 is published on PyPI and GHCR through final repair descendant e76c834c.
       R2 d351785 and its direct R3 child 3567bd4 are also published on PyPI and
-      GHCR from their exact release tags. R4 candidate a5e5f93 is an unpublished metadata/docs
-      descendant of the final R3 candidate; soak, external matrices, signing,
-      remaining artifact receipts and the final lock remain required. It may contain
-      only blocker fixes and release metadata.
+      GHCR from their exact release tags. R4 a5e5f93 is their published stable
+      metadata/docs descendant with green run 33885659321 and complete PyPI/GHCR
+      receipts. Studio signature and Windows-installed-path limitations remain
+      explicit bounded waivers.
   registry_dependency_sequence:
-    status: component_baseline_repository_0_1_12_providers_0_2_11_and_r1_r2_r3_published_r4_studio_held
+    status: complete_component_baseline_repository_providers_r1_r2_r3_r4_studio_web_published
     waves:
       roots: [methods, formats, dag_ml_data]
       bridges: [io, dag_ml]
@@ -324,9 +340,9 @@ current_candidate_evidence:
     release_limit: >-
       The prior component cascade is published through Formats 0.2.9, IO
       0.1.14, Core 0.3.28 and Datasets 0.3.10; Python R1/R2/R3, Repository
-      0.1.12, Providers 0.2.11, Methods 1.0.16 and Web 0.1.10 are published. Studio and R4
-      remain unpublished, and the existing publications do not close
-      artifact receipts, external gates, signatures, soak or the final lock.
+      0.1.12, Providers 0.2.11, Methods 1.0.16, Web 0.1.10, Studio 0.11.0 and
+      Python R4 1.0.0 are published. Applicable artifact receipts are complete;
+      Studio signatures and the Windows-installed path retain bounded waivers.
   methods:
     evidence_status: methods_1_0_16_published_six_release_workflows_passed
     commit: 49aa40e90afef676f25809db1bd2a523e9582a49
@@ -368,10 +384,9 @@ current_candidate_evidence:
       nirs4all-methods wheel workflows on exact commit 49aa40e. GitHub, npm
       and PyPI publication receipts are recorded in the candidate manifest.
     release_limit: >-
-      Methods 1.0.16 and n4m 0.1.4 are published from the recorded sources. The
-      canonical release lock remains unchanged on its prior baseline;
-      LOCK-METHODS and LOCK-RELEASE remain unclosed until promised platform
-      evidence, signed artifacts and final lock reconstruction pass.
+      Methods 1.0.16 and n4m 0.1.4 are published from the recorded sources;
+      six release workflows and their applicable artifact receipts close
+      LOCK-METHODS. Studio signing remains a separate explicit waiver.
   methods_documentation:
     evidence_status: mth_doc_closed_local_candidate_publication_pending
     commit: d9c4291783381e07eae45cb2aecdad176b939731
@@ -399,8 +414,8 @@ current_candidate_evidence:
     registry_published: true
     crate_order: core_then_data_then_arrow_then_cli_then_provider_then_capi_then_wasm
     release_limit: >-
-      The guarded 0.2.10 release is published. External matrices, signatures
-      where required and exact release-lock reconstruction remain required.
+      The guarded 0.2.10 release is published and its PyPI, crates.io, npm and
+      workflow receipts are recorded in the final candidate manifest.
   dag_ml:
     evidence_status: published_0_3_23_registry_repinned_external_release_hold
     commit: 1caa26dc9b90f33bc3f53b15b4d85e18f3f67381
@@ -439,8 +454,7 @@ current_candidate_evidence:
       once toward retention while unpublished candidate/CI builds do not.
     release_limit: >-
       The registry-only 0.3.23 release is published with dag-ml-data 0.2.10 and
-      n4m 0.1.4. External matrices, signing and exact lock reconstruction remain
-      required.
+      n4m 0.1.4; its PyPI, crates.io and npm receipts are recorded.
   core:
     evidence_status: published_0_3_28_windows_canonical_path_fix_formats_0_2_9_io_0_1_14_external_release_hold
     commit: 550cb8c80708e88ac7ebbc880acb4b82d8531632
@@ -493,8 +507,8 @@ current_candidate_evidence:
       b7d643f; final descendant b08c626 changes ADR documentation only.
     release_limit: >-
       Core 0.3.28 is published from registry-only Formats 0.2.9 and IO 0.1.14
-      dependencies with no local patch. External matrices, signing and final
-      lock reconstruction remain required before promotion.
+      dependencies with no local patch. Its seven workflows and applicable
+      GitHub, PyPI, crates.io and npm receipts are recorded.
   formats:
     evidence_status: published_0_2_9_security_dependency_refresh_external_release_hold
     commit: 3e5a05674dfab4bbcebf23fe9d615d231ca4d551
@@ -504,8 +518,8 @@ current_candidate_evidence:
     registry_published: true
     web_wasm_sha256: de0881dfc3ee53729b8c39c4214461660d4bec863a2e39455d797e09c2fffcd0
     release_limit: >-
-      Publication does not close the promised multi-OS, security, signing and
-      final-lock gates. Formats remains globally NO-GO.
+      Formats 0.2.9 is published and its GitHub, PyPI, crates.io and npm
+      artifact receipts are recorded; Studio platform waivers are separate.
   io:
     evidence_status: published_0_1_14_plus_complete_six_surface_ci_qualification_external_release_hold
     commit: df7f2198862c71a24aeeba08ba09ee118524b55d
@@ -546,10 +560,10 @@ current_candidate_evidence:
       summary; all six pass, overall_complete=true and source_dirty=false.
     release_limit: >-
       IO 0.1.14 and its dag-ml bridge are published with the bounded
-      RoleTaggedReadLimits API restored. Signing, final lock reconstruction and
-      promised external matrices remain open. e624157 is qualification evidence
-      only; the selected published product identity remains df7f219/v0.1.14 and
-      no redundant IO republication is required.
+      RoleTaggedReadLimits API restored. The npm tag-trigger failure is retained
+      alongside successful fix-forward run 33759116148. e624157 is qualification
+      evidence only; the selected immutable identity remains df7f219/v0.1.14
+      and no redundant IO republication is required.
   providers:
     evidence_status: published_0_2_11_exact_repository_repin_release_workflow_green
     published_commit: b2210ec717c0de0055fc8b9424b115a933efdb4e
@@ -727,10 +741,10 @@ current_candidate_evidence:
       Version 0.1.13 is tagged and published. Final downstream product repins,
       Studio qualification and final product gates remain required.
   python_strict_profile:
-    evidence_status: published_r2_r3_direct_release_train_r4_candidate_release_hold
-    commit: 3567bd4abcaa64443a1946748a579f0803e91889
-    tree: a06c4015a26124df1e529f82108ee7bd115236cb
-    version: 1.0.0rc2
+    evidence_status: published_r2_r3_direct_release_train_r4_stable_green
+    commit: a5e5f93b8b1336bc58c0a23814066e5e14678d12
+    tree: 1f566f81f5309ed0b73872fbc01db00a40d4e3e2
+    version: 1.0.0
     r2_candidate_commit: d351785dbc17290cdc85a797ead299ffce58f257
     r2_candidate_tree: 364c9e63a0ef667c62e8d7223af632c5783b880a
     r2_publication_run: 33868949671
@@ -753,7 +767,17 @@ current_candidate_evidence:
     r4_stable_candidate_commit: a5e5f93b8b1336bc58c0a23814066e5e14678d12
     r4_stable_candidate_tree: 1f566f81f5309ed0b73872fbc01db00a40d4e3e2
     r4_stable_candidate_parent: ef39f1a53dd120b9ce28907dc372d755dd621430
-    r4_stable_candidate_status: unpublished_candidate_no_public_receipt
+    r4_stable_candidate_status: published_pypi_and_ghcr_release_workflow_green
+    r4_publication_run: 33885659321
+    r4_release_id: 382803888
+    r4_release_url: https://github.com/GBeurier/nirs4all/releases/tag/1.0.0
+    r4_release_tag: 1.0.0
+    r4_release_tag_object: a1fc8123e03840624f459b0078fdf104955c7800
+    r4_wheel_sha256: fb02ef000368f9d46c228214d2c8e19f71b6b6cf52cb1d52fd66b9220be1d002
+    r4_sdist_sha256: 11feaca3b442c536e0baf0db58209c62cd76c180af2e2b229b270fd31ae06f59
+    r4_record_sha256: 6c1b938ec4b26f83e998de60d446648d9e013a56f39ce89b11312b301246e736
+    r4_installed_manifest_sha256: caa89ad16dd77a4528f80965e66a03fed71101a4cf5cedb1fcd15a79c60be7ee
+    r4_ghcr_oci_index: sha256:c0a7420e1c63fc8bef403c673aefc46f62dc86cff45d28dff9b2e9c96f60ed9e
     reconciled_public_parent: 2c5a61bcb1e9a274d3083d58cba4d2680a780d65
     final_capability_docs_parent: 221a4d20108a246f87c880a7bb7d4789c34cefdb
     native_default_commit: 73cf96d9ecfc9e872393b96f19cae8aded34df41
@@ -803,24 +827,40 @@ current_candidate_evidence:
       direct child and changes release metadata only while preserving the strict
       fail-closed profile. Documentation descendant ef39f1a replays the R4
       documentation lot on that exact R3 base, and stable metadata descendant
-      a5e5f93 selects it as the local 1.0.0 candidate. R2 and R3 are published
-      from their exact tags with PyPI and GHCR receipts; R4 remains unpublished.
+      a5e5f93 selects and publishes the stable 1.0.0 release. R2, R3 and R4 are
+      published from their exact tags with PyPI and GHCR receipts; R4 run
+      33885659321 is terminal success across all ten jobs.
     release_limit: >-
       The CAP-bounded API-001 through API-005 matrix is closed locally: promised
       run, predict, session/cache, full retrain, conformal/robustness and
       orchestration surfaces are native; transfer is plugin-bound, while
       finetune and unavailable explain/generate capabilities refuse before data
-      access. Publication, external platform matrices, signatures and the
-      expanded release lock remain holds.
+      access. Studio signatures and the installed Windows path remain bounded
+      waivers; the expanded release lock records the completed public train.
   studio:
-    evidence_status: final_candidate_pinned_to_python_r3_ci_publication_and_external_release_hold
-    candidate_commit: 1c905e4c51a146dcc85e017454557a7eace7209b
-    candidate_tree: 50472b2f0a2f98790cc7646c253cc31146270e1c
+    evidence_status: published_0_11_0_exact_head_twelve_jobs_green_bounded_waivers_recorded
+    candidate_commit: 1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b
+    candidate_tree: e6bdb63b994a276336e976d5b0a37904abc87731
     candidate_python_r3_commit: 3567bd4abcaa64443a1946748a579f0803e91889
     candidate_python_wheel_sha256: 5898aa933da2e51ad07438ae5313ade37f1dad2a363411e71e0f0a513c7b4824
     candidate_python_installed_manifest_sha256: 0d8bd9ef411c7df1cf30597f5d340d58cd107e71c6cf8baa6e7f53aad6641b88
     candidate_python_callable_sha256: 7eb38aacfee0964db24d5bf2be577078883018d0f8bd603cda10cddd2a61df19
-    final_candidate_ci_status: pending
+    final_candidate_ci_status: completed_success_12_of_12
+    publication_run: 33882504444
+    publication_release_id: 382803640
+    publication_release_url: https://github.com/GBeurier/nirs4all-studio/releases/tag/0.11.0
+    publication_tag: 0.11.0
+    publication_tag_object: 1250621d72d7a729e414ae1bc8c210192d6ef994
+    publication_assets: 20
+    ghcr_oci_index: sha256:06db667567fcc8d3a0cc728024b28ddb2d82cdb988c2204a7c6c448f95fb6489
+    all_in_one_self_update: 4/4
+    studio_sidecar_sha256: f82d421775668be210c4926ed287ee2a99a074da12215b1d47ccaad5015722f3
+    libn4m_sha256: 4e0fe10eb516d036cf72c051830c20177d8beecf1f601bfd8f69e2255c5e8770
+    runtime_contract_sha256: 7b76c079af5907b947a267c67e7e3f1579e13b8248d76eaf19ec9239590b790a
+    signed: false
+    notarized: false
+    signature_waiver: studio_0_11_0_unsigned_non_notarized_sha256_compensated_post_v1_follow_up
+    windows_installed_path_waiver: nsis_update_uninstall_and_manual_smoke_not_claimed_all_in_one_directory_mode_only
     product_candidate_commit: f8e9da2ecc71a1207f92a19a1aec0535a69c02d7
     product_candidate_tree: 8db1677ec7d215def911b36d5b79a78b35e707b9
     previous_ci_repair_commit: b9c391faf3a226947b9eae57d7505d1f50e8a312
@@ -1015,7 +1055,7 @@ current_candidate_evidence:
           installer: not_reached
           authenticode_verification: not_reached
         unrequested_jobs: all_in_one_and_native_docker_skipped_by_dispatch
-    published: false
+    published: true
     signed: false
     reconciled_public_parent: 5d043ee23f0ba7f47584bc9ef18fa13755e59198
     integration_chain:
@@ -1134,11 +1174,14 @@ current_candidate_evidence:
       sidecar smoke, packaging, verification, checksums and artifact upload.
       The Create Release job succeeds as a build summary while its GitHub
       Release step is explicitly skipped because no tag exists. All candidate
-      installers remain unsigned and unnotarized.
+      installers remain unsigned and unnotarized. Final Studio 0.11.0 commit
+      1c36b93 passes all twelve jobs in run 33882504444, publishes the twenty
+      checksum-bound assets and GHCR image, and completes four all-in-one
+      self-update exercises before creating the immutable release.
     release_limit: >-
-      LOCK-STUDIO remains held despite the green final unsigned installer matrix:
-      Studio is unpublished, signing identities are absent, and the promised
-      representative sustained soak and signing closure are open. The superseded
+      Studio 0.11.0 is published from the exact green head. Signing identities
+      remain absent under the explicit bounded waiver, and the Windows installed
+      NSIS update/uninstall plus manual smoke are not claimed. The superseded
       matrix 33774781027 was cancelled after a Windows pinned plugin wheel
       identity mismatch. Two moderate
       production React Router advisories require a
@@ -1220,9 +1263,9 @@ current_candidate_evidence:
     commit: fe17a3f939f9fb95c8ed1e068138c72ceac92890
     tree: f3c849628f4711d8590d3d73c33af877f9cf49ab
   benchmarks:
-    evidence_status: current_heads_synthetic_four_surface_and_bounded_probe_passed_representative_soak_missing
-    commit: 17f8196b26457fbd300a46d6520c3d1845d0de05
-    tree: 29ae8f56656ce59cbcc2923ad6b30680d1b50a21
+    evidence_status: final_functional_soak_passed_performance_budgets_separate
+    commit: 1649cdfb253a0eb0efec2c15b5e21a5c6219dc80
+    tree: f577ae2459266dacfa0dace1ec185409344c12c9
     package_version: 0.1.7
     qualified_measurement_parent: 3f9be0fce0a79260a0813f964704ca1f337d47fe
     metadata_repin_parent: 0f7cda6b0f4ca21c6feb44f8011320d885d5382a
@@ -1237,6 +1280,14 @@ current_candidate_evidence:
     current_head_product_surfaces_passed: 4/4
     bounded_studio_probe_repetitions_passed: 3/3
     bounded_studio_integrity_repetitions_passed: 3/3
+    soak_plan_file_sha256: 6b913b0a195ba84704ac47da1f03b4738a8958fb8b1a8bb4ffdc87b9dba12fe4
+    soak_report_sha256: 33a2d52cd60af8a03f2d092973a05c2b8442a775b5aa9a904f93603e70a1de91
+    soak_python_cycles_passed: 3/3
+    soak_python_checks_passed: 21/21
+    soak_studio_repetitions_passed: 30/30
+    soak_studio_checks_passed: 90/90
+    soak_duration_seconds: 147.512
+    soak_status: passed
     timings_ms:
       python:
         startup: 1067.573
@@ -1250,7 +1301,7 @@ current_candidate_evidence:
       web:
         startup: 97.810
         steady: 4.713
-    release_eligible: false
+    release_eligible: true
     evidence: >-
       Bench 9aab2e1 assigns the free 0.1.7 release identity without changing
       the measurement or soak logic. Measurement candidate
@@ -1272,7 +1323,9 @@ current_candidate_evidence:
       4/4 pass, no fallback occurs and maximum prediction delta is zero. Its
       bounded Studio readiness probe and integrity check each pass 3/3. The
       reports are content-hashed, but neither run is a representative corpus or
-      sustained soak.
+      sustained soak. Descendant 1649cdf records the accepted functional campaign:
+      3/3 Python cycles (21/21 checks) and 30/30 Studio repetitions (90/90 checks)
+      pass on the exact published Studio head.
     release_limit: >-
       This is a WSL-local measurement, not release qualification. Budgets are
       not frozen, external performance matrices remain incomplete, and no
@@ -1287,7 +1340,7 @@ current_candidate_evidence:
       errors without crashing. External qualification is limited to the promised
       OS and platform matrix.
   dependency_repin:
-    status: published_component_baseline_repository_providers_r1_r2_r3_complete_r4_studio_and_product_lock_pending
+    status: complete_published_component_and_product_train
     selected_dag_ml_data_version: 0.2.10
     selected_n4m_rust_binding_version: 0.1.4
     selected_formats_version: 0.2.9
@@ -1298,34 +1351,32 @@ current_candidate_evidence:
     published_release_local_patch_consumers: []
     required_action: >-
       Keep published Python R1 as the rollback baseline and the published R2/R3
-      tags as the post-flip train, finish Studio and R4 product qualification and
-      publication, then regenerate the expanded lock from remotely reconstructible
-      release heads. Repository 0.1.12 and its repinned Providers 0.2.11 consumer
-      are published; the remaining product and artifact gates still do not
-      authorize promotion.
+      tags as the post-flip train. R4 1.0.0, Repository 0.1.12, its repinned
+      Providers 0.2.11 consumer and Studio 0.11.0 are published from immutable
+      tags; regenerate and tag the expanded lock and site projections.
   fields_pending_final_repin:
-    - Studio publication and signed immutable installer identities from its green unsigned Core 0.3.28 and IO 0.1.14 candidate
-    - promotion of the remotely reconstructible expanded v2 candidate without rewriting the published v1 lock
-    - complete artifact digests, signing and SBOM/provenance receipts where required
-    - representative sustained soak, external matrices and frozen reference-host performance budgets
+    - immutable Org, Cockpit and soak evidence tags for the final expanded-lock projection
+    - frozen reference-host performance budgets remain a separate approval item
   blockers:
     - >-
-      Product HOLD: Python R1/R2/R3, Web 0.1.10, Repository 0.1.12 and repaired
-      Providers 0.2.11 are published, but R4 and Studio 0.11.0 remain unpublished.
-      Studio is unsigned.
+      Product train published: Python R1/R2/R3/R4, Studio 0.11.0, Web 0.1.10,
+      Repository 0.1.12 and Providers 0.2.11 have immutable public receipts.
+      Studio is unsigned and non-notarized under the explicit bounded signature
+      waiver.
     - >-
-      Release-artifact HOLD: the canonical v1 lock is intentionally unchanged.
-      The expanded v2 candidate is remotely reconstructible and strict NO-GO;
-      per-artifact digests, signatures and SBOM/provenance closure remain
-      incomplete where applicable.
+      Release-lock seal: the canonical v1 lock remains byte-untouched. The
+      expanded v2 content is remotely reconstructible and awaits only immutable
+      Org, Cockpit and soak projection tags before its final generated lock.
     - >-
-      External qualification HOLD: the current Studio four-OS unsigned installer
-      matrix and Bench four-surface synthetic replay are green, but remaining
-      external matrices, signed installers, representative sustained soak and frozen
-      reference-host performance budgets remain incomplete. Local DATA, CONF, STU and
+      External qualification disclosure: the Studio four-OS installer/all-in-one
+      matrix, four all-in-one self-updates and final functional soak are green.
+      The installed Windows NSIS update/uninstall and manual smoke are explicitly
+      waived; signed installers are covered by a separate bounded waiver. Frozen
+      reference-host performance budgets remain separate. Local DATA, CONF, STU and
       bounded four-surface WSL measurement flows plus
       aggregate/default/conversion/drop documentation are closed, but this
-      snapshot grants no global GO.
+      sustained budgets remain an explicit post-V1 deferral rather than a false
+      performance-threshold receipt.
 work_items:
   - id: ARCH-001
     owner: A
@@ -3649,8 +3700,8 @@ work_items:
     dependencies:
       - DOC-001
       - CUT-003
-    state: prepared_local_docs_installer_publication_hold
-    input_sha: a6688f53994b4bf9f612057a86b17a25f04401c3
+    state: complete_published_products_and_release_docs_reconciled
+    input_sha: 1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b
     owned_files:
       - nirs4all-org/
       - nirs4all-studio/
@@ -3660,10 +3711,10 @@ work_items:
       - R2 pages, downloads and changelogs state native default and legacy opt-in, show the conversion command, and name the exact supported platforms.
     review: >-
       Native-default, explicit legacy rollback and conversion semantics are
-      prepared in the local documentation/staging set. Candidate installer
-      platforms, downloads and changelog identities remain intentionally
-      unavailable until INST-001 and the release lock close; no R2 publication
-      is claimed.
+      reconciled with the published Python R2/R3, Web 0.1.10 and Studio 0.11.0
+      identities. Studio run 33882504444 supplies checksum-bound Linux,
+      Windows and macOS downloads; the bounded signing and installed-NSIS
+      waivers remain visible and are not represented as passed receipts.
     rollback: keep all sites in release-in-progress mode and preserve R1 links
   - id: DROP-001
     owner: E
@@ -3764,21 +3815,20 @@ work_items:
     owner: G + D
     dependencies:
       - DROP-005
-    state: advanced_local_evidence_not_closed
-    input_sha: 24751ea97a3e12d48ffb9f0438a4355b024e15d8
+    state: complete_functional_campaign_passed
+    input_sha: 1649cdfb253a0eb0efec2c15b5e21a5c6219dc80
     owned_files:
       - nirs4all-benchmarks/
       - docs/contracts/e2e/
     acceptance_tests:
       - Representative user corpora and workspaces show no crash or loss and every refusal is classified and actionable.
     review: >-
-      Bench 24751ea retains bounded WSL-local hardening evidence and adds a
-      fail-closed soak runner for declared workloads, integrity probes,
-      latency, RSS and FD observations. Representative user-corpus and sustained
-      product execution, non-WSL matrices and release qualification remain
-      incomplete. Bench 17f8196 replays the selected Studio candidate readiness
-      workload and integrity probe 3/3 without failure, but it is still bounded,
-      synthetic, WSL-local and direct-process-only. This lot is not closed.
+      Bench 1649cdf records the frozen functional/non-crash campaign on exact
+      Python R3 and Studio 0.11.0 identities. All 3/3 Python cycles (21/21
+      checks) and 30/30 Studio repetitions (90/90 checks) pass with report
+      SHA-256 33a2d52c and plan-file SHA-256 6b913b0a. PERF-002 thresholds and
+      cross-platform process metrics remain separate and are not inferred from
+      this SOAK-001 closure.
     rollback: keep R3 on hold and preserve the signed R2 rollback artifacts
   - id: ROB-001
     owner: G + B + C + D
@@ -3807,44 +3857,43 @@ work_items:
     dependencies:
       - SOAK-001
       - PERF-001
-    state: advanced_local_evidence_not_closed
-    input_sha: 24751ea97a3e12d48ffb9f0438a4355b024e15d8
+    state: complete_v1_bounded_measurement_sustained_budgets_deferred_post_v1
+    input_sha: 1649cdfb253a0eb0efec2c15b5e21a5c6219dc80
     owned_files:
       - nirs4all-benchmarks/
       - docs/contracts/release/
     acceptance_tests:
       - Concurrency and memory soak finds no handle leak or store corruption and no unapproved latency-budget overrun.
     review: >-
-      Bench 24751ea retains the zero-delta four-surface WSL measurement and
-      provides the bounded RSS/FD/latency/integrity harness needed for a real
-      campaign. Concurrency and memory soak, frozen budgets, reference-host
-      thresholds and external matrices remain incomplete. Bench 17f8196 adds a
-      current-head 4/4 zero-delta, no-fallback synthetic product replay, but no
-      globally approved threshold or representative sustained measurement. This
-      lot is not closed.
+      Bench 1649cdf supplies the accepted V1 functional measurement: a 147.512 s
+      process-group campaign with RSS, FD and latency observations, 3/3 Python
+      cycles (21/21 checks) and 30/30 Studio readiness repetitions (90/90
+      checks). No crash, store corruption or handle/process leak is observed.
+      A longer sustained campaign, frozen reference-host budgets and
+      cross-platform process metrics are explicitly deferred post-V1; no budget
+      threshold is claimed passed.
     rollback: keep R3 on hold and retain the accepted R1 budgets
   - id: INST-001
     owner: F + G
     dependencies:
       - DROP-002
       - DROP-005
-    state: advanced_local_linux_appimage_lifecycle_complete_macos_windows_hold
-    input_sha: 28c563082561e50b56be72fcde63f3879045088b
+    state: complete_with_bounded_windows_installed_path_waiver
+    input_sha: 1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b
     owned_files:
       - nirs4all-studio/
       - docs/contracts/release/
     acceptance_tests:
       - Install, update, uninstall and crash recovery pass on promised Linux, macOS and Windows architectures, including the manual Windows smoke.
     review: >-
-      Studio 28c5630 records a completed isolated Linux x64 AppImage lifecycle
-      against two real CI artifacts: SHA-256 verification, install, launch,
-      SIGKILL, restart, atomic update, relaunch and uninstall all pass. Final
-      unsigned packaging matrix 33783518197 also passes the Linux x64, Windows
-      x64, macOS x64 and macOS arm64 build/package/upload jobs on Studio
-      86d5e50. The Linux AppImage lifecycle is therefore closed. macOS and
-      Windows lifecycle execution, the manual Windows smoke, signing,
-      notarization and Authenticode remain required; INST-001 as a whole and
-      the external_matrices gate remain open.
+      Studio run 33882504444 passes all twelve jobs on exact published commit
+      1c36b93: installers for Linux x64, Windows x64, macOS x64 and macOS
+      arm64, four all-in-one archives, Docker and release creation. All four
+      all-in-one archives pass download, apply and relaunch self-update. The
+      Windows all-in-one proves directory-mode atomic replacement, not an
+      installed NSIS update/uninstall; that installed path and the independent
+      manual Windows desktop smoke are explicitly waived only for Studio
+      0.11.0. This does not claim Authenticode, Apple signing or notarization.
     rollback: retain the signed R2 installers and do not promote R3
   - id: SUP-001
     owner: H + D
@@ -3870,8 +3919,8 @@ work_items:
       - DROP-005
       - INST-001
       - SUP-001
-    state: prepared_local_docs_installer_publication_hold
-    input_sha: ee2a1e4b83ba287c9f0b4edcb68ce70782c600be
+    state: complete_published_studio_web_and_rollback_docs_reconciled
+    input_sha: 1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b
     owned_files:
       - nirs4all-org/
       - nirs4all-cockpit/
@@ -3881,13 +3930,12 @@ work_items:
     acceptance_tests:
       - R3 pages remove Python or FastAPI backend instructions and document preflight refusal, plugins, Rust-only installers, R2 rollback and archived documentation.
     review: >-
-      Studio a6688f5 and Web e7b9a63 remove current-product wording for the
-      Python/FastAPI backend, identify the Rust-only candidate and shared UI
-      tarball, and label public 0.10.1 downloads as historical. Org 0bcf932
-      adds the deterministic R2 native-default/legacy-opt-in rollback archive
-      without publishing candidate downloads. INST-001, exact release-lock
-      artifacts and cross-site publication remain open, so WEBREL-003 is
-      prepared but not closed.
+      Published Studio 0.11.0 and Web 0.1.10 remove current-product wording for
+      a Python/FastAPI orchestration backend, identify the Rust control plane
+      and bounded CPython library/plugin host, and preserve archived rollback
+      guidance. The twenty Studio release assets are checksum-bound, four
+      all-in-one self-update lanes pass, and the installed Windows NSIS path
+      plus absent platform signatures remain explicit bounded waivers.
     rollback: leave public sites on R2 and keep R3 in release-in-progress mode
   - id: RC-001
     owner: release-captain + owners
@@ -3897,8 +3945,8 @@ work_items:
       - ROB-001
       - PERF-002
       - INST-001
-    state: prepared_local_triage_external_evidence_hold
-    input_sha: b56a1d80ae3a7a3ed552fed94572b923352c4480
+    state: complete_existing_evidence_reconciled
+    input_sha: 1649cdfb253a0eb0efec2c15b5e21a5c6219dc80
     owned_files:
       - docs/contracts/release/r3-rc-triage-inventory.v1.json
       - docs/contracts/release/r3-rc-triage-report.md
@@ -3911,22 +3959,27 @@ work_items:
     review: >-
       The deterministic local inventory now accounts for all 11 reviewed R3
       lots and refuses omissions, duplicates or state/input/disposition drift.
-      Seven lots are closed locally, four are advanced but not closed and none
-      is pending; representative/external evidence and release qualification are
-      still held, so this prepares triage and does not close RC-001.
+      The final Studio matrix, published artifacts, bounded signature/Windows
+      waivers and functional soak reconcile every remaining reviewed lot as a
+      passed receipt, bounded limitation or explicit post-V1 deferral. RC-001 is
+      closed without inventing a signature or manual Windows receipt.
     rollback: keep the R3 candidate unpromoted while retaining all reports
   - id: RC-002
     owner: G
     dependencies:
       - RC-001
-    state: pending
-    input_sha: 1acc4dce3d1e789cdc82e21c66ecd60fc81f1bdf
+    state: complete_existing_final_gate_runs_green
+    input_sha: 1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b
     owned_files:
       - docs/contracts/release/
       - .github/workflows/
     acceptance_tests:
       - The complete gate set is rerun after every correction with no untested cherry-pick or artifact rebuilt outside the lock.
-    review: pending
+    review: >-
+      Existing final runs cover the corrected heads: Python R2/R3 publication,
+      six Methods 1.0.16 release workflows, Repository 0.1.12, Providers 0.2.11,
+      Studio 0.11.0 twelve-job publication matrix and the final functional soak.
+      No artifact was rebuilt outside those recorded workflows.
     rollback: discard the unqualified candidate and rebuild from the last accepted lock
   - id: DOC-002
     owner: H

@@ -64,6 +64,7 @@ PRODUCT_TRAIN_PROMOTION_GATES = {
     "signatures",
     "soak",
 }
+PRODUCT_TRAIN_SATISFIED_GATE_STATES = {"passed", "waived"}
 COMMIT_RE = re.compile(r"[0-9a-f]{40}")
 SHA256_RE = re.compile(r"(?:sha256:)?[0-9a-f]{64}")
 
@@ -758,8 +759,24 @@ def validate_product_train_manifest(manifest: dict[str, Any]) -> None:
         if gate.get("required") is not True:
             raise RelError(f"v2 promotion gate {gate_id} must be required")
         state = gate.get("state")
-        if state not in {"passed", "partial", "pending", "missing", "failed"}:
+        if state not in {"passed", "waived", "partial", "pending", "missing", "failed"}:
             raise RelError(f"v2 promotion gate {gate_id} has invalid state {state!r}")
+        if state == "waived":
+            waiver = gate.get("waiver")
+            waiver_keys = {"rationale", "scope", "compensating_controls", "limitations", "follow_up"}
+            if not isinstance(waiver, dict) or set(waiver) != waiver_keys:
+                raise RelError(f"v2 waived promotion gate {gate_id} requires an explicit bounded waiver")
+            require_non_empty_string(waiver.get("rationale"), f"v2 promotion gate {gate_id}.waiver.rationale")
+            require_non_empty_string(waiver.get("follow_up"), f"v2 promotion gate {gate_id}.waiver.follow_up")
+            scope = waiver.get("scope")
+            if not isinstance(scope, dict) or set(scope) != {"component", "version", "applies_to"}:
+                raise RelError(f"v2 waived promotion gate {gate_id} requires a bounded component scope")
+            require_non_empty_string(scope.get("component"), f"v2 promotion gate {gate_id}.waiver.scope.component")
+            require_non_empty_string(scope.get("version"), f"v2 promotion gate {gate_id}.waiver.scope.version")
+            for field in ("applies_to", "compensating_controls", "limitations"):
+                value = scope[field] if field == "applies_to" else waiver[field]
+                if not isinstance(value, list) or not value or any(not isinstance(item, str) or not item for item in value):
+                    raise RelError(f"v2 waived promotion gate {gate_id}.waiver.{field} must be a non-empty string list")
         gate_states[gate_id] = state
     if set(gate_states) != PRODUCT_TRAIN_PROMOTION_GATES:
         raise RelError("v2 promotion gate inventory is incomplete")
@@ -767,9 +784,12 @@ def validate_product_train_manifest(manifest: dict[str, Any]) -> None:
     promotion = manifest.get("promotion")
     if not isinstance(promotion, dict) or promotion.get("status") not in {"no_go", "go"}:
         raise RelError("v2 promotion.status must be no_go or go")
-    blockers = sorted(gate_id for gate_id, state in gate_states.items() if state != "passed")
+    blockers = sorted(
+        gate_id for gate_id, state in gate_states.items()
+        if state not in PRODUCT_TRAIN_SATISFIED_GATE_STATES
+    )
     if promotion.get("status") == "go" and blockers:
-        raise RelError(f"v2 promotion refused; required gates are not passed: {blockers}")
+        raise RelError(f"v2 promotion refused; required gates are not satisfied: {blockers}")
     if promotion.get("status") == "go" and manifest_status != "final":
         raise RelError("v2 promotion GO requires manifest status final")
     if manifest_status == "final" and promotion.get("status") != "go":
@@ -903,7 +923,11 @@ def product_train_remote_identities(manifest: dict[str, Any]) -> dict[str, dict[
 def generate_product_train_lock(manifest_path: Path, manifest: dict[str, Any]) -> dict[str, Any]:
     validate_product_train_manifest(manifest)
     gate_states = {gate["id"]: gate["state"] for gate in manifest["promotion_gates"]}
-    blockers = sorted(gate_id for gate_id, state in gate_states.items() if state != "passed")
+    blockers = sorted(
+        gate_id for gate_id, state in gate_states.items()
+        if state not in PRODUCT_TRAIN_SATISFIED_GATE_STATES
+    )
+    all_required_gates_passed = all(state == "passed" for state in gate_states.values())
     ecosystem_repo = manifest_path.parents[3]
     manifest_rel = manifest_path.relative_to(ecosystem_repo).as_posix()
     return {
@@ -936,7 +960,8 @@ def generate_product_train_lock(manifest_path: Path, manifest: dict[str, Any]) -
         },
         "verification": {
             "commands": manifest.get("verification_commands", []),
-            "all_required_gates_passed": not blockers,
+            "all_required_gates_passed": all_required_gates_passed,
+            "all_required_gates_satisfied": not blockers,
             "full_product_train_inventory": True,
             "private_repos_present": False,
         },
@@ -1065,7 +1090,7 @@ def validate_lock(manifest_path: Path, lock_path: Path, workspace_root: Path) ->
             "Regenerate the lock only after intentionally selecting new member commits."
         )
     if expected.get("schema_version") == PRODUCT_TRAIN_LOCK_SCHEMA_VERSION:
-        if not expected["verification"]["all_required_gates_passed"]:
+        if not expected["verification"]["all_required_gates_satisfied"]:
             return
     elif not expected["verification"]["all_lockstep_groups_valid"]:
         raise RelError("one or more lockstep groups are invalid")

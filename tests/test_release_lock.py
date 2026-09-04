@@ -520,6 +520,7 @@ def test_generate_v2_product_train_lock_uses_remote_identities_without_local_che
     )
     assert lock["verification"]["full_product_train_inventory"] is True
     assert lock["verification"]["all_required_gates_passed"] is True
+    assert lock["verification"]["all_required_gates_satisfied"] is True
     assert lock["promotion"] == {
         "status": "no_go",
         "eligible": True,
@@ -529,6 +530,63 @@ def test_generate_v2_product_train_lock_uses_remote_identities_without_local_che
             for gate_id in sorted(release_lock.PRODUCT_TRAIN_PROMOTION_GATES)
         },
     }
+
+
+def test_v2_explicit_bounded_waiver_satisfies_gate_without_claiming_passed(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    signatures = next(gate for gate in manifest["promotion_gates"] if gate["id"] == "signatures")
+    signatures["state"] = "waived"
+    signatures["waiver"] = {
+        "rationale": "Signing credentials are unavailable for this bounded research release.",
+        "scope": {
+            "component": "nirs4all-studio",
+            "version": "0.11.0",
+            "applies_to": ["windows_x64", "macos_x64", "macos_arm64"],
+        },
+        "compensating_controls": ["Published SHA-256 checksums"],
+        "limitations": ["SmartScreen and Gatekeeper warnings remain possible"],
+        "follow_up": "Provision signing and notarization after V1.",
+    }
+    _write_json(manifest_path, manifest)
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+    assert lock["promotion"]["eligible"] is True
+    assert lock["promotion"]["blockers"] == []
+    assert lock["verification"]["all_required_gates_satisfied"] is True
+    assert lock["verification"]["all_required_gates_passed"] is False
+
+
+@pytest.mark.parametrize("missing", ["waiver", "rationale", "scope", "limitations"])
+def test_v2_waiver_requires_explicit_bounded_evidence(tmp_path: Path, missing: str) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    signatures = next(gate for gate in manifest["promotion_gates"] if gate["id"] == "signatures")
+    signatures["state"] = "waived"
+    signatures["waiver"] = {
+        "rationale": "Signing credentials are unavailable.",
+        "scope": {"component": "studio", "version": "0.11.0", "applies_to": ["installers"]},
+        "compensating_controls": ["SHA-256 checksums"],
+        "limitations": ["OS trust warnings remain possible"],
+        "follow_up": "Provision credentials after V1.",
+    }
+    if missing == "waiver":
+        signatures.pop("waiver")
+    elif missing == "scope":
+        signatures["waiver"].pop("scope")
+    else:
+        signatures["waiver"].pop(missing)
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(release_lock.RelError, match="waiver"):
+        release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
 
 
 def test_v2_milestone_states_are_validated_generically(tmp_path: Path) -> None:
@@ -1021,22 +1079,19 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
     assert set(components) == release_lock.PRODUCT_TRAIN_COMPONENT_KEYS
     assert set(projections) == release_lock.PRODUCT_TRAIN_PROJECTION_KEYS
     assert not ({"benchmarks", "org", "cockpit"} & set(components))
-    assert components["io"]["qualification_head"]["head"] == "e6241571e2714160d2ff769030964b8924f0cbdb"
+    assert "qualification_head" not in components["io"]
     assert components["io"]["release_state"] == "published"
     assert lock["members"]["io"]["state"]["commit"] == (
         "df7f2198862c71a24aeeba08ba09ee118524b55d"
     )
-    assert components["studio"]["qualification_head"]["head"] == "1c905e4c51a146dcc85e017454557a7eace7209b"
+    assert components["studio"]["publication_head"]["head"] == "1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b"
     assert projections["org"]["qualification_head"]["head"] == "f46fc1fbc26849a9fcb1781b9fb668517ec3a4df"
     assert projections["cockpit"]["qualification_head"]["head"] == "7f294748c3a2e926ecbfed4f96f50d8ec300313d"
     assert projections["benchmarks"]["qualification_head"]["head"] == (
-        "17f8196b26457fbd300a46d6520c3d1845d0de05"
+        "1649cdfb253a0eb0efec2c15b5e21a5c6219dc80"
     )
     assert projections["repository"]["publication_head"]["tree"] == (
         "c37878a2f83baf90fcfb222944d4d06178164a71"
-    )
-    assert projections["repository"]["qualification_head"]["head"] == (
-        "dbd9dae1205e1905692decd9fc7243f4fbda3068"
     )
     assert {
         artifact["id"]: artifact["sha256"]
@@ -1054,24 +1109,19 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "publication_33876963719": "passed",
     }
     assert components["providers"]["publication_head"]["head"] == "b2210ec717c0de0055fc8b9424b115a933efdb4e"
-    assert components["providers"]["qualification_head"]["head"] == (
-        "b2210ec717c0de0055fc8b9424b115a933efdb4e"
-    )
+    assert "qualification_head" not in components["providers"]
     assert lock["members"]["providers"]["state"]["commit"] == (
         "b2210ec717c0de0055fc8b9424b115a933efdb4e"
     )
-    assert {artifact["id"]: artifact["version"] for artifact in components["methods"]["artifacts"]} == {
+    assert {artifact["id"]: artifact["version"] for artifact in components["methods"]["contract_versions"]} == {
         "methods_project": "1.0.16",
         "n4m_c_abi": "2.5.0",
         "n4m_rust_binding": "0.1.4",
     }
-    assert {artifact["id"] for artifact in components["core"]["artifacts"]} == {
-        "python_nirs4all_core",
-        "rust_nirs4all",
-        "npm_nirs4all",
-        "r_nirs4all",
-        "matlab_octave_nirs4all",
+    assert {"source_tgz", "cyclonedx_sbom", "crate_aggregate", "npm_aggregate"} <= {
+        artifact["id"] for artifact in components["core"]["artifacts"]
     }
+    assert all(len(artifact["sha256"]) == 64 for artifact in components["core"]["artifacts"])
     assert {receipt["id"] for receipt in components["core"]["receipts"]} == {
         "ci",
         "npm",
@@ -1080,8 +1130,11 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "source",
         "python",
         "crates",
+        "release_v0_3_28",
     }
-    io_receipt = components["io"]["receipts"][0]
+    io_receipt = next(
+        receipt for receipt in components["io"]["receipts"] if receipt["id"] == "io_xlg_001"
+    )
     assert io_receipt["state"] == "passed"
     assert io_receipt["run"] == 33784472043
     assert io_receipt["report_sha256"] == (
@@ -1099,18 +1152,20 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "train_version": "0.3.28",
         "disposition": "compatible_published_lag",
     }
-    assert components["studio"]["receipts"][0]["state"] == "passed"
-    assert components["studio"]["receipts"][0]["github_release_created"] is False
-    assert {
-        artifact["id"]: artifact["archive_digest"]
-        for artifact in components["studio"]["artifacts"]
-    } == {
-        "pinned_plugin_wheels": "sha256:8149cce1671f4ea1cf5e99f3b4c5ef4412984ad424fa7c6075b898facf02ca6d",
-        "windows_x64_installer": "sha256:07fe1d212bb5ce16d6ab15e5250bae79260f714e51db0e6ab2cd6c7a606199df",
-        "linux_x64_appimage": "sha256:953a8014891fb80b408c2490ec1b21e10a2f873027805c875491ac215ba7c6e7",
-        "macos_x64_dmg": "sha256:ad895bb11ae7337804dd886508620a973cf2707208522923e7564aa4d6b2a050",
-        "macos_arm64_dmg": "sha256:1759fec8d37279cf9b20dce36cca8c371abecd01b29d216d9502e24d1b52e3f5",
-    }
+    studio_publication = next(
+        receipt
+        for receipt in components["studio"]["receipts"]
+        if receipt["id"] == "studio_0_11_0_publication_33882504444"
+    )
+    assert studio_publication["state"] == "passed"
+    assert studio_publication["release_id"] == 382803640
+    studio_artifacts = {artifact["id"]: artifact["sha256"] for artifact in components["studio"]["artifacts"]}
+    assert studio_artifacts["all_in_one_windows_x64"] == (
+        "8091ca079236581a0fa8620ee24e43059094cffd85bc5b6f87e43de9de22159d"
+    )
+    assert studio_artifacts["ghcr_image"] == (
+        "06db667567fcc8d3a0cc728024b28ddb2d82cdb988c2204a7c6c448f95fb6489"
+    )
     assert manifest["product_milestones"]["r1"]["state"] == "published"
     assert manifest["product_milestones"]["r2"]["state"] == "published"
     assert manifest["product_milestones"]["r3"]["state"] == "published"
@@ -1128,21 +1183,22 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "publication_repair_tree": "49dadfb76d6995c2ab825d8cb937a864ea773fb9",
     }
     assert manifest["product_milestones"]["r3"]["members"]["studio"]["remote"]["head"] == (
-        "1c905e4c51a146dcc85e017454557a7eace7209b"
+        "1c36b93f62cf560d8f4822c76cfe09fbb1d0e67b"
     )
     assert manifest["product_milestones"]["r2"]["publication_receipts"]["workflow_run"] == 33868949671
     assert manifest["product_milestones"]["r3"]["publication_receipts"]["workflow_run"] == 33873060692
     assert {gate["id"]: gate["state"] for gate in manifest["promotion_gates"]} == {
         "artifact_receipts": "pending",
-        "candidate_ci": "pending",
+        "candidate_ci": "passed",
         "component_publications": "passed",
-        "external_matrices": "pending",
+        "external_matrices": "waived",
         "product_publication": "partial",
         "repository_surface_contract": "passed",
-        "signatures": "missing",
-        "soak": "missing",
+        "signatures": "waived",
+        "soak": "passed",
     }
     assert lock == release_lock.generate_lock(manifest_path, ROOT.parent)
     assert lock["promotion"]["status"] == "no_go"
     assert lock["promotion"]["eligible"] is False
     assert lock["verification"]["all_required_gates_passed"] is False
+    assert lock["verification"]["all_required_gates_satisfied"] is False
