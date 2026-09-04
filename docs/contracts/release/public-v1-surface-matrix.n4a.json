@@ -65,8 +65,8 @@
       {"key": "io", "repo_path": "nirs4all-io", "commit": "e41bf8f94a92356e98c215d4c41e907a7dfaf6ac", "based_on": ["b48323a494ac5f0af166830ec3fcb825ce3984b3", "b0fb6bafb66d6abe13237a59c5eae0258d3c6958"], "qualification": "consolidated DATA-package code and documentation candidate; unpublished"},
       {"key": "datasets", "repo_path": "nirs4all-datasets", "commit": "5b528e96af80a3566a9773a617b76f447f5c8d50", "based_on": ["04d8ec3a8e327e89f5e88bc3da02dfdf4e16f2ef"], "qualification": "Formats 0.2.8 / IO 0.1.12 pins, corrected SPDX/licenses and signable source archives; Python sdist publication cascade held"},
       {"key": "core", "repo_path": "nirs4all-core", "commit": "b6442dc4334c62a2b6c72526bea554a734134ac6", "based_on": ["e0f5d485eae4279f02d58fe82fad3946202e463f"], "qualification": "consolidated aggregate/runtime E2E plus schema-refusal hardening candidate; unpublished"},
-      {"key": "python", "repo_path": "nirs4all", "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4", "based_on": ["221a4d20108a246f87c880a7bb7d4789c34cefdb"], "qualification": "native-default, explicit conversion separation, observability, final capability documentation and executable API-004/005 preflight candidate; unpublished"},
-      {"key": "studio", "repo_path": "nirs4all-studio", "commit": "bb76f2c8833f430d26311422c9d7018592fcf6cb", "based_on": ["e254a1ebba578e5b1932d09079088d02eb51d411"], "qualification": "Rust control-plane and final documentation candidate; external product holds remain"},
+      {"key": "python", "repo_path": "nirs4all", "commit": "f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81", "based_on": ["73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7", "2af6cfd7f988fa400617c460a77450dbad4228c9"], "qualification": "stable 1.0.0 metadata candidate on the final R3 code and DOC-002 lineage; unpublished and NO-GO"},
+      {"key": "studio", "repo_path": "nirs4all-studio", "commit": "3c4f61f323e71e82544144382467b6b99014da6c", "based_on": ["181f0e95a948f0e884ba48a17b7574a0bacdf7fe"], "qualification": "Rust control-plane candidate pinned to final Python R3; final CI and external product holds remain"},
       {"key": "web", "repo_path": "nirs4all-web", "commit": "f1ae6c38e6c82bd7bf525c8c4a7adc8deb456eea", "based_on": ["20867a71c45731f757267a98e7928710e7c3693d"], "qualification": "client-only WASM candidate plus documentation; unpublished"},
       {"key": "tools", "repo_path": "nirs4all-tools", "commit": "2215c9b9dcf498067ce2cad5f8bf42bf06a39285", "based_on": ["e3a332633f87b4652a06f8993e63c386a3568698"], "qualification": "explicit workspace conversion CLI candidate; unpublished"},
       {"key": "org", "repo_path": "nirs4all-org", "commit": "28523174bdbceffbb3d5c06e43796fe04073b1f5", "based_on": ["71a1db5c7d808a015aa2a1c6f07e6542ca3b8571"], "qualification": "DOC/SUP disclosure projection qualified locally; unpublished and no release promotion"},
@@ -385,9 +385,9 @@
       "local_gate_policy": "providers_local_sibling_release plus canonical schema byte-identity and fixture validation in the providers repo.",
       "qualification_evidence": {
         "ref": "refs/heads/release/providers-0.2.11-repository-0.1.12-candidate",
-        "head": "4a84046890db04a26c43a01ca7b01f46417449ca",
-        "tree": "922fd2d5453a5f6416ad67a9ea6b8be2248bdbc5",
-        "repository_head": "9ea1d9ff9f72b259c349d89c4c010e3e5dad3dd0",
+        "head": "bccd6e0c76862f3f109f6b8d8c625624b96f4691",
+        "tree": "7ddb666b97e7f4eb75cdd978ca29ff6609c32470",
+        "repository_head": "a97283306610543e68a61b201e1f904f3c72ca1b",
         "status": "qualified_candidate_pending_release"
       }
     },
@@ -406,16 +406,16 @@
       "local_gate_policy": "Repository public-v1 surface checker on exact R1/R2/R3 heads, package gate and build-only artifact receipt.",
       "qualification_evidence": {
         "ref": "refs/heads/release/repository-v1-compat-0.1.12-candidate",
-        "head": "9ea1d9ff9f72b259c349d89c4c010e3e5dad3dd0",
-        "tree": "74afdebf0f6d58020875223a1292f6f849e8f2a0",
+        "head": "a97283306610543e68a61b201e1f904f3c72ca1b",
+        "tree": "3c3750afc11bfb90b3531eed4ad92cf38f3ceb1b",
         "contract_path": "contracts/public-v1-surface.n4a.json",
-        "contract_sha256": "sha256:329cdbd7c3a413e2af25f69cdd6c19f09034d25a5eea051573615adc52082442",
+        "contract_sha256": "sha256:5d3a547b0faade82d464e57345a1233fd3ba9080d62721d3266bf5562e21d70f",
         "checker_path": "scripts/check_public_v1_surface.py",
         "checker_sha256": "sha256:ac8b886c4cecf5c515c7600bc57c79c5ed28bbbf3c6782014d5ce48628095969",
         "source_heads": {
           "r1": "61a66d1bd0157dd9422facc4b32fca33989d4035",
-          "r2": "ab36667b83a329c44009c7567d8aaf1c5dedb45a",
-          "r3": "6429974a88cccc3fbf8dbe8aeb060435381f2bd4"
+          "r2": "4a758ec631e68afd79c2b2564b98e4faaf449650",
+          "r3": "2af6cfd7f988fa400617c460a77450dbad4228c9"
         },
         "status": "qualified_candidate_pending_release"
       },

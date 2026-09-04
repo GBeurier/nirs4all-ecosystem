@@ -106,9 +106,12 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["methods"]["commit"] == "e0bee1ce160cd805d3060185fd151c09230c3381"
     assert evidence["dag_ml_data"]["commit"] == "7d9b9fed04c135ed4c2bba472c782aca7ef85807"
     assert evidence["dag_ml"]["commit"] == "1caa26dc9b90f33bc3f53b15b4d85e18f3f67381"
-    assert evidence["python_strict_profile"]["commit"] == "6429974a88cccc3fbf8dbe8aeb060435381f2bd4"
-    assert evidence["python_strict_profile"]["r3_direct_parent"] == "ab36667b83a329c44009c7567d8aaf1c5dedb45a"
-    assert evidence["python_strict_profile"]["r4_documentation_commit"] == "694ed336d856ca296bd2205e1be6a55a6251d950"
+    assert evidence["python_strict_profile"]["commit"] == "2af6cfd7f988fa400617c460a77450dbad4228c9"
+    assert evidence["python_strict_profile"]["r3_direct_parent"] == "4a758ec631e68afd79c2b2564b98e4faaf449650"
+    assert evidence["python_strict_profile"]["r4_documentation_commit"] == "73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7"
+    assert evidence["python_strict_profile"]["r4_stable_candidate_commit"] == (
+        "f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81"
+    )
     assert evidence["core"]["commit"] == "550cb8c80708e88ac7ebbc880acb4b82d8531632"
     assert evidence["core"]["version"] == "0.3.28"
     assert evidence["io"]["commit"] == "df7f2198862c71a24aeeba08ba09ee118524b55d"
@@ -122,7 +125,11 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["tools"]["support_matrix_sha256"] == "85031fd02b89c16f7adc90e1faad4843cd654f0279c48332d58af3ad6b37a65b"
     assert evidence["ui"]["commit"] == "406d94d70004f27459ef12347af1e6f0079ab6ac"
     assert evidence["ui"]["tarball_sha256"] == "44ba22aef663548f426518ada8478a5c461e96dd5592cf2691b68776c42b9a67"
-    assert evidence["studio"]["candidate_commit"] == "181f0e95a948f0e884ba48a17b7574a0bacdf7fe"
+    assert evidence["studio"]["candidate_commit"] == "3c4f61f323e71e82544144382467b6b99014da6c"
+    assert evidence["studio"]["candidate_python_r3_commit"] == "2af6cfd7f988fa400617c460a77450dbad4228c9"
+    assert evidence["studio"]["candidate_python_wheel_sha256"] == (
+        "5898aa933da2e51ad07438ae5313ade37f1dad2a363411e71e0f0a513c7b4824"
+    )
     assert evidence["studio"]["final_candidate_ci_status"] == "pending"
     assert evidence["studio"]["release_matrix_run"] == 33783518197
     assert evidence["studio"]["release_matrix_status"] == "completed_success_unsigned"
@@ -134,23 +141,23 @@ def test_coverage_is_inventory_only_and_does_not_claim_release_readiness() -> No
     assert evidence["web"]["published"] is True
     assert evidence["web"]["pages_published"] is True
     assert evidence["benchmarks"]["commit"] == "17f8196b26457fbd300a46d6520c3d1845d0de05"
-    assert evidence["providers"]["qualification_commit"] == "4a84046890db04a26c43a01ca7b01f46417449ca"
+    assert evidence["providers"]["qualification_commit"] == "bccd6e0c76862f3f109f6b8d8c625624b96f4691"
     assert evidence["providers"]["publish_job_status"] == "skipped"
-    assert evidence["repository"]["qualification_commit"] == "9ea1d9ff9f72b259c349d89c4c010e3e5dad3dd0"
+    assert evidence["repository"]["qualification_commit"] == "a97283306610543e68a61b201e1f904f3c72ca1b"
     assert evidence["repository"]["public_surface_id"] == "nirs4all.repository.catalog"
-    assert evidence["repository"]["public_surface_contract_sha256"] == "329cdbd7c3a413e2af25f69cdd6c19f09034d25a5eea051573615adc52082442"
+    assert evidence["repository"]["public_surface_contract_sha256"] == "5d3a547b0faade82d464e57345a1233fd3ba9080d62721d3266bf5562e21d70f"
     assert evidence["historical_robustness_scaffolds"]["evidence_status"] == (
         "superseded_by_functional_non_crash_scope_not_a_release_gate"
     )
     assert evidence["org"]["commit"] == "28523174bdbceffbb3d5c06e43796fe04073b1f5"
     assert evidence["cockpit"]["commit"] == "972155b9af539a444ede5c585e8d9eb799d35fe0"
     assert evidence["remote_candidate_staging"]["status"] == (
-        "exact_candidate_heads_recorded_repository_published_providers_r2_r3_and_studio_unpublished"
+        "exact_candidate_heads_recorded_repository_published_providers_r2_r3_r4_and_studio_unpublished"
     )
     assert evidence["remote_candidate_staging"]["tag_or_registry_publication"] is True
     assert evidence["remote_candidate_staging"]["all_product_milestones_published"] is False
     assert len(evidence["remote_candidate_staging"]["heads"]) == 18
-    assert evidence["product_release_sequence"]["status"] == "r1_r2_r3_distinct_remote_candidates_r4_held"
+    assert evidence["product_release_sequence"]["status"] == "r1_r2_r3_distinct_remote_candidates_r4_candidate_held"
     assert evidence["product_release_sequence"]["milestones"]["r1"]["default_engine"] == "legacy"
     assert evidence["product_release_sequence"]["milestones"]["r1"]["publication_repair_commit"] == "e76c834c75157f0c74fcbba7383a69a818ed6b34"
     assert evidence["product_release_sequence"]["milestones"]["r1"]["pypi_published"] is True
