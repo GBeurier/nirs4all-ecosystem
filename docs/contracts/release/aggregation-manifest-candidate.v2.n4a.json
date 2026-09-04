@@ -20,8 +20,8 @@
       "nirs4all@a5e5f93b8b1336bc58c0a23814066e5e14678d12:r4-stable-candidate",
       "nirs4all-methods@bf2641641c8b4235201203bd338486b96964b59f:docs-qualification",
       "nirs4all-tools@f4fc4a6ee9bb89f9079241e19c91ddacced3a31b:support-qualification",
-      "nirs4all-org@237e611f59fc0d93aa0d69fd18860b8d331a21b2:docs-support-projection",
-      "nirs4all-cockpit@10833ec5538508a7d7ebcf7fd0caf3c7df877083:docs-support-projection"
+      "nirs4all-org@c604c172d744e789ce5dbe6b0bcbf3c887e9b41e:docs-support-projection",
+      "nirs4all-cockpit@ae77551ac796d6b38f9494c7c54aa2d8548ad814:docs-support-projection"
     ]
   },
   "inventory_scope": {
@@ -312,8 +312,8 @@
       "qualification_head": {
         "repository": "GBeurier/nirs4all-org",
         "ref": "refs/heads/codex/r4-final-site-sync",
-        "head": "237e611f59fc0d93aa0d69fd18860b8d331a21b2",
-        "tree": "521070bce609308acd4f20b726c5c032602b4717"
+        "head": "c604c172d744e789ce5dbe6b0bcbf3c887e9b41e",
+        "tree": "afe1ad6ab64514c060aa5abfb8d9df4025eaf53b"
       }
     },
     {
@@ -327,8 +327,8 @@
       "qualification_head": {
         "repository": "GBeurier/nirs4all-cockpit",
         "ref": "refs/heads/codex/r4-final-site-sync",
-        "head": "10833ec5538508a7d7ebcf7fd0caf3c7df877083",
-        "tree": "b963040ca37971e734d1c3d8969f90d9ec3b4115"
+        "head": "ae77551ac796d6b38f9494c7c54aa2d8548ad814",
+        "tree": "aaaeff563b15d6149da8ccb2acefe7494e734e2a"
       }
     },
     {
