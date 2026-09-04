@@ -46,7 +46,7 @@
       },
       "surface_matrix": {
         "path": "docs/contracts/release/public-v1-surface-matrix.n4a.json",
-        "canonical_json_sha256": "sha256:7e92a8da4b6322903c6170ca8dbdbde1d94c5c7ab8eb681a0d1df471468e9fe0"
+        "canonical_json_sha256": "sha256:8bd58dcdd856f5ddb53827027eb6dbab7dc5dfbd97fba0ac5ae7b72878799163"
       }
     }
   },
@@ -1267,7 +1267,7 @@
       "evidence": [
         {
           "candidate_key": "studio",
-          "commit": "89b5278a47ae4d38d6b508fabdd6e712f96942c0",
+          "commit": "6cfc807d63b0f4b9a1bf00324c00dd83471f4ba2",
           "source": "README.md",
           "source_sha256": "sha256:d50c91422e1da10a731b7238d167633436e832732cfa0a8f1e7ad7761d42f039",
           "claim": "The Studio candidate documents a Rust-only control plane."
@@ -1317,7 +1317,7 @@
       "evidence": [
         {
           "candidate_key": "studio",
-          "commit": "89b5278a47ae4d38d6b508fabdd6e712f96942c0",
+          "commit": "6cfc807d63b0f4b9a1bf00324c00dd83471f4ba2",
           "source": "README.md",
           "source_sha256": "sha256:d50c91422e1da10a731b7238d167633436e832732cfa0a8f1e7ad7761d42f039",
           "claim": "The Studio candidate restricts embedded CPython to stdio library/plugin execution and refuses broader backend duties."
