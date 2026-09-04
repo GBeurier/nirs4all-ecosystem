@@ -178,15 +178,15 @@ locks:
   LOCK-API: pending
   LOCK-STUDIO: pending
   LOCK-DROP: pending
-  LOCK-RELEASE: no_go_expanded_candidate_lock_prepared_providers_product_publications_artifact_receipts_signatures_external_matrices_and_soak_pending
+  LOCK-RELEASE: no_go_expanded_candidate_lock_prepared_r4_studio_artifact_receipts_signatures_external_matrices_and_soak_pending
   LOCK-SOAK: pending
   LOCK-DOCS: pending
 current_candidate_evidence:
   observed_at: 2026-09-04
   authority: published_component_baseline_plus_exact_io_studio_bench_repository_and_providers_qualifications
   promotion_status: no_go
-  publication_status: repository_0_1_11_published_providers_and_product_train_incomplete_no_go
-  publication_detail: component_baseline_r1_web_and_repository_0_1_11_published_providers_0_2_11_r2_r3_r4_and_studio_unpublished
+  publication_status: repository_0_1_12_providers_0_2_11_r1_r2_r3_published_r4_studio_incomplete_no_go
+  publication_detail: component_baseline_r1_r2_r3_web_repository_0_1_12_and_providers_0_2_11_published_r4_and_studio_unpublished
   release_gate_status: no_go
   canonical_release_lock:
     updated: false
@@ -194,16 +194,16 @@ current_candidate_evidence:
     reason: >-
       aggregation-lock.n4a.lock.json is generated from the selected release
       manifest and represents reconstructible release members. The local
-      component releases below, Python R1 and Web are tagged and published,
-      while the additive v2 candidate records published and qualification
-      identities separately. Repository 0.1.11 is published; Repository 0.1.12,
-      Providers 0.2.11, R2, R3, the R4 metadata candidate and Studio are qualified candidates but remain
-      unpublished. Artifact receipts, signatures, external matrices, lifecycle
+      component releases below, Python R1/R2/R3, Web, Repository 0.1.12 and
+      Providers 0.2.11 are tagged and published, while the additive v2 candidate
+      records published and qualification identities separately. The R4 metadata
+      candidate and Studio are qualified candidates but remain unpublished.
+      Artifact receipts, signatures, external matrices, lifecycle
       and soak remain incomplete. The v1 lock is byte-untouched and the v2
       candidate remains strict NO-GO until those gates close.
   remote_candidate_staging:
     branch: release/native-v1-candidate
-    status: exact_candidate_heads_recorded_repository_published_providers_r2_r3_r4_and_studio_unpublished
+    status: exact_candidate_heads_recorded_repository_providers_r1_r2_r3_published_r4_and_studio_unpublished
     tag_or_registry_publication: true
     all_product_milestones_published: false
     heads:
@@ -226,7 +226,7 @@ current_candidate_evidence:
       org: 10b2eb8a69b37eecc46947b96dff19255f91037c
       cockpit: 61715debd1937dc99efaba3dd74fe380f5e1f14c
   product_release_sequence:
-    status: r1_r2_r3_distinct_remote_candidates_r4_candidate_held
+    status: r1_r2_r3_distinct_published_releases_r4_candidate_held
     required_order: r1_0_13_0_then_r2_1_0_0_rc_1_then_r3_1_0_0_rc_2_then_r4_1_0_0
     milestones:
       r1:
@@ -251,7 +251,19 @@ current_candidate_evidence:
         version: 1.0.0rc1
         commit: d351785dbc17290cdc85a797ead299ffce58f257
         tree: 364c9e63a0ef667c62e8d7223af632c5783b880a
-        artifact_status: unpublished_candidate_no_public_receipt
+        artifact_status: published_pypi_and_ghcr_release_workflow_green
+        publication_run: 33868949671
+        release_id: 382680131
+        release_url: https://github.com/GBeurier/nirs4all/releases/tag/1.0.0-rc.1
+        release_tag: 1.0.0-rc.1
+        release_tag_object: df657957bd7f867c026aba806a593e6a8837b972
+        wheel_sha256: b9b44a3374ee22fd67f11964fde42e158f6e2ea2a8b829ae0f4c58f26fa1e7da
+        sdist_sha256: 69ecf82236c3f818472681d0d653a9f2d2d15df4738ca5ae0510ac7fef5a3f45
+        record_sha256: 7331a9536fd785d9543471457028d28b4ee10fb77b620b91f8cb974fd8f05d7e
+        installed_manifest_sha256: 4adb72f3c6a692ef8416e17c71e7456d1bdf03533d9eb00013d256a879dbbe29
+        ghcr_oci_index: sha256:1db10c9c8ac017e3153c83b123adc12350998210690288224f22ac537b642419
+        pypi_published: true
+        ghcr_published: true
         default_engine: native
         remote_branch: release/r2-1.0.0-rc.1-candidate
         studio_version: 0.10.2
@@ -264,7 +276,19 @@ current_candidate_evidence:
         commit: 3567bd4abcaa64443a1946748a579f0803e91889
         tree: a06c4015a26124df1e529f82108ee7bd115236cb
         direct_parent_r2_commit: d351785dbc17290cdc85a797ead299ffce58f257
-        artifact_status: unpublished_candidate_no_public_receipt
+        artifact_status: published_pypi_and_ghcr_release_workflow_green
+        publication_run: 33873060692
+        release_id: 382709680
+        release_url: https://github.com/GBeurier/nirs4all/releases/tag/1.0.0-rc.2
+        release_tag: 1.0.0-rc.2
+        release_tag_object: 5d82fcd06b440dc8e3668716658e7c50393f485f
+        wheel_sha256: bb6f7a1f3a0de0fb9986e685b02bf48d7998f2d9261f8cdb7be35ed13bc4bdd0
+        sdist_sha256: 6a6d41dc828919f0cc0cb14d06735e6d712e672edf5b7d9a00533ddb01c0949c
+        record_sha256: 1d3b34670fd5c5c92c3a2e6bd2871f81d2d5f63f019764a021ed2099f6dbddbc
+        installed_manifest_sha256: 0d8bd9ef411c7df1cf30597f5d340d58cd107e71c6cf8baa6e7f53aad6641b88
+        ghcr_oci_index: sha256:461f8b61f004c6bd035a12202540e46a8df7438010dbf31094bf0b04dbd12d1a
+        pypi_published: true
+        ghcr_published: true
         default_engine: native_fail_closed
         remote_branch: release/r3-1.0.0-rc.2-candidate
         studio_version: 0.11.0
@@ -280,17 +304,16 @@ current_candidate_evidence:
         remote_branch: release/r4-1.0.0-candidate-v3
         status: unpublished_candidate_no_public_receipt
     release_limit: >-
-      R1, R2 and R3 have distinct descendant release candidates with the
+      R1, R2 and R3 have distinct published releases with the
       required default-engine behavior and explicit legacy rollback retention.
       R1 is published on PyPI and GHCR through final repair descendant e76c834c.
-      R2 d351785 and its direct R3 child 3567bd4 remain unpublished, and no
-      candidate build counts as a completed
-      post-flip release. R4 candidate a5e5f93 is an unpublished metadata/docs
+      R2 d351785 and its direct R3 child 3567bd4 are also published on PyPI and
+      GHCR from their exact release tags. R4 candidate a5e5f93 is an unpublished metadata/docs
       descendant of the final R3 candidate; soak, external matrices, signing,
-      publication receipts and the final lock remain required. It may contain
+      remaining artifact receipts and the final lock remain required. It may contain
       only blocker fixes and release metadata.
   registry_dependency_sequence:
-    status: component_baseline_published_providers_0_2_11_and_product_publication_held
+    status: component_baseline_repository_0_1_12_providers_0_2_11_and_r1_r2_r3_published_r4_studio_held
     waves:
       roots: [methods, formats, dag_ml_data]
       bridges: [io, dag_ml]
@@ -300,10 +323,9 @@ current_candidate_evidence:
       evidence_sites: [benchmarks, org, cockpit]
     release_limit: >-
       The prior component cascade is published through Formats 0.2.9, IO
-      0.1.14, Core 0.3.28 and Datasets 0.3.10; Python R1, Providers 0.2.10 and
-      Web 0.1.10 are published. Providers 0.2.10 has a reproduced interop defect,
-      so repaired 0.2.11 must be tagged and published before the cascade is
-      current. No existing publication promotes R2/R3 or Studio or closes
+      0.1.14, Core 0.3.28 and Datasets 0.3.10; Python R1/R2/R3, Repository
+      0.1.12, Providers 0.2.11 and Web 0.1.10 are published. Studio and R4
+      remain unpublished, and the existing publications do not close
       artifact receipts, external gates, signatures, soak or the final lock.
   methods:
     evidence_status: n4m_0_1_4_published_r4_docs_qualified_local_external_release_hold
@@ -518,11 +540,12 @@ current_candidate_evidence:
       only; the selected published product identity remains df7f219/v0.1.14 and
       no redundant IO republication is required.
   providers:
-    evidence_status: published_0_2_10_final_0_2_11_repository_repin_qualified_release_pending
-    published_commit: 5a03f508374531409919fceb2f2367544c52b94d
-    published_tree: f8ce915b4f95fbff9e27f967d1c319363d2b7881
-    published_version: 0.2.10
-    published_tag: v0.2.10
+    evidence_status: published_0_2_11_exact_repository_repin_release_workflow_green
+    published_commit: b2210ec717c0de0055fc8b9424b115a933efdb4e
+    published_tree: 23a4a70513a33118c19923a47647a0a362c85f18
+    published_version: 0.2.11
+    published_tag: v0.2.11
+    published_tag_object: 048829a57afad016c07783891d1b4c7139304280
     qualification_commit: b2210ec717c0de0055fc8b9424b115a933efdb4e
     qualification_tree: 23a4a70513a33118c19923a47647a0a362c85f18
     qualification_ref: refs/heads/release/providers-0.2.11-repository-0.1.12-candidate
@@ -532,11 +555,19 @@ current_candidate_evidence:
     build_run: 33787887613
     build_job: 100757017147
     publish_job: 100758697733
-    publish_job_status: skipped
-    artifact_id: 9906308974
-    artifact_archive_sha256: abce07ab4a933bcec3282738dd0324d61c842432eb78cd777ccac3eb8b45bc23
-    wheel_sha256: e8220584e6d9e1af97b209e8e2e06326ed3071e103544968a3305bb6e2353357
-    sdist_sha256: 690c3241aa2f0c8e01f960b4fb5667edf157780784ce8a9077cb7896fa22af00
+    publish_job_status: success
+    publication_run: 33877124302
+    publication_build_job: 101036652522
+    publication_publish_job: 101038192288
+    artifact_id: 9938470086
+    artifact_archive_sha256: cf96cc7c630301df9c1e0fc89138aa85052d87badda49060cdd57544e7263a53
+    wheel_sha256: d536881ce7bde4b7f585ca6639027ae3f8874642c4b2422e7d033ab927052107
+    wheel_size: 61600
+    sdist_sha256: 7f327a78989940ceefd6e948933b35ede12b650dd1ad7cd34c5c95dd41d5a468
+    sdist_size: 66415
+    release_id: 382738850
+    release_url: https://github.com/GBeurier/nirs4all-providers/releases/tag/v0.2.11
+    pypi_url: https://pypi.org/project/nirs4all-providers/0.2.11/
     evidence: >-
       Exact interop reproduced a TypeError in published 0.2.10 after the fetch
       submodule shadowed PipelineProvider.fetch. Functional parent d32e9df
@@ -550,37 +581,44 @@ current_candidate_evidence:
       explicitly skipped. Final candidate b2210ec repins the workflow and its
       invariant to Repository 0.1.12 candidate dbd9dae; the focused publication
       contract and real provider-repository round-trip pass four tests plus
-      Ruff. This is local qualification only and has no publication receipt.
+      Ruff. Annotated tag v0.2.11 resolves to that exact head; workflow
+      33877124302 published the GitHub release and the recorded wheel/sdist to
+      PyPI after Repository 0.1.12.
     release_limit: >-
-      Providers 0.2.11 is not tagged or published. Published 0.2.10 remains an
-      immutable historical baseline but is functionally insufficient for the
-      selected train, so component publication and the global release remain
-      held.
+      Providers 0.2.11 is tagged and published; 0.2.10 remains accessible as
+      immutable history. R4/Studio publication and the remaining global gates
+      are still held.
   repository:
-    evidence_status: published_0_1_11_final_0_1_12_surface_contract_qualified_release_pending
+    evidence_status: published_0_1_12_exact_surface_contract_release_workflow_green
     previous_published_commit: 0c2595e1e7305b7969afd22984ad15e37fa7ea5d
     previous_published_version: 0.1.10
-    published_commit: c0ed40ac6d21ab2a9879b8c654a3fa1f0d4fffac
-    published_tree: 1bae2a889fdee52d8c54e19216641e7a99612fd6
-    published_version: 0.1.11
-    published_tag: v0.1.11
-    published_tag_object: ae8b54da5f759d087e4e6ae590bf53a9816f2035
+    published_commit: dbd9dae1205e1905692decd9fc7243f4fbda3068
+    published_tree: c37878a2f83baf90fcfb222944d4d06178164a71
+    published_version: 0.1.12
+    published_tag: v0.1.12
+    published_tag_object: 15cd73737ca44f3b464dddb1e1c51773836fbb23
     qualification_commit: dbd9dae1205e1905692decd9fc7243f4fbda3068
     qualification_tree: c37878a2f83baf90fcfb222944d4d06178164a71
     qualification_ref: refs/heads/release/repository-v1-compat-0.1.12-candidate
     candidate_version: 0.1.12
-    candidate_build_status: pending
+    candidate_build_status: published
     build_run: 33852742761
     build_job: 100959002867
     artifact_id: 9928969311
     artifact_archive_sha256: 35670b439df063bf4fdf8ce66513d2630450ced025d6f7a2e04d5fc130e321ed
-    wheel_sha256: 5743d99c70642ecffe9c2c4f92186a706abdb03b5b7cd2d62775ee92f8f389bb
-    sdist_sha256: 5f911fefbc3cf7abb7651377e703113ac0c698dfefcd5c3bb9bb7cd31410ae53
-    publication_run: 33854293363
-    publication_artifact_id: 9929546238
-    publication_artifact_archive_sha256: 67977fcc6a64f057c1a8c81870b61f02e44adfbf61e0862de320bb9eda2bd17c
-    release_url: https://github.com/GBeurier/nirs4all-repository/releases/tag/v0.1.11
-    pypi_url: https://pypi.org/project/nirs4all-repository/0.1.11/
+    wheel_sha256: 127ca9b43e9a17e743a983f22743213e747fa46f5b3f54e126c1b0eb43dbd8f9
+    wheel_size: 112110
+    sdist_sha256: df56c2bf7301747fca8466c2afd4f1132059ab3e89022049a4f941f2e7c43a56
+    sdist_size: 130997
+    publication_run: 33876963719
+    publication_build_job: 101036136098
+    publication_release_assets_job: 101036217030
+    publication_publish_job: 101036282717
+    publication_artifact_id: 9938233538
+    publication_artifact_archive_sha256: dd150d6e748e4fb832cd44e981456a0430ee4fe5fd8b5923bcfd72b04a31f0a8
+    release_id: 382737787
+    release_url: https://github.com/GBeurier/nirs4all-repository/releases/tag/v0.1.12
+    pypi_url: https://pypi.org/project/nirs4all-repository/0.1.12/
     public_surface_id: nirs4all.repository.catalog
     previous_public_surface_contract_sha256: 613d7008c38023d2d5e94df9bc4c9936e2a321c0d9aa24bcbf7a22cb6ac5b65f
     public_surface_contract_sha256: 454c1599a3046d9240009b8b7179f48ee95548cec3c910d6fb308e3b96a7d9e7
@@ -595,19 +633,20 @@ current_candidate_evidence:
       r3: a06c4015a26124df1e529f82108ee7bd115236cb
     compatibility_recipes: [r1, r2, r3]
     evidence: >-
-      Repository 0.1.11 commit c0ed40a remains tagged and published on GitHub
-      and PyPI with build-only run 33852742761 and publication run 33854293363.
-      Candidate 0.1.12 commit dbd9dae supersedes its provisional contract and
+      Repository 0.1.11 remains accessible as immutable history. Repository
+      0.1.12 commit dbd9dae supersedes its provisional contract and
       passes all five exact-source compatibility recipes against R1 61a66d1,
       final R2 d351785 and direct-child R3 3567bd4. Its contract SHA-256 is
       454c1599a3046d9240009b8b7179f48ee95548cec3c910d6fb308e3b96a7d9e7;
-      the checker is unchanged. This is qualified candidate evidence only.
+      the checker is unchanged. Annotated tag v0.1.12 resolves to that exact
+      head; workflow 33876963719 published the GitHub release assets and the
+      recorded wheel/sdist to PyPI.
       The release workflow uses Twine 7 and packaging 26.3; an older local
       Twine 6.2 rejection is not release evidence and is not a blocker.
     release_limit: >-
-      Repository 0.1.11 remains an accessible historical release. Repository
-      0.1.12 publication waits for immutable R2/R3 tag receipts; artifact,
-      signature/SBOM obligations and final promotion remain open.
+      Repository 0.1.11 remains an accessible historical release and 0.1.12 is
+      the current published contract. Remaining artifact, signature/SBOM and
+      final promotion obligations remain open.
   datasets:
     evidence_status: published_0_3_10_security_train_single_tag_move_ci_only_delta_external_release_hold
     commit: 007d7aafe50e6e4148d5a5cefe0ad96d9da37e7b
@@ -677,13 +716,25 @@ current_candidate_evidence:
       Version 0.1.13 is tagged and published. Final downstream product repins,
       Studio qualification and final product gates remain required.
   python_strict_profile:
-    evidence_status: remote_r3_direct_child_of_r2_native_default_candidate_release_hold
+    evidence_status: published_r2_r3_direct_release_train_r4_candidate_release_hold
     commit: 3567bd4abcaa64443a1946748a579f0803e91889
     tree: a06c4015a26124df1e529f82108ee7bd115236cb
     version: 1.0.0rc2
     r2_candidate_commit: d351785dbc17290cdc85a797ead299ffce58f257
     r2_candidate_tree: 364c9e63a0ef667c62e8d7223af632c5783b880a
+    r2_publication_run: 33868949671
+    r2_release_tag: 1.0.0-rc.1
+    r2_release_tag_object: df657957bd7f867c026aba806a593e6a8837b972
+    r2_wheel_sha256: b9b44a3374ee22fd67f11964fde42e158f6e2ea2a8b829ae0f4c58f26fa1e7da
+    r2_sdist_sha256: 69ecf82236c3f818472681d0d653a9f2d2d15df4738ca5ae0510ac7fef5a3f45
+    r2_ghcr_oci_index: sha256:1db10c9c8ac017e3153c83b123adc12350998210690288224f22ac537b642419
     r3_direct_parent: d351785dbc17290cdc85a797ead299ffce58f257
+    r3_publication_run: 33873060692
+    r3_release_tag: 1.0.0-rc.2
+    r3_release_tag_object: 5d82fcd06b440dc8e3668716658e7c50393f485f
+    r3_wheel_sha256: bb6f7a1f3a0de0fb9986e685b02bf48d7998f2d9261f8cdb7be35ed13bc4bdd0
+    r3_sdist_sha256: 6a6d41dc828919f0cc0cb14d06735e6d712e672edf5b7d9a00533ddb01c0949c
+    r3_ghcr_oci_index: sha256:461f8b61f004c6bd035a12202540e46a8df7438010dbf31094bf0b04dbd12d1a
     r4_documentation_commit: ef39f1a53dd120b9ce28907dc372d755dd621430
     r4_documentation_tree: 126dfe87557a265d2a6c7894885c7772604d5311
     r4_documentation_base_r3: 3567bd4abcaa64443a1946748a579f0803e91889
@@ -741,8 +792,8 @@ current_candidate_evidence:
       direct child and changes release metadata only while preserving the strict
       fail-closed profile. Documentation descendant ef39f1a replays the R4
       documentation lot on that exact R3 base, and stable metadata descendant
-      a5e5f93 selects it as the local 1.0.0 candidate. R2, R3 and R4 remain
-      unpublished and have no public artifact receipt.
+      a5e5f93 selects it as the local 1.0.0 candidate. R2 and R3 are published
+      from their exact tags with PyPI and GHCR receipts; R4 remains unpublished.
     release_limit: >-
       The CAP-bounded API-001 through API-005 matrix is closed locally: promised
       run, predict, session/cache, full retrain, conformal/robustness and
@@ -1225,35 +1276,32 @@ current_candidate_evidence:
       errors without crashing. External qualification is limited to the promised
       OS and platform matrix.
   dependency_repin:
-    status: published_component_baseline_complete_final_candidate_repins_done_publications_and_product_lock_pending
+    status: published_component_baseline_repository_providers_r1_r2_r3_complete_r4_studio_and_product_lock_pending
     selected_dag_ml_data_version: 0.2.10
     selected_n4m_rust_binding_version: 0.1.4
     selected_formats_version: 0.2.9
     selected_io_version: 0.1.14
     selected_core_version: 0.3.28
-    selected_providers_version: 0.2.11_candidate_repinned_to_repository_dbd9dae
-    selected_repository_version: 0.1.11_published_0.1.12_candidate_repinned_to_final_python_heads
+    selected_providers_version: 0.2.11_published_from_repository_dbd9dae_repin
+    selected_repository_version: 0.1.12_published_with_final_python_r1_r2_r3_surface_contract
     published_release_local_patch_consumers: []
     required_action: >-
-      Keep published Python R1 as the rollback baseline, finish the separately
-      governed R2/R3 and Studio product qualifications/publications, then
-      regenerate the expanded lock from remotely reconstructible release heads.
-      Publish the final-head-repinned Repository 0.1.12, then publish its
-      repinned Providers 0.2.11 consumer and complete the product and artifact gates. The published component
-      baseline, R1 and Web alone do not authorize promotion.
+      Keep published Python R1 as the rollback baseline and the published R2/R3
+      tags as the post-flip train, finish Studio and R4 product qualification and
+      publication, then regenerate the expanded lock from remotely reconstructible
+      release heads. Repository 0.1.12 and its repinned Providers 0.2.11 consumer
+      are published; the remaining product and artifact gates still do not
+      authorize promotion.
   fields_pending_final_repin:
-    - Providers 0.2.11 and Repository 0.1.12 publication receipts from their final-head repins
-    - separately gated Python R2 and R3 product releases
     - Studio publication and signed immutable installer identities from its green unsigned Core 0.3.28 and IO 0.1.14 candidate
     - promotion of the remotely reconstructible expanded v2 candidate without rewriting the published v1 lock
     - complete artifact digests, signing and SBOM/provenance receipts where required
     - representative sustained soak, external matrices and frozen reference-host performance budgets
   blockers:
     - >-
-      Product HOLD: Python R1 and Web 0.1.10 are published, but repaired
-      Providers 0.2.11 and Studio 0.11.0 remain unpublished; Repository 0.1.11
-      is published and its repinned 0.1.12 candidate remains unpublished. Studio is unsigned and
-      R2/R3 are not releases.
+      Product HOLD: Python R1/R2/R3, Web 0.1.10, Repository 0.1.12 and repaired
+      Providers 0.2.11 are published, but R4 and Studio 0.11.0 remain unpublished.
+      Studio is unsigned.
     - >-
       Release-artifact HOLD: the canonical v1 lock is intentionally unchanged.
       The expanded v2 candidate is remotely reconstructible and strict NO-GO;

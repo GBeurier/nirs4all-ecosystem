@@ -1033,7 +1033,7 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "17f8196b26457fbd300a46d6520c3d1845d0de05"
     )
     assert projections["repository"]["publication_head"]["tree"] == (
-        "1bae2a889fdee52d8c54e19216641e7a99612fd6"
+        "c37878a2f83baf90fcfb222944d4d06178164a71"
     )
     assert projections["repository"]["qualification_head"]["head"] == (
         "dbd9dae1205e1905692decd9fc7243f4fbda3068"
@@ -1042,8 +1042,8 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         artifact["id"]: artifact["sha256"]
         for artifact in projections["repository"]["artifacts"]
     } == {
-        "python_wheel": "5743d99c70642ecffe9c2c4f92186a706abdb03b5b7cd2d62775ee92f8f389bb",
-        "python_sdist": "5f911fefbc3cf7abb7651377e703113ac0c698dfefcd5c3bb9bb7cd31410ae53",
+        "python_wheel": "127ca9b43e9a17e743a983f22743213e747fa46f5b3f54e126c1b0eb43dbd8f9",
+        "python_sdist": "df56c2bf7301747fca8466c2afd4f1132059ab3e89022049a4f941f2e7c43a56",
         "public_v1_surface_contract": "454c1599a3046d9240009b8b7179f48ee95548cec3c910d6fb308e3b96a7d9e7",
         "public_v1_surface_checker": "ac8b886c4cecf5c515c7600bc57c79c5ed28bbbf3c6782014d5ce48628095969",
     }
@@ -1051,8 +1051,9 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "build_33852742761": "passed",
         "exact_r1_r2_r3_surface_contract": "passed",
         "publication_33854293363": "passed",
+        "publication_33876963719": "passed",
     }
-    assert components["providers"]["publication_head"]["head"] == "5a03f508374531409919fceb2f2367544c52b94d"
+    assert components["providers"]["publication_head"]["head"] == "b2210ec717c0de0055fc8b9424b115a933efdb4e"
     assert components["providers"]["qualification_head"]["head"] == (
         "b2210ec717c0de0055fc8b9424b115a933efdb4e"
     )
@@ -1111,8 +1112,8 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
         "macos_arm64_dmg": "sha256:1759fec8d37279cf9b20dce36cca8c371abecd01b29d216d9502e24d1b52e3f5",
     }
     assert manifest["product_milestones"]["r1"]["state"] == "published"
-    assert manifest["product_milestones"]["r2"]["state"] == "candidate"
-    assert manifest["product_milestones"]["r3"]["state"] == "candidate"
+    assert manifest["product_milestones"]["r2"]["state"] == "published"
+    assert manifest["product_milestones"]["r3"]["state"] == "published"
     assert manifest["product_milestones"]["r4"]["state"] == "candidate"
     assert manifest["product_milestones"]["r4"]["members"]["python"]["remote"]["head"] == (
         "a5e5f93b8b1336bc58c0a23814066e5e14678d12"
@@ -1129,13 +1130,15 @@ def test_candidate_v2_manifest_is_exhaustive_current_and_not_promotable() -> Non
     assert manifest["product_milestones"]["r3"]["members"]["studio"]["remote"]["head"] == (
         "6d249ce69d5ddf2f0c4a831f33e70e9dda905471"
     )
+    assert manifest["product_milestones"]["r2"]["publication_receipts"]["workflow_run"] == 33868949671
+    assert manifest["product_milestones"]["r3"]["publication_receipts"]["workflow_run"] == 33873060692
     assert {gate["id"]: gate["state"] for gate in manifest["promotion_gates"]} == {
         "artifact_receipts": "pending",
         "candidate_ci": "pending",
-        "component_publications": "pending",
+        "component_publications": "passed",
         "external_matrices": "pending",
         "product_publication": "partial",
-        "repository_surface_contract": "pending",
+        "repository_surface_contract": "passed",
         "signatures": "missing",
         "soak": "missing",
     }
