@@ -3,14 +3,14 @@
   "authority": {
     "candidate_updates": [
       "nirs4all-io@e6241571e2714160d2ff769030964b8924f0cbdb",
-      "nirs4all@4a758ec631e68afd79c2b2564b98e4faaf449650:r2-candidate",
-      "nirs4all@2af6cfd7f988fa400617c460a77450dbad4228c9:r3-candidate",
-      "nirs4all-studio@3c4f61f323e71e82544144382467b6b99014da6c",
+      "nirs4all@d351785dbc17290cdc85a797ead299ffce58f257:r2-candidate",
+      "nirs4all@3567bd4abcaa64443a1946748a579f0803e91889:r3-candidate",
+      "nirs4all-studio@89b5278a47ae4d38d6b508fabdd6e712f96942c0",
       "nirs4all-benchmarks@17f8196b26457fbd300a46d6520c3d1845d0de05",
-      "nirs4all-providers@bccd6e0c76862f3f109f6b8d8c625624b96f4691",
-      "nirs4all-repository@a97283306610543e68a61b201e1f904f3c72ca1b",
-      "nirs4all@73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7:docs-rebased-on-final-r3",
-      "nirs4all@f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81:r4-stable-candidate",
+      "nirs4all-providers@b2210ec717c0de0055fc8b9424b115a933efdb4e",
+      "nirs4all-repository@dbd9dae1205e1905692decd9fc7243f4fbda3068",
+      "nirs4all@ef39f1a53dd120b9ce28907dc372d755dd621430:docs-rebased-on-final-r3",
+      "nirs4all@a5e5f93b8b1336bc58c0a23814066e5e14678d12:r4-stable-candidate",
       "nirs4all-methods@bf2641641c8b4235201203bd338486b96964b59f:docs-qualification",
       "nirs4all-tools@f4fc4a6ee9bb89f9079241e19c91ddacced3a31b:support-qualification",
       "nirs4all-org@28523174bdbceffbb3d5c06e43796fe04073b1f5:docs-support-projection",
@@ -26,7 +26,7 @@
     "manifest_path": "docs/contracts/release/aggregation-manifest-candidate.v2.n4a.json",
     "tool": "scripts/n4a_release_lock.py"
   },
-  "manifest_digest": "sha256:66e516ae7240fa3ec6c34b27e8966852bb2f83602ad7bd4d15604f0366b0dabc",
+  "manifest_digest": "sha256:66f9b6655386b84ad972779107b04995ee88466fa371d03aa8fbd37e842cf497",
   "members": {
     "core": {
       "artifacts": [
@@ -348,10 +348,10 @@
         "tree": "f8ce915b4f95fbff9e27f967d1c319363d2b7881"
       },
       "qualification_head": {
-        "head": "bccd6e0c76862f3f109f6b8d8c625624b96f4691",
+        "head": "b2210ec717c0de0055fc8b9424b115a933efdb4e",
         "ref": "refs/heads/release/providers-0.2.11-repository-0.1.12-candidate",
         "repository": "GBeurier/nirs4all-providers",
-        "tree": "7ddb666b97e7f4eb75cdd978ca29ff6609c32470"
+        "tree": "23a4a70513a33118c19923a47647a0a362c85f18"
       },
       "receipts": [
         {
@@ -397,13 +397,13 @@
             "provider_repository_roundtrip",
             "ruff"
           ],
-          "head": "bccd6e0c76862f3f109f6b8d8c625624b96f4691",
+          "head": "b2210ec717c0de0055fc8b9424b115a933efdb4e",
           "id": "providers_0_2_11_repository_0_1_12_repin",
           "publication": false,
-          "repository_head": "a97283306610543e68a61b201e1f904f3c72ca1b",
+          "repository_head": "dbd9dae1205e1905692decd9fc7243f4fbda3068",
           "state": "passed",
           "tests": 4,
-          "tree": "7ddb666b97e7f4eb75cdd978ca29ff6609c32470"
+          "tree": "23a4a70513a33118c19923a47647a0a362c85f18"
         }
       ],
       "release_role": "required_provider_contracts",
@@ -413,11 +413,11 @@
       "role": "Published Python provider client over neutral cross-language contracts",
       "state": {
         "branch": "release/providers-0.2.11-repository-0.1.12-candidate",
-        "commit": "bccd6e0c76862f3f109f6b8d8c625624b96f4691",
+        "commit": "b2210ec717c0de0055fc8b9424b115a933efdb4e",
         "dirty": false,
         "exact_tag": null,
         "remote_ref": "refs/heads/release/providers-0.2.11-repository-0.1.12-candidate",
-        "tree": "7ddb666b97e7f4eb75cdd978ca29ff6609c32470"
+        "tree": "23a4a70513a33118c19923a47647a0a362c85f18"
       },
       "version": "0.2.11"
     },
@@ -429,32 +429,32 @@
         "tree": "e0583f7287c13ace028b38708268305626a47372"
       },
       "qualification_head": {
-        "head": "f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81",
-        "parent": "73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7",
-        "ref": "refs/heads/release/r4-1.0.0-candidate-v2",
+        "head": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
+        "parent": "ef39f1a53dd120b9ce28907dc372d755dd621430",
+        "ref": "refs/heads/release/r4-1.0.0-candidate-v3",
         "repository": "GBeurier/nirs4all",
-        "tree": "6876beb942e1caf0a683a0a60c6f3954818ac9d4"
+        "tree": "1f566f81f5309ed0b73872fbc01db00a40d4e3e2"
       },
       "receipts": [
         {
-          "base_r3": "2af6cfd7f988fa400617c460a77450dbad4228c9",
+          "base_r3": "3567bd4abcaa64443a1946748a579f0803e91889",
           "disposition": "rebased_on_final_r3_publication_hold",
           "gate": "ruff_docs_content_identical_to_sphinx_qualified_source",
-          "head": "73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7",
+          "head": "ef39f1a53dd120b9ce28907dc372d755dd621430",
           "id": "r4_doc002_python_local_qualification",
-          "parent": "a1c7482ccdda0d83720bcec32c094baf2abc3232",
+          "parent": "20d871dcd6a1e13576c83829c49e780e1e7ee4b5",
           "published": false,
-          "ref": "refs/heads/codex/r4-doc002-python-final-r3-v2",
+          "ref": "refs/heads/codex/r4-doc002-python-final-r3-v3",
           "selected_as_member": false,
           "state": "passed",
-          "tree": "907af76ec9499105a5a75bd9ffe6322fba77cc28"
+          "tree": "126dfe87557a265d2a6c7894885c7772604d5311"
         },
         {
           "id": "r2_r3_product_gates",
           "publication": false,
-          "r2_head": "4a758ec631e68afd79c2b2564b98e4faaf449650",
-          "r3_direct_parent": "4a758ec631e68afd79c2b2564b98e4faaf449650",
-          "r3_head": "2af6cfd7f988fa400617c460a77450dbad4228c9",
+          "r2_head": "d351785dbc17290cdc85a797ead299ffce58f257",
+          "r3_direct_parent": "d351785dbc17290cdc85a797ead299ffce58f257",
+          "r3_head": "3567bd4abcaa64443a1946748a579f0803e91889",
           "state": "pending"
         }
       ],
@@ -464,12 +464,12 @@
       "repo_url": "GBeurier/nirs4all",
       "role": "Full Python library, compatibility oracle and product API",
       "state": {
-        "branch": "release/r4-1.0.0-candidate-v2",
-        "commit": "f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81",
+        "branch": "release/r4-1.0.0-candidate-v3",
+        "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
         "dirty": false,
         "exact_tag": null,
-        "remote_ref": "refs/heads/release/r4-1.0.0-candidate-v2",
-        "tree": "6876beb942e1caf0a683a0a60c6f3954818ac9d4"
+        "remote_ref": "refs/heads/release/r4-1.0.0-candidate-v3",
+        "tree": "1f566f81f5309ed0b73872fbc01db00a40d4e3e2"
       },
       "version": "1.0.0"
     },
@@ -537,10 +537,10 @@
         "tree": "f7a2032653979ddee824c6c9e15ea88c571cfdfd"
       },
       "qualification_head": {
-        "head": "3c4f61f323e71e82544144382467b6b99014da6c",
+        "head": "89b5278a47ae4d38d6b508fabdd6e712f96942c0",
         "ref": "refs/heads/release/r3-0.11.0-candidate",
         "repository": "GBeurier/nirs4all-studio",
-        "tree": "c3a2c31a47e3b82f5e8e9fa9d64d64731cbf8a22"
+        "tree": "931e2ae8c86c667c1da9507d8a2705fd20ff1ebb"
       },
       "receipts": [
         {
@@ -559,14 +559,14 @@
         },
         {
           "callable_sha256": "7eb38aacfee0964db24d5bf2be577078883018d0f8bd603cda10cddd2a61df19",
-          "head": "3c4f61f323e71e82544144382467b6b99014da6c",
+          "head": "89b5278a47ae4d38d6b508fabdd6e712f96942c0",
           "id": "final_candidate_ci",
           "installed_manifest_sha256": "0d8bd9ef411c7df1cf30597f5d340d58cd107e71c6cf8baa6e7f53aad6641b88",
           "publication": false,
-          "python_r3_head": "2af6cfd7f988fa400617c460a77450dbad4228c9",
+          "python_r3_head": "3567bd4abcaa64443a1946748a579f0803e91889",
           "python_wheel_sha256": "5898aa933da2e51ad07438ae5313ade37f1dad2a363411e71e0f0a513c7b4824",
           "state": "pending",
-          "tree": "c3a2c31a47e3b82f5e8e9fa9d64d64731cbf8a22"
+          "tree": "931e2ae8c86c667c1da9507d8a2705fd20ff1ebb"
         }
       ],
       "release_role": "desktop_product",
@@ -576,11 +576,11 @@
       "role": "Rust control-plane desktop product with CPython plugin host",
       "state": {
         "branch": "release/r3-0.11.0-candidate",
-        "commit": "3c4f61f323e71e82544144382467b6b99014da6c",
+        "commit": "89b5278a47ae4d38d6b508fabdd6e712f96942c0",
         "dirty": false,
         "exact_tag": null,
         "remote_ref": "refs/heads/release/r3-0.11.0-candidate",
-        "tree": "c3a2c31a47e3b82f5e8e9fa9d64d64731cbf8a22"
+        "tree": "931e2ae8c86c667c1da9507d8a2705fd20ff1ebb"
       },
       "version": "0.11.0"
     },
@@ -707,10 +707,10 @@
       "members": {
         "python": {
           "remote": {
-            "head": "4a758ec631e68afd79c2b2564b98e4faaf449650",
+            "head": "d351785dbc17290cdc85a797ead299ffce58f257",
             "ref": "refs/heads/release/r2-1.0.0-rc.1-candidate",
             "repository": "GBeurier/nirs4all",
-            "tree": "9860efcb130f5258fc760bc6e4bd19a81e8dfeea"
+            "tree": "364c9e63a0ef667c62e8d7223af632c5783b880a"
           },
           "version": "1.0.0rc1"
         },
@@ -731,19 +731,19 @@
       "members": {
         "python": {
           "remote": {
-            "head": "2af6cfd7f988fa400617c460a77450dbad4228c9",
+            "head": "3567bd4abcaa64443a1946748a579f0803e91889",
             "ref": "refs/heads/release/r3-1.0.0-rc.2-candidate",
             "repository": "GBeurier/nirs4all",
-            "tree": "5b0634005e8c574bdc8f1b7b4f6e452405af5ead"
+            "tree": "a06c4015a26124df1e529f82108ee7bd115236cb"
           },
           "version": "1.0.0rc2"
         },
         "studio": {
           "remote": {
-            "head": "3c4f61f323e71e82544144382467b6b99014da6c",
+            "head": "89b5278a47ae4d38d6b508fabdd6e712f96942c0",
             "ref": "refs/heads/release/r3-0.11.0-candidate",
             "repository": "GBeurier/nirs4all-studio",
-            "tree": "c3a2c31a47e3b82f5e8e9fa9d64d64731cbf8a22"
+            "tree": "931e2ae8c86c667c1da9507d8a2705fd20ff1ebb"
           },
           "version": "0.11.0"
         }
@@ -753,12 +753,12 @@
     "r4": {
       "members": {
         "python": {
-          "parent": "73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7",
+          "parent": "ef39f1a53dd120b9ce28907dc372d755dd621430",
           "remote": {
-            "head": "f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81",
-            "ref": "refs/heads/release/r4-1.0.0-candidate-v2",
+            "head": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
+            "ref": "refs/heads/release/r4-1.0.0-candidate-v3",
             "repository": "GBeurier/nirs4all",
-            "tree": "6876beb942e1caf0a683a0a60c6f3954818ac9d4"
+            "tree": "1f566f81f5309ed0b73872fbc01db00a40d4e3e2"
           },
           "version": "1.0.0"
         }
@@ -860,7 +860,7 @@
         },
         {
           "id": "public_v1_surface_contract",
-          "sha256": "5d3a547b0faade82d464e57345a1233fd3ba9080d62721d3266bf5562e21d70f",
+          "sha256": "454c1599a3046d9240009b8b7179f48ee95548cec3c910d6fb308e3b96a7d9e7",
           "state": "candidate",
           "version": "1"
         },
@@ -879,10 +879,10 @@
         "tree": "1bae2a889fdee52d8c54e19216641e7a99612fd6"
       },
       "qualification_head": {
-        "head": "a97283306610543e68a61b201e1f904f3c72ca1b",
+        "head": "dbd9dae1205e1905692decd9fc7243f4fbda3068",
         "ref": "refs/heads/release/repository-v1-compat-0.1.12-candidate",
         "repository": "GBeurier/nirs4all-repository",
-        "tree": "3c3750afc11bfb90b3531eed4ad92cf38f3ceb1b"
+        "tree": "c37878a2f83baf90fcfb222944d4d06178164a71"
       },
       "receipts": [
         {
@@ -913,13 +913,13 @@
           "scope": "local_exact_source_compatibility",
           "source_heads": {
             "r1": "61a66d1bd0157dd9422facc4b32fca33989d4035",
-            "r2": "4a758ec631e68afd79c2b2564b98e4faaf449650",
-            "r3": "2af6cfd7f988fa400617c460a77450dbad4228c9"
+            "r2": "d351785dbc17290cdc85a797ead299ffce58f257",
+            "r3": "3567bd4abcaa64443a1946748a579f0803e91889"
           },
           "source_trees": {
             "r1": "e0583f7287c13ace028b38708268305626a47372",
-            "r2": "9860efcb130f5258fc760bc6e4bd19a81e8dfeea",
-            "r3": "5b0634005e8c574bdc8f1b7b4f6e452405af5ead"
+            "r2": "364c9e63a0ef667c62e8d7223af632c5783b880a",
+            "r3": "a06c4015a26124df1e529f82108ee7bd115236cb"
           },
           "state": "passed"
         },
@@ -1027,10 +1027,10 @@
       "tree": "f8ce915b4f95fbff9e27f967d1c319363d2b7881"
     },
     "component:providers:qualification_head": {
-      "head": "bccd6e0c76862f3f109f6b8d8c625624b96f4691",
+      "head": "b2210ec717c0de0055fc8b9424b115a933efdb4e",
       "ref": "refs/heads/release/providers-0.2.11-repository-0.1.12-candidate",
       "repository": "GBeurier/nirs4all-providers",
-      "tree": "7ddb666b97e7f4eb75cdd978ca29ff6609c32470"
+      "tree": "23a4a70513a33118c19923a47647a0a362c85f18"
     },
     "component:python:publication_head": {
       "head": "61a66d1bd0157dd9422facc4b32fca33989d4035",
@@ -1039,11 +1039,11 @@
       "tree": "e0583f7287c13ace028b38708268305626a47372"
     },
     "component:python:qualification_head": {
-      "head": "f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81",
-      "parent": "73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7",
-      "ref": "refs/heads/release/r4-1.0.0-candidate-v2",
+      "head": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
+      "parent": "ef39f1a53dd120b9ce28907dc372d755dd621430",
+      "ref": "refs/heads/release/r4-1.0.0-candidate-v3",
       "repository": "GBeurier/nirs4all",
-      "tree": "6876beb942e1caf0a683a0a60c6f3954818ac9d4"
+      "tree": "1f566f81f5309ed0b73872fbc01db00a40d4e3e2"
     },
     "component:studio:publication_head": {
       "head": "5d043ee23f0ba7f47584bc9ef18fa13755e59198",
@@ -1052,10 +1052,10 @@
       "tree": "f7a2032653979ddee824c6c9e15ea88c571cfdfd"
     },
     "component:studio:qualification_head": {
-      "head": "3c4f61f323e71e82544144382467b6b99014da6c",
+      "head": "89b5278a47ae4d38d6b508fabdd6e712f96942c0",
       "ref": "refs/heads/release/r3-0.11.0-candidate",
       "repository": "GBeurier/nirs4all-studio",
-      "tree": "c3a2c31a47e3b82f5e8e9fa9d64d64731cbf8a22"
+      "tree": "931e2ae8c86c667c1da9507d8a2705fd20ff1ebb"
     },
     "component:tools:publication_head": {
       "head": "88c2bc1e29603049cdbf1a1080a35845edf2f3c9",
@@ -1088,10 +1088,10 @@
       "tree": "e978be82eca9df3cf44c721ea2692e6f0fc896c3"
     },
     "milestone:r2:python": {
-      "head": "4a758ec631e68afd79c2b2564b98e4faaf449650",
+      "head": "d351785dbc17290cdc85a797ead299ffce58f257",
       "ref": "refs/heads/release/r2-1.0.0-rc.1-candidate",
       "repository": "GBeurier/nirs4all",
-      "tree": "9860efcb130f5258fc760bc6e4bd19a81e8dfeea"
+      "tree": "364c9e63a0ef667c62e8d7223af632c5783b880a"
     },
     "milestone:r2:studio": {
       "head": "54350c688ae576bbbb393c5a24dae8d106f77322",
@@ -1100,22 +1100,22 @@
       "tree": "9ecf2279039ef9b5af3d5be59be695f0dc0bc1d3"
     },
     "milestone:r3:python": {
-      "head": "2af6cfd7f988fa400617c460a77450dbad4228c9",
+      "head": "3567bd4abcaa64443a1946748a579f0803e91889",
       "ref": "refs/heads/release/r3-1.0.0-rc.2-candidate",
       "repository": "GBeurier/nirs4all",
-      "tree": "5b0634005e8c574bdc8f1b7b4f6e452405af5ead"
+      "tree": "a06c4015a26124df1e529f82108ee7bd115236cb"
     },
     "milestone:r3:studio": {
-      "head": "3c4f61f323e71e82544144382467b6b99014da6c",
+      "head": "89b5278a47ae4d38d6b508fabdd6e712f96942c0",
       "ref": "refs/heads/release/r3-0.11.0-candidate",
       "repository": "GBeurier/nirs4all-studio",
-      "tree": "c3a2c31a47e3b82f5e8e9fa9d64d64731cbf8a22"
+      "tree": "931e2ae8c86c667c1da9507d8a2705fd20ff1ebb"
     },
     "milestone:r4:python": {
-      "head": "f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81",
-      "ref": "refs/heads/release/r4-1.0.0-candidate-v2",
+      "head": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
+      "ref": "refs/heads/release/r4-1.0.0-candidate-v3",
       "repository": "GBeurier/nirs4all",
-      "tree": "6876beb942e1caf0a683a0a60c6f3954818ac9d4"
+      "tree": "1f566f81f5309ed0b73872fbc01db00a40d4e3e2"
     },
     "projection:benchmarks:qualification_head": {
       "head": "17f8196b26457fbd300a46d6520c3d1845d0de05",
@@ -1142,10 +1142,10 @@
       "tree": "1bae2a889fdee52d8c54e19216641e7a99612fd6"
     },
     "projection:repository:qualification_head": {
-      "head": "a97283306610543e68a61b201e1f904f3c72ca1b",
+      "head": "dbd9dae1205e1905692decd9fc7243f4fbda3068",
       "ref": "refs/heads/release/repository-v1-compat-0.1.12-candidate",
       "repository": "GBeurier/nirs4all-repository",
-      "tree": "3c3750afc11bfb90b3531eed4ad92cf38f3ceb1b"
+      "tree": "c37878a2f83baf90fcfb222944d4d06178164a71"
     }
   },
   "schema_version": "n4a.aggregation-lock/v2",

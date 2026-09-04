@@ -46,7 +46,7 @@
       },
       "surface_matrix": {
         "path": "docs/contracts/release/public-v1-surface-matrix.n4a.json",
-        "canonical_json_sha256": "sha256:83518e0e9121c43bcda69c5c2cb88c8c8734a6891e5eccce51608f5c3ed06c7e"
+        "canonical_json_sha256": "sha256:c2ce1e208109ffaed5be2820408cc78cfbcf13430552841640b92ce5b531182c"
       }
     }
   },
@@ -655,14 +655,14 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
+          "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
           "source": "nirs4all/pipeline/engine.py",
           "source_sha256": "sha256:b21940df060bffbbfda52c6441e6001bcf0cad9e1a422e08f12926a4d754ac6b",
           "claim": "The Python candidate retains explicit engine=legacy selection and dispatch for rollback while the strict profile refuses implicit legacy execution."
         },
         {
           "candidate_key": "python",
-          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
+          "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
           "source": "nirs4all/api/run.py",
           "source_sha256": "sha256:a83523381a3d6a422f32eac30fb54daaf577f229f2ff84a8dcfb13f91e250ca7",
           "claim": "The Python candidate retains explicit engine=legacy selection and dispatch for rollback while the strict profile refuses implicit legacy execution."
@@ -990,7 +990,7 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
+          "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
           "source": "docs/source/reference/public_interfaces.md",
           "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate documents the bounded native SNV(ddof=0) to Savitzky-Golay(interp defaults) to PLS path."
@@ -1049,7 +1049,7 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
+          "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
           "source": "docs/source/reference/public_interfaces.md",
           "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate documents bounded native HPO resume without widening the HPO promise."
@@ -1216,7 +1216,7 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
+          "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
           "source": "docs/source/reference/public_interfaces.md",
           "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate documents bounded native multi-target conformal behavior for the declared Rust-backed surfaces."
@@ -1267,9 +1267,9 @@
       "evidence": [
         {
           "candidate_key": "studio",
-          "commit": "bb76f2c8833f430d26311422c9d7018592fcf6cb",
+          "commit": "89b5278a47ae4d38d6b508fabdd6e712f96942c0",
           "source": "README.md",
-          "source_sha256": "sha256:63d30f92aa2ca6b71c5785772fc86b4c736165143c179140206b10b928a621d5",
+          "source_sha256": "sha256:d50c91422e1da10a731b7238d167633436e832732cfa0a8f1e7ad7761d42f039",
           "claim": "The Studio candidate documents a Rust-only control plane."
         }
       ],
@@ -1317,9 +1317,9 @@
       "evidence": [
         {
           "candidate_key": "studio",
-          "commit": "bb76f2c8833f430d26311422c9d7018592fcf6cb",
+          "commit": "89b5278a47ae4d38d6b508fabdd6e712f96942c0",
           "source": "README.md",
-          "source_sha256": "sha256:63d30f92aa2ca6b71c5785772fc86b4c736165143c179140206b10b928a621d5",
+          "source_sha256": "sha256:d50c91422e1da10a731b7238d167633436e832732cfa0a8f1e7ad7761d42f039",
           "claim": "The Studio candidate restricts embedded CPython to stdio library/plugin execution and refuses broader backend duties."
         }
       ],
@@ -1590,7 +1590,7 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
+          "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
           "source": "docs/source/reference/public_interfaces.md",
           "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate keeps extended Python model families behind the explicit library/plugin boundary."
@@ -1645,7 +1645,7 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
+          "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
           "source": "docs/source/reference/public_interfaces.md",
           "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate keeps extended Python operator families behind the explicit library/plugin boundary."
@@ -1700,7 +1700,7 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
+          "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
           "source": "docs/source/reference/public_interfaces.md",
           "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate keeps transfer workflows behind the explicit library/plugin boundary."
@@ -1755,7 +1755,7 @@
       "evidence": [
         {
           "candidate_key": "python",
-          "commit": "40421617c7f39cae6d11c4c3aecb51e9d0a582f4",
+          "commit": "a5e5f93b8b1336bc58c0a23814066e5e14678d12",
           "source": "docs/source/reference/public_interfaces.md",
           "source_sha256": "sha256:830f637905715f2b6152e19be85a520a85c03cceea431a4649233fb655a616c5",
           "claim": "The Python candidate does not qualify finetune for V1 and the strict profile refuses it."

@@ -217,11 +217,11 @@ current_candidate_evidence:
       core: 550cb8c80708e88ac7ebbc880acb4b82d8531632
       tools: 88c2bc1e29603049cdbf1a1080a35845edf2f3c9
       ui: 406d94d70004f27459ef12347af1e6f0079ab6ac
-      python: f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81
-      studio: 3c4f61f323e71e82544144382467b6b99014da6c
+      python: a5e5f93b8b1336bc58c0a23814066e5e14678d12
+      studio: 89b5278a47ae4d38d6b508fabdd6e712f96942c0
       web: 051bf636d7c1729087e5d40061b18bd690cd33b7
-      providers: bccd6e0c76862f3f109f6b8d8c625624b96f4691
-      repository: a97283306610543e68a61b201e1f904f3c72ca1b
+      providers: b2210ec717c0de0055fc8b9424b115a933efdb4e
+      repository: dbd9dae1205e1905692decd9fc7243f4fbda3068
       benchmarks: 17f8196b26457fbd300a46d6520c3d1845d0de05
       org: 28523174bdbceffbb3d5c06e43796fe04073b1f5
       cockpit: 972155b9af539a444ede5c585e8d9eb799d35fe0
@@ -249,8 +249,8 @@ current_candidate_evidence:
         studio_remote_branch: release/r1-0.10.1-candidate
       r2:
         version: 1.0.0rc1
-        commit: 4a758ec631e68afd79c2b2564b98e4faaf449650
-        tree: 9860efcb130f5258fc760bc6e4bd19a81e8dfeea
+        commit: d351785dbc17290cdc85a797ead299ffce58f257
+        tree: 364c9e63a0ef667c62e8d7223af632c5783b880a
         artifact_status: unpublished_candidate_no_public_receipt
         default_engine: native
         remote_branch: release/r2-1.0.0-rc.1-candidate
@@ -261,31 +261,31 @@ current_candidate_evidence:
         studio_remote_branch: release/r2-0.10.2-candidate
       r3:
         version: 1.0.0rc2
-        commit: 2af6cfd7f988fa400617c460a77450dbad4228c9
-        tree: 5b0634005e8c574bdc8f1b7b4f6e452405af5ead
-        direct_parent_r2_commit: 4a758ec631e68afd79c2b2564b98e4faaf449650
+        commit: 3567bd4abcaa64443a1946748a579f0803e91889
+        tree: a06c4015a26124df1e529f82108ee7bd115236cb
+        direct_parent_r2_commit: d351785dbc17290cdc85a797ead299ffce58f257
         artifact_status: unpublished_candidate_no_public_receipt
         default_engine: native_fail_closed
         remote_branch: release/r3-1.0.0-rc.2-candidate
         studio_version: 0.11.0
-        studio_commit: 3c4f61f323e71e82544144382467b6b99014da6c
-        studio_tree: c3a2c31a47e3b82f5e8e9fa9d64d64731cbf8a22
+        studio_commit: 89b5278a47ae4d38d6b508fabdd6e712f96942c0
+        studio_tree: 931e2ae8c86c667c1da9507d8a2705fd20ff1ebb
         studio_control_plane: rust_only_fail_closed_cpython_plugin_host_only
         studio_remote_branch: release/r3-0.11.0-candidate
       r4:
         version: 1.0.0
-        commit: f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81
-        tree: 6876beb942e1caf0a683a0a60c6f3954818ac9d4
-        direct_parent_documentation_commit: 73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7
-        remote_branch: release/r4-1.0.0-candidate-v2
+        commit: a5e5f93b8b1336bc58c0a23814066e5e14678d12
+        tree: 1f566f81f5309ed0b73872fbc01db00a40d4e3e2
+        direct_parent_documentation_commit: ef39f1a53dd120b9ce28907dc372d755dd621430
+        remote_branch: release/r4-1.0.0-candidate-v3
         status: unpublished_candidate_no_public_receipt
     release_limit: >-
       R1, R2 and R3 have distinct descendant release candidates with the
       required default-engine behavior and explicit legacy rollback retention.
       R1 is published on PyPI and GHCR through final repair descendant e76c834c.
-      R2 4a758ec and its direct R3 child 2af6cfd remain unpublished, and no
+      R2 d351785 and its direct R3 child 3567bd4 remain unpublished, and no
       candidate build counts as a completed
-      post-flip release. R4 candidate f5ea57f is an unpublished metadata/docs
+      post-flip release. R4 candidate a5e5f93 is an unpublished metadata/docs
       descendant of the final R3 candidate; soak, external matrices, signing,
       publication receipts and the final lock remain required. It may contain
       only blocker fixes and release metadata.
@@ -523,10 +523,10 @@ current_candidate_evidence:
     published_tree: f8ce915b4f95fbff9e27f967d1c319363d2b7881
     published_version: 0.2.10
     published_tag: v0.2.10
-    qualification_commit: bccd6e0c76862f3f109f6b8d8c625624b96f4691
-    qualification_tree: 7ddb666b97e7f4eb75cdd978ca29ff6609c32470
+    qualification_commit: b2210ec717c0de0055fc8b9424b115a933efdb4e
+    qualification_tree: 23a4a70513a33118c19923a47647a0a362c85f18
     qualification_ref: refs/heads/release/providers-0.2.11-repository-0.1.12-candidate
-    repository_candidate_commit: a97283306610543e68a61b201e1f904f3c72ca1b
+    repository_candidate_commit: dbd9dae1205e1905692decd9fc7243f4fbda3068
     functional_fix_parent: d32e9df34494d44d6034c5ddd74523c41f34b087
     candidate_version: 0.2.11
     build_run: 33787887613
@@ -547,8 +547,8 @@ current_candidate_evidence:
       trusted publication. Run 33787887613 passes Ruff, mypy, 81 main tests
       with one skip, eight conformance tests, five schemas and fixtures, the
       backing release gate, Twine and installed-wheel smoke. Its publish job is
-      explicitly skipped. Final candidate bccd6e0 repins the workflow and its
-      invariant to Repository 0.1.12 candidate a972833; the focused publication
+      explicitly skipped. Final candidate b2210ec repins the workflow and its
+      invariant to Repository 0.1.12 candidate dbd9dae; the focused publication
       contract and real provider-repository round-trip pass four tests plus
       Ruff. This is local qualification only and has no publication receipt.
     release_limit: >-
@@ -565,8 +565,8 @@ current_candidate_evidence:
     published_version: 0.1.11
     published_tag: v0.1.11
     published_tag_object: ae8b54da5f759d087e4e6ae590bf53a9816f2035
-    qualification_commit: a97283306610543e68a61b201e1f904f3c72ca1b
-    qualification_tree: 3c3750afc11bfb90b3531eed4ad92cf38f3ceb1b
+    qualification_commit: dbd9dae1205e1905692decd9fc7243f4fbda3068
+    qualification_tree: c37878a2f83baf90fcfb222944d4d06178164a71
     qualification_ref: refs/heads/release/repository-v1-compat-0.1.12-candidate
     candidate_version: 0.1.12
     candidate_build_status: pending
@@ -583,24 +583,24 @@ current_candidate_evidence:
     pypi_url: https://pypi.org/project/nirs4all-repository/0.1.11/
     public_surface_id: nirs4all.repository.catalog
     previous_public_surface_contract_sha256: 613d7008c38023d2d5e94df9bc4c9936e2a321c0d9aa24bcbf7a22cb6ac5b65f
-    public_surface_contract_sha256: 5d3a547b0faade82d464e57345a1233fd3ba9080d62721d3266bf5562e21d70f
+    public_surface_contract_sha256: 454c1599a3046d9240009b8b7179f48ee95548cec3c910d6fb308e3b96a7d9e7
     public_surface_checker_sha256: ac8b886c4cecf5c515c7600bc57c79c5ed28bbbf3c6782014d5ce48628095969
     compatibility_source_heads:
       r1: 61a66d1bd0157dd9422facc4b32fca33989d4035
-      r2: 4a758ec631e68afd79c2b2564b98e4faaf449650
-      r3: 2af6cfd7f988fa400617c460a77450dbad4228c9
+      r2: d351785dbc17290cdc85a797ead299ffce58f257
+      r3: 3567bd4abcaa64443a1946748a579f0803e91889
     compatibility_source_trees:
       r1: e0583f7287c13ace028b38708268305626a47372
-      r2: 9860efcb130f5258fc760bc6e4bd19a81e8dfeea
-      r3: 5b0634005e8c574bdc8f1b7b4f6e452405af5ead
+      r2: 364c9e63a0ef667c62e8d7223af632c5783b880a
+      r3: a06c4015a26124df1e529f82108ee7bd115236cb
     compatibility_recipes: [r1, r2, r3]
     evidence: >-
       Repository 0.1.11 commit c0ed40a remains tagged and published on GitHub
       and PyPI with build-only run 33852742761 and publication run 33854293363.
-      Candidate 0.1.12 commit a972833 supersedes its provisional contract and
+      Candidate 0.1.12 commit dbd9dae supersedes its provisional contract and
       passes all five exact-source compatibility recipes against R1 61a66d1,
-      final R2 4a758ec and direct-child R3 2af6cfd. Its contract SHA-256 is
-      5d3a547b0faade82d464e57345a1233fd3ba9080d62721d3266bf5562e21d70f;
+      final R2 d351785 and direct-child R3 3567bd4. Its contract SHA-256 is
+      454c1599a3046d9240009b8b7179f48ee95548cec3c910d6fb308e3b96a7d9e7;
       the checker is unchanged. This is qualified candidate evidence only.
       The release workflow uses Twine 7 and packaging 26.3; an older local
       Twine 6.2 rejection is not release evidence and is not a blocker.
@@ -678,19 +678,19 @@ current_candidate_evidence:
       Studio qualification and final product gates remain required.
   python_strict_profile:
     evidence_status: remote_r3_direct_child_of_r2_native_default_candidate_release_hold
-    commit: 2af6cfd7f988fa400617c460a77450dbad4228c9
-    tree: 5b0634005e8c574bdc8f1b7b4f6e452405af5ead
+    commit: 3567bd4abcaa64443a1946748a579f0803e91889
+    tree: a06c4015a26124df1e529f82108ee7bd115236cb
     version: 1.0.0rc2
-    r2_candidate_commit: 4a758ec631e68afd79c2b2564b98e4faaf449650
-    r2_candidate_tree: 9860efcb130f5258fc760bc6e4bd19a81e8dfeea
-    r3_direct_parent: 4a758ec631e68afd79c2b2564b98e4faaf449650
-    r4_documentation_commit: 73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7
-    r4_documentation_tree: 907af76ec9499105a5a75bd9ffe6322fba77cc28
-    r4_documentation_base_r3: 2af6cfd7f988fa400617c460a77450dbad4228c9
+    r2_candidate_commit: d351785dbc17290cdc85a797ead299ffce58f257
+    r2_candidate_tree: 364c9e63a0ef667c62e8d7223af632c5783b880a
+    r3_direct_parent: d351785dbc17290cdc85a797ead299ffce58f257
+    r4_documentation_commit: ef39f1a53dd120b9ce28907dc372d755dd621430
+    r4_documentation_tree: 126dfe87557a265d2a6c7894885c7772604d5311
+    r4_documentation_base_r3: 3567bd4abcaa64443a1946748a579f0803e91889
     r4_documentation_status: qualified_local_publication_hold
-    r4_stable_candidate_commit: f5ea57f9e2c2def1fe7cee04b57c68e30b5fee81
-    r4_stable_candidate_tree: 6876beb942e1caf0a683a0a60c6f3954818ac9d4
-    r4_stable_candidate_parent: 73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7
+    r4_stable_candidate_commit: a5e5f93b8b1336bc58c0a23814066e5e14678d12
+    r4_stable_candidate_tree: 1f566f81f5309ed0b73872fbc01db00a40d4e3e2
+    r4_stable_candidate_parent: ef39f1a53dd120b9ce28907dc372d755dd621430
     r4_stable_candidate_status: unpublished_candidate_no_public_receipt
     reconciled_public_parent: 2c5a61bcb1e9a274d3083d58cba4d2680a780d65
     final_capability_docs_parent: 221a4d20108a246f87c880a7bb7d4789c34cefdb
@@ -700,7 +700,7 @@ current_candidate_evidence:
     legacy_usage_observability_commit: b652bba3bc903f20854a3bba65a41aefc42eb2eb
     legacy_observability_documentation_commit: e227244464983ea2a94ebc01b6af30d474a025df
     legacy_usage_counter_scope: opt_in_process_local_non_persistent_intentional
-    capability_ledger_candidate_commit: 40421617c7f39cae6d11c4c3aecb51e9d0a582f4
+    capability_ledger_candidate_commit: a5e5f93b8b1336bc58c0a23814066e5e14678d12
     parent_hpo_commit: e99a7ab30086ef494e9f48a4863776480c964564
     hpo_resume_witness_commit: a56a870f461ffa80c24dffba3b266725695c129f
     predictor_descriptor_commit: 1ebe03ddbd99e691f1f0332655bee5ebf584f2e9
@@ -736,12 +736,12 @@ current_candidate_evidence:
       Descendant ea3320c makes workflow dispatch build-only and reserves PyPI
       and Docker writes for a published GitHub Release after exact tag/version
       validation. R1 product commit 61a66d1 is published through repair e76c834c
-      and green run 33753479548 on PyPI and GHCR. Final R2 candidate 4a758ec
-      includes the Windows dual-run cleanup; R3 candidate 2af6cfd is its
+      and green run 33753479548 on PyPI and GHCR. Final R2 candidate d351785
+      includes the Windows dual-run cleanup; R3 candidate 3567bd4 is its
       direct child and changes release metadata only while preserving the strict
-      fail-closed profile. Documentation descendant 73ae2b3 replays the R4
+      fail-closed profile. Documentation descendant ef39f1a replays the R4
       documentation lot on that exact R3 base, and stable metadata descendant
-      f5ea57f selects it as the local 1.0.0 candidate. R2, R3 and R4 remain
+      a5e5f93 selects it as the local 1.0.0 candidate. R2, R3 and R4 remain
       unpublished and have no public artifact receipt.
     release_limit: >-
       The CAP-bounded API-001 through API-005 matrix is closed locally: promised
@@ -752,9 +752,9 @@ current_candidate_evidence:
       expanded release lock remain holds.
   studio:
     evidence_status: final_candidate_pinned_to_python_r3_ci_publication_and_external_release_hold
-    candidate_commit: 3c4f61f323e71e82544144382467b6b99014da6c
-    candidate_tree: c3a2c31a47e3b82f5e8e9fa9d64d64731cbf8a22
-    candidate_python_r3_commit: 2af6cfd7f988fa400617c460a77450dbad4228c9
+    candidate_commit: 89b5278a47ae4d38d6b508fabdd6e712f96942c0
+    candidate_tree: 931e2ae8c86c667c1da9507d8a2705fd20ff1ebb
+    candidate_python_r3_commit: 3567bd4abcaa64443a1946748a579f0803e91889
     candidate_python_wheel_sha256: 5898aa933da2e51ad07438ae5313ade37f1dad2a363411e71e0f0a513c7b4824
     candidate_python_installed_manifest_sha256: 0d8bd9ef411c7df1cf30597f5d340d58cd107e71c6cf8baa6e7f53aad6641b88
     candidate_python_callable_sha256: 7eb38aacfee0964db24d5bf2be577078883018d0f8bd603cda10cddd2a61df19
@@ -1231,7 +1231,7 @@ current_candidate_evidence:
     selected_formats_version: 0.2.9
     selected_io_version: 0.1.14
     selected_core_version: 0.3.28
-    selected_providers_version: 0.2.11_candidate_repinned_to_repository_a972833
+    selected_providers_version: 0.2.11_candidate_repinned_to_repository_dbd9dae
     selected_repository_version: 0.1.11_published_0.1.12_candidate_repinned_to_final_python_heads
     published_release_local_patch_consumers: []
     required_action: >-
@@ -3875,7 +3875,7 @@ work_items:
       - RC-001
       - SUP-001
     state: complete_local_docs_publication_hold
-    input_sha: 73ae2b3127d571fb1d1e5bc4b4c32924c75ff1f7
+    input_sha: ef39f1a53dd120b9ce28907dc372d755dd621430
     owned_files:
       - docs/
     acceptance_tests:
@@ -3883,8 +3883,8 @@ work_items:
     review: >-
       Methods bf26416 and Org 2852317 are locally qualified documentation
       descendants, including a green Methods Sphinx build and the matching
-      public disclosure projection. Python docs 73ae2b3 reproduce the already
-      qualified documentation lot on exact final R3 base 2af6cfd;
+      public disclosure projection. Python docs ef39f1a reproduce the already
+      qualified documentation lot on exact final R3 base 3567bd4;
       the replay is content-identical, conflict-free and passes Ruff on docs.
       It is explicitly not selected as a product member. DOC-002 is complete
       locally, while cross-site stable publication and release locks remain held.
@@ -3917,7 +3917,7 @@ work_items:
       - DOC-002
       - SUP-002
     state: advanced_expanded_v2_candidate_no_go_artifact_and_publication_holds
-    input_sha: bccd6e0c76862f3f109f6b8d8c625624b96f4691
+    input_sha: b2210ec717c0de0055fc8b9424b115a933efdb4e
     owned_files:
       - docs/contracts/release/
     acceptance_tests:
