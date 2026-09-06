@@ -352,14 +352,14 @@ def test_release_ci_gate_validates_only_a_lock_pinned_selected_workspace() -> No
     assert "tests/test_release_lock.py tests/test_native_capability_ledger.py" in workflow
     assert "--workspace-root \"$GITHUB_WORKSPACE\"" not in workflow
     assert "git submodule update --init --checkout nirs4all" in workflow
-    assert 'git rev-parse HEAD:nirs4all' in workflow
-    assert 'test "$oracle_gitlink" = "$oracle_commit"' in workflow
+    assert 'git -C nirs4all fetch --depth=1 origin "$oracle_commit"' in workflow
+    assert 'git -C nirs4all checkout --detach "$oracle_commit"' in workflow
     assert 'test "$oracle_head" = "$oracle_commit"' in workflow
     assert "N4A_RELEASE_WORKSPACE_ROOT: ${{ runner.temp }}/n4a-selected-release-members" in workflow
 
 
-def test_outside_lock_oracle_ledger_commit_matches_the_ecosystem_gitlink() -> None:
-    """The workflow may initialise this gitlink, but may never follow an unpinned head."""
+def test_outside_lock_oracle_ledger_commit_is_immutable() -> None:
+    """The current aggregate pin may move, but evidence must select one exact commit."""
     ledger = _read_ledger()
     commits = {
         evidence["commit"]
@@ -368,14 +368,9 @@ def test_outside_lock_oracle_ledger_commit_matches_the_ecosystem_gitlink() -> No
         if evidence.get("outside_lock_surface_id") == "nirs4all.python.oracle"
     }
     assert len(commits) == 1
-    gitlink = subprocess.run(
-        ["git", "rev-parse", "HEAD:nirs4all"],
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    assert commits == {gitlink}
+    [commit] = commits
+    assert len(commit) == 40
+    assert all(character in "0123456789abcdef" for character in commit)
 
 
 def test_selected_workspace_integration_uses_the_real_release_lock_gate() -> None:

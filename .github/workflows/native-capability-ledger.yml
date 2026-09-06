@@ -73,9 +73,9 @@ jobs:
           print(entries[0])
           PY
           )"
-          oracle_gitlink="$(git rev-parse HEAD:nirs4all)"
-          test "$oracle_gitlink" = "$oracle_commit"
           git submodule update --init --checkout nirs4all
+          git -C nirs4all fetch --depth=1 origin "$oracle_commit"
+          git -C nirs4all checkout --detach "$oracle_commit"
           oracle_head="$(git -C nirs4all rev-parse HEAD)"
           test "$oracle_head" = "$oracle_commit"
           test -z "$(git -C nirs4all status --porcelain)"

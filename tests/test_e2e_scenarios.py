@@ -1505,7 +1505,7 @@ def test_cross_language_e2e_repository_forced_refit_has_strict_artifact_evidence
                     "run_custom_app_host.py",
                     "smoke:custom-app-host",
                     "smoke:published-custom-host",
-                    "check:ui-shim",
+                        "check:ui-package",
                     "Rscript",
                 },
                 "evidence": {

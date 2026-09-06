@@ -2340,7 +2340,7 @@
           "requires_paths": [
             "{workspace_root}/nirs4all-web/web-app/src/app/custom-app-host.contract.test.ts",
             "{workspace_root}/nirs4all-core/tests/parity/expected/portable_python_oracle.json",
-            "{workspace_root}/nirs4all-web/web-app/vendor/nirs4all-ui/dist/components/index.js"
+            "{workspace_root}/nirs4all-web/web-app/vendor/npm/nirs4all-ui-0.1.13.tgz"
           ],
           "command": [
             "bash",
@@ -2369,7 +2369,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-package && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host npm run smoke:custom-app-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-ui.json"
