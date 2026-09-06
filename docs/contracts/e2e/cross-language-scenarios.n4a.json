@@ -1139,7 +1139,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_EVIDENCE={artifacts_dir}/python-paper-repository/repository-best-pipeline.json N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/python-paper-repository N4A_REPOSITORY_DATASET_EXPECTED_BADGE='130 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/python-paper-repository npm run smoke:repository-best-pipeline"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-package && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_EVIDENCE={artifacts_dir}/python-paper-repository/repository-best-pipeline.json N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/python-paper-repository N4A_REPOSITORY_DATASET_EXPECTED_BADGE='130 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/python-paper-repository npm run smoke:repository-best-pipeline"
           ],
           "produces": [
             "{artifacts_dir}/python-paper-repository/web-repository-best-pipeline.json",
@@ -1272,7 +1272,7 @@
           "command": [
             "bash",
             "-lc",
-            "python3.11 {ecosystem_root}/scripts/export_repository_dataset_fixture.py --workspace-root {workspace_root} --out-dir {artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset --build-synthetic-catalog-fixture && cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset N4A_REPOSITORY_DATASET_EXPECTED_BADGE='48 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
+            "python3.11 {ecosystem_root}/scripts/export_repository_dataset_fixture.py --workspace-root {workspace_root} --out-dir {artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset --build-synthetic-catalog-fixture && cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-package && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH N4A_WEB_PYTHON=python3.11 N4A_REPOSITORY_DATASET_DIR={artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset N4A_REPOSITORY_DATASET_EXPECTED_BADGE='48 samples × 2151 wavelengths' ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:pipeline-repository"
           ],
           "produces": [
             "{artifacts_dir}/wasm-repo-alt-dataset/catalog-dataset/repository_dataset_manifest.json",
@@ -1295,7 +1295,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-package && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/wasm-repo-alt-dataset npm run smoke:predict-artifact"
           ],
           "produces": [
             "{artifacts_dir}/wasm-repo-alt-dataset/predict-artifact-smoke.json"
@@ -1641,7 +1641,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-shim && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH npm run check:ui-package && PATH={node22_bin_dir}:$PATH npm run smoke:shared-ui-contract && PATH={node22_bin_dir}:$PATH npm run build && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/legacy-converter npm run smoke:converted-predictions"
           ],
           "produces": [
             "{artifacts_dir}/legacy-converter/web-results-panels.json",

@@ -1052,6 +1052,7 @@ def test_cross_language_e2e_docs_list_every_orchestrated_scenario() -> None:
 
 def test_cross_language_e2e_declares_requested_complex_workflows() -> None:
     manifest = _read_manifest()
+    assert "check:ui-shim" not in json.dumps(manifest)
     scenarios = {scenario["id"]: scenario for scenario in manifest["scenarios"]}
 
     expected = {
