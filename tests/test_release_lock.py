@@ -645,3 +645,305 @@ def test_central_manifest_declares_reproducible_methods_and_core_topology_source
     assert topology["function"] == "release_topology_manifest"
     assert topology["path"] == "bindings/python/src/nirs4all_core/_topology.py"
     assert topology["include_json"] is True
+
+
+def _minimal_product_train_manifest(release_lock: ModuleType) -> dict:
+    components = []
+    for key in sorted(release_lock.PRODUCT_TRAIN_COMPONENT_KEYS):
+        components.append(
+            {
+                "key": key,
+                "repo_path": key,
+                "role": f"{key} role",
+                "release_role": f"{key} release role",
+                "release_state": "candidate",
+                "artifact_receipts_complete": False,
+                "artifacts": [{"id": "package", "version": "1.0.0", "state": "candidate"}],
+                "qualification_head": {
+                    "repository": f"GBeurier/{key}",
+                    "ref": f"refs/heads/release/{key}",
+                    "head": "1" * 40,
+                    "tree": "2" * 40,
+                },
+            }
+        )
+    milestones = {
+        "r1": {"state": "candidate", "members": {}},
+        "r2": {"state": "candidate", "members": {}},
+        "r3": {"state": "candidate", "members": {}},
+        "r4": {"state": "not_created", "members": {}},
+    }
+    gates = [
+        {"id": gate_id, "required": True, "state": "passed"}
+        for gate_id in sorted(release_lock.PRODUCT_TRAIN_PROMOTION_GATES)
+    ]
+    projections = [
+        {
+            "key": key,
+            "repo_path": key,
+            "role": f"{key} projection",
+            "required_for_promotion": True,
+            "artifact_receipts_required": False,
+            "artifact_receipts_complete": False,
+            "state": "candidate",
+            "qualification_head": {
+                "repository": f"GBeurier/{key}",
+                "ref": f"refs/heads/release/{key}",
+                "head": "4" * 40,
+                "tree": "5" * 40,
+            },
+        }
+        for key in sorted(release_lock.PRODUCT_TRAIN_PROJECTION_KEYS)
+    ]
+    return {
+        "schema_version": release_lock.PRODUCT_TRAIN_MANIFEST_SCHEMA_VERSION,
+        "release_train": "test-product-train",
+        "status": "candidate",
+        "authority": {"ledger_commit": "3" * 40},
+        "promotion": {"status": "no_go"},
+        "promotion_gates": gates,
+        "product_milestones": milestones,
+        "projections": projections,
+        "components": components,
+    }
+
+
+def test_generate_v2_product_train_lock_uses_remote_identities_without_local_checkouts(
+    tmp_path: Path,
+) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    _write_json(manifest_path, manifest)
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+    assert lock["schema_version"] == release_lock.PRODUCT_TRAIN_LOCK_SCHEMA_VERSION
+    assert set(lock["members"]) == release_lock.PRODUCT_TRAIN_COMPONENT_KEYS
+    assert len(lock["remote_identities"]) == (
+        len(release_lock.PRODUCT_TRAIN_COMPONENT_KEYS)
+        + len(release_lock.PRODUCT_TRAIN_PROJECTION_KEYS)
+    )
+    assert lock["verification"]["full_product_train_inventory"] is True
+    assert lock["verification"]["all_required_gates_passed"] is True
+    assert lock["verification"]["all_required_gates_satisfied"] is True
+    assert lock["promotion"] == {
+        "status": "no_go",
+        "eligible": True,
+        "blockers": [],
+        "gates": {
+            gate_id: "passed"
+            for gate_id in sorted(release_lock.PRODUCT_TRAIN_PROMOTION_GATES)
+        },
+    }
+
+
+def test_v2_explicit_bounded_waiver_satisfies_gate_without_claiming_passed(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    signatures = next(gate for gate in manifest["promotion_gates"] if gate["id"] == "signatures")
+    signatures["state"] = "waived"
+    signatures["waiver"] = {
+        "rationale": "Signing credentials are unavailable for this bounded research release.",
+        "scope": {
+        "component": "studio",
+        "version": "1.0.0",
+            "applies_to": ["windows_x64", "macos_x64", "macos_arm64"],
+        },
+        "compensating_controls": ["Published SHA-256 checksums"],
+        "limitations": ["SmartScreen and Gatekeeper warnings remain possible"],
+        "follow_up": "Provision signing and notarization after V1.",
+    }
+    _write_json(manifest_path, manifest)
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+    assert lock["promotion"]["eligible"] is True
+    assert lock["promotion"]["blockers"] == []
+    assert lock["verification"]["all_required_gates_satisfied"] is True
+    assert lock["verification"]["all_required_gates_passed"] is False
+
+
+@pytest.mark.parametrize("missing", ["waiver", "rationale", "scope", "limitations"])
+def test_v2_waiver_requires_explicit_bounded_evidence(tmp_path: Path, missing: str) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    signatures = next(gate for gate in manifest["promotion_gates"] if gate["id"] == "signatures")
+    signatures["state"] = "waived"
+    signatures["waiver"] = {
+        "rationale": "Signing credentials are unavailable.",
+        "scope": {"component": "studio", "version": "1.0.0", "applies_to": ["installers"]},
+        "compensating_controls": ["SHA-256 checksums"],
+        "limitations": ["OS trust warnings remain possible"],
+        "follow_up": "Provision credentials after V1.",
+    }
+    if missing == "waiver":
+        signatures.pop("waiver")
+    elif missing == "scope":
+        signatures["waiver"].pop("scope")
+    else:
+        signatures["waiver"].pop(missing)
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(release_lock.RelError, match="waiver"):
+        release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+
+def test_v2_milestone_states_are_validated_generically(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    manifest["product_milestones"]["r1"]["state"] = "candidate"
+    manifest["product_milestones"]["r2"]["state"] = "published"
+    manifest["product_milestones"]["r2"]["members"] = {
+        key: {"version": "1.0.0", "remote": manifest["components"][0]["qualification_head"]}
+        for key in ("python", "studio")
+    }
+    _write_json(manifest_path, manifest)
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+    assert lock["product_milestones"]["r1"]["state"] == "candidate"
+    assert lock["product_milestones"]["r2"]["state"] == "published"
+
+
+def test_v2_final_go_accepts_only_completed_immutable_train(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    manifest["status"] = "final"
+    manifest["promotion"]["status"] = "go"
+    for component in manifest["components"]:
+        identity = component.pop("qualification_head")
+        identity["ref"] = f"refs/tags/v-{component['key']}^{{}}"
+        component["publication_head"] = identity
+        component["release_state"] = "published"
+        component["artifact_receipts_complete"] = True
+        component["artifacts"] = [
+            {
+                "id": "package",
+                "version": "1.0.0",
+                "state": "published",
+                "sha256": "6" * 64,
+            }
+        ]
+        component["receipts"] = [{"id": "release", "state": "passed"}]
+    for projection in manifest["projections"]:
+        identity = projection.pop("qualification_head")
+        identity["ref"] = f"refs/tags/v-{projection['key']}^{{}}"
+        projection["publication_head"] = identity
+        projection["state"] = "receipt"
+    for milestone in manifest["product_milestones"].values():
+        milestone["state"] = "published"
+        milestone["members"] = {
+            key: {"version": "1.0.0", "remote": manifest["components"][0]["publication_head"]}
+            for key in ("python", "studio")
+        }
+    _write_json(manifest_path, manifest)
+
+    lock = release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+    assert lock["status"] == "final"
+    assert lock["promotion"]["status"] == "go"
+    assert lock["promotion"]["eligible"] is True
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        ("r4_not_created", "requires published R4"),
+        ("r4_missing_studio", "requires Python and Studio members"),
+        ("candidate_component", "requires published distribution members"),
+        ("artifact_receipts", "requires complete artifact receipts"),
+        ("artifact_sha", "artifacts without SHA-256"),
+        ("mutable_projection", "requires immutable tag identities"),
+    ],
+)
+def test_v2_final_go_fails_closed_on_incomplete_train(
+    tmp_path: Path,
+    mutation: str,
+    message: str,
+) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    manifest["status"] = "final"
+    manifest["promotion"]["status"] = "go"
+    for component in manifest["components"]:
+        identity = component.pop("qualification_head")
+        identity["ref"] = f"refs/tags/v-{component['key']}^{{}}"
+        component["publication_head"] = identity
+        component["release_state"] = "published"
+        component["artifact_receipts_complete"] = True
+        component["artifacts"] = [
+            {
+                "id": "package",
+                "version": "1.0.0",
+                "state": "published",
+                "sha256": "6" * 64,
+            }
+        ]
+        component["receipts"] = [{"id": "release", "state": "passed"}]
+    for projection in manifest["projections"]:
+        identity = projection.pop("qualification_head")
+        identity["ref"] = f"refs/tags/v-{projection['key']}^{{}}"
+        projection["publication_head"] = identity
+        projection["state"] = "receipt"
+    for milestone in manifest["product_milestones"].values():
+        milestone["state"] = "published"
+        milestone["members"] = {
+            key: {"version": "1.0.0", "remote": manifest["components"][0]["publication_head"]}
+            for key in ("python", "studio")
+        }
+    if mutation == "r4_not_created":
+        manifest["product_milestones"]["r4"]["state"] = "not_created"
+        manifest["product_milestones"]["r4"]["members"] = {}
+    elif mutation == "r4_missing_studio":
+        manifest["product_milestones"]["r4"]["members"].pop("studio")
+    elif mutation == "candidate_component":
+        component = manifest["components"][0]
+        component["qualification_head"] = component.pop("publication_head")
+        component["qualification_head"]["ref"] = "refs/heads/release/candidate"
+        component["release_state"] = "candidate"
+    elif mutation == "artifact_receipts":
+        manifest["components"][0]["artifact_receipts_complete"] = False
+    elif mutation == "artifact_sha":
+        manifest["components"][0]["artifacts"][0].pop("sha256")
+    else:
+        manifest["projections"][0]["publication_head"]["ref"] = "refs/heads/release/projection"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(release_lock.RelError, match=message):
+        release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+
+@pytest.mark.parametrize("blocked_gate", ["signatures", "soak", "product_publication"])
+def test_v2_product_train_refuses_go_with_required_evidence_missing(
+    tmp_path: Path,
+    blocked_gate: str,
+) -> None:
+    release_lock = _load_release_lock()
+    manifest_dir = tmp_path / "ecosystem" / "docs" / "contracts" / "release"
+    manifest_dir.mkdir(parents=True)
+    manifest_path = manifest_dir / "product-train.json"
+    manifest = _minimal_product_train_manifest(release_lock)
+    manifest["promotion"]["status"] = "go"
+    next(gate for gate in manifest["promotion_gates"] if gate["id"] == blocked_gate)["state"] = "missing"
+    _write_json(manifest_path, manifest)
+
+    with pytest.raises(release_lock.RelError, match="promotion refused"):
+        release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")

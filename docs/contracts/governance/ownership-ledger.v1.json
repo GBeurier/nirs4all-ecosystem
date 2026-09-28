@@ -1,0 +1,994 @@
+{
+  "schema_version": "n4a.ownership-ledger/v1",
+  "status": "complete-authoritative-single-approver",
+  "scope": {
+    "exhaustive": true,
+    "repository_sources": [
+      "docs/contracts/release/public-v1-surface-matrix.n4a.json",
+      "docs/contracts/release/aggregation-lock.n4a.lock.json",
+      "docs/contracts/release/migration-work-ledger.yaml"
+    ],
+    "excluded_repositories": {
+      "nirs4all-lite": "retired audit-only checkout",
+      "nirs4all-drafts": "private and out of scope",
+      "nirs4all-lab": "private and out of scope"
+    },
+    "repository_keys": [
+      "nirs4all-ecosystem",
+      "nirs4all",
+      "nirs4all-core",
+      "dag-ml",
+      "dag-ml-data",
+      "nirs4all-methods",
+      "nirs4all-formats",
+      "nirs4all-io",
+      "nirs4all-datasets",
+      "nirs4all-tools",
+      "nirs4all-studio",
+      "nirs4all-ui",
+      "nirs4all-web",
+      "nirs4all-quality",
+      "nirs4all-providers",
+      "nirs4all-cockpit",
+      "nirs4all-org",
+      "nirs4all-cluster",
+      "nirs4all-benchmarks",
+      "nirs4all-repository"
+    ]
+  },
+  "authority_sources": [
+    {
+      "id": "codeowners.nirs4all",
+      "kind": "tracked_codeowners",
+      "repository_key": "nirs4all",
+      "path": ".github/CODEOWNERS",
+      "commit": "b4b04b8f49cf47cf9ae9b94017ab53c694cdf0d4",
+      "source_sha256": "sha256:c640ae9c59599d06c5c2e0f3352050c86043129b2292ad14bf6f086d9a8a4002",
+      "claims": [
+        "@GBeurier is the repository-wide code owner."
+      ]
+    },
+    {
+      "id": "codeowners.dag-ml",
+      "kind": "tracked_codeowners",
+      "repository_key": "dag-ml",
+      "path": "CODEOWNERS",
+      "commit": "e560a8ffc2da5fd489f65c010746492d1ef1b39b",
+      "source_sha256": "sha256:35306dcd8d0a3639eccf9aba00c99ad2e85e8f48fa7c9e8de8ded5531d18f82b",
+      "claims": [
+        "@GBeurier is the repository-wide code owner and owns contracts, ADRs, C headers and workflows."
+      ]
+    },
+    {
+      "id": "codeowners.dag-ml-data",
+      "kind": "tracked_codeowners",
+      "repository_key": "dag-ml-data",
+      "path": "CODEOWNERS",
+      "commit": "91302fdbc38474e94750184469923f9b2bbb0e9d",
+      "source_sha256": "sha256:548817870c46b0f164e777b26388c920bcbcea200424a795f3a9c2528f48f559",
+      "claims": [
+        "@GBeurier is the repository-wide code owner and owns contracts, ADRs, C headers and workflows."
+      ]
+    }
+  ],
+  "identities": [
+    {
+      "id": "github:GBeurier",
+      "kind": "github_user",
+      "handle": "@GBeurier",
+      "can_approve": true,
+      "can_release_captain": true,
+      "authority_source_ids": [
+        "codeowners.nirs4all",
+        "codeowners.dag-ml",
+        "codeowners.dag-ml-data"
+      ]
+    }
+  ],
+  "remote_authority": {
+    "namespace": "GBeurier",
+    "kind": "github_personal_namespace",
+    "team_slugs": [],
+    "observation": "All in-scope origin remotes use the GBeurier namespace. No tracked team slug or second CODEOWNERS handle was found; package author names are not promoted into approval identities."
+  },
+  "release_captain": {
+    "status": "assigned-existing-authority",
+    "identity_ref": "github:GBeurier",
+    "authority_source_ids": [
+      "codeowners.nirs4all",
+      "codeowners.dag-ml",
+      "codeowners.dag-ml-data"
+    ],
+    "pending_choice": null
+  },
+  "lanes": [
+    {
+      "id": "A",
+      "title": "Architecture and governance",
+      "responsibilities": [
+        "Release topology, ADRs, governance contracts and ownership changes."
+      ],
+      "accountable_identity_refs": [
+        "github:GBeurier"
+      ],
+      "reviewer_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_keys": [
+        "nirs4all-ecosystem",
+        "nirs4all-studio"
+      ]
+    },
+    {
+      "id": "B",
+      "title": "Methods and ABI",
+      "responsibilities": [
+        "Numerical methods, portable operators, ABI compatibility and binding contracts."
+      ],
+      "accountable_identity_refs": [
+        "github:GBeurier"
+      ],
+      "reviewer_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_keys": [
+        "nirs4all-ecosystem",
+        "nirs4all",
+        "dag-ml",
+        "nirs4all-methods",
+        "nirs4all-formats",
+        "nirs4all-tools"
+      ]
+    },
+    {
+      "id": "C",
+      "title": "Data and providers",
+      "responsibilities": [
+        "Formats, data materialization, dataset packages and provider contracts."
+      ],
+      "accountable_identity_refs": [
+        "github:GBeurier"
+      ],
+      "reviewer_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_keys": [
+        "nirs4all-ecosystem",
+        "nirs4all",
+        "nirs4all-core",
+        "dag-ml",
+        "dag-ml-data",
+        "nirs4all-methods",
+        "nirs4all-formats",
+        "nirs4all-io",
+        "nirs4all-tools",
+        "nirs4all-providers"
+      ]
+    },
+    {
+      "id": "D",
+      "title": "Persistence and migration",
+      "responsibilities": [
+        "Archive/storage evolution, conversion tooling and distributed operational boundaries."
+      ],
+      "accountable_identity_refs": [
+        "github:GBeurier"
+      ],
+      "reviewer_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_keys": [
+        "nirs4all-ecosystem",
+        "nirs4all",
+        "nirs4all-core",
+        "dag-ml",
+        "nirs4all-methods",
+        "nirs4all-formats",
+        "nirs4all-tools",
+        "nirs4all-studio",
+        "nirs4all-cluster",
+        "nirs4all-benchmarks"
+      ]
+    },
+    {
+      "id": "E",
+      "title": "Public API and native cutover",
+      "responsibilities": [
+        "Public APIs, aggregate exposure, runtime selection and legacy cutover."
+      ],
+      "accountable_identity_refs": [
+        "github:GBeurier"
+      ],
+      "reviewer_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_keys": [
+        "nirs4all-ecosystem",
+        "nirs4all",
+        "nirs4all-core",
+        "dag-ml",
+        "dag-ml-data",
+        "nirs4all-studio",
+        "nirs4all-ui",
+        "nirs4all-web",
+        "nirs4all-providers",
+        "nirs4all-cluster"
+      ]
+    },
+    {
+      "id": "F",
+      "title": "Studio and web runtime",
+      "responsibilities": [
+        "Studio, shared UI and browser product integration boundaries."
+      ],
+      "accountable_identity_refs": [
+        "github:GBeurier"
+      ],
+      "reviewer_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_keys": [
+        "nirs4all-ecosystem",
+        "nirs4all",
+        "nirs4all-core",
+        "dag-ml",
+        "nirs4all-methods",
+        "nirs4all-tools",
+        "nirs4all-studio",
+        "nirs4all-ui",
+        "nirs4all-web",
+        "nirs4all-quality",
+        "nirs4all-cockpit",
+        "nirs4all-org"
+      ]
+    },
+    {
+      "id": "G",
+      "title": "Parity and release qualification",
+      "responsibilities": [
+        "Parity, benchmarks, release evidence, datasets and publication gates."
+      ],
+      "accountable_identity_refs": [
+        "github:GBeurier"
+      ],
+      "reviewer_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_keys": [
+        "nirs4all-ecosystem",
+        "nirs4all",
+        "dag-ml",
+        "nirs4all-methods",
+        "nirs4all-formats",
+        "nirs4all-io",
+        "nirs4all-datasets",
+        "nirs4all-tools",
+        "nirs4all-studio",
+        "nirs4all-ui",
+        "nirs4all-web",
+        "nirs4all-quality",
+        "nirs4all-cockpit",
+        "nirs4all-org",
+        "nirs4all-benchmarks",
+        "nirs4all-repository"
+      ]
+    },
+    {
+      "id": "H",
+      "title": "Documentation and handoff",
+      "responsibilities": [
+        "Public documentation, release communication and cross-lane handoff quality."
+      ],
+      "accountable_identity_refs": [
+        "github:GBeurier"
+      ],
+      "reviewer_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_keys": [
+        "nirs4all-ecosystem",
+        "nirs4all-methods",
+        "nirs4all-tools",
+        "nirs4all-studio",
+        "nirs4all-web",
+        "nirs4all-quality",
+        "nirs4all-cockpit",
+        "nirs4all-org",
+        "nirs4all-benchmarks",
+        "nirs4all-repository"
+      ]
+    }
+  ],
+  "repositories": [
+    {
+      "key": "nirs4all-ecosystem",
+      "repo_path": "nirs4all-ecosystem",
+      "remote": "https://github.com/GBeurier/nirs4all-ecosystem.git",
+      "lanes": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H"
+      ],
+      "primary_lane": "A",
+      "consulted_lanes": [
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-ecosystem.lane-overlap",
+        "primary_lane": "A",
+        "consulted_lanes": [
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all",
+      "repo_path": "nirs4all",
+      "remote": "https://github.com/GBeurier/nirs4all.git",
+      "lanes": [
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "primary_lane": "E",
+      "consulted_lanes": [
+        "B",
+        "C",
+        "D",
+        "F",
+        "G"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all.lane-overlap",
+        "primary_lane": "E",
+        "consulted_lanes": [
+          "B",
+          "C",
+          "D",
+          "F",
+          "G"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-core",
+      "repo_path": "nirs4all-core",
+      "remote": "https://github.com/GBeurier/nirs4all-core.git",
+      "lanes": [
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "primary_lane": "E",
+      "consulted_lanes": [
+        "C",
+        "D",
+        "F"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-core.lane-overlap",
+        "primary_lane": "E",
+        "consulted_lanes": [
+          "C",
+          "D",
+          "F"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "dag-ml",
+      "repo_path": "dag-ml",
+      "remote": "https://github.com/GBeurier/dag-ml.git",
+      "lanes": [
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "primary_lane": "E",
+      "consulted_lanes": [
+        "B",
+        "C",
+        "D",
+        "F",
+        "G"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.dag-ml.lane-overlap",
+        "primary_lane": "E",
+        "consulted_lanes": [
+          "B",
+          "C",
+          "D",
+          "F",
+          "G"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "dag-ml-data",
+      "repo_path": "dag-ml-data",
+      "remote": "https://github.com/GBeurier/dag-ml-data.git",
+      "lanes": [
+        "C",
+        "E"
+      ],
+      "primary_lane": "C",
+      "consulted_lanes": [
+        "E"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.dag-ml-data.lane-overlap",
+        "primary_lane": "C",
+        "consulted_lanes": [
+          "E"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-methods",
+      "repo_path": "nirs4all-methods",
+      "remote": "https://github.com/GBeurier/nirs4all-methods.git",
+      "lanes": [
+        "B",
+        "C",
+        "D",
+        "F",
+        "G",
+        "H"
+      ],
+      "primary_lane": "B",
+      "consulted_lanes": [
+        "C",
+        "D",
+        "F",
+        "G",
+        "H"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-methods.lane-overlap",
+        "primary_lane": "B",
+        "consulted_lanes": [
+          "C",
+          "D",
+          "F",
+          "G",
+          "H"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-formats",
+      "repo_path": "nirs4all-formats",
+      "remote": "https://github.com/GBeurier/nirs4all-formats.git",
+      "lanes": [
+        "B",
+        "C",
+        "D",
+        "G"
+      ],
+      "primary_lane": "C",
+      "consulted_lanes": [
+        "B",
+        "D",
+        "G"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-formats.lane-overlap",
+        "primary_lane": "C",
+        "consulted_lanes": [
+          "B",
+          "D",
+          "G"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-io",
+      "repo_path": "nirs4all-io",
+      "remote": "https://github.com/GBeurier/nirs4all-io.git",
+      "lanes": [
+        "C",
+        "G"
+      ],
+      "primary_lane": "C",
+      "consulted_lanes": [
+        "G"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-io.lane-overlap",
+        "primary_lane": "C",
+        "consulted_lanes": [
+          "G"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-datasets",
+      "repo_path": "nirs4all-datasets",
+      "remote": "https://github.com/GBeurier/nirs4all-datasets.git",
+      "lanes": [
+        "G"
+      ],
+      "primary_lane": "G",
+      "consulted_lanes": [],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": null
+    },
+    {
+      "key": "nirs4all-tools",
+      "repo_path": "nirs4all-tools",
+      "remote": "https://github.com/GBeurier/nirs4all-tools.git",
+      "lanes": [
+        "B",
+        "C",
+        "D",
+        "F",
+        "G",
+        "H"
+      ],
+      "primary_lane": "D",
+      "consulted_lanes": [
+        "B",
+        "C",
+        "F",
+        "G",
+        "H"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-tools.lane-overlap",
+        "primary_lane": "D",
+        "consulted_lanes": [
+          "B",
+          "C",
+          "F",
+          "G",
+          "H"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-studio",
+      "repo_path": "nirs4all-studio",
+      "remote": "https://github.com/GBeurier/nirs4all-studio.git",
+      "lanes": [
+        "A",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H"
+      ],
+      "primary_lane": "F",
+      "consulted_lanes": [
+        "A",
+        "D",
+        "E",
+        "G",
+        "H"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-studio.lane-overlap",
+        "primary_lane": "F",
+        "consulted_lanes": [
+          "A",
+          "D",
+          "E",
+          "G",
+          "H"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-ui",
+      "repo_path": "nirs4all-ui",
+      "remote": "https://github.com/GBeurier/nirs4all-ui.git",
+      "lanes": [
+        "E",
+        "F",
+        "G"
+      ],
+      "primary_lane": "F",
+      "consulted_lanes": [
+        "E",
+        "G"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-ui.lane-overlap",
+        "primary_lane": "F",
+        "consulted_lanes": [
+          "E",
+          "G"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-web",
+      "repo_path": "nirs4all-web",
+      "remote": "https://github.com/GBeurier/nirs4all-web.git",
+      "lanes": [
+        "E",
+        "F",
+        "G",
+        "H"
+      ],
+      "primary_lane": "F",
+      "consulted_lanes": [
+        "E",
+        "G",
+        "H"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-web.lane-overlap",
+        "primary_lane": "F",
+        "consulted_lanes": [
+          "E",
+          "G",
+          "H"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-quality",
+      "repo_path": "nirs4all-quality",
+      "remote": "https://github.com/GBeurier/nirs4all-quality.git",
+      "lanes": [
+        "F",
+        "G",
+        "H"
+      ],
+      "primary_lane": "F",
+      "consulted_lanes": [
+        "G",
+        "H"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-quality.lane-overlap",
+        "primary_lane": "F",
+        "consulted_lanes": [
+          "G",
+          "H"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-providers",
+      "repo_path": "nirs4all-providers",
+      "remote": "https://github.com/GBeurier/nirs4all-providers.git",
+      "lanes": [
+        "C",
+        "E"
+      ],
+      "primary_lane": "C",
+      "consulted_lanes": [
+        "E"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-providers.lane-overlap",
+        "primary_lane": "C",
+        "consulted_lanes": [
+          "E"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-cockpit",
+      "repo_path": "nirs4all-cockpit",
+      "remote": "https://github.com/GBeurier/nirs4all-cockpit.git",
+      "lanes": [
+        "F",
+        "G",
+        "H"
+      ],
+      "primary_lane": "G",
+      "consulted_lanes": [
+        "F",
+        "H"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-cockpit.lane-overlap",
+        "primary_lane": "G",
+        "consulted_lanes": [
+          "F",
+          "H"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-org",
+      "repo_path": "nirs4all-org",
+      "remote": "https://github.com/GBeurier/nirs4all-org.git",
+      "lanes": [
+        "F",
+        "G",
+        "H"
+      ],
+      "primary_lane": "H",
+      "consulted_lanes": [
+        "F",
+        "G"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-org.lane-overlap",
+        "primary_lane": "H",
+        "consulted_lanes": [
+          "F",
+          "G"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-cluster",
+      "repo_path": "nirs4all-cluster",
+      "remote": "https://github.com/GBeurier/nirs4all-cluster.git",
+      "lanes": [
+        "D",
+        "E"
+      ],
+      "primary_lane": "D",
+      "consulted_lanes": [
+        "E"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-cluster.lane-overlap",
+        "primary_lane": "D",
+        "consulted_lanes": [
+          "E"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-benchmarks",
+      "repo_path": "nirs4all-benchmarks",
+      "remote": "https://github.com/GBeurier/nirs4all-benchmarks.git",
+      "lanes": [
+        "D",
+        "G",
+        "H"
+      ],
+      "primary_lane": "G",
+      "consulted_lanes": [
+        "D",
+        "H"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-benchmarks.lane-overlap",
+        "primary_lane": "G",
+        "consulted_lanes": [
+          "D",
+          "H"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-repository",
+      "repo_path": "nirs4all-repository",
+      "remote": "https://github.com/GBeurier/nirs4all-repository.git",
+      "lanes": [
+        "G",
+        "H"
+      ],
+      "primary_lane": "G",
+      "consulted_lanes": [
+        "H"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-repository.lane-overlap",
+        "primary_lane": "G",
+        "consulted_lanes": [
+          "H"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    }
+  ],
+  "artifact_classes": [
+    {
+      "id": "contracts",
+      "path_patterns": [
+        "**/docs/contracts/**",
+        "**/docs/adr/**",
+        "**/compat/**",
+        "**/include/**"
+      ],
+      "primary_lane": "A",
+      "required_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_lane_rule": "The repository primary lane is consulted in addition to Lane A.",
+      "change_rule": "Contract changes require an immutable before/after SHA handoff, targeted contract tests and rollback text."
+    },
+    {
+      "id": "schemas",
+      "path_patterns": [
+        "**/*.schema.json",
+        "**/*.schema.yaml",
+        "**/*.schema.yml"
+      ],
+      "primary_lane": "C",
+      "required_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_lane_rule": "The repository primary lane is consulted in addition to Lane C.",
+      "change_rule": "Schema changes require compatibility evidence, fixture coverage and an explicit reader/writer rollback."
+    },
+    {
+      "id": "goldens",
+      "path_patterns": [
+        "**/goldens/**",
+        "**/fixtures/**",
+        "**/parity/**"
+      ],
+      "primary_lane": "G",
+      "required_identity_refs": [
+        "github:GBeurier"
+      ],
+      "repository_lane_rule": "The repository primary lane is consulted in addition to Lane G.",
+      "change_rule": "Golden changes require provenance, the exact regeneration command or test, before/after SHAs and rollback text."
+    }
+  ],
+  "artifact_overlap_arbitrations": [
+    {
+      "class_ids": [
+        "contracts",
+        "schemas"
+      ],
+      "precedence": "schemas",
+      "rule": "A schema below a contract path requires both schema and contract review; schema compatibility rules decide content."
+    },
+    {
+      "class_ids": [
+        "contracts",
+        "goldens"
+      ],
+      "precedence": "goldens",
+      "rule": "A fixture below a contract path requires both contract and golden review; golden provenance rules decide replacement."
+    },
+    {
+      "class_ids": [
+        "schemas",
+        "goldens"
+      ],
+      "precedence": "schemas",
+      "rule": "A schema fixture requires both schema compatibility and golden provenance review."
+    }
+  ],
+  "change_policy": {
+    "default_rule": "Every change requires the repository primary lane and its declared approver.",
+    "overlap_rule": "A multi-lane repository must carry its explicit arbitration record; touched consulted lanes receive a handoff.",
+    "ownership_change_rule": "Ownership, lane, arbitration or release-captain changes require the current release captain and every affected primary lane.",
+    "artifact_rule": "Contract, schema and golden rules add to repository ownership and never replace it.",
+    "handoff_required_when": [
+      "primary_lane_changes",
+      "consulted_lane_paths_touched",
+      "contract_schema_or_golden_changes"
+    ]
+  },
+  "handoff_contract": {
+    "schema_version": "n4a.ownership-handoff/v1",
+    "required_fields": [
+      "schema_version",
+      "source_lane",
+      "target_lane",
+      "repositories",
+      "from_sha",
+      "to_sha",
+      "tests",
+      "rollback"
+    ],
+    "optional_fields": [
+      "artifact_classes",
+      "arbitration_ids",
+      "notes"
+    ],
+    "sha_pattern": "^[0-9a-f]{40}$",
+    "minimum_tests": 1,
+    "rollback_min_length": 12
+  },
+  "governed_files": {
+    "codeowners": ".github/CODEOWNERS",
+    "handoff_template": ".github/PULL_REQUEST_TEMPLATE/ownership-handoff.md",
+    "validator": "scripts/n4a_ownership_ledger.py",
+    "tests": "tests/test_ownership_ledger.py"
+  }
+}
