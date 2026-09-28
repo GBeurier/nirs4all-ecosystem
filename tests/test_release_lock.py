@@ -78,9 +78,18 @@ def _write_fetchability_fixture(tmp_path: Path) -> tuple[ModuleType, Path, Path]
     }
     lock = {
         "schema_version": release_lock.LOCK_SCHEMA_VERSION,
+        "manifest_digest": release_lock.sha256_bytes(release_lock.canonical_json(manifest)),
         "members": {
-            "ok": {"state": {"commit": commit, "branch": "main"}},
-            "missing": {"state": {"commit": "0" * 40, "branch": "main"}},
+            "ok": {
+                "repo_path": "ok-repo",
+                "selected_workspace_path": "ok-repo",
+                "state": {"commit": commit, "branch": "main"},
+            },
+            "missing": {
+                "repo_path": "missing-repo",
+                "selected_workspace_path": "missing-repo",
+                "state": {"commit": "0" * 40, "branch": "main"},
+            },
         },
     }
     manifest_path = tmp_path / "manifest.json"
@@ -129,6 +138,64 @@ def test_audit_fetchability_reports_unfetchable_members(tmp_path: Path) -> None:
     by_key = {row["key"]: row for row in report["members"]}
     assert by_key["ok"]["status"] == "ok"
     assert by_key["missing"]["status"] == "checkout_failed"
+
+
+def test_checkout_members_rejects_stale_manifest_before_creating_output(
+    tmp_path: Path,
+) -> None:
+    release_lock, manifest_path, lock_path = _write_fetchability_fixture(tmp_path)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["status"] = "changed-after-lock"
+    _write_json(manifest_path, manifest)
+    output = tmp_path / "must-not-exist"
+
+    with pytest.raises(release_lock.RelError, match="manifest_digest"):
+        release_lock.checkout_members(manifest_path, lock_path, output)
+
+    assert not output.exists()
+
+
+def test_audit_fetchability_rejects_incomplete_member_set_before_clone(
+    tmp_path: Path,
+) -> None:
+    release_lock, manifest_path, lock_path = _write_fetchability_fixture(tmp_path)
+    lock = json.loads(lock_path.read_text(encoding="utf-8"))
+    del lock["members"]["missing"]
+    _write_json(lock_path, lock)
+    output = tmp_path / "must-not-exist"
+
+    with pytest.raises(release_lock.RelError, match="components and lock members differ"):
+        release_lock.audit_fetchability(manifest_path, lock_path, output)
+
+    assert not output.exists()
+
+
+def test_checkout_members_rejects_abbreviated_commit_before_clone(
+    tmp_path: Path,
+) -> None:
+    release_lock, manifest_path, lock_path = _write_fetchability_fixture(tmp_path)
+    lock = json.loads(lock_path.read_text(encoding="utf-8"))
+    lock["members"]["ok"]["state"]["commit"] = "deadbeef"
+    _write_json(lock_path, lock)
+    output = tmp_path / "must-not-exist"
+
+    with pytest.raises(release_lock.RelError, match="full git SHA"):
+        release_lock.checkout_members(manifest_path, lock_path, output)
+
+    assert not output.exists()
+
+
+def test_central_lock_envelope_is_bound_to_manifest_without_member_checkouts() -> None:
+    release_lock = _load_release_lock()
+    release_dir = ROOT / "docs" / "contracts" / "release"
+    manifest = release_lock.load_json(
+        release_dir / "aggregation-manifest.n4a.json"
+    )
+    lock = release_lock.load_json(
+        release_dir / "aggregation-lock.n4a.lock.json"
+    )
+
+    release_lock.validate_lock_envelope(manifest, lock)
 
 
 def test_validate_lock_mismatch_error_mentions_selected_workspace(tmp_path: Path) -> None:

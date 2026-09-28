@@ -24,6 +24,13 @@ When live RC worktrees diverge from the selected release members, the
 aggregation lock validated from an isolated `checkout-members` workspace is the
 authority, not the live `_worktrees` checkout state.
 
+The release-lock tool's checkout, fetchability-audit, and full-validation
+commands first bind the lock to the exact canonical digest of the supplied
+manifest, require the manifest and lock member sets and paths to match, and
+require full 40-character Git commit identities. Changes to that envelope fail
+before any clone or checkout. Full lock validation against the selected member
+workspace is still required to attest that each commit SHA is the intended one.
+
 Validate it with:
 
 ```bash

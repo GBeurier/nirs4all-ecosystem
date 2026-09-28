@@ -594,9 +594,79 @@ def generate_lock(manifest_path: Path, workspace_root: Path) -> dict[str, Any]:
     return lock
 
 
+def validate_lock_envelope(manifest: dict[str, Any], lock: dict[str, Any]) -> None:
+    """Validate immutable lock identity before any checkout or network access.
+
+    Full validation regenerates the lock from selected repositories. Lock
+    consumers must nevertheless reject a stale or hand-edited envelope before
+    they clone arbitrary refs, otherwise an incomplete member set or unrelated
+    manifest could be presented as fetchability evidence.
+    """
+
+    if manifest.get("schema_version") != MANIFEST_SCHEMA_VERSION:
+        raise RelError(f"unexpected manifest schema_version: {manifest.get('schema_version')!r}")
+    if lock.get("schema_version") != LOCK_SCHEMA_VERSION:
+        raise RelError(f"unexpected lock schema_version: {lock.get('schema_version')!r}")
+
+    expected_digest = sha256_bytes(canonical_json(manifest))
+    if lock.get("manifest_digest") != expected_digest:
+        raise RelError(
+            "lock manifest_digest does not match the supplied aggregation manifest"
+        )
+
+    components = manifest.get("components")
+    if not isinstance(components, list) or not components:
+        raise RelError("manifest must contain a non-empty components array")
+    by_key: dict[str, dict[str, Any]] = {}
+    for component in components:
+        if not isinstance(component, dict):
+            raise RelError("manifest components must be objects")
+        key = component.get("key")
+        if not isinstance(key, str) or not key:
+            raise RelError("manifest component keys must be non-empty strings")
+        if key in by_key:
+            raise RelError(f"duplicate manifest component key: {key!r}")
+        by_key[key] = component
+
+    members = lock.get("members")
+    if not isinstance(members, dict) or not members:
+        raise RelError("lock must contain a non-empty members object")
+    if set(members) != set(by_key):
+        raise RelError(
+            "manifest components and lock members differ: "
+            f"manifest={sorted(by_key)} lock={sorted(members)}"
+        )
+
+    for key, component in by_key.items():
+        member = members[key]
+        if not isinstance(member, dict):
+            raise RelError(f"lock member {key!r} must be an object")
+        repo_path = repo_relative_path(component.get("repo_path", ""))
+        selected_workspace_path = repo_relative_path(
+            component.get("selected_workspace_path") or repo_path
+        )
+        if member.get("repo_path") != repo_path:
+            raise RelError(f"lock member {key!r} repo_path does not match manifest")
+        if member.get("selected_workspace_path") != selected_workspace_path:
+            raise RelError(
+                f"lock member {key!r} selected_workspace_path does not match manifest"
+            )
+        state = member.get("state")
+        if not isinstance(state, dict):
+            raise RelError(f"lock member {key!r} state must be an object")
+        commit = state.get("commit")
+        if not isinstance(commit, str) or re.fullmatch(r"[0-9a-f]{40}", commit) is None:
+            raise RelError(f"lock member {key!r} state.commit must be a full git SHA")
+        branch = state.get("branch")
+        if branch is not None and (not isinstance(branch, str) or not branch):
+            raise RelError(f"lock member {key!r} state.branch must be null or a non-empty string")
+
+
 def validate_lock(manifest_path: Path, lock_path: Path, workspace_root: Path) -> None:
-    expected = generate_lock(manifest_path, workspace_root)
+    manifest = load_json(manifest_path)
     actual = load_json(lock_path)
+    validate_lock_envelope(manifest, actual)
+    expected = generate_lock(manifest_path, workspace_root)
     if actual != expected:
         raise RelError(
             "lockfile is stale or inconsistent for "
@@ -618,6 +688,7 @@ def validate_lock(manifest_path: Path, lock_path: Path, workspace_root: Path) ->
 def checkout_members(manifest_path: Path, lock_path: Path, output_root: Path) -> None:
     manifest = load_json(manifest_path)
     lock = load_json(lock_path)
+    validate_lock_envelope(manifest, lock)
     members = lock.get("members", {})
     output_root.mkdir(parents=True, exist_ok=True)
     by_key = {component["key"]: component for component in manifest.get("components", [])}
@@ -737,13 +808,8 @@ def build_fetchability_report(
 ) -> dict[str, Any]:
     manifest = load_json(manifest_path)
     lock = load_json(lock_path)
-    if manifest.get("schema_version") != MANIFEST_SCHEMA_VERSION:
-        raise RelError(f"unexpected manifest schema_version: {manifest.get('schema_version')!r}")
-    if lock.get("schema_version") != LOCK_SCHEMA_VERSION:
-        raise RelError(f"unexpected lock schema_version: {lock.get('schema_version')!r}")
+    validate_lock_envelope(manifest, lock)
     members = lock.get("members", {})
-    if not isinstance(members, dict) or not members:
-        raise RelError("lock must contain a non-empty members object")
     by_key = {component["key"]: component for component in manifest.get("components", [])}
     checkout_root.mkdir(parents=True, exist_ok=True)
     rows = [
