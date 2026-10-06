@@ -3341,6 +3341,7 @@ def runtime_evidence_ledger(
         "source": {
             "manifest": manifest_path.as_posix(),
             "manifest_sha256": _file_sha256(manifest_path),
+            "runtime_manifest_sha256": _file_sha256(manifest_path),
             "manifest_schema_version": manifest["schema_version"],
             "runtime_artifacts_policy": (
                 ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; "

@@ -86,3 +86,7 @@
 	path = nirs4all-device
 	url = https://github.com/GBeurier/nirs4all-device.git
 	branch = main
+[submodule "nirs4all-r"]
+	path = nirs4all-r
+	url = https://github.com/GBeurier/nirs4all-r.git
+	branch = main
