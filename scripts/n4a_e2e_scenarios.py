@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import math
@@ -1703,6 +1704,8 @@ def _bounded_web_source_dataset() -> dict[str, Any]:
             expected = subprocess.check_output(["git", "-C", str(sdk), "show", f"{tree_entry[2]}:{file}"])
             if (sdk / file).read_bytes() != expected:
                 raise ValueError(f"SDK fixture source/input differs from qualified gitlink: {file}")
+            if file == scopes[0]:
+                helper_source = expected
         corpus = sdk / "examples/sample_data/regression"
         actual_inputs = {str(file.relative_to(sdk)) for file in corpus.rglob("*") if file.is_file()}
         expected_inputs = {file for file in files if file.startswith("examples/sample_data/regression/")}
@@ -1711,17 +1714,22 @@ def _bounded_web_source_dataset() -> dict[str, Any]:
     except (OSError, subprocess.SubprocessError, ValueError) as exc:
         raise ValueError(f"qualified Web source fixture identity failed: {exc}") from exc
     program = (
-        "import nirs4all,sys,json,importlib.util; "
+        "import nirs4all,sys,json,types,base64; "
         "sys.path.insert(0,sys.argv[1]); "
-        "spec=importlib.util.spec_from_file_location('qualified_web_fixture',"
-        "sys.argv[1]+'/tests/e2e/test_pipeline_generation_performance.py'); "
-        "module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module); "
+        "module=types.ModuleType('qualified_web_fixture'); "
+        "module.__file__=sys.argv[1]+'/tests/e2e/test_pipeline_generation_performance.py'; "
+        "exec(compile(base64.b64decode(sys.argv[2]),module.__file__,'exec'),module.__dict__); "
         "print(json.dumps(module._web_dataset_fixture('regression')))"
     )
     try:
-        result = subprocess.run([sys.executable, "-c", program, str(sdk)],
+        result = subprocess.run([sys.executable, "-c", program, str(sdk), base64.b64encode(helper_source).decode("ascii")],
                                 capture_output=True, text=True, check=True, timeout=60)
-        return json.loads(result.stdout)
+        fixture = json.loads(result.stdout)
+        # Independent public-profile attestation; a loader cannot redefine the scientific input.
+        expected_sha256 = "4f3284e7304d6d58680e07404f14cfaafe1c94a7408a7bd974a5a98c826280bd"
+        if _canonical_json_sha256(fixture) != expected_sha256:
+            raise ValueError("qualified Web source fixture differs from attested 189x2151 profile")
+        return fixture
     except (OSError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
         raise ValueError(f"qualified Web source fixture binding failed: {exc}") from exc
 

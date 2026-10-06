@@ -5430,3 +5430,34 @@ def test_bounded_web_source_fixture_rejects_unqualified_checkout(tmp_path: Path,
     monkeypatch.setattr(e2e, 'default_workspace_root', lambda: tmp_path)
     with pytest.raises(ValueError, match='qualified Web source fixture identity failed'):
         e2e._bounded_web_source_dataset()
+
+
+def test_bounded_web_source_executes_verified_bytes_and_refuses_different_profile(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import base64
+
+    e2e = _load_e2e_module()
+    source_path = 'tests/e2e/test_pipeline_generation_performance.py'
+    sdk = tmp_path / 'nirs4all'
+    helper = sdk / source_path
+    helper.parent.mkdir(parents=True)
+    verified_source = b'"""Isolated source transport fixture."""\n'
+    helper.write_bytes(verified_source)
+    monkeypatch.setattr(e2e, 'default_workspace_root', lambda: tmp_path)
+
+    def git_source(command: list[str], **kwargs: object) -> str | bytes:
+        if 'HEAD' in command:
+            return f"160000 commit {'a' * 40}\tnirs4all\n"
+        if '--name-only' in command:
+            return source_path + '\n'
+        return verified_source
+
+    def different_profile(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        assert base64.b64decode(command[-1]) == verified_source
+        assert 'exec(compile(' in command[2]
+        assert 'spec_from_file_location' not in command[2]
+        return subprocess.CompletedProcess(command, 0, stdout=json.dumps({'nSamples': 1, 'X': [[0.0]]}))
+
+    monkeypatch.setattr(e2e.subprocess, 'check_output', git_source)
+    monkeypatch.setattr(e2e.subprocess, 'run', different_profile)
+    with pytest.raises(ValueError, match='differs from attested 189x2151 profile'):
+        e2e._bounded_web_source_dataset()
