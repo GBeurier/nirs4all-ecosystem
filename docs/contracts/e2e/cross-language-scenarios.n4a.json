@@ -909,7 +909,7 @@
             "Rscript"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-core/bindings/r/tests/e2e_dataset_io_pipeline.R",
+            "{workspace_root}/nirs4all-ecosystem/tests/runtime/r/e2e_dataset_io_pipeline.R",
             "{workspace_root}/nirs4all-core/scripts/e2e/prepare_r_dataset_io_pipeline.py",
             "{workspace_root}/nirs4all-providers/src/nirs4all_providers/datasets.py",
             "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/__init__.py",
@@ -923,7 +923,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && PATH={r_bin_dir}:$PATH PYTHONPATH={workspace_root}/nirs4all-providers/src:{workspace_root}/nirs4all-datasets/src:{workspace_root}/nirs4all-io/src:${{PYTHONPATH:-}} Rscript bindings/r/tests/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"
+            "cd {workspace_root}/nirs4all-core && PATH={r_bin_dir}:$PATH PYTHONPATH={workspace_root}/nirs4all-providers/src:{workspace_root}/nirs4all-datasets/src:{workspace_root}/nirs4all-io/src:${{PYTHONPATH:-}} Rscript {workspace_root}/nirs4all-ecosystem/tests/runtime/r/e2e_dataset_io_pipeline.R --out {artifacts_dir}/r-dataset-io-pipeline"
           ],
           "produces": [
             "{artifacts_dir}/r-dataset-io-pipeline/dataset-card.json",
@@ -942,12 +942,12 @@
             "Rscript"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-core/bindings/r/tests/e2e_run_save_pipeline.R"
+            "{workspace_root}/nirs4all-ecosystem/tests/runtime/r/e2e_run_save_pipeline.R"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && PATH={r_bin_dir}:$PATH NIRS4ALL_CORE_R_PARITY_LEDGER={artifacts_dir}/r-dataset-io-pipeline/r-parity-ledger.json NIRS4ALL_CORE_R_PARITY_SCENARIO_ID=e2e-r-dataset-io-pipeline-save make test-r-parity && PATH={r_bin_dir}:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript bindings/r/tests/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"
+            "cd {workspace_root}/nirs4all-core && PATH={r_bin_dir}:$PATH NIRS4ALL_CORE_R_PARITY_LEDGER={artifacts_dir}/r-dataset-io-pipeline/r-parity-ledger.json NIRS4ALL_CORE_R_PARITY_SCENARIO_ID=e2e-r-dataset-io-pipeline-save make test-r-parity -f {workspace_root}/nirs4all-ecosystem/Makefile && PATH={r_bin_dir}:$PATH R_LIBS_USER=\"$PWD/.r-parity-lib:${{R_LIBS_USER:-}}\" Rscript {workspace_root}/nirs4all-ecosystem/tests/runtime/r/e2e_run_save_pipeline.R --in {artifacts_dir}/r-dataset-io-pipeline/reshaped-dataset.json --out {artifacts_dir}/r-dataset-io-pipeline"
           ],
           "produces": [
             "{artifacts_dir}/r-dataset-io-pipeline/r-parity-ledger.json",
@@ -2292,14 +2292,14 @@
             "python3.11"
           ],
           "requires_paths": [
-            "{workspace_root}/nirs4all-core/bindings/r/tests/parity.R",
+            "{workspace_root}/nirs4all-ecosystem/tests/runtime/r/parity.R",
             "{workspace_root}/nirs4all-core/tests/parity/expected/portable_python_oracle.json",
             "{workspace_root}/nirs4all-methods/bindings/r/n4m"
           ],
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-core && export PATH={r_bin_dir}:$PATH && Rscript --version >/dev/null && NIRS4ALL_CORE_R_PARITY_LEDGER={artifacts_dir}/custom-app-host/custom-host-r-parity.json NIRS4ALL_CORE_R_PARITY_SCENARIO_ID=e2e-core-ui-custom-app-host make test-r-parity PYTHON=python3.11"
+            "cd {workspace_root}/nirs4all-core && export PATH={r_bin_dir}:$PATH && Rscript --version >/dev/null && NIRS4ALL_CORE_R_PARITY_LEDGER={artifacts_dir}/custom-app-host/custom-host-r-parity.json NIRS4ALL_CORE_R_PARITY_SCENARIO_ID=e2e-core-ui-custom-app-host make test-r-parity -f {workspace_root}/nirs4all-ecosystem/Makefile PYTHON=python3.11"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/custom-host-r-parity.json"
@@ -2340,7 +2340,7 @@
           "requires_paths": [
             "{workspace_root}/nirs4all-web/web-app/src/app/custom-app-host.contract.test.ts",
             "{workspace_root}/nirs4all-core/tests/parity/expected/portable_python_oracle.json",
-            "{workspace_root}/nirs4all-web/web-app/vendor/npm/nirs4all-ui-0.1.13.tgz"
+            "{workspace_root}/nirs4all-web/web-app/vendor/npm/nirs4all-ui-0.1.14.tgz"
           ],
           "command": [
             "bash",
