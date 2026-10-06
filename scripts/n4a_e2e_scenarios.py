@@ -1734,6 +1734,11 @@ def _bounded_web_source_dataset() -> dict[str, Any]:
         raise ValueError(f"qualified Web source fixture binding failed: {exc}") from exc
 
 
+def _same_json_description(left: Any, right: Any) -> bool:
+    """Compare exact JSON metadata without conflating Boolean, integer, or float values."""
+    return _canonical_json_sha256(left) == _canonical_json_sha256(right)
+
+
 def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> list[str]:
     """Bind the documented host-CV/native-REFIT profile to genuine observations."""
     def require(condition: bool, message: str) -> None:
@@ -1783,20 +1788,20 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
                 and set(declared[2]["model"]) == {"class"}, "candidate contains undeclared workload parameters")
         classes = [declared[0]["class"], declared[1]["class"], declared[2]["model"]["class"]]
         require(classes == ["nirs4all.operators.transforms.scalers.StandardNormalVariate", "sklearn.model_selection._split.ShuffleSplit", "sklearn.cross_decomposition._pls.PLSRegression"], "candidate class profile mismatch")
-        require(opened["class_sequence"] == classes and opened["class_sequence_sha256"] == _canonical_json_sha256(classes), "Python candidate class sequence mismatch")
+        require(_same_json_description(opened["class_sequence"], classes) and opened["class_sequence_sha256"] == _canonical_json_sha256(classes), "Python candidate class sequence mismatch")
         snv = declared[0]["params"]
         require(set(snv) == {"axis", "copy", "ddof", "with_mean", "with_std"}, "candidate SNV parameter profile mismatch")
         require(type(snv["axis"]) is int and snv["axis"] == 1 and type(snv["ddof"]) is int and snv["ddof"] == 0
                 and all(snv[key] is True for key in ("copy", "with_mean", "with_std")), "candidate SNV defaults mismatch")
         split = declared[1]["params"]
-        require(split == {"n_splits": 3, "random_state": 42, "test_size": None, "train_size": None}
+        require(_same_json_description(split, {"n_splits": 3, "random_state": 42, "test_size": None, "train_size": None})
                 and type(split["n_splits"]) is int and type(split["random_state"]) is int, "candidate splitter profile mismatch")
         zipped = declared[2]["_zip_"]
-        require(set(zipped) == {"n_components", "scale"} and zipped["n_components"] == list(range(3, 20, 2))
+        require(set(zipped) == {"n_components", "scale"} and _same_json_description(zipped["n_components"], list(range(3, 20, 2)))
                 and all(type(value) is int for value in zipped["n_components"])
                 and len(zipped["scale"]) == 9 and all(value is True for value in zipped["scale"]), "candidate paired workload mismatch")
         variants = [{"n_components": value, "scale": True} for value in zipped["n_components"]]
-        require(candidate["variants"] == variants and type(opened["variant_count"]) is int and opened["variant_count"] == len(variants), "Python candidate variant mismatch")
+        require(_same_json_description(candidate["variants"], variants) and type(opened["variant_count"]) is int and opened["variant_count"] == len(variants), "Python candidate variant mismatch")
         require(all(set(value) == {"n_components", "scale"} and type(value["n_components"]) is int
                     and value["scale"] is True for value in candidate["variants"]), "invalid typed candidate variant")
         require(native["schemaVersion"] == package["schema_version"] == 1, "native package schema mismatch")
@@ -1843,6 +1848,11 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         check_rows(refit_rows, test_ids)
         require(type(summary["cv_predictions"]) is int and summary["cv_predictions"] == len(cv_rows), "CV prediction count mismatch")
         require(type(summary["refit_predictions"]) is int and summary["refit_predictions"] == len(refit_rows), "REFIT prediction count mismatch")
+        run_summary = summary["run_summary"]
+        require(_same_json_description(
+            {key: run_summary[key] for key in ("scoreCount", "cvRows", "refitRows")},
+            {"scoreCount": len(observed["folds"]) + 2, "cvRows": len(cv_rows), "refitRows": len(refit_rows)},
+        ), "run-summary counts differ from observed scores and predictions")
         fold_rows = [row for fold in observed["folds"] for row in fold["predictions"]]
         check_rows(fold_rows, train_ids)
         order = lambda rows: sorted(rows, key=lambda row: str(row["sampleId"]))
@@ -1870,7 +1880,10 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         tolerance = family["prediction_oracle"]["web_wasm_tolerance"]
         require(_is_number(tolerance) and 0 <= tolerance <= 5e-4, "invalid Web oracle tolerance")
         for comparison in (payload["prediction_comparison"], web["prediction_comparison"]):
-            require(type(comparison["compared_rows"]) is int and comparison["compared_rows"] == len(test_ids)
+            require(_same_json_description(
+                {key: comparison[key] for key in ("compared_rows", "web_rows")},
+                {"compared_rows": len(test_ids), "web_rows": len(refit_rows)},
+            )
                     and comparison["tolerance"] == tolerance, "oracle comparison count/tolerance mismatch")
         for row in refit_rows:
             reference = oracle[str(row["sampleId"])]
@@ -1880,12 +1893,13 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         plans = list(package["effective_plan"]["node_plans"].values())
         require(len(plans) == len(package["artifacts"]) == len(package["outputs"]) == 1, "native REFIT package topology mismatch")
         pipeline = plans[0]["params"]["web_pipeline"]
-        require(pipeline["steps"] == [{"id": "snv", "params": {}, "type": "n4m:preprocessing.scatter.snv"}], "native REFIT preprocessing candidate mismatch")
+        require(_same_json_description(pipeline["steps"], [{"id": "snv", "params": {}, "type": "n4m:preprocessing.scatter.snv"}]), "native REFIT preprocessing candidate mismatch")
         selected = family["prediction_oracle"]["selected"]["generator_choices"][0]["_zip_"]
-        require(web["selected_candidate"] == selected and selected["scale"] is True
+        require(_same_json_description(web["selected_candidate"], selected) and selected["scale"] is True
                 and type(selected["n_components"]) is int and type(web["selected_candidate"]["n_components"]) is int, "selected candidate mismatch")
-        require(selected in variants, "selected candidate is outside the declared paired workload")
-        require(pipeline["model"]["type"] == "n4m:models.pls.pls_regression" and pipeline["model"]["params"]["n_components"] == selected["n_components"], "native REFIT model candidate mismatch")
+        require(any(_same_json_description(selected, variant) for variant in variants), "selected candidate is outside the declared paired workload")
+        require(_same_json_description(pipeline["model"], {"id": "pls", "type": "n4m:models.pls.pls_regression",
+                                                        "params": {"n_components": selected["n_components"]}}), "native REFIT model candidate mismatch")
         record = package["artifacts"][0]["record"]
         artifact = record["artifact"]
         require(artifact["controller_id"] == "controller:web.pipeline" and artifact["id"] == native["artifactId"], "native REFIT artifact identity mismatch")

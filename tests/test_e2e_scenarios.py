@@ -5082,7 +5082,7 @@ def _bounded_web_test_artifact(tmp_path: Path) -> tuple[object, Path, dict[str, 
                    "target_content_fingerprint": hashlib.sha256(struct.pack("<3d", *dataset["y"][:3])).hexdigest()},
                "effective_plan": {"node_plans": {"node": {"params": {"web_pipeline": {
                    "steps": [{"id": "snv", "params": {}, "type": "n4m:preprocessing.scatter.snv"}],
-                   "model": {"type": "n4m:models.pls.pls_regression", "params": {"n_components": 3}}}}}}},
+                   "model": {"id": "pls", "type": "n4m:models.pls.pls_regression", "params": {"n_components": 3}}}}}}},
                "artifacts": [{"record": {"node_id": "node", "artifact": artifact}}],
                "outputs": [{"node_id": "node", "port_name": "oof"}]}
     lineage = {"engine": "dag-ml-wasm", "compiled": True, "executed": False, "refitExecuted": True,
@@ -5095,8 +5095,9 @@ def _bounded_web_test_artifact(tmp_path: Path) -> tuple[object, Path, dict[str, 
                                 "artifactId": "model-state", "carrierSha256": carrier, "targetNames": ["target"]}}
     summary = {key: value for key, value in lineage.items() if key != "dataProvider"}
     summary.update(cvProfile="browser-chain-on-native-folds", dataProviderStatus="materialized", schedulerFallback=False,
-                   cv_predictions=3, refit_predictions=2)
-    comparison = {"status": "passed", "compared_rows": 2, "max_abs_delta": 0,
+                   cv_predictions=3, refit_predictions=2,
+                   run_summary={"scoreCount": 5, "cvRows": 3, "refitRows": 2})
+    comparison = {"status": "passed", "compared_rows": 2, "web_rows": 2, "max_abs_delta": 0,
                   "max_actual_delta": 0, "max_residual_delta": 0, "tolerance": 5e-4}
     payload = {"schema_version": "n4a.e2e.web_runtime_perf/v1", "status": "passed",
                "candidate_sha256": e2e._canonical_json_sha256(candidate), "dataset_sha256": e2e._canonical_json_sha256(dataset),
@@ -5461,3 +5462,38 @@ def test_bounded_web_source_executes_verified_bytes_and_refuses_different_profil
     monkeypatch.setattr(e2e.subprocess, 'run', different_profile)
     with pytest.raises(ValueError, match='differs from attested 189x2151 profile'):
         e2e._bounded_web_source_dataset()
+
+
+@pytest.mark.parametrize('left,right', [
+    (True, 1), (True, 1.0), (3, 3.0), (1, True),
+    ({'nested': [{'scale': True}]}, {'nested': [{'scale': 1}]}),
+    ({'nested': [{'scale': True}]}, {'nested': [{'scale': 1.0}]}),
+    ({'nested': [{'n_components': 3}]}, {'nested': [{'n_components': 3.0}]}),
+    ({'nested': [{'n_components': 1}]}, {'nested': [{'n_components': True}]}),
+])
+def test_exact_candidate_json_descriptions_preserve_recursive_types(left: object, right: object) -> None:
+    e2e = _load_e2e_module()
+    assert not e2e._same_json_description(left, right)
+    assert not e2e._same_json_description(right, left)
+    assert e2e._same_json_description({'scale': True, 'n_components': 3}, {'n_components': 3, 'scale': True})
+
+
+@pytest.mark.parametrize('field,value', [
+    ('web.selected_candidate.scale', 1), ('web.selected_candidate.scale', 1.0),
+    ('prediction_comparison.web_rows', True), ('prediction_comparison.web_rows', 1),
+    ('prediction_comparison.web_rows', 2.0), ('web.prediction_comparison.web_rows', 1),
+    ('web.dag_ml.run_summary.refitRows', 1), ('web.dag_ml.run_summary.refitRows', 2.0),
+    ('web.dag_ml.run_summary.cvRows', 1), ('web.dag_ml.run_summary.cvRows', 3.0),
+    ('web.dag_ml.run_summary.scoreCount', True), ('web.dag_ml.run_summary.scoreCount', 5.0),
+])
+def test_bounded_web_descriptions_and_all_declared_counts_match_observations(tmp_path: Path, field: str, value: object) -> None:
+    e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    # The synthetic fixture shares these copies; separate them to model a changed reported copy.
+    payload = json.loads(json.dumps(payload))
+    parts = field.split('.')
+    node = payload
+    for part in parts[:-1]:
+        node = node[part]
+    node[parts[-1]] = value
+    path.write_text(json.dumps(payload))
+    assert e2e._validate_existing_artifact(str(path), plan={'id': 'e2e-pipeline-generation-performance-compare'}, require_positive_evidence=True)
