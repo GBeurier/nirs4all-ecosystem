@@ -5387,3 +5387,46 @@ def test_bounded_web_rejects_remaining_consistent_source_and_fold_mutations(tmp_
     for file, body in ((candidate_path, candidate), (family_path, family), (dataset_path, dataset), (path, payload)):
         file.write_text(json.dumps(body))
     assert e2e._validate_existing_artifact(str(path), plan={'id': 'e2e-pipeline-generation-performance-compare'}, require_positive_evidence=True)
+
+
+@pytest.mark.parametrize('where', ['root', 'observed', 'nested'])
+def test_bounded_web_rejects_scalar_false_arrays(tmp_path: Path, where: str) -> None:
+    e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    if where == 'root':
+        payload['unknown'] = [False]
+    elif where == 'observed':
+        payload['web']['observed_run']['unknown'] = [False]
+    else:
+        payload['unknown'] = [[False]]
+    path.write_text(json.dumps(payload))
+    assert e2e._validate_existing_artifact(str(path), plan={'id': 'e2e-pipeline-generation-performance-compare'}, require_positive_evidence=True)
+
+
+@pytest.mark.parametrize('field', ['cv_count', 'refit_count', 'comparison_count', 'selected_component', 'cv_r2', 'refit_r2'])
+def test_bounded_web_rejects_forged_scores_and_remaining_float_counts(tmp_path: Path, field: str) -> None:
+    e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    if field == 'cv_count':
+        payload['web']['dag_ml']['cv_predictions'] = 3.0
+    elif field == 'refit_count':
+        payload['web']['dag_ml']['refit_predictions'] = 2.0
+    elif field == 'comparison_count':
+        payload['prediction_comparison']['compared_rows'] = 2.0
+    elif field == 'selected_component':
+        payload['web']['selected_candidate']['n_components'] = 3.0
+        family_path = path.parent / 'pipeline-family.json'
+        family = json.loads(family_path.read_text())
+        family['prediction_oracle']['selected']['generator_choices'][0]['_zip_']['n_components'] = 3.0
+        family_path.write_text(json.dumps(family))
+        payload['family_sha256'] = e2e._canonical_json_sha256(family)
+    else:
+        payload['web']['observed_run'][field.removesuffix('_r2')]['metrics']['r2'] = 999.0
+    path.write_text(json.dumps(payload))
+    assert e2e._validate_existing_artifact(str(path), plan={'id': 'e2e-pipeline-generation-performance-compare'}, require_positive_evidence=True)
+
+
+def test_bounded_web_source_fixture_rejects_unqualified_checkout(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    e2e = _load_e2e_module()
+    (tmp_path / 'nirs4all').mkdir()
+    monkeypatch.setattr(e2e, 'default_workspace_root', lambda: tmp_path)
+    with pytest.raises(ValueError, match='qualified Web source fixture identity failed'):
+        e2e._bounded_web_source_dataset()

@@ -1308,6 +1308,8 @@ def _json_semantic_failures(
     _parts: tuple[str | int, ...] = (),
 ) -> list[str]:
     failures: list[str] = []
+    if allowed_false_paths and value is False:
+        return [] if _parts in allowed_false_paths else [f"{path}=false"]
     if isinstance(value, dict):
         for key, item in value.items():
             child_path = f"{path}.{key}"
@@ -1322,7 +1324,7 @@ def _json_semantic_failures(
                     or any(fragment in status for fragment in DISALLOWED_ARTIFACT_STATUS_SUBSTRINGS)
                 ):
                     failures.append(f"{child_path}={item!r}")
-            if (key_name in BOOLEAN_EVIDENCE_FIELDS or allowed_false_paths) and item is False and child_parts not in allowed_false_paths:
+            if not allowed_false_paths and key_name in BOOLEAN_EVIDENCE_FIELDS and item is False:
                 failures.append(f"{child_path}=false")
             failures.extend(_numeric_failures(key_name, item, child_path))
             failures.extend(_json_semantic_failures(item, child_path, allowed_false_paths=allowed_false_paths, _parts=child_parts))
@@ -1684,6 +1686,30 @@ def _bounded_web_provider_binding(dataset: dict[str, Any]) -> dict[str, Any]:
 def _bounded_web_source_dataset() -> dict[str, Any]:
     """Reload the qualified oracle's source fixture without training or benchmarking."""
     sdk = default_workspace_root() / "nirs4all"
+    try:
+        tree_entry = subprocess.check_output(
+            ["git", "-C", str(repo_root()), "ls-tree", "HEAD", "nirs4all"], text=True,
+        ).strip().split()
+        if len(tree_entry) != 4 or tree_entry[:2] != ["160000", "commit"] or not re.fullmatch(r"[a-f0-9]{40}", tree_entry[2]):
+            raise ValueError("missing qualified SDK gitlink")
+        scopes = ["tests/e2e/test_pipeline_generation_performance.py", "tests/__init__.py",
+                  "tests/integration/__init__.py", "tests/integration/parity", "examples/sample_data/regression"]
+        files = subprocess.check_output(
+            ["git", "-C", str(sdk), "ls-tree", "-r", "--name-only", tree_entry[2], "--", *scopes], text=True,
+        ).splitlines()
+        if not files or scopes[0] not in files:
+            raise ValueError("missing immutable SDK fixture source")
+        for file in files:
+            expected = subprocess.check_output(["git", "-C", str(sdk), "show", f"{tree_entry[2]}:{file}"])
+            if (sdk / file).read_bytes() != expected:
+                raise ValueError(f"SDK fixture source/input differs from qualified gitlink: {file}")
+        corpus = sdk / "examples/sample_data/regression"
+        actual_inputs = {str(file.relative_to(sdk)) for file in corpus.rglob("*") if file.is_file()}
+        expected_inputs = {file for file in files if file.startswith("examples/sample_data/regression/")}
+        if actual_inputs != expected_inputs:
+            raise ValueError("SDK fixture contains undeclared input files")
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        raise ValueError(f"qualified Web source fixture identity failed: {exc}") from exc
     program = (
         "import nirs4all,sys,json,importlib.util; "
         "sys.path.insert(0,sys.argv[1]); "
@@ -1807,8 +1833,8 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         refit_rows = observed["refit"]["predictions"]
         check_rows(cv_rows, train_ids)
         check_rows(refit_rows, test_ids)
-        require(summary["cv_predictions"] == len(cv_rows), "CV prediction count mismatch")
-        require(summary["refit_predictions"] == len(refit_rows), "REFIT prediction count mismatch")
+        require(type(summary["cv_predictions"]) is int and summary["cv_predictions"] == len(cv_rows), "CV prediction count mismatch")
+        require(type(summary["refit_predictions"]) is int and summary["refit_predictions"] == len(refit_rows), "REFIT prediction count mismatch")
         fold_rows = [row for fold in observed["folds"] for row in fold["predictions"]]
         check_rows(fold_rows, train_ids)
         order = lambda rows: sorted(rows, key=lambda row: str(row["sampleId"]))
@@ -1824,12 +1850,20 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
             for key, expected in (("rmse", math.sqrt(sum(x * x for x in residuals) / len(rows))),
                                   ("mae", sum(abs(x) for x in residuals) / len(rows))):
                 require(abs(score["metrics"][key] - expected) <= 1e-10 * max(1, expected), "independent prediction score mismatch")
+            if "r2" in score["metrics"]:
+                from sklearn.metrics import r2_score
+
+                actual_r2 = score["metrics"]["r2"]
+                expected_r2 = float(r2_score([row["actual"] for row in rows], [row["predicted"] for row in rows]))
+                require(_is_number(actual_r2) and math.isfinite(actual_r2) and math.isfinite(expected_r2)
+                        and abs(actual_r2 - expected_r2) <= 1e-10 * max(1, abs(expected_r2)), "independent R2 score mismatch")
         oracle = {str(row["sample_id"]): row for row in family["prediction_oracle"]["rows"]}
         require(set(oracle) == test_ids, "Python oracle test split mismatch")
         tolerance = family["prediction_oracle"]["web_wasm_tolerance"]
         require(_is_number(tolerance) and 0 <= tolerance <= 5e-4, "invalid Web oracle tolerance")
         for comparison in (payload["prediction_comparison"], web["prediction_comparison"]):
-            require(comparison["compared_rows"] == len(test_ids) and comparison["tolerance"] == tolerance, "oracle comparison count/tolerance mismatch")
+            require(type(comparison["compared_rows"]) is int and comparison["compared_rows"] == len(test_ids)
+                    and comparison["tolerance"] == tolerance, "oracle comparison count/tolerance mismatch")
         for row in refit_rows:
             reference = oracle[str(row["sampleId"])]
             require(abs(row["predicted"] - reference["dag_ml_predicted"]) <= tolerance, "Web/Python prediction oracle mismatch")
@@ -1840,7 +1874,8 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         pipeline = plans[0]["params"]["web_pipeline"]
         require(pipeline["steps"] == [{"id": "snv", "params": {}, "type": "n4m:preprocessing.scatter.snv"}], "native REFIT preprocessing candidate mismatch")
         selected = family["prediction_oracle"]["selected"]["generator_choices"][0]["_zip_"]
-        require(web["selected_candidate"] == selected and selected["scale"] is True, "selected candidate mismatch")
+        require(web["selected_candidate"] == selected and selected["scale"] is True
+                and type(selected["n_components"]) is int and type(web["selected_candidate"]["n_components"]) is int, "selected candidate mismatch")
         require(selected in variants, "selected candidate is outside the declared paired workload")
         require(pipeline["model"]["type"] == "n4m:models.pls.pls_regression" and pipeline["model"]["params"]["n_components"] == selected["n_components"], "native REFIT model candidate mismatch")
         record = package["artifacts"][0]["record"]
@@ -1848,7 +1883,7 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         require(artifact["controller_id"] == "controller:web.pipeline" and artifact["id"] == native["artifactId"], "native REFIT artifact identity mismatch")
         require(re.fullmatch(r"[a-f0-9]{64}", native["carrierSha256"]) and artifact["content_fingerprint"] == native["carrierSha256"], "native REFIT sidecar fingerprint mismatch")
         require(package["outputs"][0]["node_id"] == record["node_id"] and package["outputs"][0]["port_name"] == "oof", "native PREDICT output mismatch")
-    except (AssertionError, KeyError, IndexError, TypeError, ValueError, OSError, ArithmeticError, E2EScenarioError) as exc:
+    except (AssertionError, KeyError, IndexError, TypeError, ValueError, OSError, ArithmeticError, ImportError, E2EScenarioError) as exc:
         return [f"{path}: invalid bounded Web CV/native REFIT evidence: {exc}"]
     return []
 
