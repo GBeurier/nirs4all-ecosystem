@@ -4,6 +4,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import math
 import os
 import re
 import subprocess
@@ -3137,9 +3138,7 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
             assert "sha256" not in artifact
             requirements = requirement_map.get(artifact["path"], [])
             if requirements:
-                assert artifact["proof_kind"] == "required_json_fields"
-                assert artifact["requirement_count"] == len(requirements)
-                assert re.fullmatch(r"[0-9a-f]{64}", artifact["proof_sha256"])
+                _assert_ledger_requirement_contract(ledger["source"], plan["id"], artifact, requirements)
             elif artifact["path"].endswith(".json"):
                 assert artifact == {
                     "path": artifact["path"],
@@ -4954,3 +4953,217 @@ def test_cross_language_e2e_cli_run_ready_dry_run_lists_ready_and_blocked(tmp_pa
         == 6
     )
     assert "Dry run only" in planned.stderr
+
+
+HISTORICAL_WEB_PERFORMANCE_PROOF = {
+    "path": "performance-compare/web-runtime.json",
+    "proof_kind": "required_json_fields",
+    "requirement_count": 23,
+    "proof_sha256": "0ccea04cbd2026263bfd5365547a311806108fe63a53bc4f73e8b59c710f4a35",
+}
+
+
+def _assert_ledger_requirement_contract(source, scenario_id, artifact, requirements) -> None:
+    """Preserve one immutable historical proof without attributing current guards."""
+    is_web_profile = (scenario_id == "e2e-pipeline-generation-performance-compare"
+                      and artifact["path"] == "performance-compare/web-runtime.json")
+    if (is_web_profile
+        and source.get("runtime_manifest_sha256") == "ee257f9382d9d18413d8cca8c9ca9190c0e31f0d96b32167d160e297c51402f1"
+        and source.get("manifest_sha256") == "5be78d72d3eecdc1ff4f2ba8ca102e4dd1a61e8c608b45ac843956fb4c180f7e"):
+        assert artifact == HISTORICAL_WEB_PERFORMANCE_PROOF
+    else:
+        assert artifact["proof_kind"] == "required_json_fields"
+        assert artifact["requirement_count"] == len(requirements)
+        assert re.fullmatch(r"[0-9a-f]{64}", artifact["proof_sha256"])
+        if is_web_profile:
+            assert artifact["proof_sha256"] != HISTORICAL_WEB_PERFORMANCE_PROOF["proof_sha256"]
+
+
+@pytest.mark.parametrize("mutation", ["runtime_source", "manifest_source", "scenario", "path", "proof", "count", "extra"])
+def test_bounded_web_historical_proof_is_exact_and_source_locked(mutation: str) -> None:
+    e2e = _load_e2e_module()
+    source = {"runtime_manifest_sha256": "ee257f9382d9d18413d8cca8c9ca9190c0e31f0d96b32167d160e297c51402f1",
+              "manifest_sha256": "5be78d72d3eecdc1ff4f2ba8ca102e4dd1a61e8c608b45ac843956fb4c180f7e"}
+    artifact = dict(HISTORICAL_WEB_PERFORMANCE_PROOF)
+    scenario = "e2e-pipeline-generation-performance-compare"
+    requirements = e2e.SCENARIO_ARTIFACT_REQUIREMENTS[scenario][artifact["path"]]
+    _assert_ledger_requirement_contract(source, scenario, artifact, requirements)
+    if mutation == "runtime_source":
+        source["runtime_manifest_sha256"] = "0" * 64
+    elif mutation == "manifest_source":
+        source["manifest_sha256"] = "0" * 64
+    elif mutation == "scenario":
+        scenario = "foreign"
+    elif mutation == "path":
+        artifact["path"] = "foreign/web-runtime.json"
+    elif mutation == "proof":
+        artifact["proof_sha256"] = "f" * 64
+    elif mutation == "count":
+        artifact["requirement_count"] = len(requirements)
+    else:
+        artifact["fresh"] = True
+    with pytest.raises(AssertionError):
+        _assert_ledger_requirement_contract(source, scenario, artifact, requirements)
+
+
+def test_bounded_web_current_proof_requires_current_guards_and_new_proof() -> None:
+    e2e = _load_e2e_module()
+    scenario = "e2e-pipeline-generation-performance-compare"
+    requirements = e2e.SCENARIO_ARTIFACT_REQUIREMENTS[scenario]["performance-compare/web-runtime.json"]
+    source = {"runtime_manifest_sha256": _sha256(MANIFEST), "manifest_sha256": _sha256(MANIFEST)}
+    artifact = dict(HISTORICAL_WEB_PERFORMANCE_PROOF)
+    with pytest.raises(AssertionError):
+        _assert_ledger_requirement_contract(source, scenario, artifact, requirements)
+    artifact["requirement_count"] = len(requirements)
+    with pytest.raises(AssertionError):
+        _assert_ledger_requirement_contract(source, scenario, artifact, requirements)
+    artifact["proof_sha256"] = "f" * 64
+    _assert_ledger_requirement_contract(source, scenario, artifact, requirements)
+
+
+def _bounded_web_test_artifact(tmp_path: Path) -> tuple[object, Path, dict[str, object]]:
+    """Small synthetic validator fixture; it is never runtime qualification."""
+    e2e = _load_e2e_module()
+    root = tmp_path / "performance-compare"
+    root.mkdir()
+    dataset = {"schema_version": "n4a.e2e.web_materialized_dataset.v1", "status": "passed",
+               "nSamples": 4, "sampleIds": ["a", "b", "c", "d"], "partitions": ["train", "train", "test", "test"],
+               "targetName": "target", "y": [1, 2, 3, 4]}
+
+    def row(sample: str, actual: float, predicted: float) -> dict[str, object]:
+        return {"sampleId": sample, "actual": actual, "predicted": predicted, "residual": predicted - actual}
+
+    def score(rows: list[dict[str, object]]) -> dict[str, object]:
+        residuals = [entry["residual"] for entry in rows]
+        return {"status": "completed", "predictions": rows,
+                "metrics": {"n": len(rows), "rmse": math.sqrt(sum(x * x for x in residuals) / len(rows)),
+                            "mae": sum(abs(x) for x in residuals) / len(rows)}}
+
+    cv_rows = [row("a", 1, 1.1), row("b", 2, 1.9)]
+    refit_rows = [row("c", 3, 3.2), row("d", 4, 3.8)]
+    selected = {"n_components": 1, "scale": True}
+    family = {"status": "passed", "prediction_oracle": {"web_wasm_tolerance": 5e-4,
+              "rows": [{"sample_id": entry["sampleId"], "actual": entry["actual"],
+                        "dag_ml_predicted": entry["predicted"], "dag_ml_residual": entry["residual"]} for entry in refit_rows],
+              "selected": {"generator_choices": [{"_zip_": selected}]}}}
+    candidate = {"schema_version": "n4a.e2e.generated_pipeline_candidate.v1", "status": "passed",
+                 "scenario_id": "e2e-pipeline-generation-performance-compare"}
+    for name, body in (("dataset-web-oracle.json", dataset), ("pipeline-family.json", family),
+                       ("pipeline-candidate.n4a.json", candidate)):
+        (root / name).write_text(json.dumps(body), encoding="utf-8")
+    fingerprint, carrier = "a" * 64, "b" * 64
+    artifact = {"controller_id": "controller:web.pipeline", "id": "model-state", "content_fingerprint": carrier}
+    package = {"schema_version": 1, "package_fingerprint": fingerprint, "training_sample_ids": ["s0", "s1"],
+               "effective_plan": {"node_plans": {"node": {"params": {"web_pipeline": {
+                   "steps": [{"id": "snv", "params": {}, "type": "n4m:preprocessing.scatter.snv"}],
+                   "model": {"type": "n4m:models.pls.pls_regression", "params": {"n_components": 1}}}}}}},
+               "artifacts": [{"record": {"node_id": "node", "artifact": artifact}}],
+               "outputs": [{"node_id": "node", "port_name": "oof"}]}
+    lineage = {"engine": "dag-ml-wasm", "compiled": True, "executed": False, "refitExecuted": True,
+               "refitProfile": "browser-composite-host-sidecar-v1", "packageFingerprint": fingerprint,
+               "phase": "FIT_CV+REFIT+PREDICT", "variantCount": 1, "folds": 2,
+               "dataProvider": {"layer": "dag-ml-data", "status": "materialized"}}
+    observed = {"engine": "dag-ml-wasm + libn4m", "lineage": lineage, "variantCount": 1,
+                "cv": score(cv_rows), "refit": score(refit_rows), "folds": [score([entry]) for entry in cv_rows],
+                "nativeRefit": {"schemaVersion": 1, "packageJson": json.dumps(package),
+                                "artifactId": "model-state", "carrierSha256": carrier, "targetNames": ["target"]}}
+    summary = {key: value for key, value in lineage.items() if key != "dataProvider"}
+    summary.update(cvProfile="browser-chain-on-native-folds", dataProviderStatus="materialized", schedulerFallback=False,
+                   cv_predictions=2, refit_predictions=2)
+    comparison = {"status": "passed", "compared_rows": 2, "max_abs_delta": 0,
+                  "max_actual_delta": 0, "max_residual_delta": 0, "tolerance": 5e-4}
+    payload = {"schema_version": "n4a.e2e.web_runtime_perf/v1", "status": "passed",
+               "candidate_sha256": e2e._canonical_json_sha256(candidate), "dataset_sha256": e2e._canonical_json_sha256(dataset),
+               "family_sha256": e2e._canonical_json_sha256(family), "console_errors": [],
+               "prediction_comparison": comparison,
+               "web": {"backend": "dag-ml-wasm + libn4m", "candidate_imported": True, "rendered_cv_scores": True,
+                       "selected_candidate": selected, "dag_ml": summary, "observed_run": observed,
+                       "prediction_comparison": comparison}}
+    path = root / "web-runtime.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return e2e, path, payload
+
+
+def test_bounded_web_cv_profile_requires_exact_context_and_preserves_raw(tmp_path: Path) -> None:
+    e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    before = path.read_bytes()
+    plan = {"id": "e2e-pipeline-generation-performance-compare"}
+    assert e2e._validate_existing_artifact(str(path), plan=plan, require_positive_evidence=True) == []
+    assert path.read_bytes() == before
+    assert e2e._validate_existing_artifact(str(path), require_positive_evidence=True)
+    assert e2e._validate_existing_artifact(str(path), plan={"id": "synthetic"}, require_positive_evidence=True)
+    foreign = path.parent / "foreign.json"
+    foreign.write_text(json.dumps(payload), encoding="utf-8")
+    assert e2e._validate_existing_artifact(str(foreign), plan=plan, require_positive_evidence=True)
+    payload["foreign"] = {"executed": False}
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    assert e2e._validate_existing_artifact(str(path), plan=plan, require_positive_evidence=True)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("schema_version", "foreign"), ("web.dag_ml.executed", True), ("web.dag_ml.executed", 0),
+    ("web.dag_ml.refitExecuted", 1), ("web.dag_ml.compiled", 1), ("web.dag_ml.schedulerFallback", 0),
+    ("web.dag_ml.refitExecuted", False), ("web.dag_ml.refitProfile", "direct-fit"),
+    ("web.dag_ml.cvProfile", "model-only"), ("web.dag_ml.packageFingerprint", "c" * 64),
+    ("web.observed_run.lineage.executed", True), ("web.observed_run.lineage.refitExecuted", False),
+    ("web.observed_run.lineage.schedulerFallback", True), ("web.observed_run.lineage.folds", 3),
+    ("web.observed_run.nativeRefit.carrierSha256", "c" * 64),
+    ("web.observed_run.nativeRefit.targetNames", ["foreign"]),
+    ("web.observed_run.cv.predictions", []), ("web.observed_run.refit.predictions", []),
+    ("web.observed_run.cv.metrics.rmse", 100), ("web.dag_ml.cv_predictions", 3),
+    ("candidate_sha256", "c" * 64), ("dataset_sha256", "c" * 64), ("family_sha256", "c" * 64),
+])
+def test_bounded_web_cv_profile_rejects_corrupt_observations(tmp_path: Path, field: str, value: object) -> None:
+    e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    node = payload
+    parts = field.split(".")
+    for part in parts[:-1]:
+        node = node[part]
+    node[parts[-1]] = value
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    assert e2e._validate_existing_artifact(str(path), plan={"id": "e2e-pipeline-generation-performance-compare"}, require_positive_evidence=True)
+
+
+@pytest.mark.parametrize("mutation", ["training_split", "package_fingerprint", "model", "preprocessing", "sidecar", "fold_duplicate", "target", "prediction"])
+def test_bounded_web_cv_profile_rejects_package_and_split_corruption(tmp_path: Path, mutation: str) -> None:
+    e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    observed = payload["web"]["observed_run"]
+    native = observed["nativeRefit"]
+    package = json.loads(native["packageJson"])
+    if mutation == "training_split":
+        package["training_sample_ids"] = ["s0", "s2"]
+    elif mutation == "package_fingerprint":
+        package["package_fingerprint"] = "c" * 64
+    elif mutation == "model":
+        package["effective_plan"]["node_plans"]["node"]["params"]["web_pipeline"]["model"]["params"]["n_components"] = 2
+    elif mutation == "preprocessing":
+        package["effective_plan"]["node_plans"]["node"]["params"]["web_pipeline"]["steps"] = []
+    elif mutation == "sidecar":
+        package["artifacts"][0]["record"]["artifact"]["content_fingerprint"] = "c" * 64
+    elif mutation == "fold_duplicate":
+        observed["folds"][1]["predictions"] = copy.deepcopy(observed["folds"][0]["predictions"])
+    elif mutation == "target":
+        observed["refit"]["predictions"][0]["actual"] = 5
+    else:
+        observed["refit"]["predictions"][0]["predicted"] = 5
+    native["packageJson"] = json.dumps(package)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    assert e2e._validate_existing_artifact(str(path), plan={"id": "e2e-pipeline-generation-performance-compare"}, require_positive_evidence=True)
+
+
+def test_bounded_web_cv_profile_remains_fail_closed_with_optimized_python(tmp_path: Path) -> None:
+    _e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    payload["web"]["observed_run"]["nativeRefit"]["carrierSha256"] = "c" * 64
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    program = (
+        "import importlib.util, sys; "
+        "spec=importlib.util.spec_from_file_location('e2e',sys.argv[1]); "
+        "module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module); "
+        "failures=module._validate_existing_artifact(sys.argv[2],"
+        "plan={'id':'e2e-pipeline-generation-performance-compare'},require_positive_evidence=True); "
+        "print(failures); sys.exit(0 if failures else 1)"
+    )
+    checked = subprocess.run([sys.executable, "-O", "-c", program, str(ROOT / "scripts/n4a_e2e_scenarios.py"), str(path)],
+                             text=True, capture_output=True, check=False)
+    assert checked.returncode == 0, checked.stdout + checked.stderr
+    assert "sidecar fingerprint mismatch" in checked.stdout

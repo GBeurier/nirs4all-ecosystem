@@ -8,6 +8,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -817,6 +818,7 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "web_dataset.sha256", "non_empty": True},
         ],
         "performance-compare/web-runtime.json": [
+            {"path": "schema_version", "equals": "n4a.e2e.web_runtime_perf/v1"},
             {"path": "status", "equals": "passed"},
             {"path": "candidate_sha256", "non_empty": True},
             {"path": "dataset_sha256", "non_empty": True},
@@ -825,7 +827,29 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
             {"path": "web.rendered_cv_scores", "equals": True},
             {"path": "web.dag_ml.engine", "equals": "dag-ml-wasm"},
             {"path": "web.dag_ml.compiled", "equals": True},
-            {"path": "web.dag_ml.executed", "equals": True},
+            # Web 0.4.0 runs the preprocessing CV chain on native folds;
+            # packaged REFIT/PREDICT execute through the composite controller.
+            {"path": "web.dag_ml.executed", "equals": False},
+            {"path": "web.dag_ml.cvProfile", "equals": "browser-chain-on-native-folds"},
+            {"path": "web.dag_ml.refitExecuted", "equals": True},
+            {"path": "web.dag_ml.refitProfile", "equals": "browser-composite-host-sidecar-v1"},
+            {"path": "web.dag_ml.phase", "equals": "FIT_CV+REFIT+PREDICT"},
+            {"path": "web.dag_ml.variantCount", "equals": 1},
+            {"path": "web.dag_ml.folds", "gt": 0},
+            {"path": "web.dag_ml.dataProviderStatus", "equals": "materialized"},
+            {"path": "web.dag_ml.packageFingerprint", "non_empty": True},
+            {"path": "web.dag_ml.packageFingerprint", "equals_path": "web.observed_run.lineage.packageFingerprint"},
+            {"path": "web.observed_run.engine", "equals_path": "web.backend"},
+            {"path": "web.observed_run.lineage.engine", "equals_path": "web.dag_ml.engine"},
+            {"path": "web.observed_run.lineage.compiled", "equals": True},
+            {"path": "web.observed_run.lineage.executed", "equals": False},
+            {"path": "web.observed_run.lineage.refitExecuted", "equals": True},
+            {"path": "web.observed_run.lineage.refitProfile", "equals_path": "web.dag_ml.refitProfile"},
+            {"path": "web.observed_run.lineage.phase", "equals_path": "web.dag_ml.phase"},
+            {"path": "web.observed_run.lineage.variantCount", "equals_path": "web.dag_ml.variantCount"},
+            {"path": "web.observed_run.lineage.folds", "equals_path": "web.dag_ml.folds"},
+            {"path": "web.observed_run.lineage.dataProvider.layer", "equals": "dag-ml-data"},
+            {"path": "web.observed_run.lineage.dataProvider.status", "equals": "materialized"},
             {"path": "web.dag_ml.schedulerFallback", "equals": False},
             {"path": "web.dag_ml.cv_predictions", "gt": 0},
             {"path": "web.dag_ml.refit_predictions", "gt": 0},
@@ -1279,7 +1303,9 @@ def _json_has_positive_evidence(value: Any) -> bool:
     return False
 
 
-def _json_semantic_failures(value: Any, path: str = "$") -> list[str]:
+def _json_semantic_failures(
+    value: Any, path: str = "$", *, allowed_false_paths: frozenset[str] = frozenset()
+) -> list[str]:
     failures: list[str] = []
     if isinstance(value, dict):
         for key, item in value.items():
@@ -1294,14 +1320,14 @@ def _json_semantic_failures(value: Any, path: str = "$") -> list[str]:
                     or any(fragment in status for fragment in DISALLOWED_ARTIFACT_STATUS_SUBSTRINGS)
                 ):
                     failures.append(f"{child_path}={item!r}")
-            if key_name in BOOLEAN_EVIDENCE_FIELDS and item is False:
+            if key_name in BOOLEAN_EVIDENCE_FIELDS and item is False and child_path not in allowed_false_paths:
                 failures.append(f"{child_path}=false")
             failures.extend(_numeric_failures(key_name, item, child_path))
-            failures.extend(_json_semantic_failures(item, child_path))
+            failures.extend(_json_semantic_failures(item, child_path, allowed_false_paths=allowed_false_paths))
         failures.extend(_delta_tolerance_failures(value, path))
     elif isinstance(value, list):
         for index, item in enumerate(value):
-            failures.extend(_json_semantic_failures(item, f"{path}[{index}]"))
+            failures.extend(_json_semantic_failures(item, f"{path}[{index}]", allowed_false_paths=allowed_false_paths))
     return failures
 
 
@@ -1524,6 +1550,7 @@ def _validate_produced_artifacts(
     before: dict[str, int | None],
     *,
     require_positive_artifacts: set[str] | None = None,
+    plan: dict[str, Any] | None = None,
 ) -> list[str]:
     failures: list[str] = []
     positive_artifacts = require_positive_artifacts or set()
@@ -1532,6 +1559,7 @@ def _validate_produced_artifacts(
         structural_failures = _validate_existing_artifact(
             raw_path,
             require_positive_evidence=raw_path in positive_artifacts,
+            plan=plan,
         )
         if structural_failures:
             failures.extend(structural_failures)
@@ -1628,11 +1656,112 @@ def _validate_non_json_artifact(path: Path) -> list[str]:
     return []
 
 
+def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> list[str]:
+    """Bind the documented host-CV/native-REFIT profile to genuine observations."""
+    def require(condition: bool, message: str) -> None:
+        if not condition:
+            raise ValueError(message)
+
+    try:
+        web = payload["web"]
+        observed = web["observed_run"]
+        lineage = observed["lineage"]
+        summary = web["dag_ml"]
+        native = observed["nativeRefit"]
+        require(summary["executed"] is False and lineage["executed"] is False, "CV scheduler lineage must be explicitly false")
+        require(summary["refitExecuted"] is True and lineage["refitExecuted"] is True, "native REFIT/PREDICT must be explicitly true")
+        require(summary["compiled"] is True and lineage["compiled"] is True, "compiled lineage must be explicitly true")
+        require(summary["schedulerFallback"] is False, "summary scheduler fallback must be explicitly false")
+        package = json.loads(native["packageJson"])
+        dataset = _read_json(path.parent / "dataset-web-oracle.json")
+        candidate = _read_json(path.parent / "pipeline-candidate.n4a.json")
+        family = _read_json(path.parent / "pipeline-family.json")
+        require(all(value["status"] == "passed" for value in (dataset, candidate, family)), "non-passing source artifact")
+        require(candidate["schema_version"] == "n4a.e2e.generated_pipeline_candidate.v1" and candidate["scenario_id"] == "e2e-pipeline-generation-performance-compare", "candidate scenario identity mismatch")
+        require(dataset["schema_version"] == "n4a.e2e.web_materialized_dataset.v1", "dataset schema mismatch")
+        require(payload["dataset_sha256"] == _canonical_json_sha256(dataset), "dataset fingerprint mismatch")
+        require(payload["candidate_sha256"] == _canonical_json_sha256(candidate), "candidate fingerprint mismatch")
+        require(payload["family_sha256"] == _canonical_json_sha256(family), "family fingerprint mismatch")
+        require(native["schemaVersion"] == package["schema_version"] == 1, "native package schema mismatch")
+        fingerprint = package["package_fingerprint"]
+        require(isinstance(fingerprint, str) and re.fullmatch(r"[a-f0-9]{64}", fingerprint), "invalid native package fingerprint")
+        require(fingerprint == summary["packageFingerprint"] == lineage["packageFingerprint"], "native package fingerprint mismatch")
+        require("schedulerFallback" not in lineage or lineage["schedulerFallback"] is False, "observed scheduler fallback")
+        require(observed["variantCount"] == summary["variantCount"] == 1, "observed variant count mismatch")
+        require(len(observed["folds"]) == summary["folds"], "observed fold count mismatch")
+        n = dataset["nSamples"]
+        ids = [str(value) for value in dataset["sampleIds"]]
+        partitions = dataset["partitions"]
+        require(len(ids) == len(partitions) == len(dataset["y"]) == n, "dataset sample dimensions mismatch")
+        require(len(set(ids)) == n and set(partitions) == {"train", "test"}, "invalid dataset split")
+        train_rows = [i for i, partition in enumerate(partitions) if partition == "train"]
+        train_ids = {ids[i] for i in train_rows}
+        test_ids = {ids[i] for i, partition in enumerate(partitions) if partition == "test"}
+        require(sorted(package["training_sample_ids"]) == sorted(f"s{i}" for i in train_rows), "native REFIT training split mismatch")
+        require(native["targetNames"] == [dataset["targetName"]], "native REFIT target identity mismatch")
+        by_id = dict(zip(ids, dataset["y"]))
+
+        def check_rows(rows: list[dict[str, Any]], expected_ids: set[str]) -> None:
+            row_ids = [str(row["sampleId"]) for row in rows]
+            require(len(row_ids) == len(set(row_ids)) and set(row_ids) == expected_ids, "prediction split mismatch")
+            for row in rows:
+                target = by_id[str(row["sampleId"])]
+                require(all(_is_number(row[key]) and math.isfinite(row[key]) for key in ("actual", "predicted", "residual")), "invalid prediction value")
+                require(abs(row["actual"] - target) <= sys.float_info.epsilon * max(1, abs(target)), "prediction target identity mismatch")
+                require(abs(row["residual"] - (row["predicted"] - row["actual"])) <= 1e-10, "prediction residual mismatch")
+
+        cv_rows = observed["cv"]["predictions"]
+        refit_rows = observed["refit"]["predictions"]
+        check_rows(cv_rows, train_ids)
+        check_rows(refit_rows, test_ids)
+        require(summary["cv_predictions"] == len(cv_rows), "CV prediction count mismatch")
+        require(summary["refit_predictions"] == len(refit_rows), "REFIT prediction count mismatch")
+        fold_rows = [row for fold in observed["folds"] for row in fold["predictions"]]
+        check_rows(fold_rows, train_ids)
+        order = lambda rows: sorted(rows, key=lambda row: str(row["sampleId"]))
+        require(order(fold_rows) == order(cv_rows), "native-fold predictions differ from CV aggregate")
+        for score in [observed["cv"], observed["refit"], *observed["folds"]]:
+            rows = score["predictions"]
+            require(rows, "empty prediction score")
+            require(score["status"] == "completed" and score["metrics"]["n"] == len(rows), "incomplete prediction score")
+            residuals = [row["predicted"] - row["actual"] for row in rows]
+            for key, expected in (("rmse", math.sqrt(sum(x * x for x in residuals) / len(rows))),
+                                  ("mae", sum(abs(x) for x in residuals) / len(rows))):
+                require(abs(score["metrics"][key] - expected) <= 1e-10 * max(1, expected), "independent prediction score mismatch")
+        oracle = {str(row["sample_id"]): row for row in family["prediction_oracle"]["rows"]}
+        require(set(oracle) == test_ids, "Python oracle test split mismatch")
+        tolerance = family["prediction_oracle"]["web_wasm_tolerance"]
+        require(_is_number(tolerance) and 0 <= tolerance <= 5e-4, "invalid Web oracle tolerance")
+        for comparison in (payload["prediction_comparison"], web["prediction_comparison"]):
+            require(comparison["compared_rows"] == len(test_ids) and comparison["tolerance"] == tolerance, "oracle comparison count/tolerance mismatch")
+        for row in refit_rows:
+            reference = oracle[str(row["sampleId"])]
+            require(abs(row["predicted"] - reference["dag_ml_predicted"]) <= tolerance, "Web/Python prediction oracle mismatch")
+            require(abs(row["actual"] - reference["actual"]) <= tolerance, "Web/Python target oracle mismatch")
+            require(abs(row["residual"] - reference["dag_ml_residual"]) <= tolerance, "Web/Python residual oracle mismatch")
+        plans = list(package["effective_plan"]["node_plans"].values())
+        require(len(plans) == len(package["artifacts"]) == len(package["outputs"]) == 1, "native REFIT package topology mismatch")
+        pipeline = plans[0]["params"]["web_pipeline"]
+        require(pipeline["steps"] == [{"id": "snv", "params": {}, "type": "n4m:preprocessing.scatter.snv"}], "native REFIT preprocessing candidate mismatch")
+        selected = family["prediction_oracle"]["selected"]["generator_choices"][0]["_zip_"]
+        require(web["selected_candidate"] == selected and selected["scale"] is True, "selected candidate mismatch")
+        require(pipeline["model"]["type"] == "n4m:models.pls.pls_regression" and pipeline["model"]["params"]["n_components"] == selected["n_components"], "native REFIT model candidate mismatch")
+        record = package["artifacts"][0]["record"]
+        artifact = record["artifact"]
+        require(artifact["controller_id"] == "controller:web.pipeline" and artifact["id"] == native["artifactId"], "native REFIT artifact identity mismatch")
+        require(re.fullmatch(r"[a-f0-9]{64}", native["carrierSha256"]) and artifact["content_fingerprint"] == native["carrierSha256"], "native REFIT sidecar fingerprint mismatch")
+        require(package["outputs"][0]["node_id"] == record["node_id"] and package["outputs"][0]["port_name"] == "oof", "native PREDICT output mismatch")
+    except (AssertionError, KeyError, IndexError, TypeError, ValueError, OSError, ArithmeticError) as exc:
+        return [f"{path}: invalid bounded Web CV/native REFIT evidence: {exc}"]
+    return []
+
+
 def _validate_existing_artifact(
     raw_path: str,
     *,
     max_age_seconds: int | None = None,
     require_positive_evidence: bool = False,
+    plan: dict[str, Any] | None = None,
 ) -> list[str]:
     path = Path(raw_path)
     if not path.exists():
@@ -1658,7 +1787,18 @@ def _validate_existing_artifact(
         payload = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         return [f"{raw_path}: invalid JSON artifact: {exc}"]
-    semantic_failures = _json_semantic_failures(payload)
+    allowed_false_paths: frozenset[str] = frozenset()
+    if (
+        plan is not None
+        and plan.get("id") == "e2e-pipeline-generation-performance-compare"
+        and _artifact_requirement_key(raw_path) == "performance-compare/web-runtime.json"
+    ):
+        profile_failures = _validate_scenario_artifact_contract(plan, raw_path, payload)
+        profile_failures.extend(_bounded_web_cv_contract_failures(payload, path))
+        if profile_failures:
+            return profile_failures
+        allowed_false_paths = frozenset({"$.web.dag_ml.executed", "$.web.observed_run.lineage.executed"})
+    semantic_failures = _json_semantic_failures(payload, allowed_false_paths=allowed_false_paths)
     if semantic_failures:
         return [f"{raw_path}: non-passing evidence: {', '.join(semantic_failures)}"]
     if require_positive_evidence and not _json_has_positive_evidence(payload):
@@ -2576,6 +2716,7 @@ def execute_plan(plan: dict[str, Any], *, stop_on_blocked: bool = True) -> int:
             step,
             produced_before,
             require_positive_artifacts=positive_artifacts,
+            plan=plan,
         )
         if artifact_failures:
             print(
@@ -3074,6 +3215,7 @@ def artifact_evidence_report(
                 raw_path,
                 max_age_seconds=max_age_seconds,
                 require_positive_evidence=raw_path in positive_artifacts,
+                plan=plan,
             )
             if not artifact_failures and Path(raw_path).suffix.lower() == ".json":
                 try:
