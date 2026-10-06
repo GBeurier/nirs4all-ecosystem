@@ -1061,7 +1061,7 @@ SCENARIO_ARTIFACT_REQUIREMENTS: dict[str, dict[str, list[dict[str, Any]]]] = {
         "custom-app-host/custom-host-runtime-contracts.json": [
             {"path": "status", "equals": "passed"},
             {"path": "schema", "equals": "nirs4all-core.capabilities.v1"},
-            {"path": "serialized_model_predict_surfaces", "equals": ["javascript_wasm"]},
+            {"path": "serialized_model_predict_surfaces", "equals": ["javascript_wasm", "rust"]},
             {"path": "wasm_predict_entrypoint", "equals": "predictPortablePipeline"},
             {
                 "path": "runtime_contract_checks.serialized_predict_surface_count_absolute_delta",

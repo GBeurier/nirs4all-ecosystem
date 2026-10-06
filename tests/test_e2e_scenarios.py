@@ -566,7 +566,7 @@ def _synthetic_evidence_payload(path: Path) -> dict:
             "status": "passed",
             "schema": "nirs4all-core.capabilities.v1",
             "runtime_surfaces": ["python", "r", "javascript_wasm"],
-            "serialized_model_predict_surfaces": ["javascript_wasm"],
+            "serialized_model_predict_surfaces": ["javascript_wasm", "rust"],
             "wasm_predict_entrypoint": "predictPortablePipeline",
             "runtime_contract_checks": {
                 "serialized_predict_surface_count_absolute_delta": 0,
@@ -5497,3 +5497,25 @@ def test_bounded_web_descriptions_and_all_declared_counts_match_observations(tmp
     node[parts[-1]] = value
     path.write_text(json.dumps(payload))
     assert e2e._validate_existing_artifact(str(path), plan={'id': 'e2e-pipeline-generation-performance-compare'}, require_positive_evidence=True)
+
+
+@pytest.mark.parametrize("surfaces", [
+    ["javascript_wasm"], ["rust"], ["rust", "javascript_wasm"],
+    ["javascript_wasm", "rust", "python"], ["javascript_wasm", "rust", "rust"],
+])
+def test_custom_host_capability_contract_rejects_wrong_serialized_predict_surfaces(
+    tmp_path: Path, surfaces: list[str],
+) -> None:
+    e2e = _load_e2e_module()
+    artifact = tmp_path / "custom-app-host" / "custom-host-runtime-contracts.json"
+    artifact.parent.mkdir(parents=True)
+    payload = _synthetic_evidence_payload(artifact)
+    payload["serialized_model_predict_surfaces"] = surfaces
+    _write_json(artifact, payload)
+    report = e2e.artifact_evidence_report([{
+        "id": "e2e-core-ui-custom-app-host", "artifacts": [str(artifact)],
+        "steps": [], "parity_checks": [],
+    }])
+    assert report["failed_count"] == 1
+    assert any("serialized_model_predict_surfaces" in failure
+               for failure in report["scenarios"]["e2e-core-ui-custom-app-host"]["failures"])

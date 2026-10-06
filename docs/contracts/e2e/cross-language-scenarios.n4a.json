@@ -2265,7 +2265,7 @@
         {
           "oracle": "nirs4all-core capability manifest runtimeContracts",
           "candidate": "custom app host runtime contract artifact",
-          "metric": "prediction contract parity: serialized_model_predict_surfaces is exactly ['javascript_wasm'] and wasm_predict_entrypoint is predictPortablePipeline",
+          "metric": "prediction contract parity: serialized_model_predict_surfaces is exactly ['javascript_wasm', 'rust'] for the published Core 0.4.4 aggregate capability contract, and wasm_predict_entrypoint is predictPortablePipeline; this custom-host execution witnesses WASM prediction, while the Rust save/load/fresh-predict capability is qualified separately",
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json"

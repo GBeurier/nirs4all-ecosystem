@@ -1,7 +1,7 @@
 {
   "current_recipe": {
     "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
-    "manifest_sha256": "fd0d56aa5be5efc3e8ccd81676d9d63c33da948dfdf7e4c06cac4f3055e5641b",
+    "manifest_sha256": "f5dc2b8148d5b909901bd4df70a6254b018af01f9aee06945fa6e5f951bfac87",
     "manifest_schema_version": "n4a.cross-language-e2e/v1"
   },
   "coverage": {
