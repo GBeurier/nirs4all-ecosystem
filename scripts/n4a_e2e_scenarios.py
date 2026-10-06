@@ -1304,12 +1304,14 @@ def _json_has_positive_evidence(value: Any) -> bool:
 
 
 def _json_semantic_failures(
-    value: Any, path: str = "$", *, allowed_false_paths: frozenset[str] = frozenset()
+    value: Any, path: str = "$", *, allowed_false_paths: frozenset[tuple[str | int, ...]] = frozenset(),
+    _parts: tuple[str | int, ...] = (),
 ) -> list[str]:
     failures: list[str] = []
     if isinstance(value, dict):
         for key, item in value.items():
             child_path = f"{path}.{key}"
+            child_parts = (*_parts, key)
             key_name = str(key).lower()
             if key_name in STATUS_FIELD_NAMES and isinstance(item, str):
                 status = _normal_status(item)
@@ -1320,14 +1322,14 @@ def _json_semantic_failures(
                     or any(fragment in status for fragment in DISALLOWED_ARTIFACT_STATUS_SUBSTRINGS)
                 ):
                     failures.append(f"{child_path}={item!r}")
-            if key_name in BOOLEAN_EVIDENCE_FIELDS and item is False and child_path not in allowed_false_paths:
+            if key_name in BOOLEAN_EVIDENCE_FIELDS and item is False and child_parts not in allowed_false_paths:
                 failures.append(f"{child_path}=false")
             failures.extend(_numeric_failures(key_name, item, child_path))
-            failures.extend(_json_semantic_failures(item, child_path, allowed_false_paths=allowed_false_paths))
+            failures.extend(_json_semantic_failures(item, child_path, allowed_false_paths=allowed_false_paths, _parts=child_parts))
         failures.extend(_delta_tolerance_failures(value, path))
     elif isinstance(value, list):
         for index, item in enumerate(value):
-            failures.extend(_json_semantic_failures(item, f"{path}[{index}]", allowed_false_paths=allowed_false_paths))
+            failures.extend(_json_semantic_failures(item, f"{path}[{index}]", allowed_false_paths=allowed_false_paths, _parts=(*_parts, index)))
     return failures
 
 
@@ -1666,6 +1668,19 @@ def _validate_bounded_native_refit_package(package_json: str) -> None:
         raise ValueError(f"native REFIT package validation failed: {exc}") from exc
 
 
+def _bounded_web_provider_binding(dataset: dict[str, Any]) -> dict[str, Any]:
+    """Bind original data via the immutable public provider, including JSON targets."""
+    web_root = default_workspace_root() / "nirs4all-web"
+    try:
+        result = subprocess.run(
+            ["node", str(repo_root() / "scripts/e2e/bind_web040_provider.mjs"), str(web_root)],
+            input=json.dumps(dataset), capture_output=True, text=True, check=True, timeout=60,
+        )
+        return json.loads(result.stdout)
+    except (OSError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
+        raise ValueError(f"immutable Web provider source binding failed: {exc}") from exc
+
+
 def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> list[str]:
     """Bind the documented host-CV/native-REFIT profile to genuine observations."""
     def require(condition: bool, message: str) -> None:
@@ -1704,6 +1719,27 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         require(payload["dataset_sha256"] == _canonical_json_sha256(dataset), "dataset fingerprint mismatch")
         require(payload["candidate_sha256"] == _canonical_json_sha256(candidate), "candidate fingerprint mismatch")
         require(payload["family_sha256"] == _canonical_json_sha256(family), "family fingerprint mismatch")
+        require(family["web_dataset"]["sha256"] == payload["dataset_sha256"], "Python/dataset source fingerprint mismatch")
+        opened = family["python_open_pipeline"]
+        require(opened["candidate_sha256"] == opened["reopened_candidate_sha256"] == payload["candidate_sha256"], "Python/candidate source fingerprint mismatch")
+        declared = candidate["pipeline"]
+        require(len(declared) == 3, "candidate pipeline topology mismatch")
+        classes = [declared[0]["class"], declared[1]["class"], declared[2]["model"]["class"]]
+        require(classes == ["nirs4all.operators.transforms.scalers.StandardNormalVariate", "sklearn.model_selection._split.ShuffleSplit", "sklearn.cross_decomposition._pls.PLSRegression"], "candidate class profile mismatch")
+        require(opened["class_sequence"] == classes and opened["class_sequence_sha256"] == _canonical_json_sha256(classes), "Python candidate class sequence mismatch")
+        snv = declared[0]["params"]
+        require(set(snv) == {"axis", "copy", "ddof", "with_mean", "with_std"}, "candidate SNV parameter profile mismatch")
+        require(type(snv["axis"]) is int and snv["axis"] == 1 and type(snv["ddof"]) is int and snv["ddof"] == 0
+                and all(snv[key] is True for key in ("copy", "with_mean", "with_std")), "candidate SNV defaults mismatch")
+        split = declared[1]["params"]
+        require(split == {"n_splits": 3, "random_state": 42, "test_size": None, "train_size": None}
+                and type(split["n_splits"]) is int and type(split["random_state"]) is int, "candidate splitter profile mismatch")
+        zipped = declared[2]["_zip_"]
+        require(set(zipped) == {"n_components", "scale"} and zipped["n_components"] == list(range(3, 20, 2))
+                and all(type(value) is int for value in zipped["n_components"])
+                and len(zipped["scale"]) == 9 and all(value is True for value in zipped["scale"]), "candidate paired workload mismatch")
+        variants = [{"n_components": value, "scale": True} for value in zipped["n_components"]]
+        require(candidate["variants"] == variants and type(opened["variant_count"]) is int and opened["variant_count"] == len(variants), "Python candidate variant mismatch")
         require(native["schemaVersion"] == package["schema_version"] == 1, "native package schema mismatch")
         fingerprint = package["package_fingerprint"]
         require(isinstance(fingerprint, str) and re.fullmatch(r"[a-f0-9]{64}", fingerprint), "invalid native package fingerprint")
@@ -1712,6 +1748,9 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         require(observed["variantCount"] == summary["variantCount"] == lineage["variantCount"] == 1, "observed variant count mismatch")
         require(len(observed["folds"]) == summary["folds"] == lineage["folds"] == 3, "observed fold count differs from requested three folds")
         n = dataset["nSamples"]
+        width = dataset["nFeatures"]
+        require(type(n) is int and n > 0 and type(width) is int and width > 0, "invalid dataset dimensions")
+        require(len(dataset["X"]) == n * width and all(_is_number(value) and math.isfinite(value) for values in (dataset["X"], dataset["y"]) for value in values), "invalid dataset feature/target buffer")
         ids = [str(value) for value in dataset["sampleIds"]]
         partitions = dataset["partitions"]
         require(len(ids) == len(partitions) == len(dataset["y"]) == n, "dataset sample dimensions mismatch")
@@ -1720,6 +1759,13 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         train_ids = {ids[i] for i in train_rows}
         test_ids = {ids[i] for i, partition in enumerate(partitions) if partition == "test"}
         require(sorted(package["training_sample_ids"]) == sorted(f"s{i}" for i in train_rows), "native REFIT training split mismatch")
+        # The public provider transports X as Float64 and y through JSON.
+        # Recompute with that provider rather than invent a numeric projection.
+        binding = _bounded_web_provider_binding(dataset)
+        envelope = package["training_envelope"]
+        require(envelope["data_content_fingerprint"] == binding["data_content_fingerprint"], "native training feature content differs from source dataset")
+        require(envelope["target_content_fingerprint"] == binding["target_content_fingerprint"], "native training target content differs from source dataset")
+        require(lineage["dataProvider"]["fingerprints"] == binding["fingerprints"], "native provider identity differs from source dataset")
         require(native["targetNames"] == [dataset["targetName"]], "native REFIT target identity mismatch")
         by_id = dict(zip(ids, dataset["y"]))
 
@@ -1767,6 +1813,7 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         require(pipeline["steps"] == [{"id": "snv", "params": {}, "type": "n4m:preprocessing.scatter.snv"}], "native REFIT preprocessing candidate mismatch")
         selected = family["prediction_oracle"]["selected"]["generator_choices"][0]["_zip_"]
         require(web["selected_candidate"] == selected and selected["scale"] is True, "selected candidate mismatch")
+        require(selected in variants, "selected candidate is outside the declared paired workload")
         require(pipeline["model"]["type"] == "n4m:models.pls.pls_regression" and pipeline["model"]["params"]["n_components"] == selected["n_components"], "native REFIT model candidate mismatch")
         record = package["artifacts"][0]["record"]
         artifact = record["artifact"]
@@ -1809,7 +1856,7 @@ def _validate_existing_artifact(
         payload = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         return [f"{raw_path}: invalid JSON artifact: {exc}"]
-    allowed_false_paths: frozenset[str] = frozenset()
+    allowed_false_paths: frozenset[tuple[str | int, ...]] = frozenset()
     if (
         plan is not None
         and plan.get("id") == "e2e-pipeline-generation-performance-compare"
@@ -1819,7 +1866,7 @@ def _validate_existing_artifact(
         profile_failures.extend(_bounded_web_cv_contract_failures(payload, path))
         if profile_failures:
             return profile_failures
-        allowed_false_paths = frozenset({"$.web.dag_ml.executed", "$.web.observed_run.lineage.executed"})
+        allowed_false_paths = frozenset({("web", "dag_ml", "executed"), ("web", "observed_run", "lineage", "executed")})
     semantic_failures = _json_semantic_failures(payload, allowed_false_paths=allowed_false_paths)
     if semantic_failures:
         return [f"{raw_path}: non-passing evidence: {', '.join(semantic_failures)}"]
