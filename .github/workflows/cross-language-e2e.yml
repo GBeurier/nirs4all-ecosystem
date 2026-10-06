@@ -174,7 +174,7 @@ jobs:
           PY
       - name: Install strict R runtime dependencies
         if: ${{ github.event_name == 'schedule' || (github.event.inputs.execute == 'true' && (!github.event.inputs.scenario || contains(fromJSON('["e2e-r-dataset-io-pipeline-save","e2e-multimodal-python-r-wasm-roundtrip","e2e-dataset-provider-repository-roundtrip","e2e-formats-io-datasets-methods-language-bindings","e2e-core-ui-custom-app-host"]'), github.event.inputs.scenario))) }}
-        run: Rscript -e 'install.packages(c("jsonlite", "yaml"), repos = "https://cloud.r-project.org")'
+        run: Rscript -e 'required <- c("digest", "jsonlite", "yaml"); install.packages(required, repos = "https://cloud.r-project.org"); stopifnot(all(vapply(required, requireNamespace, logical(1), quietly = TRUE)))'
       - name: Validate scenario contract
         run: python3 scripts/n4a_e2e_scenarios.py validate
       - name: Run pytest validation
