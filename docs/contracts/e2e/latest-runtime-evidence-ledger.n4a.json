@@ -1,4 +1,9 @@
 {
+  "current_recipe": {
+    "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
+    "manifest_sha256": "fd0d56aa5be5efc3e8ccd81676d9d63c33da948dfdf7e4c06cac4f3055e5641b",
+    "manifest_schema_version": "n4a.cross-language-e2e/v1"
+  },
   "coverage": {
     "blocked_count": 0,
     "contract_parity_check_count": 0,

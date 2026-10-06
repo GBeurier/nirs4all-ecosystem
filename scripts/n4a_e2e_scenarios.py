@@ -3350,6 +3350,11 @@ def runtime_evidence_ledger(
             ),
             "regenerate": RUNTIME_EVIDENCE_COMMAND,
         },
+        "current_recipe": {
+            "manifest": manifest_path.as_posix(),
+            "manifest_sha256": _file_sha256(manifest_path),
+            "manifest_schema_version": manifest["schema_version"],
+        },
         "coverage": {
             "scenario_count": coverage["scenario_count"],
             "expected_scenario_count": coverage["expected_scenario_count"],

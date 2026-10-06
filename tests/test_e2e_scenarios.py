@@ -1227,8 +1227,19 @@ def test_cross_language_e2e_step_repos_and_path_gates_stay_on_declared_public_su
                 if any(fragment in raw_path for fragment in ALLOWED_PUBLIC_CHECKOUT_DATA_BLOCKERS):
                     continue
                 if raw_path.startswith("{ecosystem_root}/"):
-                    gated_root = raw_path.removeprefix("{ecosystem_root}/").split("/", 1)[0]
-                    assert gated_root in ALLOWED_ORCHESTRATION_PATH_ROOTS, f"{step_id}: {raw_path}"
+                    relative_path = raw_path.removeprefix("{ecosystem_root}/")
+                    gated_root = relative_path.split("/", 1)[0]
+                    if gated_root == "tests":
+                        assert relative_path in {
+                            "tests/runtime/r/e2e_dataset_io_pipeline.R",
+                            "tests/runtime/r/e2e_run_save_pipeline.R",
+                            "tests/runtime/r/parity.R",
+                        }, f"{step_id}: {raw_path}"
+                        witness = ROOT / relative_path
+                        assert witness.is_file(), f"{step_id}: {raw_path}"
+                        assert witness.resolve().is_relative_to((ROOT / "tests/runtime/r").resolve()), f"{step_id}: {raw_path}"
+                    else:
+                        assert gated_root in ALLOWED_ORCHESTRATION_PATH_ROOTS, f"{step_id}: {raw_path}"
                     continue
                 assert raw_path.startswith("{workspace_root}/"), f"{step_id}: {raw_path}"
                 gated_repo = raw_path.removeprefix("{workspace_root}/").split("/", 1)[0]
@@ -3050,7 +3061,10 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
 
     assert ledger["schema_version"] == e2e.EVIDENCE_LEDGER_SCHEMA_VERSION
     assert ledger["source"]["manifest"] == "docs/contracts/e2e/cross-language-scenarios.n4a.json"
-    assert ledger["source"]["manifest_sha256"] == _sha256(MANIFEST)
+    # Recipe attribution is independent of the historical runtime proof source.
+    assert ledger["current_recipe"]["manifest"] == "docs/contracts/e2e/cross-language-scenarios.n4a.json"
+    assert ledger["current_recipe"]["manifest_sha256"] == _sha256(MANIFEST)
+    assert ledger["current_recipe"]["manifest_schema_version"] == manifest["schema_version"]
     assert ledger["source"]["manifest_schema_version"] == manifest["schema_version"]
     assert ".n4a-e2e-artifacts/" in ledger["source"]["runtime_artifacts_policy"]
     assert "evidence-ledger" in ledger["source"]["regenerate"]
@@ -3143,6 +3157,29 @@ def test_cross_language_e2e_committed_runtime_evidence_ledger_matches_contract()
         assert all(not Path(artifact["path"]).is_absolute() for artifact in scenario["verified_artifacts"])
         assert all(".." not in Path(artifact["path"]).parts for artifact in scenario["verified_artifacts"])
         assert all(".n4a-e2e-artifacts" not in artifact["path"] for artifact in scenario["verified_artifacts"])
+
+
+def test_current_recipe_attribution_cannot_requalify_historical_runtime_proofs() -> None:
+    e2e = _load_e2e_module()
+    historical = json.loads((ROOT / "docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json").read_text())
+    current = _sha256(MANIFEST)
+    assert historical["current_recipe"]["manifest_sha256"] == current
+    # Keep every historical proof unchanged while modelling a current-source
+    # generation. Current recipe metadata alone cannot satisfy --check.
+    generated = json.loads(json.dumps(historical))
+    generated["source"]["manifest_sha256"] = current
+    generated["source"]["runtime_manifest_sha256"] = current
+    if historical["source"].get("runtime_manifest_sha256") != current:
+        historical_text = json.dumps(historical, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
+        compared_current, compared_generated = e2e._evidence_ledger_check_texts(generated, historical_text)
+        assert compared_current != compared_generated
+    # A mismatched runtime source remains rejected even when all other fields,
+    # including current-recipe attribution, match a generated ledger.
+    stale = json.loads(json.dumps(generated))
+    stale["source"]["runtime_manifest_sha256"] = "0" * 64
+    stale_text = json.dumps(stale, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
+    compared_current, compared_generated = e2e._evidence_ledger_check_texts(generated, stale_text)
+    assert compared_current != compared_generated
 
 
 def test_cross_language_e2e_evidence_ledger_check_treats_max_age_as_runtime_guard() -> None:
