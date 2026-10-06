@@ -1322,7 +1322,7 @@ def _json_semantic_failures(
                     or any(fragment in status for fragment in DISALLOWED_ARTIFACT_STATUS_SUBSTRINGS)
                 ):
                     failures.append(f"{child_path}={item!r}")
-            if key_name in BOOLEAN_EVIDENCE_FIELDS and item is False and child_parts not in allowed_false_paths:
+            if (key_name in BOOLEAN_EVIDENCE_FIELDS or allowed_false_paths) and item is False and child_parts not in allowed_false_paths:
                 failures.append(f"{child_path}=false")
             failures.extend(_numeric_failures(key_name, item, child_path))
             failures.extend(_json_semantic_failures(item, child_path, allowed_false_paths=allowed_false_paths, _parts=child_parts))
@@ -1681,6 +1681,25 @@ def _bounded_web_provider_binding(dataset: dict[str, Any]) -> dict[str, Any]:
         raise ValueError(f"immutable Web provider source binding failed: {exc}") from exc
 
 
+def _bounded_web_source_dataset() -> dict[str, Any]:
+    """Reload the qualified oracle's source fixture without training or benchmarking."""
+    sdk = default_workspace_root() / "nirs4all"
+    program = (
+        "import nirs4all,sys,json,importlib.util; "
+        "sys.path.insert(0,sys.argv[1]); "
+        "spec=importlib.util.spec_from_file_location('qualified_web_fixture',"
+        "sys.argv[1]+'/tests/e2e/test_pipeline_generation_performance.py'); "
+        "module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module); "
+        "print(json.dumps(module._web_dataset_fixture('regression')))"
+    )
+    try:
+        result = subprocess.run([sys.executable, "-c", program, str(sdk)],
+                                capture_output=True, text=True, check=True, timeout=60)
+        return json.loads(result.stdout)
+    except (OSError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
+        raise ValueError(f"qualified Web source fixture binding failed: {exc}") from exc
+
+
 def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> list[str]:
     """Bind the documented host-CV/native-REFIT profile to genuine observations."""
     def require(condition: bool, message: str) -> None:
@@ -1720,10 +1739,14 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         require(payload["candidate_sha256"] == _canonical_json_sha256(candidate), "candidate fingerprint mismatch")
         require(payload["family_sha256"] == _canonical_json_sha256(family), "family fingerprint mismatch")
         require(family["web_dataset"]["sha256"] == payload["dataset_sha256"], "Python/dataset source fingerprint mismatch")
+        require(dataset == _bounded_web_source_dataset(), "dataset differs from qualified source fixture")
         opened = family["python_open_pipeline"]
         require(opened["candidate_sha256"] == opened["reopened_candidate_sha256"] == payload["candidate_sha256"], "Python/candidate source fingerprint mismatch")
         declared = candidate["pipeline"]
         require(len(declared) == 3, "candidate pipeline topology mismatch")
+        require(set(declared[0]) == set(declared[1]) == {"class", "params"}
+                and set(declared[2]) == {"model", "_zip_"}
+                and set(declared[2]["model"]) == {"class"}, "candidate contains undeclared workload parameters")
         classes = [declared[0]["class"], declared[1]["class"], declared[2]["model"]["class"]]
         require(classes == ["nirs4all.operators.transforms.scalers.StandardNormalVariate", "sklearn.model_selection._split.ShuffleSplit", "sklearn.cross_decomposition._pls.PLSRegression"], "candidate class profile mismatch")
         require(opened["class_sequence"] == classes and opened["class_sequence_sha256"] == _canonical_json_sha256(classes), "Python candidate class sequence mismatch")
@@ -1740,6 +1763,8 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
                 and len(zipped["scale"]) == 9 and all(value is True for value in zipped["scale"]), "candidate paired workload mismatch")
         variants = [{"n_components": value, "scale": True} for value in zipped["n_components"]]
         require(candidate["variants"] == variants and type(opened["variant_count"]) is int and opened["variant_count"] == len(variants), "Python candidate variant mismatch")
+        require(all(set(value) == {"n_components", "scale"} and type(value["n_components"]) is int
+                    and value["scale"] is True for value in candidate["variants"]), "invalid typed candidate variant")
         require(native["schemaVersion"] == package["schema_version"] == 1, "native package schema mismatch")
         fingerprint = package["package_fingerprint"]
         require(isinstance(fingerprint, str) and re.fullmatch(r"[a-f0-9]{64}", fingerprint), "invalid native package fingerprint")
@@ -1788,10 +1813,13 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         check_rows(fold_rows, train_ids)
         order = lambda rows: sorted(rows, key=lambda row: str(row["sampleId"]))
         require(order(fold_rows) == order(cv_rows), "native-fold predictions differ from CV aggregate")
+        require([sorted(str(row["sampleId"]) for row in fold["predictions"]) for fold in observed["folds"]]
+                == binding["validation_sample_ids"], "observed folds differ from native seed-42 assignments")
         for score in [observed["cv"], observed["refit"], *observed["folds"]]:
             rows = score["predictions"]
             require(rows, "empty prediction score")
-            require(score["status"] == "completed" and score["metrics"]["n"] == len(rows), "incomplete prediction score")
+            require(score["status"] == "completed" and type(score["metrics"]["n"]) is int
+                    and score["metrics"]["n"] == len(rows), "incomplete or invalid typed prediction score")
             residuals = [row["predicted"] - row["actual"] for row in rows]
             for key, expected in (("rmse", math.sqrt(sum(x * x for x in residuals) / len(rows))),
                                   ("mae", sum(abs(x) for x in residuals) / len(rows))):
@@ -1820,7 +1848,7 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         require(artifact["controller_id"] == "controller:web.pipeline" and artifact["id"] == native["artifactId"], "native REFIT artifact identity mismatch")
         require(re.fullmatch(r"[a-f0-9]{64}", native["carrierSha256"]) and artifact["content_fingerprint"] == native["carrierSha256"], "native REFIT sidecar fingerprint mismatch")
         require(package["outputs"][0]["node_id"] == record["node_id"] and package["outputs"][0]["port_name"] == "oof", "native PREDICT output mismatch")
-    except (AssertionError, KeyError, IndexError, TypeError, ValueError, OSError, ArithmeticError) as exc:
+    except (AssertionError, KeyError, IndexError, TypeError, ValueError, OSError, ArithmeticError, E2EScenarioError) as exc:
         return [f"{path}: invalid bounded Web CV/native REFIT evidence: {exc}"]
     return []
 
@@ -1866,7 +1894,8 @@ def _validate_existing_artifact(
         profile_failures.extend(_bounded_web_cv_contract_failures(payload, path))
         if profile_failures:
             return profile_failures
-        allowed_false_paths = frozenset({("web", "dag_ml", "executed"), ("web", "observed_run", "lineage", "executed")})
+        allowed_false_paths = frozenset({("web", "dag_ml", "executed"), ("web", "observed_run", "lineage", "executed"),
+                                         ("web", "dag_ml", "schedulerFallback"), ("studio", "included_in_gate")})
     semantic_failures = _json_semantic_failures(payload, allowed_false_paths=allowed_false_paths)
     if semantic_failures:
         return [f"{raw_path}: non-passing evidence: {', '.join(semantic_failures)}"]

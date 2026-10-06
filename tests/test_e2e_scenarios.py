@@ -5033,13 +5033,16 @@ def _bounded_web_test_artifact(tmp_path: Path) -> tuple[object, Path, dict[str, 
         X = [value for i in train for value in ds["X"][i * ds["nFeatures"]:(i + 1) * ds["nFeatures"]]]
         y = [ds["y"][i] for i in train]
         return {"data_content_fingerprint": hashlib.sha256(struct.pack(f"<{len(X)}d", *X)).hexdigest(),
-                "target_content_fingerprint": hashlib.sha256(struct.pack(f"<{len(y)}d", *y)).hexdigest(), "fingerprints": {"schema": "s", "plan": "p", "relation": "r"}}
+                "target_content_fingerprint": hashlib.sha256(struct.pack(f"<{len(y)}d", *y)).hexdigest(), "fingerprints": {"schema": "s", "plan": "p", "relation": "r"},
+                "validation_sample_ids": [[str(ds["sampleIds"][i])] for i in train]}
     e2e._bounded_web_provider_binding = synthetic_binding
     root = tmp_path / "performance-compare"
     root.mkdir()
     dataset = {"schema_version": "n4a.e2e.web_materialized_dataset.v1", "status": "passed",
                "nFeatures": 4, "X": list(range(20)), "nSamples": 5, "sampleIds": ["a", "b", "c", "d", "e"], "partitions": ["train", "train", "train", "test", "test"],
                "targetName": "target", "y": [1, 2, 3, 4, 5]}
+    trusted_fixture = json.loads(json.dumps(dataset))
+    e2e._bounded_web_source_dataset = lambda: trusted_fixture
 
     def row(sample: str, actual: float, predicted: float) -> dict[str, object]:
         return {"sampleId": sample, "actual": actual, "predicted": predicted, "residual": predicted - actual}
@@ -5183,7 +5186,8 @@ def test_bounded_web_cv_profile_remains_fail_closed_with_optimized_python(tmp_pa
         "spec=importlib.util.spec_from_file_location('e2e',sys.argv[1]); "
         "module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module); "
         "module._validate_bounded_native_refit_package=lambda package_json:None; "
-        "module._bounded_web_provider_binding=lambda ds:{**__import__('json').loads(__import__('json').load(open(sys.argv[2]))['web']['observed_run']['nativeRefit']['packageJson'])['training_envelope'],'fingerprints':{'schema':'s','plan':'p','relation':'r'}}; "
+        "module._bounded_web_source_dataset=lambda:__import__('json').load(open(__import__('pathlib').Path(sys.argv[2]).parent/'dataset-web-oracle.json')); "
+        "module._bounded_web_provider_binding=lambda ds:{**__import__('json').loads(__import__('json').load(open(sys.argv[2]))['web']['observed_run']['nativeRefit']['packageJson'])['training_envelope'],'fingerprints':{'schema':'s','plan':'p','relation':'r'},'validation_sample_ids':[['a'],['b'],['c']]}; "
         "failures=module._validate_existing_artifact(sys.argv[2],"
         "plan={'id':'e2e-pipeline-generation-performance-compare'},require_positive_evidence=True); "
         "print(failures); sys.exit(0 if failures else 1)"
@@ -5342,3 +5346,44 @@ def test_bounded_web_provider_boundary_fails_closed(tmp_path: Path, monkeypatch:
     monkeypatch.setattr(e2e.subprocess, 'run', unavailable)
     with pytest.raises(ValueError, match='immutable Web provider source binding failed'):
         e2e._bounded_web_provider_binding({})
+
+
+@pytest.mark.parametrize('mutation', ['literal_alias', 'unknown_false', 'model_params', 'train_params', 'float_component', 'integer_scale', 'fold_count_bool', 'fold_count_float', 'fold_membership', 'heldout_X'])
+def test_bounded_web_rejects_remaining_consistent_source_and_fold_mutations(tmp_path: Path, mutation: str) -> None:
+    e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    candidate_path = path.parent / 'pipeline-candidate.n4a.json'
+    family_path = path.parent / 'pipeline-family.json'
+    dataset_path = path.parent / 'dataset-web-oracle.json'
+    candidate = json.loads(candidate_path.read_text())
+    family = json.loads(family_path.read_text())
+    dataset = json.loads(dataset_path.read_text())
+    if mutation == 'literal_alias':
+        payload['web']['observed_run']['lineage.executed'] = False
+    elif mutation == 'unknown_false':
+        payload['unknown'] = {'refitExecuted': False}
+    elif mutation == 'model_params':
+        candidate['pipeline'][2]['model']['params'] = {'scale': False}
+    elif mutation == 'train_params':
+        candidate['pipeline'][2]['train_params'] = {'tol': 0.1}
+    elif mutation == 'float_component':
+        candidate['variants'][0]['n_components'] = 3.0
+    elif mutation == 'integer_scale':
+        candidate['variants'][0]['scale'] = 1
+    elif mutation == 'fold_count_bool':
+        payload['web']['observed_run']['folds'][0]['metrics']['n'] = True
+    elif mutation == 'fold_count_float':
+        payload['web']['observed_run']['folds'][0]['metrics']['n'] = 1.0
+    elif mutation == 'fold_membership':
+        folds = payload['web']['observed_run']['folds']
+        folds[0], folds[1] = folds[1], folds[0]
+    else:
+        dataset['X'][-1] += 1
+    payload['candidate_sha256'] = e2e._canonical_json_sha256(candidate)
+    family['python_open_pipeline']['candidate_sha256'] = payload['candidate_sha256']
+    family['python_open_pipeline']['reopened_candidate_sha256'] = payload['candidate_sha256']
+    payload['dataset_sha256'] = e2e._canonical_json_sha256(dataset)
+    family['web_dataset']['sha256'] = payload['dataset_sha256']
+    payload['family_sha256'] = e2e._canonical_json_sha256(family)
+    for file, body in ((candidate_path, candidate), (family_path, family), (dataset_path, dataset), (path, payload)):
+        file.write_text(json.dumps(body))
+    assert e2e._validate_existing_artifact(str(path), plan={'id': 'e2e-pipeline-generation-performance-compare'}, require_positive_evidence=True)
