@@ -24,6 +24,66 @@ on:
         type: boolean
 
 jobs:
+  qualify-public-sdk-container:
+    # This is a separate distribution witness; it does not replace any of the
+    # eleven scientific scenarios or their seventy evidence artifacts.
+    if: ${{ github.event_name == 'schedule' || (!github.event.inputs.scenario && github.event.inputs.execute == 'true') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      SDK_IMAGE: ghcr.io/gbeurier/nirs4all@sha256:8b6263f1ff28d57e7df9b461340c512e64dcc7aaaf5a84f0ad3a488aebd0f4b0
+      EXPECTED_SOURCE_SHA: 71b046a3076e2d15bf0f2296a4c59ac071d435af
+    steps:
+      - uses: actions/checkout@v7
+      - name: Pull and verify the immutable public SDK image
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SDK_IMAGE" =~ ^ghcr\.io/gbeurier/nirs4all@sha256:[a-f0-9]{64}$ ]]
+          mkdir -p .sdk-container-artifacts
+          docker pull "$SDK_IMAGE"
+          docker image inspect "$SDK_IMAGE" > .sdk-container-artifacts/image-inspect.json
+          python3 - <<'PYCODE'
+          import json, os
+          image = json.load(open('.sdk-container-artifacts/image-inspect.json'))[0]
+          assert os.environ['SDK_IMAGE'] in image['RepoDigests']
+          labels = image['Config']['Labels']
+          assert labels['org.opencontainers.image.revision'] == os.environ['EXPECTED_SOURCE_SHA']
+          assert labels['org.opencontainers.image.version'] == '1.4.3'
+          PYCODE
+      - name: Execute the public SDK container offline
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --entrypoint python \
+            --tmpfs /workspace:rw,nosuid,nodev,size=256m \
+            -e OPENBLAS_NUM_THREADS=1 -e OMP_NUM_THREADS=1 -e MKL_NUM_THREADS=1 \
+            -v "$PWD/scripts/e2e/probe_public_sdk143_container.py:/probe.py:ro" \
+            "$SDK_IMAGE" /probe.py > .sdk-container-artifacts/probe.log
+          cat .sdk-container-artifacts/probe.log
+          docker run --rm --network none --entrypoint python \
+            "$SDK_IMAGE" -m pip check | tee .sdk-container-artifacts/pip-check.log
+          python3 - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          root = Path('.sdk-container-artifacts')
+          report = json.loads((root / 'probe.log').read_text().splitlines()[-1])
+          assert report['status'] == 'PASS' and report['sdk_version'] == '1.4.3'
+          report['image'] = os.environ['SDK_IMAGE']
+          report['source_sha'] = os.environ['EXPECTED_SOURCE_SHA']
+          report['pip_check'] = 'PASS'
+          (root / 'qualification.json').write_text(json.dumps(report, indent=2) + '\n')
+          PYCODE
+      - name: Upload the independent SDK container witness
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: public-sdk-container-${{ github.run_id }}
+          path: .sdk-container-artifacts/**
+          include-hidden-files: true
+          if-no-files-found: error
+
   validate-and-plan:
     runs-on: ubuntu-latest
     env:
