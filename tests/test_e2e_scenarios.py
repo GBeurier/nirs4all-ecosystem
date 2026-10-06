@@ -5024,11 +5024,14 @@ def test_bounded_web_current_proof_requires_current_guards_and_new_proof() -> No
 def _bounded_web_test_artifact(tmp_path: Path) -> tuple[object, Path, dict[str, object]]:
     """Small synthetic validator fixture; it is never runtime qualification."""
     e2e = _load_e2e_module()
+    # This synthetic unit fixture isolates the native dependency boundary. Real
+    # package acceptance/refusals are checked separately with the public runtime.
+    e2e._validate_bounded_native_refit_package = lambda package_json: None
     root = tmp_path / "performance-compare"
     root.mkdir()
     dataset = {"schema_version": "n4a.e2e.web_materialized_dataset.v1", "status": "passed",
-               "nSamples": 4, "sampleIds": ["a", "b", "c", "d"], "partitions": ["train", "train", "test", "test"],
-               "targetName": "target", "y": [1, 2, 3, 4]}
+               "nSamples": 5, "sampleIds": ["a", "b", "c", "d", "e"], "partitions": ["train", "train", "train", "test", "test"],
+               "targetName": "target", "y": [1, 2, 3, 4, 5]}
 
     def row(sample: str, actual: float, predicted: float) -> dict[str, object]:
         return {"sampleId": sample, "actual": actual, "predicted": predicted, "residual": predicted - actual}
@@ -5039,8 +5042,8 @@ def _bounded_web_test_artifact(tmp_path: Path) -> tuple[object, Path, dict[str, 
                 "metrics": {"n": len(rows), "rmse": math.sqrt(sum(x * x for x in residuals) / len(rows)),
                             "mae": sum(abs(x) for x in residuals) / len(rows)}}
 
-    cv_rows = [row("a", 1, 1.1), row("b", 2, 1.9)]
-    refit_rows = [row("c", 3, 3.2), row("d", 4, 3.8)]
+    cv_rows = [row("a", 1, 1.1), row("b", 2, 1.9), row("c", 3, 3.1)]
+    refit_rows = [row("d", 4, 4.2), row("e", 5, 4.8)]
     selected = {"n_components": 1, "scale": True}
     family = {"status": "passed", "prediction_oracle": {"web_wasm_tolerance": 5e-4,
               "rows": [{"sample_id": entry["sampleId"], "actual": entry["actual"],
@@ -5053,7 +5056,7 @@ def _bounded_web_test_artifact(tmp_path: Path) -> tuple[object, Path, dict[str, 
         (root / name).write_text(json.dumps(body), encoding="utf-8")
     fingerprint, carrier = "a" * 64, "b" * 64
     artifact = {"controller_id": "controller:web.pipeline", "id": "model-state", "content_fingerprint": carrier}
-    package = {"schema_version": 1, "package_fingerprint": fingerprint, "training_sample_ids": ["s0", "s1"],
+    package = {"schema_version": 1, "execution_root_seed": 42, "package_fingerprint": fingerprint, "training_sample_ids": ["s0", "s1", "s2"],
                "effective_plan": {"node_plans": {"node": {"params": {"web_pipeline": {
                    "steps": [{"id": "snv", "params": {}, "type": "n4m:preprocessing.scatter.snv"}],
                    "model": {"type": "n4m:models.pls.pls_regression", "params": {"n_components": 1}}}}}}},
@@ -5061,15 +5064,15 @@ def _bounded_web_test_artifact(tmp_path: Path) -> tuple[object, Path, dict[str, 
                "outputs": [{"node_id": "node", "port_name": "oof"}]}
     lineage = {"engine": "dag-ml-wasm", "compiled": True, "executed": False, "refitExecuted": True,
                "refitProfile": "browser-composite-host-sidecar-v1", "packageFingerprint": fingerprint,
-               "phase": "FIT_CV+REFIT+PREDICT", "variantCount": 1, "folds": 2,
+               "phase": "FIT_CV+REFIT+PREDICT", "variantCount": 1, "folds": 3,
                "dataProvider": {"layer": "dag-ml-data", "status": "materialized"}}
-    observed = {"engine": "dag-ml-wasm + libn4m", "lineage": lineage, "variantCount": 1,
+    observed = {"engine": "dag-ml-wasm + libn4m", "lineage": lineage, "variantCount": 1, "diagnostics": [],
                 "cv": score(cv_rows), "refit": score(refit_rows), "folds": [score([entry]) for entry in cv_rows],
                 "nativeRefit": {"schemaVersion": 1, "packageJson": json.dumps(package),
                                 "artifactId": "model-state", "carrierSha256": carrier, "targetNames": ["target"]}}
     summary = {key: value for key, value in lineage.items() if key != "dataProvider"}
     summary.update(cvProfile="browser-chain-on-native-folds", dataProviderStatus="materialized", schedulerFallback=False,
-                   cv_predictions=2, refit_predictions=2)
+                   cv_predictions=3, refit_predictions=2)
     comparison = {"status": "passed", "compared_rows": 2, "max_abs_delta": 0,
                   "max_actual_delta": 0, "max_residual_delta": 0, "tolerance": 5e-4}
     payload = {"schema_version": "n4a.e2e.web_runtime_perf/v1", "status": "passed",
@@ -5106,11 +5109,11 @@ def test_bounded_web_cv_profile_requires_exact_context_and_preserves_raw(tmp_pat
     ("web.dag_ml.refitExecuted", False), ("web.dag_ml.refitProfile", "direct-fit"),
     ("web.dag_ml.cvProfile", "model-only"), ("web.dag_ml.packageFingerprint", "c" * 64),
     ("web.observed_run.lineage.executed", True), ("web.observed_run.lineage.refitExecuted", False),
-    ("web.observed_run.lineage.schedulerFallback", True), ("web.observed_run.lineage.folds", 3),
+    ("web.observed_run.lineage.schedulerFallback", True), ("web.observed_run.lineage.folds", 4),
     ("web.observed_run.nativeRefit.carrierSha256", "c" * 64),
     ("web.observed_run.nativeRefit.targetNames", ["foreign"]),
     ("web.observed_run.cv.predictions", []), ("web.observed_run.refit.predictions", []),
-    ("web.observed_run.cv.metrics.rmse", 100), ("web.dag_ml.cv_predictions", 3),
+    ("web.observed_run.cv.metrics.rmse", 100), ("web.dag_ml.cv_predictions", 4),
     ("candidate_sha256", "c" * 64), ("dataset_sha256", "c" * 64), ("family_sha256", "c" * 64),
 ])
 def test_bounded_web_cv_profile_rejects_corrupt_observations(tmp_path: Path, field: str, value: object) -> None:
@@ -5159,6 +5162,7 @@ def test_bounded_web_cv_profile_remains_fail_closed_with_optimized_python(tmp_pa
         "import importlib.util, sys; "
         "spec=importlib.util.spec_from_file_location('e2e',sys.argv[1]); "
         "module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module); "
+        "module._validate_bounded_native_refit_package=lambda package_json:None; "
         "failures=module._validate_existing_artifact(sys.argv[2],"
         "plan={'id':'e2e-pipeline-generation-performance-compare'},require_positive_evidence=True); "
         "print(failures); sys.exit(0 if failures else 1)"
@@ -5167,3 +5171,70 @@ def test_bounded_web_cv_profile_remains_fail_closed_with_optimized_python(tmp_pa
                              text=True, capture_output=True, check=False)
     assert checked.returncode == 0, checked.stdout + checked.stderr
     assert "sidecar fingerprint mismatch" in checked.stdout
+
+
+@pytest.mark.parametrize("field", ["web.observed_run.lineage.variantCount", "web.observed_run.variantCount",
+                                  "web.dag_ml.variantCount", "web.observed_run.nativeRefit.schemaVersion",
+                                  "web.candidate_imported", "web.rendered_cv_scores"])
+def test_bounded_web_rejects_boolean_numeric_evidence(tmp_path: Path, field: str) -> None:
+    e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    node = payload
+    parts = field.split(".")
+    for part in parts[:-1]:
+        node = node[part]
+    node[parts[-1]] = 1 if field in {"web.candidate_imported", "web.rendered_cv_scores"} else True
+    path.write_text(json.dumps(payload))
+    assert e2e._validate_existing_artifact(str(path), plan={"id": "e2e-pipeline-generation-performance-compare"})
+
+
+def test_bounded_web_rejects_self_consistent_wrong_fold_count(tmp_path: Path) -> None:
+    e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    observed = payload["web"]["observed_run"]
+    observed["folds"] = [copy.deepcopy(observed["cv"])]
+    observed["lineage"]["folds"] = payload["web"]["dag_ml"]["folds"] = 1
+    path.write_text(json.dumps(payload))
+    assert e2e._validate_existing_artifact(str(path), plan={"id": "e2e-pipeline-generation-performance-compare"})
+
+
+@pytest.mark.parametrize("mutation", ["seed", "schema", "diagnostics"])
+def test_bounded_web_rejects_native_seed_schema_and_diagnostics(tmp_path: Path, mutation: str) -> None:
+    e2e, path, payload = _bounded_web_test_artifact(tmp_path)
+    observed = payload["web"]["observed_run"]
+    package = json.loads(observed["nativeRefit"]["packageJson"])
+    if mutation == "seed":
+        package["execution_root_seed"] = 43
+    elif mutation == "schema":
+        package["schema_version"] = True
+    else:
+        observed["diagnostics"] = ["native error"]
+    observed["nativeRefit"]["packageJson"] = json.dumps(package)
+    path.write_text(json.dumps(payload))
+    assert e2e._validate_existing_artifact(str(path), plan={"id": "e2e-pipeline-generation-performance-compare"})
+
+
+@pytest.mark.parametrize("failure", ["unavailable", "invalid"])
+def test_bounded_native_validator_boundary_is_fail_closed(monkeypatch: pytest.MonkeyPatch, failure: str) -> None:
+    import types
+
+    e2e = _load_e2e_module()
+    module = types.ModuleType("dag_ml")
+    if failure == "invalid":
+        def reject(package_json: str) -> None:
+            raise Exception("invalid native package")
+        module.validate_initial_full_refit_package_json = reject
+    monkeypatch.setitem(sys.modules, "dag_ml", module)
+    with pytest.raises(ValueError, match="native REFIT package validation failed"):
+        e2e._validate_bounded_native_refit_package('{"unchanged":true}')
+
+
+def test_bounded_native_validator_receives_unmodified_package_json(monkeypatch: pytest.MonkeyPatch) -> None:
+    import types
+
+    e2e = _load_e2e_module()
+    seen = []
+    module = types.ModuleType("dag_ml")
+    module.validate_initial_full_refit_package_json = seen.append
+    monkeypatch.setitem(sys.modules, "dag_ml", module)
+    raw = '{ "package": [1,2,3] }'
+    e2e._validate_bounded_native_refit_package(raw)
+    assert seen == [raw]

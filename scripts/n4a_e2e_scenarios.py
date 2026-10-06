@@ -1656,6 +1656,16 @@ def _validate_non_json_artifact(path: Path) -> list[str]:
     return []
 
 
+def _validate_bounded_native_refit_package(package_json: str) -> None:
+    """Use the public native validator; unavailable or invalid contracts fail closed."""
+    try:
+        import dag_ml
+
+        dag_ml.validate_initial_full_refit_package_json(package_json)
+    except Exception as exc:
+        raise ValueError(f"native REFIT package validation failed: {exc}") from exc
+
+
 def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> list[str]:
     """Bind the documented host-CV/native-REFIT profile to genuine observations."""
     def require(condition: bool, message: str) -> None:
@@ -1668,11 +1678,23 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         lineage = observed["lineage"]
         summary = web["dag_ml"]
         native = observed["nativeRefit"]
+        requirements = SCENARIO_ARTIFACT_REQUIREMENTS["e2e-pipeline-generation-performance-compare"]["performance-compare/web-runtime.json"]
+        for requirement in requirements:
+            if type(requirement.get("equals")) is bool:
+                present, value = _json_path(payload, requirement["path"])
+                require(present and value is requirement["equals"], "invalid typed Boolean evidence")
+        for value in (summary["variantCount"], lineage["variantCount"], observed["variantCount"],
+                      summary["folds"], lineage["folds"], native["schemaVersion"]):
+            require(type(value) is int, "invalid typed native schema/count")
         require(summary["executed"] is False and lineage["executed"] is False, "CV scheduler lineage must be explicitly false")
         require(summary["refitExecuted"] is True and lineage["refitExecuted"] is True, "native REFIT/PREDICT must be explicitly true")
         require(summary["compiled"] is True and lineage["compiled"] is True, "compiled lineage must be explicitly true")
         require(summary["schedulerFallback"] is False, "summary scheduler fallback must be explicitly false")
         package = json.loads(native["packageJson"])
+        _validate_bounded_native_refit_package(native["packageJson"])
+        require(type(package["schema_version"]) is int and package["schema_version"] == 1, "invalid typed package schema")
+        require(type(package["execution_root_seed"]) is int and package["execution_root_seed"] == 42, "native package seed differs from requested scenario")
+        require(observed.get("diagnostics", []) == [], "observed runtime diagnostics")
         dataset = _read_json(path.parent / "dataset-web-oracle.json")
         candidate = _read_json(path.parent / "pipeline-candidate.n4a.json")
         family = _read_json(path.parent / "pipeline-family.json")
@@ -1687,8 +1709,8 @@ def _bounded_web_cv_contract_failures(payload: dict[str, Any], path: Path) -> li
         require(isinstance(fingerprint, str) and re.fullmatch(r"[a-f0-9]{64}", fingerprint), "invalid native package fingerprint")
         require(fingerprint == summary["packageFingerprint"] == lineage["packageFingerprint"], "native package fingerprint mismatch")
         require("schedulerFallback" not in lineage or lineage["schedulerFallback"] is False, "observed scheduler fallback")
-        require(observed["variantCount"] == summary["variantCount"] == 1, "observed variant count mismatch")
-        require(len(observed["folds"]) == summary["folds"], "observed fold count mismatch")
+        require(observed["variantCount"] == summary["variantCount"] == lineage["variantCount"] == 1, "observed variant count mismatch")
+        require(len(observed["folds"]) == summary["folds"] == lineage["folds"] == 3, "observed fold count differs from requested three folds")
         n = dataset["nSamples"]
         ids = [str(value) for value in dataset["sampleIds"]]
         partitions = dataset["partitions"]
