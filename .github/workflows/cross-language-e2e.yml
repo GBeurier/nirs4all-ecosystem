@@ -32,8 +32,8 @@ jobs:
     permissions:
       contents: read
     env:
-      SDK_IMAGE: ghcr.io/gbeurier/nirs4all@sha256:c4874de29ae4e1347c656e40f1639465bd83dc44dde24a2155ac13b00571bf6c
-      EXPECTED_SOURCE_SHA: 1e792e6068018e823f2a5f0e7918b3d0c12fba0c
+      SDK_IMAGE: ghcr.io/gbeurier/nirs4all@sha256:cb6282f8ce59a86ae785c1abd798ed7c533abc443f353ceffa6be157b5acc33a
+      EXPECTED_SOURCE_SHA: 1cc6b83d4c6d3904a0ce78f7b844056e47efd794
     steps:
       - uses: actions/checkout@v7
       - name: Pull and verify the immutable public SDK image
@@ -50,7 +50,7 @@ jobs:
           assert os.environ['SDK_IMAGE'] in image['RepoDigests']
           labels = image['Config']['Labels']
           assert labels['org.opencontainers.image.revision'] == os.environ['EXPECTED_SOURCE_SHA']
-          assert labels['org.opencontainers.image.version'] == '1.4.5'
+          assert labels['org.opencontainers.image.version'] == '1.4.6'
           PYCODE
       - name: Execute the public SDK container offline
         shell: bash
@@ -69,7 +69,7 @@ jobs:
           from pathlib import Path
           root = Path('.sdk-container-artifacts')
           report = json.loads((root / 'probe.log').read_text().splitlines()[-1])
-          assert report['status'] == 'PASS' and report['sdk_version'] == '1.4.5'
+          assert report['status'] == 'PASS' and report['sdk_version'] == '1.4.6'
           report['image'] = os.environ['SDK_IMAGE']
           report['source_sha'] = os.environ['EXPECTED_SOURCE_SHA']
           report['pip_check'] = 'PASS'

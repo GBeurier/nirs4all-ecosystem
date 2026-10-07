@@ -11,7 +11,7 @@ import numpy as np
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import KFold
 
-expected = "1.4.5"
+expected = "1.4.6"
 assert version("nirs4all") == expected
 assert nirs4all.__version__ == expected
 assert n4m.abi_version()[:2] == (2, 17)
