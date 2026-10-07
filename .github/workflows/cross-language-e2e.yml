@@ -32,8 +32,8 @@ jobs:
     permissions:
       contents: read
     env:
-      SDK_IMAGE: ghcr.io/gbeurier/nirs4all@sha256:8b6263f1ff28d57e7df9b461340c512e64dcc7aaaf5a84f0ad3a488aebd0f4b0
-      EXPECTED_SOURCE_SHA: 71b046a3076e2d15bf0f2296a4c59ac071d435af
+      SDK_IMAGE: ghcr.io/gbeurier/nirs4all@sha256:c4874de29ae4e1347c656e40f1639465bd83dc44dde24a2155ac13b00571bf6c
+      EXPECTED_SOURCE_SHA: 1e792e6068018e823f2a5f0e7918b3d0c12fba0c
     steps:
       - uses: actions/checkout@v7
       - name: Pull and verify the immutable public SDK image
@@ -50,7 +50,7 @@ jobs:
           assert os.environ['SDK_IMAGE'] in image['RepoDigests']
           labels = image['Config']['Labels']
           assert labels['org.opencontainers.image.revision'] == os.environ['EXPECTED_SOURCE_SHA']
-          assert labels['org.opencontainers.image.version'] == '1.4.3'
+          assert labels['org.opencontainers.image.version'] == '1.4.5'
           PYCODE
       - name: Execute the public SDK container offline
         shell: bash
@@ -59,7 +59,7 @@ jobs:
           docker run --rm --network none --entrypoint python \
             --tmpfs /workspace:rw,nosuid,nodev,size=256m \
             -e OPENBLAS_NUM_THREADS=1 -e OMP_NUM_THREADS=1 -e MKL_NUM_THREADS=1 \
-            -v "$PWD/scripts/e2e/probe_public_sdk143_container.py:/probe.py:ro" \
+            -v "$PWD/scripts/e2e/probe_public_sdk_container.py:/probe.py:ro" \
             "$SDK_IMAGE" /probe.py > .sdk-container-artifacts/probe.log
           cat .sdk-container-artifacts/probe.log
           docker run --rm --network none --entrypoint python \
@@ -69,7 +69,7 @@ jobs:
           from pathlib import Path
           root = Path('.sdk-container-artifacts')
           report = json.loads((root / 'probe.log').read_text().splitlines()[-1])
-          assert report['status'] == 'PASS' and report['sdk_version'] == '1.4.3'
+          assert report['status'] == 'PASS' and report['sdk_version'] == '1.4.5'
           report['image'] = os.environ['SDK_IMAGE']
           report['source_sha'] = os.environ['EXPECTED_SOURCE_SHA']
           report['pip_check'] = 'PASS'
