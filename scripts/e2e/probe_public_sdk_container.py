@@ -1,6 +1,9 @@
 """Execute the existing release smoke contract inside the public SDK image."""
+import hashlib
 import json
+import sys
 from importlib.metadata import version
+from pathlib import Path
 
 import n4m
 import nirs4all
@@ -27,10 +30,23 @@ with nirs4all.run(
     assert result.execution_engine == "dag-ml"
     score = float(result.cv_best_score)
     assert np.isfinite(score)
+module_origins = {}
+for name, module in sorted(sys.modules.items()):
+    if name.split(".", 1)[0] not in {
+        "nirs4all", "n4m", "dag_ml", "dag_ml_data", "nirs4all_core",
+        "nirs4all_io", "nirs4all_formats", "polars", "numpy", "sklearn",
+    } or not getattr(module, "__file__", None):
+        continue
+    path = Path(module.__file__).resolve()
+    module_origins[name] = {
+        "path": str(path),
+        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+    }
 print(json.dumps({
     "status": "PASS",
     "sdk_version": expected,
     "sdk_module": nirs4all.__file__,
+    "loaded_module_origins": module_origins,
     "methods_version": n4m.version(),
     "methods_abi": list(n4m.abi_version()),
     "execution_engine": "dag-ml",
