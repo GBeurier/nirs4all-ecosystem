@@ -6,6 +6,29 @@
 > own access rights). This repository only **references a specific commit** of
 > each; it does not contain their code.
 
+## Current public cohort — 8 October 2026
+
+Python SDK **1.4.7**, Core **0.4.5**, DAG-ML **0.3.41**, Data **0.2.13**,
+Formats **0.2.11**, Methods **1.3.4**, IO **0.2.6**, Datasets **0.3.11**,
+R **0.7.2**, UI **0.1.15**, Web **0.4.1**, Quality **0.0.3** and Device
+**0.1.1** are published. [Studio 0.15.2](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.15.2)
+has public Linux, Windows and macOS ARM installers, checksums and Docker;
+its native runtime identity matches the embedded SDK 1.4.7.
+
+The final local qualification passed **11/11 scenarios and 70 artifacts**;
+the [published evidence ledger](docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json)
+preserves actual sources, numerical tolerances and local performance results.
+Python/DAG refit predictions match; browser predictions meet their declared
+tolerance. Cross-validation metrics are not asserted identical. Subsequent
+documentation and publication-workflow gitlinks preserve that scientific evidence.
+
+The [common guide and Legacy Python documentation](https://gbeurier.github.io/nirs4all/)
+are public. Existing Read the Docs routes redirect there; a new native RTD build
+requires RTD to remove its administrative block. The
+[public cockpit](https://cockpit.nirs4all.org/) tracks registry and deployment
+state. Full scientific E2E and performance qualification runs locally;
+hosted workflows package and verify deliveries, with short platform UI checks.
+
 ## Projects referenced
 
 | Submodule | Tracked branch | Visibility |
@@ -47,7 +70,7 @@
 - For RC V1, submodule gitlinks in this parent repository are **not** the release authority. Use `docs/contracts/release/aggregation-lock.n4a.lock.json` plus each manifest `selected_workspace_path` for aggregate members, and the surface matrix / agent reports for product surfaces outside the lock.
 - `nirs4all-web` is the **client-side-only** browser/WASM product surface. Its release surface must not imply a Python server or Python parity proof by itself.
 - `nirs4all-quality` is a **client-side-only** browser/WASM quality workflow surface built from the same core/UI direction; it is tracked publicly because the cockpit links and monitors it.
-- `nirs4all-device` is a **phone/tablet spectrometer workbench** surface. The cockpit tracks its public Pages app; Android debug APKs remain CI artifacts rather than registry or production-store release targets.
+- `nirs4all-device` is a **phone/tablet spectrometer workbench** surface. The cockpit tracks its public Pages app and GitHub Android debug APK; these do not claim production-store delivery or hardware validation.
 - `nirs4all-ui` is a shared React component and pure TypeScript view-model package consumed by product surfaces such as Studio/Web. It is accounted for as a public release surface outside the aggregation lock, not as a backend, parser, persistence, ML, or parity-proof surface.
 - `nirs4all-providers` is a separately published Python client (`GBeurier/nirs4all-providers`), but the canonical provider surface for core/R/WASM/native consumers remains the neutral contracts under `docs/contracts/providers/`.
 - `nirs4all-org` and `nirs4all-cockpit` are publication surfaces outside the aggregation lock. They should be accounted for as public release surfaces, not as aggregate-core lock members.
