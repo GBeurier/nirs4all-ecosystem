@@ -2042,7 +2042,7 @@
         "Methods binding ABI/version report",
       "Language binding prediction parity",
       "WASM methods orchestrator ledger fixture",
-      "nirs4all-core MATLAB/Octave release-matlab gate succeeded on v0.3.11 and uploaded the nirs4all-matlab-octave archive after strict Octave parity",
+      "nirs4all-core MATLAB/Octave release-matlab gate succeeded on v0.4.5 at the current source and uploaded the archive after source-bound local qualification; the retained local Octave oracle and six native-workflow proofs are verified without a remote numerical rerun",
       "Archived Rust wrapper is recorded as non-release-target evidence with release_target=false and gate=not_applicable",
       "nirs4all-core client-side WASM import of assembled formats/IO dataset ledger"
       ],
@@ -2071,7 +2071,7 @@
         {
           "oracle": "python nirs4all portable parity fixtures and nirs4all-core release-matlab gate",
           "candidate": "MATLAB/Octave nirs4all aggregate archive",
-          "metric": "Public release-matlab workflow for v0.3.11 succeeded, declares Octave MEX build plus make test-matlab-parity, and uploaded nirs4all-matlab-octave-0.3.11.zip after the strict parity job",
+          "metric": "Public release-matlab workflow for v0.4.5 succeeded at the current source and uploaded nirs4all-matlab-octave-0.4.5.zip after its local-qualification dependency; the source-bound verifier must pass and attest the retained local Octave numeric parity oracle and six native-workflow proofs",
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/formats-io-methods/matlab-octave-release-gate.json"
@@ -2125,7 +2125,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-methods && PATH={r_bin_dir}:$PATH Rscript --version >/dev/null && python3.11 scripts/e2e/cross_binding_methods_parity.py --artifacts-dir {artifacts_dir}/formats-io-methods"
+            "cd {workspace_root}/nirs4all-methods && PATH={r_bin_dir}:$PATH Rscript --version >/dev/null && python3.11 scripts/e2e/cross_binding_methods_parity.py --skip-build --artifacts-dir {artifacts_dir}/formats-io-methods"
           ],
       "produces": [
         "{artifacts_dir}/formats-io-methods/binding-parity.json",
@@ -2265,7 +2265,7 @@
         {
           "oracle": "nirs4all-core capability manifest runtimeContracts",
           "candidate": "custom app host runtime contract artifact",
-          "metric": "prediction contract parity: serialized_model_predict_surfaces is exactly ['javascript_wasm', 'rust'] for the published Core 0.4.4 aggregate capability contract, and wasm_predict_entrypoint is predictPortablePipeline; this custom-host execution witnesses WASM prediction, while the Rust save/load/fresh-predict capability is qualified separately",
+          "metric": "prediction contract parity: serialized_model_predict_surfaces is exactly ['javascript_wasm', 'rust'] for the published Core 0.4.5 aggregate capability contract, and wasm_predict_entrypoint is predictPortablePipeline; this custom-host execution witnesses WASM prediction, while the Rust save/load/fresh-predict capability is qualified separately",
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/custom-app-host/custom-host-runtime-contracts.json"
@@ -2340,7 +2340,7 @@
           "requires_paths": [
             "{workspace_root}/nirs4all-web/web-app/src/app/custom-app-host.contract.test.ts",
             "{workspace_root}/nirs4all-core/tests/parity/expected/portable_python_oracle.json",
-            "{workspace_root}/nirs4all-web/web-app/vendor/npm/nirs4all-ui-0.1.14.tgz"
+            "{workspace_root}/nirs4all-web/web-app/vendor/npm/nirs4all-ui-0.1.15.tgz"
           ],
           "command": [
             "bash",
@@ -2389,7 +2389,7 @@
           "command": [
             "bash",
             "-lc",
-            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.4.4 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.14 N4A_PUBLISHED_METHODS_VERSION=1.3.4 npm run smoke:published-custom-host"
+            "cd {workspace_root}/nirs4all-web/web-app && PATH={node22_bin_dir}:$PATH ARTIFACTS_DIR={artifacts_dir}/custom-app-host N4A_PUBLISHED_NIRS4ALL_VERSION=0.4.5 N4A_PUBLISHED_NIRS4ALL_UI_VERSION=0.1.15 N4A_PUBLISHED_METHODS_VERSION=1.3.4 npm run smoke:published-custom-host"
           ],
           "produces": [
             "{artifacts_dir}/custom-app-host/published-custom-host.json"

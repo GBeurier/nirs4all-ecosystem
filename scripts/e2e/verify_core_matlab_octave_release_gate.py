@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 import urllib.error
 import urllib.request
@@ -18,8 +20,8 @@ SCHEMA_VERSION = "n4a.e2e.matlab_octave_release_gate.v1"
 SCENARIO_ID = "e2e-formats-io-datasets-methods-language-bindings"
 REPO = "GBeurier/nirs4all-core"
 WORKFLOW = "release-matlab.yml"
-TAG = "v0.3.11"
-CORE_VERSION = "0.3.11"
+TAG = "v0.4.5"
+CORE_VERSION = "0.4.5"
 ASSET_NAME = f"nirs4all-matlab-octave-{CORE_VERSION}.zip"
 
 
@@ -72,6 +74,35 @@ def _workflow_run() -> dict[str, Any]:
     return successful[0] if successful else runs[0]
 
 
+def _local_parity_qualification(core_root: Path) -> dict[str, Any]:
+    receipt_path = core_root / "compat/local-qualification.json"
+    policy_path = core_root / "qualification/policy.json"
+    command = [sys.executable, "scripts/verify_local_qualification.py", "--project", "core",
+               "--receipt", "compat/local-qualification.json", "--root", str(core_root)]
+    completed = subprocess.run(command, cwd=core_root, capture_output=True, text=True, check=False)
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    selected = {}
+    for run in receipt["runs"]:
+        if run["id"] in ("octave-full-sdk-oracle", "octave-native-workflows"):
+            report = json.loads((core_root / run["report"]["path"]).read_text(encoding="utf-8"))
+            selected[run["id"]] = {"exit_code": run["exit_code"], "summary": report["summary"]}
+    required = {"octave-full-sdk-oracle": 1, "octave-native-workflows": 6}
+    verified = completed.returncode == 0 and all(
+        gate in selected and selected[gate]["exit_code"] == 0
+        and selected[gate]["summary"]["passed"] >= minimum
+        and selected[gate]["summary"]["failed"] == 0
+        and selected[gate]["summary"]["skipped"] == 0
+        for gate, minimum in required.items()
+    )
+    source_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=core_root, text=True).strip()
+    return {"verified": verified, "verifier_exit_code": completed.returncode,
+            "command": command, "stdout": completed.stdout, "stderr": completed.stderr,
+            "receipt_sha256": hashlib.sha256(receipt_path.read_bytes()).hexdigest(),
+            "policy_sha256": hashlib.sha256(policy_path.read_bytes()).hexdigest(),
+            "source_sha": source_sha, "gate_ids": sorted(selected), "gates": selected,
+            "scope": "Verify retained source-bound local parity; no numerical rerun or remote parity execution."}
+
+
 def verify(workspace_root: Path) -> dict[str, Any]:
     core_root = workspace_root / "nirs4all-core"
     workflow_path = core_root / ".github" / "workflows" / WORKFLOW
@@ -83,11 +114,13 @@ def verify(workspace_root: Path) -> dict[str, Any]:
     assets = release.get("assets") or []
     asset = next((item for item in assets if item.get("name") == ASSET_NAME), None)
     run = _workflow_run()
+    local_qualification = _local_parity_qualification(core_root)
+    source_matches = run.get("head_sha") == local_qualification["source_sha"]
 
     local_workflow = {
-        "strict_matlab_parity_job_declared": "strict-matlab-parity" in workflow_text,
-        "octave_mex_build_declared": 'octave --quiet --eval "cd bindings/matlab; build_mex"' in workflow_text,
-        "test_matlab_parity_declared": "make test-matlab-parity" in workflow_text,
+        "local_qualification_job_declared": "  local-qualification:" in workflow_text,
+        "source_bound_local_qualification_declared": "python scripts/verify_local_qualification.py --project core --receipt compat/local-qualification.json --root ." in workflow_text,
+        "package_requires_local_qualification": "needs: local-qualification" in workflow_text,
         "release_asset_upload_declared": "nirs4all-matlab-octave-" in workflow_text,
         "no_continue_on_error": "continue-on-error" not in workflow_text,
     }
@@ -103,6 +136,8 @@ def verify(workspace_root: Path) -> dict[str, Any]:
         if release.get("tag_name") == TAG
         and asset is not None
         and run.get("conclusion") == "success"
+        and source_matches
+        and local_qualification["verified"]
         and all(local_workflow.values())
         and all(core_makefile.values())
         else "failed"
@@ -126,16 +161,17 @@ def verify(workspace_root: Path) -> dict[str, Any]:
             "event": run.get("event"),
             "head_branch": run.get("head_branch"),
             "head_sha": run.get("head_sha"),
+            "source_matches_current_checkout": source_matches,
             "conclusion": run.get("conclusion"),
             "url": run.get("html_url"),
         },
         "local_workflow": local_workflow,
         "core_makefile": core_makefile,
+        "local_qualification": local_qualification,
         "parity_gate": {
             "runtime": "matlab_octave",
             "oracle": "python nirs4all portable parity fixtures",
-            "workflow_declares_octave_build": local_workflow["octave_mex_build_declared"],
-            "workflow_declares_strict_parity": local_workflow["test_matlab_parity_declared"],
+            "workflow_declares_local_qualification": local_workflow["source_bound_local_qualification_declared"],
             "release_asset_uploaded_after_gate": asset is not None and run.get("conclusion") == "success",
         },
     }

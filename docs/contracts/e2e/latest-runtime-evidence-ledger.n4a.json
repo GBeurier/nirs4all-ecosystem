@@ -1,9 +1,4 @@
 {
-  "current_recipe": {
-    "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
-    "manifest_sha256": "f5dc2b8148d5b909901bd4df70a6254b018af01f9aee06945fa6e5f951bfac87",
-    "manifest_schema_version": "n4a.cross-language-e2e/v1"
-  },
   "coverage": {
     "blocked_count": 0,
     "contract_parity_check_count": 0,
@@ -80,6 +75,11 @@
         "strict": 8
       }
     }
+  },
+  "current_recipe": {
+    "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
+    "manifest_schema_version": "n4a.cross-language-e2e/v1",
+    "manifest_sha256": "4207c8a4ef7c2a8dc841104bcae4d8ca9356a8570a4c4532338d7fa67dc05d1a"
   },
   "evidence": {
     "artifact_count": 70,
@@ -838,8 +838,8 @@
         {
           "path": "performance-compare/web-runtime.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "0ccea04cbd2026263bfd5365547a311806108fe63a53bc4f73e8b59c710f4a35",
-          "requirement_count": 23
+          "proof_sha256": "e3922cd2990d520536a44cfe4fb49224fd88d33fac58cfbb94d0b1b287ec06d0",
+          "requirement_count": 44
         }
       ]
     },
@@ -988,14 +988,14 @@
         {
           "path": "formats-io-methods/binding-parity.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "c6d57ca0130d77abf0caf2c8808476892039cddaa4031bf3f6c6906688c6a50d",
+          "proof_sha256": "b6fb9c0f38583f24202f1377a6443d6f4e15c00c754d84cc43c60576ad17cb2a",
           "requirement_count": 17
         },
         {
           "path": "formats-io-methods/matlab-octave-release-gate.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "ac7dde8c690890039d1cb8ee6f754e036557fac5a4da2ef505143c5053c321c9",
-          "requirement_count": 25
+          "proof_sha256": "892a91fba66582b5f296014e51753a4797ac627e2a0094669725ba23306b5a22",
+          "requirement_count": 30
         },
         {
           "path": "formats-io-methods/predictions-by-language.json",
@@ -1108,7 +1108,7 @@
         {
           "path": "custom-app-host/custom-host-runtime-contracts.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "7d9f30c0a60f776cccfdc44913f403f46525abfcd3ded441b54e633860659049",
+          "proof_sha256": "6254bc2440bdcb6a306fac591525f4d56a21475ab4b16600af6da8097a235bc3",
           "requirement_count": 6
         },
         {
@@ -1120,7 +1120,7 @@
         {
           "path": "custom-app-host/published-custom-host.json",
           "proof_kind": "required_json_fields",
-          "proof_sha256": "71c9cadac7b0267579a4c62c3279ff2728a872955e54bdbea00abf9a7dd118e2",
+          "proof_sha256": "554bbd8d1dca1026e383c6021be03fb1d1bfccbd00918532de7fcc94bc2eff26",
           "requirement_count": 26
         }
       ]
@@ -1130,9 +1130,9 @@
   "source": {
     "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
     "manifest_schema_version": "n4a.cross-language-e2e/v1",
-    "manifest_sha256": "5be78d72d3eecdc1ff4f2ba8ca102e4dd1a61e8c608b45ac843956fb4c180f7e",
+    "manifest_sha256": "4207c8a4ef7c2a8dc841104bcae4d8ca9356a8570a4c4532338d7fa67dc05d1a",
     "regenerate": "python3 scripts/n4a_e2e_scenarios.py evidence-ledger --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json",
     "runtime_artifacts_policy": ".n4a-e2e-artifacts/ contains bulky runtime evidence and remains untracked; this ledger records the normalized verified artifact inventory and host-stable proof hashes over required evidence fields.",
-    "runtime_manifest_sha256": "ee257f9382d9d18413d8cca8c9ca9190c0e31f0d96b32167d160e297c51402f1"
+    "runtime_manifest_sha256": "4207c8a4ef7c2a8dc841104bcae4d8ca9356a8570a4c4532338d7fa67dc05d1a"
   }
 }

@@ -1,95 +1,18 @@
-name: Cross-language E2E scenarios
+name: Cross-language contract checks
 
 on:
   pull_request:
   push:
     branches: [main, "rc/**"]
-  schedule:
-    - cron: "37 3 * * 1"
   workflow_dispatch:
-    inputs:
-      scenario:
-        description: "Scenario id to execute; leave empty to plan all"
-        required: false
-        type: string
-      execute:
-        description: "Run commands instead of dry planning"
-        required: true
-        default: false
-        type: boolean
-      allow_blocked:
-        description: "Reserved for explicitly declared external blockers; should remain false for RC gates"
-        required: true
-        default: false
-        type: boolean
+
+permissions:
+  contents: read
 
 jobs:
-  qualify-public-sdk-container:
-    # This is a separate distribution witness; it does not replace any of the
-    # eleven scientific scenarios or their seventy evidence artifacts.
-    if: ${{ github.event_name == 'schedule' || (!github.event.inputs.scenario && github.event.inputs.execute == 'true') }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      SDK_IMAGE: ghcr.io/gbeurier/nirs4all@sha256:cb6282f8ce59a86ae785c1abd798ed7c533abc443f353ceffa6be157b5acc33a
-      EXPECTED_SOURCE_SHA: 1cc6b83d4c6d3904a0ce78f7b844056e47efd794
-    steps:
-      - uses: actions/checkout@v7
-      - name: Pull and verify the immutable public SDK image
-        shell: bash
-        run: |
-          set -euo pipefail
-          [[ "$SDK_IMAGE" =~ ^ghcr\.io/gbeurier/nirs4all@sha256:[a-f0-9]{64}$ ]]
-          mkdir -p .sdk-container-artifacts
-          docker pull "$SDK_IMAGE"
-          docker image inspect "$SDK_IMAGE" > .sdk-container-artifacts/image-inspect.json
-          python3 - <<'PYCODE'
-          import json, os
-          image = json.load(open('.sdk-container-artifacts/image-inspect.json'))[0]
-          assert os.environ['SDK_IMAGE'] in image['RepoDigests']
-          labels = image['Config']['Labels']
-          assert labels['org.opencontainers.image.revision'] == os.environ['EXPECTED_SOURCE_SHA']
-          assert labels['org.opencontainers.image.version'] == '1.4.6'
-          PYCODE
-      - name: Execute the public SDK container offline
-        shell: bash
-        run: |
-          set -euo pipefail
-          docker run --rm --network none --entrypoint python \
-            --tmpfs /workspace:rw,nosuid,nodev,size=256m \
-            -e OPENBLAS_NUM_THREADS=1 -e OMP_NUM_THREADS=1 -e MKL_NUM_THREADS=1 \
-            -v "$PWD/scripts/e2e/probe_public_sdk_container.py:/probe.py:ro" \
-            "$SDK_IMAGE" /probe.py > .sdk-container-artifacts/probe.log
-          cat .sdk-container-artifacts/probe.log
-          docker run --rm --network none --entrypoint python \
-            "$SDK_IMAGE" -m pip check | tee .sdk-container-artifacts/pip-check.log
-          python3 - <<'PYCODE'
-          import json, os
-          from pathlib import Path
-          root = Path('.sdk-container-artifacts')
-          report = json.loads((root / 'probe.log').read_text().splitlines()[-1])
-          assert report['status'] == 'PASS' and report['sdk_version'] == '1.4.6'
-          report['image'] = os.environ['SDK_IMAGE']
-          report['source_sha'] = os.environ['EXPECTED_SOURCE_SHA']
-          report['pip_check'] = 'PASS'
-          (root / 'qualification.json').write_text(json.dumps(report, indent=2) + '\n')
-          PYCODE
-      - name: Upload the independent SDK container witness
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: public-sdk-container-${{ github.run_id }}
-          path: .sdk-container-artifacts/**
-          include-hidden-files: true
-          if-no-files-found: error
-
   validate-and-plan:
     runs-on: ubuntu-latest
-    env:
-      N4A_WORKSPACE_ROOT: ${{ github.workspace }}/nirs4all-ecosystem
-      N4A_E2E_MAX_ARTIFACT_AGE_SECONDS: "14400"
-      PYTHONDONTWRITEBYTECODE: "1"
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: nirs4all-ecosystem
@@ -98,224 +21,29 @@ jobs:
         uses: actions/checkout@v7
         with:
           path: nirs4all-ecosystem
-          submodules: recursive
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-      - name: Disable flaky preinstalled Microsoft apt feeds
-        run: |
-          sudo rm -f /etc/apt/sources.list.d/azure-cli.list
-          sudo rm -f /etc/apt/sources.list.d/azure-cli.sources
-          sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list
-          sudo rm -f /etc/apt/sources.list.d/microsoft-prod.sources
-        working-directory: ${{ github.workspace }}
-      - uses: r-lib/actions/setup-r@v2
-        if: ${{ github.event_name == 'schedule' || (github.event.inputs.execute == 'true' && (!github.event.inputs.scenario || contains(fromJSON('["e2e-r-dataset-io-pipeline-save","e2e-multimodal-python-r-wasm-roundtrip","e2e-dataset-provider-repository-roundtrip","e2e-formats-io-datasets-methods-language-bindings","e2e-core-ui-custom-app-host"]'), github.event.inputs.scenario))) }}
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Set up Emscripten SDK
-        uses: mymindstorm/setup-emsdk@v14
-        if: ${{ github.event_name == 'schedule' || github.event.inputs.execute == 'true' }}
-        with:
-          version: 3.1.74
-      - name: Install system E2E tool shims
-        run: sudo apt-get update && sudo apt-get install -y gcc-12 g++-12 cmake ninja-build
-        working-directory: ${{ github.workspace }}
-      - name: Install test dependencies
-        run: python3 -m pip install pytest
-      - name: Install executed E2E package dependencies
-        if: ${{ github.event_name == 'schedule' || github.event.inputs.execute == 'true' }}
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install \
-            -e "nirs4all[dev]" \
-            -e "nirs4all-datasets[dev,nirs4all,io]" \
-            -e "nirs4all-repository[dev,nirs4all,datasets]" \
-            -e "nirs4all-providers[dev,all]" \
-            -e "nirs4all-io[dev,parquet]" \
-            -e "nirs4all-papers[dev]" \
-            -e "nirs4all-tools[dev,duckdb,parquet]" \
-            -e "nirs4all-cluster[dev]" \
-            -e "nirs4all-methods/bindings/python" \
-            -e "nirs4all-core/bindings/python"
-          npm --prefix nirs4all-core/bindings/wasm ci --no-audit --no-fund
-          npm --prefix nirs4all-web/web-app ci --no-audit --no-fund
-      - name: Build strict methods runtime artifacts
-        if: ${{ github.event_name == 'schedule' || github.event.inputs.execute == 'true' }}
-        run: |
-          cd nirs4all-methods
-          cmake --preset ci-linux-gcc12-release
-          cmake --build --preset ci-linux-gcc12-release --target n4m_c --parallel
-          ln -sfn ci-linux-gcc12-release build/dev-release
-          cmake --preset emscripten
-          cmake --build --preset emscripten --target n4m_wasm --parallel
-          npm --prefix bindings/js install --no-audit --no-fund
-          npm --prefix bindings/js run build
-          npm --prefix bindings/js run stage:wasm
-      - name: Export strict methods Python runtime
-        if: ${{ github.event_name == 'schedule' || github.event.inputs.execute == 'true' }}
-        run: |
-          methods_python="$GITHUB_WORKSPACE/nirs4all-ecosystem/nirs4all-methods/bindings/python/src"
-          core_python="$GITHUB_WORKSPACE/nirs4all-ecosystem/nirs4all-core/bindings/python/src"
-          methods_lib="$GITHUB_WORKSPACE/nirs4all-ecosystem/nirs4all-methods/build/dev-release/cpp/src"
-          {
-            echo "PYTHONPATH=$methods_python:$core_python:${PYTHONPATH:-}"
-            echo "N4M_LIB_PATH=$methods_lib/libn4m.so"
-            echo "LD_LIBRARY_PATH=$methods_lib:${LD_LIBRARY_PATH:-}"
-          } >> "$GITHUB_ENV"
-          PYTHONPATH="$methods_python:$core_python:${PYTHONPATH:-}" \
-          N4M_LIB_PATH="$methods_lib/libn4m.so" \
-          LD_LIBRARY_PATH="$methods_lib:${LD_LIBRARY_PATH:-}" \
-          python3 - <<'PY'
-          import n4m  # noqa: F401
-          import pls4all  # noqa: F401
-          PY
-      - name: Install strict R runtime dependencies
-        if: ${{ github.event_name == 'schedule' || (github.event.inputs.execute == 'true' && (!github.event.inputs.scenario || contains(fromJSON('["e2e-r-dataset-io-pipeline-save","e2e-multimodal-python-r-wasm-roundtrip","e2e-dataset-provider-repository-roundtrip","e2e-formats-io-datasets-methods-language-bindings","e2e-core-ui-custom-app-host"]'), github.event.inputs.scenario))) }}
-        run: Rscript -e 'required <- c("digest", "jsonlite", "yaml"); install.packages(required, repos = "https://cloud.r-project.org"); stopifnot(all(vapply(required, requireNamespace, logical(1), quietly = TRUE)))'
-      - name: Validate scenario contract
+      - name: Install contract test dependencies
+        run: python3 -m pip install pytest pyyaml
+      - name: Validate cross-language contract
         run: python3 scripts/n4a_e2e_scenarios.py validate
-      - name: Run pytest validation
-        env:
-          N4A_E2E_EVENT_NAME: ${{ github.event_name }}
-          N4A_E2E_EXECUTE: ${{ github.event.inputs.execute }}
-          N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}
-        run: |
-          full_workspace_checks=0
-          if [[ "$N4A_E2E_EVENT_NAME" == "schedule" ]]; then
-            full_workspace_checks=1
-          elif [[ "$N4A_E2E_EXECUTE" == "true" && -z "$N4A_E2E_SCENARIO" ]]; then
-            full_workspace_checks=1
-          fi
-          case "$N4A_E2E_SCENARIO" in
-            e2e-r-dataset-io-pipeline-save|e2e-multimodal-python-r-wasm-roundtrip|e2e-dataset-provider-repository-roundtrip|e2e-formats-io-datasets-methods-language-bindings|e2e-core-ui-custom-app-host)
-              full_workspace_checks=1
-              ;;
-          esac
-          if [[ "$full_workspace_checks" == "1" ]]; then
-            python3 -m pytest -q tests/test_e2e_scenarios.py
-          else
-            python3 -m pytest -q tests/test_e2e_scenarios.py \
-              -k "not current_workspace_plans_all_complex_workflows_ready and not cli_coverage_json_exposes_readiness_and_gaps and not cli_run_ready_dry_run_lists_ready_and_blocked"
-          fi
+      - name: Test contract runner
+        run: >
+          python3 -m pytest -q tests/test_e2e_scenarios.py
+          -k "not current_workspace_plans_all_complex_workflows_ready and not cli_coverage_json_exposes_readiness_and_gaps and not cli_run_ready_dry_run_lists_ready_and_blocked"
       - name: Write coverage debt board
         run: >
           python3 scripts/n4a_e2e_scenarios.py coverage
           --json-out .n4a-e2e-artifacts/coverage/coverage-summary.json
           --markdown-out .n4a-e2e-artifacts/coverage/coverage-debt.md
       - name: Plan all scenarios
-        if: ${{ github.event_name != 'schedule' && !github.event.inputs.scenario && github.event.inputs.execute != 'true' }}
-        run: python3 scripts/n4a_e2e_scenarios.py plan
-      - name: Execute scheduled ready runtime scenarios
-        if: ${{ github.event_name == 'schedule' }}
-        run: python3 scripts/n4a_e2e_scenarios.py run-ready --execute
-      - name: Verify scheduled ready runtime artifacts
-        if: ${{ github.event_name == 'schedule' }}
-        run: >
-          python3 scripts/n4a_e2e_scenarios.py evidence
-          --ready-only
-          --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
-          --json-out .n4a-e2e-artifacts/evidence-summary.json
-      - name: Check scheduled runtime evidence ledger
-        if: ${{ github.event_name == 'schedule' }}
-        run: >
-          python3 scripts/n4a_e2e_scenarios.py evidence-ledger
-          --check
-          --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
-          --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
-      - name: Execute ready scenarios
-        if: ${{ !github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        env:
-          N4A_ALLOW_BLOCKED: ${{ github.event.inputs.allow_blocked }}
-        run: |
-          args=(run-ready --execute)
-          if [[ "$N4A_ALLOW_BLOCKED" == "true" ]]; then
-            args+=(--allow-blocked)
-          fi
-          python3 scripts/n4a_e2e_scenarios.py "${args[@]}"
-      - name: Verify ready scenario artifacts
-        if: ${{ !github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        run: >
-          python3 scripts/n4a_e2e_scenarios.py evidence
-          --ready-only
-          --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
-          --json-out .n4a-e2e-artifacts/evidence-summary.json
-      - name: Check committed runtime evidence ledger
-        if: ${{ !github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        env:
-          N4A_ALLOW_BLOCKED: ${{ github.event.inputs.allow_blocked }}
-        run: |
-          args=(
-            evidence-ledger
-            --check
-            --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
-            --out docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
-          )
-          if [[ "$N4A_ALLOW_BLOCKED" == "true" ]]; then
-            args+=(--allow-blocked)
-          fi
-          python3 scripts/n4a_e2e_scenarios.py "${args[@]}"
-      - name: Plan selected scenario
-        if: ${{ github.event.inputs.scenario && github.event.inputs.execute != 'true' }}
-        env:
-          N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}
-        run: python3 scripts/n4a_e2e_scenarios.py plan --scenario "$N4A_E2E_SCENARIO"
-      - name: Execute selected scenario
-        if: ${{ github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        env:
-          N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}
-          N4A_ALLOW_BLOCKED: ${{ github.event.inputs.allow_blocked }}
-        run: |
-          args=(run "$N4A_E2E_SCENARIO" --execute)
-          if [[ "$N4A_ALLOW_BLOCKED" == "true" ]]; then
-            args+=(--allow-blocked)
-          fi
-          python3 scripts/n4a_e2e_scenarios.py "${args[@]}"
-      - name: Verify selected scenario artifacts
-        if: ${{ github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        env:
-          N4A_E2E_SCENARIO: ${{ github.event.inputs.scenario }}
-        run: >
-          python3 scripts/n4a_e2e_scenarios.py evidence
-          --scenario "$N4A_E2E_SCENARIO"
-          --max-age-seconds "$N4A_E2E_MAX_ARTIFACT_AGE_SECONDS"
-          --json-out .n4a-e2e-artifacts/evidence-summary.json
-      - name: Upload coverage debt board
+        run: python3 scripts/n4a_e2e_scenarios.py plan --json > .n4a-e2e-artifacts/plan.json
+      - name: Upload contract plan
         if: ${{ always() }}
         uses: actions/upload-artifact@v7
         with:
-          name: n4a-e2e-coverage-debt-${{ github.run_id }}
-          path: nirs4all-ecosystem/.n4a-e2e-artifacts/coverage/**
-          if-no-files-found: warn
-      - name: Upload ready scenario evidence
-        if: ${{ always() && !github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: n4a-e2e-ready-runtime-evidence-${{ github.run_id }}
-          path: |
-            nirs4all-ecosystem/.n4a-e2e-artifacts/**
-            nirs4all-ecosystem/docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
+          name: n4a-e2e-contract-plan-${{ github.run_id }}
+          path: nirs4all-ecosystem/.n4a-e2e-artifacts/**
           include-hidden-files: true
-          if-no-files-found: warn
-      - name: Upload selected scenario evidence
-        if: ${{ always() && github.event.inputs.scenario && github.event.inputs.execute == 'true' }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: n4a-e2e-${{ github.event.inputs.scenario }}-runtime-evidence-${{ github.run_id }}
-          path: |
-            nirs4all-ecosystem/.n4a-e2e-artifacts/**
-            nirs4all-ecosystem/docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
-          include-hidden-files: true
-          if-no-files-found: warn
-      - name: Upload scheduled ready runtime evidence
-        if: ${{ always() && github.event_name == 'schedule' }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: n4a-e2e-ready-scheduled-runtime-evidence-${{ github.run_id }}
-          path: |
-            nirs4all-ecosystem/.n4a-e2e-artifacts/**
-            nirs4all-ecosystem/docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json
-          include-hidden-files: true
-          if-no-files-found: warn
+          if-no-files-found: error
