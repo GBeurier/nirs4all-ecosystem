@@ -23,6 +23,8 @@ PUBLIC_SUBMODULES = {
     "nirs4all-methods",
     "nirs4all-org",
     "nirs4all-papers",
+    "nirs4all-preflight",
+    "nirs4all-domains",
     "nirs4all-providers",
     "nirs4all-quality",
     "nirs4all-r",
@@ -60,7 +62,8 @@ def test_gitmodules_tracks_public_refactor_topology_only() -> None:
     for name in PUBLIC_SUBMODULES:
         section = f'submodule "{name}"'
         assert parser[section]["path"] == name
-        assert parser[section]["url"] == f"https://github.com/GBeurier/{name}.git"
+        owner = "dcornet" if name == "nirs4all-domains" else "GBeurier"
+        assert parser[section]["url"] == f"https://github.com/{owner}/{name}.git"
         assert parser[section]["branch"] == "main"
 
 

@@ -6,21 +6,30 @@
 > own access rights). This repository only **references a specific commit** of
 > each; it does not contain their code.
 
-## Current public cohort — 8 October 2026
+## Current public cohort — 3 November 2026
 
-Python SDK **1.4.7**, Core **0.4.5**, DAG-ML **0.3.41**, Data **0.2.13**,
-Formats **0.2.11**, Methods **1.3.4**, IO **0.2.6**, Datasets **0.3.11**,
-R **0.7.2**, UI **0.1.15**, Web **0.4.1**, Quality **0.0.3** and Device
-**0.1.1** are published. [Studio 0.15.2](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.15.2)
-has public Linux, Windows and macOS ARM installers, checksums and Docker;
-its native runtime identity matches the embedded SDK 1.4.7.
+Python SDK **1.4.15**, Core **0.4.7**, DAG-ML **0.3.44**, Data **0.2.16**,
+Formats **0.2.14**, Methods **1.3.14**, IO **0.2.14**, Datasets **0.3.18**,
+UI **0.2.1**, Web **0.5.0**, Benchmarks **0.1.9**,
+Repository **0.1.13**, Cluster **0.1.5** and Tools **0.0.8** are published.
+R is pinned to tag **v0.7.4**; R-universe still reports **0.7.3** at this snapshot.
+[Studio 0.15.9](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.15.9)
+has public Linux, Windows and macOS ARM installers and checksums.
+[Preflight 0.1.6](https://github.com/GBeurier/nirs4all-preflight/releases/tag/v0.1.6)
+and [Domains v0.1.0-alpha.17](https://github.com/dcornet/nirs4all-domains/releases/tag/v0.1.0-alpha.17)
+join the public submodules; Domains remains an alpha prerelease.
+Quality **0.0.6** was published separately and its submodule tracks the current
+publication head. Providers **0.2.11** and Device **0.1.1** are also pinned to
+their published release tags. The website tracks its current publication head;
+the cockpit snapshot follows the completed collect and Pages deployment.
 
-The final local qualification passed **11/11 scenarios and 70 artifacts**;
+The **8 October** local qualification passed **11/11 scenarios and 70 artifacts**;
 the [published evidence ledger](docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json)
-preserves actual sources, numerical tolerances and local performance results.
-Python/DAG refit predictions match; browser predictions meet their declared
-tolerance. Cross-validation metrics are not asserted identical. Subsequent
-documentation and publication-workflow gitlinks preserve that scientific evidence.
+preserves those sources, numerical tolerances and local performance results.
+Python/DAG refit predictions matched; browser predictions met their declared
+tolerance. Cross-validation metrics were not asserted identical. This cohort
+update preserves that historical evidence; it does not record a new scientific
+qualification of the November releases.
 
 The [common guide and Legacy Python documentation](https://gbeurier.github.io/nirs4all/)
 are public. Existing Read the Docs routes redirect there; a new native RTD build
@@ -50,6 +59,8 @@ hosted workflows package and verify deliveries, with short platform UI checks.
 | `nirs4all-cockpit` | `main` | public release/status cockpit |
 | `nirs4all-org` | `main` | public |
 | `nirs4all-papers` | `main` | public |
+| `nirs4all-preflight` | `main` | public preflight checks |
+| `nirs4all-domains` | `main` | public domain packages (alpha; dcornet) |
 | `nirs4all-formats` | `main` | public |
 | `nirs4all-io` | `main` | public |
 | `nirs4all-methods` | `main` | public |

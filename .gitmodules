@@ -90,3 +90,11 @@
 	path = nirs4all-r
 	url = https://github.com/GBeurier/nirs4all-r.git
 	branch = main
+[submodule "nirs4all-preflight"]
+	path = nirs4all-preflight
+	url = https://github.com/GBeurier/nirs4all-preflight.git
+	branch = main
+[submodule "nirs4all-domains"]
+	path = nirs4all-domains
+	url = https://github.com/dcornet/nirs4all-domains.git
+	branch = main
