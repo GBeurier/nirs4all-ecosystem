@@ -13,7 +13,7 @@ Formats **0.2.14**, Methods **1.3.14**, IO **0.2.14**, Datasets **0.3.18**,
 UI **0.2.1**, Web **0.5.0**, Benchmarks **0.1.9**,
 Repository **0.1.13**, Cluster **0.1.5** and Tools **0.0.8** are published.
 R **0.7.4** is pinned to its tag and served by R-universe.
-[Studio 0.15.9](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.15.9)
+[Studio 0.15.10](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.15.10)
 has public Linux, Windows, macOS ARM and macOS Intel installers and checksums.
 [Preflight 0.1.6](https://github.com/GBeurier/nirs4all-preflight/releases/tag/v0.1.6)
 and [Domains v0.1.0-alpha.17](https://github.com/dcornet/nirs4all-domains/releases/tag/v0.1.0-alpha.17)
