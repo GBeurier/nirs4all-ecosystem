@@ -14,7 +14,7 @@ UI **0.2.1**, Web **0.5.0**, Benchmarks **0.1.9**,
 Repository **0.1.13**, Cluster **0.1.5** and Tools **0.0.8** are published.
 R is pinned to tag **v0.7.4**; R-universe still reports **0.7.3** at this snapshot.
 [Studio 0.15.9](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.15.9)
-has public Linux, Windows and macOS ARM installers and checksums.
+has public Linux, Windows, macOS ARM and macOS Intel installers and checksums.
 [Preflight 0.1.6](https://github.com/GBeurier/nirs4all-preflight/releases/tag/v0.1.6)
 and [Domains v0.1.0-alpha.17](https://github.com/dcornet/nirs4all-domains/releases/tag/v0.1.0-alpha.17)
 join the public submodules; Domains remains an alpha prerelease.
@@ -22,6 +22,8 @@ Quality **0.0.6** was published separately and its submodule tracks the current
 publication head. Providers **0.2.11** and Device **0.1.1** are also pinned to
 their published release tags. The website tracks its current publication head;
 the cockpit snapshot follows the completed collect and Pages deployment.
+The full restorable state (every pin, registry version, Studio runtime identity and
+open item) is frozen in [snapshots/ECOSYSTEM_2026-11-03.md](snapshots/ECOSYSTEM_2026-11-03.md).
 
 The **8 October** local qualification passed **11/11 scenarios and 70 artifacts**;
 the [published evidence ledger](docs/contracts/e2e/latest-runtime-evidence-ledger.n4a.json)
