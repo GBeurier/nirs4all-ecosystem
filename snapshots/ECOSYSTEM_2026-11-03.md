@@ -121,7 +121,7 @@ The registry [`GBeurier/gbeurier.r-universe.dev@8f72800a`](https://github.com/GB
 
 The pins of dagmldata, nirs4allio and nirs4allformats are commits after the release tags that carry the dual-license fix in the R DESCRIPTION files.
 
-> ⚠️ **Not yet rebuilt at 09:20 UTC.** R-universe still served nirs4all 0.7.3, nirs4allio 0.2.11, nirs4allformats 0.2.13 and nirs4alldatasets 0.3.16. dagml 0.3.44, dagmldata 0.2.16, n4m 1.3.14 and pls4all 1.3.14 were already served. The registry is correct; the next "Update universe" sync rebuilds the rest. Check with `curl -s https://gbeurier.r-universe.dev/api/packages/nirs4all`.
+> ✅ **Rebuilt by 2026-11-03 ~11:00 UTC:** R-universe serves nirs4all 0.7.4, nirs4allio 0.2.14, nirs4allformats 0.2.14, nirs4alldatasets 0.3.18, dagmldata 0.2.16, dagml 0.3.44, n4m 1.3.14 and pls4all 1.3.14, all `CeCILL-2.1 | AGPL (>= 3)` with build status success.
 
 ## Studio 0.15.9 — embedded runtime identity
 
@@ -181,7 +181,6 @@ The Docker image is published by the tag release run 41600898717.
 
 ## Known open items at this snapshot
 
-- **R-universe** rebuild of nirs4all 0.7.4, io, formats and datasets still pending (see above).
 - **Studio 0.15.9 "Show all trained models" fix** (`f8fb3258`, native chain-listing routes): it passed the automated tests but had neither a Codex review nor a manual check in the Windows app.
 - **Methods licensing:**
   - `libPLS_1.95` (GPLv2 + MathWorks files) in the source archive;
