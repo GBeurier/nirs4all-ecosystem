@@ -181,7 +181,8 @@ The Docker image is published by the tag release run 41600898717.
 
 ## Known open items at this snapshot
 
-- **Studio 0.15.9 "Show all trained models" fix** (`f8fb3258`, native chain-listing routes): it passed the automated tests but had neither a Codex review nor a manual check in the Windows app.
+- **Studio 0.15.9 "Show all trained models" fix** (`f8fb3258`, native chain-listing routes): it passed the automated tests. Running the callable on the 0.15.9 Windows acceptance store returns 150 chains for Amylose and 48 for the missing-target run. It was not clicked through in the installed Windows app.
+- **Native results callables** (`api/library_aggregated_results.py:66-79`) open `<linked path>/store.sqlite` only, while the FastAPI helpers also accept `<linked path>/workspace/store.sqlite` (`results_repository.workspace_store_root`). A workspace linked at the project folder with that nested layout would show empty result and model lists. Workspaces linked at their store folder, the current layout, are unaffected. Fix: resolve `workspace_store_root(path) or path` before opening `StoreAdapter`.
 - **Methods licensing:**
   - `libPLS_1.95` (GPLv2 + MathWorks files) in the source archive;
   - OnPLS license file;
