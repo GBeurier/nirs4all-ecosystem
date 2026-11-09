@@ -60,10 +60,6 @@ V1_REQUIRED_GATE_COMPONENT_KEYS = {
 }
 EXTENSION_NAMESPACE = re.compile(r"^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)+$")
 STABLE_CAPABILITY_ID = re.compile(r"^[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+$")
-PLS_OPERATOR_ALIASES = {
-    "sklearn.cross_decomposition.PLSRegression",
-    "sklearn.cross_decomposition._pls.PLSRegression",
-}
 RUNTIME_AVAILABILITY = {"executable", "metadata"}
 ROLLBACK_PROFILE = "rollback-capable"
 LEGACY_ORACLE_CAPABILITY = "nirs4all.python.oracle.legacy-backend"
@@ -71,13 +67,14 @@ LEGACY_ENGINE_SOURCES = {
     "nirs4all/pipeline/engine.py",
     "nirs4all/api/run.py",
 }
-PORTABLE_CONTROLLER_KINDS = {
-    "split.kennard_stone": "operator",
-    "preprocess.snv": "operator",
-    "preprocess.savgol": "operator",
-    "model.pls_regression": "model",
-    "pipeline.portable_methods": "api",
+CURRENT_CORE_OPERATIONS = {
+    "core.n4a-container.write": ("n4a-container", "write"),
+    "core.n4a-container.read": ("n4a-container", "read"),
+    "core.native-n4a-canonical.predict": ("native-n4a-canonical", "predict"),
+    "core.n4a-container.predict": ("n4a-container", "predict"),
 }
+CURRENT_WRITE_TEST = "production_roundtrip_exact_bytes_hashes_and_borrowed_ranges"
+CURRENT_CI_RECEIPT = Path("docs/contracts/release/core-0.5.0-ci.json")
 
 
 class CapabilityLedgerError(RuntimeError):
@@ -535,59 +532,84 @@ def _validate_crosswalk(value: Any, capabilities: dict[str, dict[str, Any]], mat
     _require(seen == set(capabilities), "release_surface_crosswalk must contain one additive row per capability")
 
 
-def _validate_portable_core_coverage(capabilities: dict[str, dict[str, Any]], selected_members: dict[str, dict[str, Any]]) -> None:
-    """Prove all currently portable Core controllers from the locked TOML source."""
-    _require("core" in selected_members, "baseline needs the selected core lock member")
-    capabilities_toml = selected_members["core"]["root"] / "compat/capabilities.toml"
+def _validate_current_core_coverage(
+    capabilities: dict[str, dict[str, Any]],
+    selected_members: dict[str, dict[str, Any]],
+    ecosystem_root: Path,
+) -> None:
+    """Bind the current bounded rows to owner cells and one exact CI receipt.
+
+    This is a release metadata gate, not another scientific execution engine.
+    The old controller/all-runtime assertions remain historical provenance.
+    """
+    core = selected_members["core"]
+    registry_path = core["root"] / "compat/capabilities.toml"
     try:
-        toml = tomllib.loads(capabilities_toml.read_text(encoding="utf-8"))
+        registry = tomllib.loads(registry_path.read_text(encoding="utf-8"))
     except (OSError, tomllib.TOMLDecodeError) as exc:
-        raise CapabilityLedgerError(f"cannot read locked core capabilities TOML: {exc}") from exc
-    controllers = _list(toml.get("controller"), "locked core capabilities TOML controller")
-    observed: dict[str, dict[str, Any]] = {}
-    for index, item in enumerate(controllers):
-        controller = _object(item, f"locked core capabilities TOML controller[{index}]")
-        controller_id = _non_empty_string(controller.get("id"), f"locked core capabilities TOML controller[{index}].id")
-        observed[controller_id] = controller
-    _require(set(observed) == set(PORTABLE_CONTROLLER_KINDS), "ledger coverage must equal every currently proved portable Core controller")
-    for controller_id, expected_kind in PORTABLE_CONTROLLER_KINDS.items():
-        entry = capabilities.get(controller_id)
-        _require(entry is not None, f"baseline must declare portable controller {controller_id}")
-        _require(entry["kind"] == expected_kind, f"{controller_id} must have kind {expected_kind}")
-        _require(entry["disposition"] == "native", f"{controller_id} must be native")
-        controller = observed[controller_id]
-        _require(controller.get("execution_path") in {"portable_pipeline", "run_portable_pipeline"}, f"locked Core controller {controller_id} has no portable execution path")
-        runtime = _object(controller.get("runtime"), f"locked Core controller {controller_id}.runtime")
-        _require(set(runtime) == {"python", "r", "javascript_wasm", "rust", "matlab_octave"}, f"locked Core controller {controller_id} must declare every aggregate runtime")
-        _require(all(level == "parity-validated" for level in runtime.values()), f"locked Core controller {controller_id} has unsupported runtime evidence")
-        assertions = entry["_runtime_assertions"]
-        _require(assertions == {name: "executable" for name in runtime}, f"{controller_id} runtime availability must derive from locked Core assertions")
-    pls = capabilities["model.pls_regression"]
-    aliases = set(_string_list(pls["aliases"], "model.pls_regression.aliases"))
-    _require(aliases == PLS_OPERATOR_ALIASES, "model.pls_regression aliases must exactly match the portable PLS aliases")
-    _require(set(observed["model.pls_regression"].get("operator_classes", [])) == PLS_OPERATOR_ALIASES, "locked Core PLS controller aliases do not match the portable aliases")
-    _require(any(entry["kind"] == "format" for entry in capabilities.values()), "baseline must declare a source-backed format disposition")
+        raise CapabilityLedgerError(f"cannot read selected Core registry: {exc}") from exc
+    surfaces = registry.get("runtime_surfaces")
+    _require(surfaces == ["python", "javascript_wasm", "rust", "matlab_octave"], "current Core surfaces must exclude the external R product")
+    federation = registry.get("external_federation", [])
+    _require(any(row.get("repository") == "nirs4all-r" and row.get("core_runtime_surface") is False for row in federation), "current Core must federate the independent R owner")
+    profiles = {row["id"]: row for row in registry["execution_profile"]}
+    fixture_path = "tests/parity/expected/capability_profiles.json"
+    release_lock = _release_lock_module()
+    release_lock.require_tracked_source(core["root"], fixture_path, "Core profile fixture")
+    fixture = _object(_load_json(core["root"] / fixture_path, "Core profile fixture"), "Core profile fixture")
+    fixture_profiles = {row["id"]: row for row in fixture["profiles"]}
+    receipt_path = ecosystem_root / CURRENT_CI_RECEIPT
+    receipt = _object(_load_json(receipt_path, "current Core CI receipt"), "current Core CI receipt")
+    _require(receipt.get("head_sha") == core["commit"], "Core CI receipt source does not match selected Core")
+    _require(receipt.get("status") == "completed" and receipt.get("conclusion") == "success", "Core CI receipt must record completed successful execution")
+    _require(receipt.get("id") == 42595677223, "current Core evidence must identify the reviewed exact-source CI run")
+    receipt_sha = hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+    for capability_id, (profile_id, operation) in CURRENT_CORE_OPERATIONS.items():
+        entry = capabilities[capability_id]
+        profile = profiles[profile_id]
+        _require(profile["version"] == 1, f"{capability_id} profile version changed")
+        cells = profile["operations"][operation]
+        _require(cells == fixture_profiles[profile_id]["operations"][operation], f"{capability_id} owner fixture disagrees with the registry")
+        extension = _object(entry["extensions"].get("org.nirs4all.owner-operation"), f"{capability_id} owner operation")
+        _exact_keys(extension, {"profile", "version", "operation", "source_support", "qualification"}, capability_id)
+        _require((extension["profile"], extension["version"], extension["operation"]) == (profile_id, 1, operation), f"{capability_id} owner operation identity changed")
+        _require(extension["source_support"] == {name: cell["status"] for name, cell in cells.items()}, f"{capability_id} source-support cells disagree with selected owner")
+        _require(entry["owner"]["repository"] == "nirs4all-core", f"{capability_id} has the wrong owner")
+        _require(entry["aliases"] == [point["symbol"] for point in cells["rust"].get("entrypoints", [])], f"{capability_id} aliases disagree with owner entrypoints")
+        sources = {evidence["source"]: evidence["_head_source"] for evidence in entry["evidence"] if evidence.get("component_key") == "core"}
+        _require("compat/capabilities.toml" in sources and fixture_path in sources, f"{capability_id} must cite selected owner registry and fixture")
+        for cell in cells.values():
+            for point in cell.get("entrypoints", []):
+                _require(point["source"] in sources, f"{capability_id} entrypoint source is missing")
+        for point in cells["rust"].get("entrypoints", []):
+            _require(point["symbol"] in sources[point["source"]], f"{capability_id} Rust entrypoint is missing")
+        assertions = {surface: "metadata" for surface in surfaces}
+        qualification = _object(extension["qualification"], f"{capability_id} qualification")
+        if capability_id == "core.n4a-container.write":
+            _exact_keys(qualification, {"state", "runtime", "receipt", "receipt_sha256", "test", "scope"}, capability_id)
+            _require(qualification["state"] == "qualified" and qualification["runtime"] == "rust/windows-latest", "storage write qualification must retain its exact runtime/platform")
+            _require(qualification["receipt"] == CURRENT_CI_RECEIPT.as_posix() and qualification["receipt_sha256"] == receipt_sha, "storage write receipt digest does not match")
+            _require(qualification["test"] == CURRENT_WRITE_TEST, "storage write qualification must name the executed fixture")
+            fixture_source = sources.get("bindings/rust/nirs4all/tests/n4a_container.rs", "")
+            workflow_source = sources.get(".github/workflows/ci.yml", "")
+            command = f"cargo test --locked -p nirs4all {CURRENT_WRITE_TEST}"
+            _require(f"fn {CURRENT_WRITE_TEST}()" in fixture_source and command in workflow_source, "storage write evidence must bind the executed owner test and workflow")
+            assertions["rust/windows-latest"] = "executable"
+            _require(entry["disposition"] == "native", "qualified storage write must remain native in its exact scope")
+        else:
+            _exact_keys(qualification, {"state", "reason"}, capability_id)
+            _require(qualification["state"] == "not-qualified-by-this-ledger", "source support cannot become qualification without scoped evidence")
+            unsupported = all(cell["status"] == "unsupported" for cell in cells.values())
+            _require(entry["disposition"] == ("refused" if unsupported else "not-promised"), "unqualified or unsupported owner operation must remain explicit")
+        _require(entry["_runtime_assertions"] == assertions, f"{capability_id} runtime assertions exceed the qualified scope")
+    boundary = capabilities["format.nirs4all-core.lazy-upstream"]
+    _require(boundary["disposition"] == "not-promised" and boundary["_runtime_assertions"] == {surface: "metadata" for surface in surfaces}, "lazy upstream formats are metadata only")
 
 
-def _validate_baseline_completeness(capabilities: dict[str, dict[str, Any]], crosswalk: Any) -> None:
-    """Require the two non-controller boundaries that make the baseline useful."""
-    aggregation = capabilities.get("dag-ml.prediction-aggregation")
-    _require(aggregation is not None, "baseline must declare native prediction aggregation")
-    _require(aggregation["kind"] == "api" and aggregation["disposition"] == "native", "native prediction aggregation must remain a native API capability")
-    _require(aggregation["runtime"] == "dag-ml-native", "native prediction aggregation must remain bound to dag-ml-native")
-
-    retained = capabilities.get(LEGACY_ORACLE_CAPABILITY)
-    _require(retained is not None, "baseline must declare retained legacy backend availability")
-    _require(retained["disposition"] == "refused", "retained legacy backend must not be promoted to native")
-    _require("legacy_retention" in retained, "retained legacy backend must carry rollback retention")
-
-    rows = _list(crosswalk, "release_surface_crosswalk")
-    by_capability = {
-        _non_empty_string(_object(row, "release_surface_crosswalk row").get("capability_id"), "release_surface_crosswalk row.capability_id"): row
-        for row in rows
-    }
-    _require("dag-ml.prediction-aggregation" in by_capability, "baseline must crosswalk native prediction aggregation")
-    _require(LEGACY_ORACLE_CAPABILITY in by_capability, "baseline must crosswalk retained legacy backend availability")
+def _validate_baseline_completeness(capabilities: dict[str, dict[str, Any]]) -> None:
+    """Keep the current release gate deliberately bounded and non-exhaustive."""
+    required = set(CURRENT_CORE_OPERATIONS) | {"format.nirs4all-core.lazy-upstream"}
+    _require(set(capabilities) == required, "current baseline must declare exactly the scoped owner operations and format boundary")
 
 
 def validate_ledger(
@@ -701,8 +723,8 @@ def validate_ledger(
             _require(retention is None, f"{path}.legacy_retention is reserved for the retained legacy backend")
 
     if verify_release_inputs:
-        _validate_portable_core_coverage(capabilities_by_id, selected_members)
-        _validate_baseline_completeness(capabilities_by_id, root["release_surface_crosswalk"])
+        _validate_baseline_completeness(capabilities_by_id)
+        _validate_current_core_coverage(capabilities_by_id, selected_members, ecosystem_root)
         _validate_crosswalk(root["release_surface_crosswalk"], capabilities_by_id, matrix, lock)
     for capability in capabilities_by_id.values():
         capability.pop("_runtime_assertions", None)

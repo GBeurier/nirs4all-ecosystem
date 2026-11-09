@@ -6,7 +6,23 @@
 > own access rights). This repository only **references a specific commit** of
 > each; it does not contain their code.
 
-## Current public cohort — 8 October 2026
+## Current owner cohort — November 2026
+
+The active [manifest](docs/contracts/release/aggregation-manifest.n4a.json) and
+[generated lock](docs/contracts/release/aggregation-lock.n4a.lock.json) select the
+current seven aggregate owners. The [surface matrix](docs/contracts/release/public-v1-surface-matrix.n4a.json)
+accounts for independent products; the [native ledger](docs/contracts/release/native-capability-ledger.v1.json)
+limits qualification to its explicit operation, source, runtime and platform evidence.
+Source declarations and parent gitlinks do not establish universal parity or publication.
+Final Providers/Papers references remain pending coordination.
+R is the independent `nirs4all-r` product, with its own runtime prerequisites.
+
+The [2026.07 profile](docs/contracts/release/history/2026.07-refactor/aggregation-lock.n4a.lock.json)
+is retained as historical provenance and is not the active CI selection.
+
+## Historical public cohort — 8 October 2026
+
+The following records the October snapshot and its then-reported qualification.
 
 Python SDK **1.4.7**, Core **0.4.5**, DAG-ML **0.3.41**, Data **0.2.13**,
 Formats **0.2.11**, Methods **1.3.4**, IO **0.2.6**, Datasets **0.3.11**,
@@ -43,7 +59,8 @@ hosted workflows package and verify deliveries, with short platform UI checks.
 | `nirs4all-web` | `main` | public client-side-only browser/WASM app |
 | `nirs4all-quality` | `main` | public client-side-only NIRS lab quality app |
 | `nirs4all-device` | `main` | public phone/tablet spectrometer workbench |
-| `nirs4all-core` | `main` | public canonical V1 RC portable aggregate |
+| `nirs4all-core` | `main` | public portable aggregate owner |
+| `nirs4all-r` | `main` | public independent R product |
 | `nirs4all-providers` | `main` | public provider/client contracts and Python client |
 | `nirs4all-tools` | `main` | public migration/conversion tools |
 | `nirs4all-ui` | `main` | public shared Studio/Web React components |
@@ -64,17 +81,20 @@ hosted workflows package and verify deliveries, with short platform UI checks.
 
 ## Release topology notes
 
-- The RC V1 aggregate release target is **`nirs4all-core`**. Retired aggregate
-  names are not public release paths or compatibility aliases.
-- The **aggregation lock is intentionally narrower than the full product matrix**. It pins the reproducible aggregate core/runtime member set; it does **not** claim to cover every product, plugin, site, or publication repo.
-- For RC V1, submodule gitlinks in this parent repository are **not** the release authority. Use `docs/contracts/release/aggregation-lock.n4a.lock.json` plus each manifest `selected_workspace_path` for aggregate members, and the surface matrix / agent reports for product surfaces outside the lock.
+- Core is the portable aggregate owner; end-user R lives in `nirs4all-r`.
+- The active aggregation lock is narrower than the product matrix. CI materializes
+  its exact commits and validates the manifest/lock, surface matrix and evidence-bound
+  native ledger. Parent source gitlinks do not replace that selected-member gate.
+- Runtime dependency artifacts follow the selected owners' manifests and exact pins;
+  a newer source gitlink does not silently upgrade a consumed artifact. See the
+  [distribution note](docs/RELEASE_DISTRIBUTION_MATRIX.md) for scope and checks.
 - `nirs4all-web` is the **client-side-only** browser/WASM product surface. Its release surface must not imply a Python server or Python parity proof by itself.
 - `nirs4all-quality` is a **client-side-only** browser/WASM quality workflow surface built from the same core/UI direction; it is tracked publicly because the cockpit links and monitors it.
 - `nirs4all-device` is a **phone/tablet spectrometer workbench** surface. The cockpit tracks its public Pages app and GitHub Android debug APK; these do not claim production-store delivery or hardware validation.
 - `nirs4all-ui` is a shared React component and pure TypeScript view-model package consumed by product surfaces such as Studio/Web. It is accounted for as a public release surface outside the aggregation lock, not as a backend, parser, persistence, ML, or parity-proof surface.
 - `nirs4all-providers` is a separately published Python client (`GBeurier/nirs4all-providers`), but the canonical provider surface for core/R/WASM/native consumers remains the neutral contracts under `docs/contracts/providers/`.
 - `nirs4all-org` and `nirs4all-cockpit` are publication surfaces outside the aggregation lock. They should be accounted for as public release surfaces, not as aggregate-core lock members.
-- Skip/xfail debt remains explicit release evidence, not implied green status: the Python parity/xfail inventory stays under the cutover gates, and the core R surface may skip locally only when R is unavailable and must still be reported as release risk.
+- Required scientific checks report actual failures and skips. R product qualification follows `nirs4all-r` and its declared native prerequisites; a missing R runtime is not green evidence. Package and source accounting do not qualify an operation.
 
 ## Cloner
 

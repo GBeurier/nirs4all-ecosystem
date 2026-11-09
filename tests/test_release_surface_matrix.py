@@ -162,7 +162,7 @@ def test_release_batch_semantics_keep_oracle_and_shipped_surfaces_distinct() -> 
 
     oracle = by_id["nirs4all.python.oracle"]
     assert oracle["required_for_nirs4all_v1"] is True
-    assert oracle["release_batch_role"] == "required_parity_oracle_held"
+    assert oracle["release_batch_role"] == "python_sdk_host"
     assert oracle["lock_relation"] == "outside_aggregation_lock"
     assert "nirs4all.python.oracle" in semantics["held_surface_ids"]
 
@@ -194,7 +194,7 @@ def test_release_batch_semantics_reject_oracle_as_shipped_product(tmp_path: Path
     matrix_path = tmp_path / "matrix.json"
     _write_json(matrix_path, matrix)
 
-    with pytest.raises(surface_matrix.SurfaceMatrixError, match="required_parity_oracle_held"):
+    with pytest.raises(surface_matrix.SurfaceMatrixError, match="python_sdk_host"):
         surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)
 
 
@@ -207,3 +207,13 @@ def test_release_batch_semantics_require_custom_host_path(tmp_path: Path) -> Non
 
     with pytest.raises(surface_matrix.SurfaceMatrixError, match="custom app host surface missing"):
         surface_matrix.validate_surface_matrix(matrix_path, MANIFEST, LOCK)
+
+
+def test_r_product_is_independent_of_the_current_core_binding() -> None:
+    matrix = _read_matrix()
+    product = _surface(matrix, "nirs4all.r.aggregate")
+    assert product["repo_path"] == "nirs4all-r"
+    assert product["lock_relation"] == "outside_aggregation_lock"
+    assert product["lock_member_key"] is None
+    lock = json.loads(LOCK.read_text())
+    assert "r" not in lock["members"]["core"]["packages"]

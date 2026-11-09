@@ -260,7 +260,7 @@ def _validate_release_batch_semantics(matrix: dict[str, Any]) -> None:
         )
 
     for surface_id, role in (
-        ("nirs4all.python.oracle", "required_parity_oracle_held"),
+        ("nirs4all.python.oracle", "python_sdk_host"),
         ("nirs4all.studio.product", "production_held"),
     ):
         surface = surfaces.get(surface_id)
@@ -281,7 +281,7 @@ def _validate_release_batch_semantics(matrix: dict[str, Any]) -> None:
     oracle = surfaces["nirs4all.python.oracle"]
     _require(
         oracle.get("required_for_nirs4all_v1") is True,
-        "nirs4all.python.oracle must remain required as a parity/accounting gate",
+        "nirs4all.python.oracle must remain required as SDK release accounting",
     )
     studio = surfaces["nirs4all.studio.product"]
     _require(
@@ -302,7 +302,7 @@ def _validate_release_batch_semantics(matrix: dict[str, Any]) -> None:
         isinstance(policy, str)
         and "nirs4all-core" in policy
         and "bare Python/PyPI nirs4all" in policy
-        and "R, Rust, JavaScript/WASM" in policy,
+        and "nirs4all-r" in policy,
         "release_batch_semantics.python_name_policy must explain Python/core and non-Python nirs4all naming",
     )
 

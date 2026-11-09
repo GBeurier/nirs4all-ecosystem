@@ -1,0 +1,1471 @@
+{
+  "aggregation_lock_version": 1,
+  "compatibility_policy": {
+    "datasets_default": "external",
+    "facade_namespace": "n4a",
+    "private_repos_allowed": false,
+    "python_compat_namespace": "nirs4all",
+    "r_packages": "explicit"
+  },
+  "generated_from": {
+    "ecosystem_repo": "nirs4all-ecosystem",
+    "manifest_path": "docs/contracts/release/aggregation-manifest.n4a.json",
+    "tool": "scripts/n4a_release_lock.py"
+  },
+  "lockstep_groups": [
+    {
+      "equivalence": "scripts/validate_contracts.py",
+      "errors": [],
+      "id": "dagml-pair",
+      "members": [
+        "dag_ml",
+        "dag_ml_data"
+      ],
+      "shared_artifacts": {
+        "conformance_pack": {
+          "canonical_json_equal": true,
+          "members": [
+            {
+              "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
+              "member": "dag_ml",
+              "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
+            },
+            {
+              "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
+              "member": "dag_ml_data",
+              "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
+            }
+          ],
+          "raw_equal": true
+        },
+        "parity_oracle": {
+          "canonical_json_equal": true,
+          "members": [
+            {
+              "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
+              "member": "dag_ml",
+              "raw_sha256": "sha256:651dfdb2d1833e45e5d4d8a50bd6cd67bed76d62517c46816c21cdabfb45b9c1"
+            },
+            {
+              "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
+              "member": "dag_ml_data",
+              "raw_sha256": "sha256:651dfdb2d1833e45e5d4d8a50bd6cd67bed76d62517c46816c21cdabfb45b9c1"
+            }
+          ],
+          "raw_equal": true
+        }
+      },
+      "valid": true
+    }
+  ],
+  "manifest_digest": "sha256:4cb1c058c6b8c5babd4e8eec48cac34dfebaeebeec85ae9da2aa21f24184cda1",
+  "members": {
+    "core": {
+      "availability": {
+        "matlab": "subset",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [
+        {
+          "canonical_json_sha256": "sha256:5c99c5b30c48788efc7dc92ebba962029d6a60449765ce6646fc88a61c47e1e1",
+          "function": "release_topology_manifest",
+          "id": "release_topology_manifest",
+          "json": {
+            "aggregate": {
+              "default_inclusion": "base",
+              "id": "nirs4all-core",
+              "owner_boundary": "aggregate",
+              "private": false,
+              "repo": "GBeurier/nirs4all-core",
+              "repo_rename_status": "completed",
+              "target_repo": "GBeurier/nirs4all-core"
+            },
+            "core_contract": {
+              "allowed_roles": [
+                "inspect",
+                "validate",
+                "capability",
+                "facade",
+                "execute"
+              ],
+              "backing_import": "nirs4all_core",
+              "core_exports": [
+                "LazyUpstream",
+                "NativeArchiveUnavailableError",
+                "PORTABLE_OPERATOR_CLASSES",
+                "PipelineDefinition",
+                "Upstream",
+                "available_upstreams",
+                "artifact_contracts",
+                "capability_manifest",
+                "controller_capabilities",
+                "dag_ml",
+                "dag_ml_data",
+                "datasets",
+                "formats",
+                "import_upstream",
+                "io",
+                "load_pipeline_definition",
+                "local_implementation_registry",
+                "methods",
+                "portable_class_names",
+                "require_upstream",
+                "read_portable_predictor_package_v2",
+                "read_portable_refit_package_v3",
+                "write_archive_v2_from_native_payloads",
+                "write_archive_v3_from_native_payloads",
+                "required_keyword_registry_entries",
+                "runtime_contracts",
+                "runtime_surfaces",
+                "upstream_status",
+                "upstreams"
+              ],
+              "execution_engine": true,
+              "execution_exports": [
+                "PortableDataset",
+                "parse_execution_plan",
+                "run_portable_pipeline"
+              ],
+              "import": "nirs4all_core",
+              "public_exports": [
+                "LazyUpstream",
+                "NativeArchiveUnavailableError",
+                "PORTABLE_OPERATOR_CLASSES",
+                "PipelineDefinition",
+                "Upstream",
+                "available_upstreams",
+                "artifact_contracts",
+                "capability_manifest",
+                "controller_capabilities",
+                "dag_ml",
+                "dag_ml_data",
+                "datasets",
+                "formats",
+                "import_upstream",
+                "io",
+                "load_pipeline_definition",
+                "local_implementation_registry",
+                "methods",
+                "portable_class_names",
+                "require_upstream",
+                "read_portable_predictor_package_v2",
+                "read_portable_refit_package_v3",
+                "write_archive_v2_from_native_payloads",
+                "write_archive_v3_from_native_payloads",
+                "required_keyword_registry_entries",
+                "runtime_contracts",
+                "runtime_surfaces",
+                "upstream_status",
+                "upstreams",
+                "PortableDataset",
+                "parse_execution_plan",
+                "run_portable_pipeline",
+                "CORE_FACADE_EXPORTS",
+                "EXECUTION_ENGINE_EXPORTS",
+                "TOPOLOGY_EXPORTS",
+                "core_facade_exports",
+                "execution_engine_exports",
+                "release_topology_manifest",
+                "validate_core_facade"
+              ],
+              "topology_exports": [
+                "CORE_FACADE_EXPORTS",
+                "EXECUTION_ENGINE_EXPORTS",
+                "TOPOLOGY_EXPORTS",
+                "core_facade_exports",
+                "execution_engine_exports",
+                "release_topology_manifest",
+                "validate_core_facade"
+              ]
+            },
+            "install_distributions": [
+              {
+                "artifact": "wheel+sdist",
+                "default_inclusion": "base",
+                "ecosystem": "python",
+                "imports": [
+                  "nirs4all_core",
+                  "n4a"
+                ],
+                "name": "nirs4all-core",
+                "registry": "pypi",
+                "role": "current Python aggregate distribution",
+                "status": "current",
+                "workflow": "release-python.yml"
+              },
+              {
+                "artifact": "crate",
+                "default_inclusion": "base",
+                "ecosystem": "rust",
+                "imports": [
+                  "nirs4all"
+                ],
+                "name": "nirs4all",
+                "registry": "crates.io",
+                "role": "Rust aggregate crate",
+                "status": "current",
+                "workflow": "release-crates.yml"
+              },
+              {
+                "artifact": "npm package",
+                "default_inclusion": "base",
+                "ecosystem": "javascript_wasm",
+                "imports": [
+                  "nirs4all"
+                ],
+                "name": "nirs4all",
+                "registry": "npm",
+                "role": "JavaScript/WASM aggregate package",
+                "status": "current",
+                "workflow": "release-npm.yml"
+              },
+              {
+                "artifact": "source package",
+                "default_inclusion": "base",
+                "ecosystem": "r",
+                "imports": [
+                  "library(nirs4all)"
+                ],
+                "name": "nirs4all",
+                "registry": "cran/r-universe",
+                "role": "R aggregate package",
+                "status": "current",
+                "workflow": "release-r.yml"
+              },
+              {
+                "artifact": "zip archive",
+                "default_inclusion": "base",
+                "ecosystem": "matlab_octave",
+                "imports": [
+                  "+nirs4all"
+                ],
+                "name": "nirs4all-matlab-octave",
+                "registry": "github-release",
+                "role": "MATLAB/Octave aggregate namespace archive",
+                "status": "current",
+                "workflow": "release-matlab.yml"
+              },
+              {
+                "artifact": "source archive + CycloneDX SBOM + SHA256SUMS",
+                "default_inclusion": "release-provenance",
+                "ecosystem": "source_sbom",
+                "imports": [],
+                "name": "nirs4all-core-source-sbom",
+                "registry": "github-release",
+                "role": "source archive, SBOM, checksums, and provenance",
+                "status": "current",
+                "workflow": "release-source.yml"
+              },
+              {
+                "component_key": "methods",
+                "default_inclusion": "aggregate-extra",
+                "ecosystem": "python",
+                "name": "nirs4all-methods",
+                "python_extra": "methods",
+                "registry": "pypi",
+                "role": "numerical methods execution engine",
+                "status": "upstream-explicit"
+              },
+              {
+                "component_key": "formats",
+                "default_inclusion": "aggregate-extra",
+                "ecosystem": "python",
+                "name": "nirs4all-formats",
+                "python_extra": "formats",
+                "registry": "pypi",
+                "role": "vendor file readers",
+                "status": "upstream-explicit"
+              },
+              {
+                "component_key": "io",
+                "default_inclusion": "aggregate-extra",
+                "ecosystem": "python",
+                "name": "nirs4all-io",
+                "python_extra": "io",
+                "registry": "pypi",
+                "role": "dataset assembly bridge",
+                "status": "upstream-explicit"
+              },
+              {
+                "component_key": "datasets",
+                "default_inclusion": "external",
+                "ecosystem": "python",
+                "name": "nirs4all-datasets",
+                "python_extra": "datasets",
+                "registry": "pypi",
+                "role": "optional dataset catalog",
+                "status": "external-optional"
+              },
+              {
+                "component_key": "dag_ml",
+                "default_inclusion": "aggregate-extra",
+                "ecosystem": "python",
+                "name": "dag-ml",
+                "python_extra": "dag-ml",
+                "registry": "pypi",
+                "role": "DAG/ML coordinator",
+                "status": "upstream-explicit"
+              },
+              {
+                "component_key": "dag_ml_data",
+                "default_inclusion": "aggregate-extra",
+                "ecosystem": "python",
+                "name": "dag-ml-data",
+                "python_extra": "dag-ml-data",
+                "registry": "pypi",
+                "role": "sample-aligned data contracts",
+                "status": "upstream-explicit"
+              }
+            ],
+            "namespace_facades": {
+              "non_python": [
+                {
+                  "distribution": "nirs4all",
+                  "ecosystem": "rust",
+                  "namespace": "nirs4all"
+                },
+                {
+                  "distribution": "nirs4all",
+                  "ecosystem": "javascript_wasm",
+                  "namespace": "nirs4all"
+                },
+                {
+                  "distribution": "nirs4all",
+                  "ecosystem": "r",
+                  "namespace": "library(nirs4all)"
+                },
+                {
+                  "distribution": "nirs4all",
+                  "ecosystem": "matlab_octave",
+                  "namespace": "+nirs4all"
+                }
+              ],
+              "python": [
+                {
+                  "distribution": "nirs4all-core",
+                  "execution_engine": true,
+                  "exports": "full_aggregate",
+                  "import": "nirs4all_core",
+                  "kind": "canonical"
+                },
+                {
+                  "backing_import": "nirs4all_core",
+                  "distribution": "nirs4all-core",
+                  "execution_engine": true,
+                  "exports": "full_aggregate",
+                  "import": "n4a",
+                  "kind": "additive-brand-facade"
+                }
+              ],
+              "reserved_python_imports": [
+                {
+                  "import": "nirs4all",
+                  "reason": "owned by the full Python modelling library until cutover"
+                }
+              ]
+            },
+            "python": {
+              "additive_imports": [
+                "n4a"
+              ],
+              "canonical_import": "nirs4all_core",
+              "distribution": "nirs4all-core",
+              "reserved_non_imports": [
+                "nirs4all"
+              ]
+            },
+            "release_pointers": {
+              "abi": [
+                {
+                  "component_key": "methods",
+                  "conformance_refs": [
+                    "n4m.abi",
+                    "n4m.parity_ledger"
+                  ],
+                  "consumers": [
+                    "python",
+                    "rust",
+                    "r",
+                    "matlab_octave",
+                    "javascript_wasm"
+                  ],
+                  "header": "cpp/include/n4m/n4m.h",
+                  "key": "methods_c_abi",
+                  "provider": "nirs4all-methods",
+                  "status": "upstream-owned",
+                  "symbol_prefix": "n4m_"
+                }
+              ],
+              "license": {
+                "expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+                "files": [
+                  "LICENSE",
+                  "bindings/python/LICENSE",
+                  "bindings/wasm/LICENSE",
+                  "bindings/r/LICENSE",
+                  "bindings/matlab/LICENSE",
+                  "LICENSING.md",
+                  "THIRD_PARTY_NOTICES.md"
+                ],
+                "source": "bindings/python/pyproject.toml:project.license"
+              },
+              "provenance": {
+                "artifacts": [
+                  "CycloneDX SBOM",
+                  "SHA256SUMS",
+                  "source archive"
+                ],
+                "workflow": "release-source.yml"
+              }
+            },
+            "schema": "nirs4all-core.release-topology.v2",
+            "upstream_components": [
+              {
+                "default_inclusion": "aggregate-extra",
+                "key": "dag_ml",
+                "optional": false,
+                "owner_boundary": "control",
+                "packages": {
+                  "c_abi": [],
+                  "matlab": [
+                    "+dagml"
+                  ],
+                  "npm": [
+                    "dag-ml-wasm"
+                  ],
+                  "r": [
+                    "dagml"
+                  ],
+                  "rust": [
+                    "dag-ml"
+                  ]
+                },
+                "private": false,
+                "python": {
+                  "bundled_in_all": true,
+                  "distribution": "dag-ml",
+                  "extra": "dag-ml",
+                  "imports": [
+                    "dag_ml"
+                  ]
+                },
+                "repo": "GBeurier/dag-ml",
+                "role": "Leakage-safe DAG/ML execution coordinator"
+              },
+              {
+                "default_inclusion": "aggregate-extra",
+                "key": "dag_ml_data",
+                "optional": false,
+                "owner_boundary": "data",
+                "packages": {
+                  "c_abi": [],
+                  "matlab": [],
+                  "npm": [
+                    "dag-ml-data-wasm"
+                  ],
+                  "r": [
+                    "dagmldata"
+                  ],
+                  "rust": [
+                    "dag-ml-data"
+                  ]
+                },
+                "private": false,
+                "python": {
+                  "bundled_in_all": true,
+                  "distribution": "dag-ml-data",
+                  "extra": "dag-ml-data",
+                  "imports": [
+                    "dag_ml_data"
+                  ]
+                },
+                "repo": "GBeurier/dag-ml-data",
+                "role": "Sample-aligned data contracts for DAG/ML runtimes"
+              },
+              {
+                "default_inclusion": "aggregate-extra",
+                "key": "formats",
+                "optional": false,
+                "owner_boundary": "readers",
+                "packages": {
+                  "c_abi": [],
+                  "matlab": [],
+                  "npm": [
+                    "@nirs4all/formats-wasm"
+                  ],
+                  "r": [
+                    "nirs4allformats"
+                  ],
+                  "rust": []
+                },
+                "private": false,
+                "python": {
+                  "bundled_in_all": true,
+                  "distribution": "nirs4all-formats",
+                  "extra": "formats",
+                  "imports": [
+                    "nirs4all_formats",
+                    "nirs4all.formats"
+                  ]
+                },
+                "repo": "GBeurier/nirs4all-formats",
+                "role": "Spectroscopy/NIRS vendor file readers"
+              },
+              {
+                "default_inclusion": "aggregate-extra",
+                "key": "io",
+                "optional": false,
+                "owner_boundary": "assembly",
+                "packages": {
+                  "c_abi": [],
+                  "matlab": [],
+                  "npm": [
+                    "@nirs4all/io-wasm"
+                  ],
+                  "r": [
+                    "nirs4allio"
+                  ],
+                  "rust": []
+                },
+                "private": false,
+                "python": {
+                  "bundled_in_all": true,
+                  "distribution": "nirs4all-io",
+                  "extra": "io",
+                  "imports": [
+                    "nirs4all_io",
+                    "nirs4all.io"
+                  ]
+                },
+                "repo": "GBeurier/nirs4all-io",
+                "role": "Dataset assembly bridge"
+              },
+              {
+                "default_inclusion": "external",
+                "key": "datasets",
+                "optional": true,
+                "owner_boundary": "catalog",
+                "packages": {
+                  "c_abi": [],
+                  "matlab": [],
+                  "npm": [
+                    "@nirs4all/datasets-wasm"
+                  ],
+                  "r": [
+                    "nirs4alldatasets"
+                  ],
+                  "rust": []
+                },
+                "private": false,
+                "python": {
+                  "bundled_in_all": false,
+                  "distribution": "nirs4all-datasets",
+                  "extra": "datasets",
+                  "imports": [
+                    "nirs4all_datasets",
+                    "nirs4all.datasets"
+                  ]
+                },
+                "repo": "GBeurier/nirs4all-datasets",
+                "role": "DOI-pinned NIRS dataset catalog"
+              },
+              {
+                "default_inclusion": "aggregate-extra",
+                "key": "methods",
+                "optional": false,
+                "owner_boundary": "kernels",
+                "packages": {
+                  "c_abi": [
+                    {
+                      "header": "cpp/include/n4m/n4m.h",
+                      "symbol_prefix": "n4m_"
+                    }
+                  ],
+                  "matlab": [
+                    "+n4m"
+                  ],
+                  "npm": [
+                    "@nirs4all/methods"
+                  ],
+                  "r": [
+                    "n4m",
+                    "pls4all"
+                  ],
+                  "rust": []
+                },
+                "private": false,
+                "python": {
+                  "bundled_in_all": true,
+                  "distribution": "nirs4all-methods",
+                  "extra": "methods",
+                  "imports": [
+                    "nirs4all_methods",
+                    "pls4all",
+                    "n4m",
+                    "nirs4all.methods"
+                  ]
+                },
+                "repo": "GBeurier/nirs4all-methods",
+                "role": "Portable C ABI PLS/NIRS numerical engine"
+              }
+            ],
+            "v1_release_surfaces": [
+              {
+                "distribution": "nirs4all-core",
+                "ecosystem": "python",
+                "local_gate": "test-python",
+                "namespace": "nirs4all_core",
+                "package_manifest": "bindings/python/pyproject.toml",
+                "registry": "pypi",
+                "release_workflow": "release-python.yml",
+                "tool_policy": "required",
+                "version_source": "bindings/python/pyproject.toml:project.version",
+                "version_spelling": "pep440"
+              },
+              {
+                "distribution": "nirs4all",
+                "ecosystem": "javascript_wasm",
+                "local_gate": "test-wasm",
+                "namespace": "nirs4all",
+                "package_manifest": "bindings/wasm/package.json",
+                "registry": "npm",
+                "release_workflow": "release-npm.yml",
+                "tool_policy": "required",
+                "version_source": "bindings/wasm/package.json:version",
+                "version_spelling": "cargo-semver"
+              },
+              {
+                "distribution": "nirs4all",
+                "ecosystem": "rust",
+                "local_gate": "test-rust",
+                "namespace": "nirs4all",
+                "package_manifest": "bindings/rust/nirs4all/Cargo.toml",
+                "registry": "crates.io",
+                "release_workflow": "release-crates.yml",
+                "tool_policy": "required",
+                "version_source": "bindings/rust/nirs4all/Cargo.toml:package.version",
+                "version_source_of_truth": true,
+                "version_spelling": "cargo-semver"
+              },
+              {
+                "distribution": "nirs4all",
+                "ecosystem": "r",
+                "local_gate": "test-r-if-available",
+                "namespace": "library(nirs4all)",
+                "package_manifest": "bindings/r/DESCRIPTION",
+                "registry": "cran/r-universe",
+                "release_workflow": "release-r.yml",
+                "tool_policy": "skip-locally-if-r-missing",
+                "version_source": "bindings/r/DESCRIPTION:Version",
+                "version_spelling": "r-description"
+              },
+              {
+                "distribution": "nirs4all-matlab-octave",
+                "ecosystem": "matlab_octave",
+                "local_gate": "test-matlab-parity-if-available",
+                "namespace": "+nirs4all",
+                "package_manifest": "bindings/matlab/README.md",
+                "registry": "github-release",
+                "release_workflow": "release-matlab.yml",
+                "tool_policy": "skip-locally-if-octave-missing",
+                "version_source": "bindings/rust/nirs4all/Cargo.toml:package.version",
+                "version_spelling": "derived-cargo-semver"
+              }
+            ]
+          },
+          "json_schema": "nirs4all-core.release-topology.v2",
+          "kind": "python_function_json",
+          "path": "bindings/python/src/nirs4all_core/_topology.py",
+          "raw_sha256": "sha256:cd5bc67706f4462dfcddab8ec3410bbb5e59e144bff2615c7fca1b72ab4ff399",
+          "read_from": "git_head",
+          "source_ref": "HEAD"
+        }
+      ],
+      "default_inclusion": "base",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": false,
+      "owner_boundary": "aggregate",
+      "packages": {
+        "matlab": {
+          "archives": [
+            "nirs4all-matlab-octave"
+          ],
+          "namespace": "+nirs4all"
+        },
+        "npm": {
+          "packages": [
+            "nirs4all"
+          ]
+        },
+        "python": {
+          "distribution": "nirs4all-core",
+          "imports": [
+            "nirs4all_core",
+            "n4a"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4all"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "nirs4all"
+          ]
+        }
+      },
+      "private": false,
+      "repo_aliases": [],
+      "repo_path": "nirs4all-core",
+      "repo_url": "GBeurier/nirs4all-core",
+      "required_gates": [
+        "core_version_guard",
+        "core_release_topology_manifest",
+        "core_release_source",
+        "core_pipeline_parity"
+      ],
+      "role": "Canonical portable aggregate bindings (Python distribution nirs4all-core; Rust, npm/WASM, R, and MATLAB/Octave publish/import as nirs4all where the bare name is available)",
+      "selected_branch_patterns": [
+        "main"
+      ],
+      "selected_workspace_path": "nirs4all-core",
+      "state": {
+        "branch": "main",
+        "commit": "d5ddf5f23d37f3528beb2ff9644e221ea86e2aa7",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "target_repo_path": "nirs4all-core",
+      "target_repo_url": "GBeurier/nirs4all-core",
+      "versions": {
+        "npm": {
+          "kind": "json",
+          "read_from": "tracked_worktree",
+          "source": "bindings/wasm/package.json",
+          "value": "0.3.22"
+        },
+        "python": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "bindings/python/pyproject.toml",
+          "value": "0.3.22"
+        },
+        "r": {
+          "kind": "description",
+          "read_from": "tracked_worktree",
+          "source": "bindings/r/DESCRIPTION",
+          "value": "0.3.22"
+        },
+        "rust": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "bindings/rust/nirs4all/Cargo.toml",
+          "value": "0.3.22"
+        }
+      }
+    },
+    "dag_ml": {
+      "availability": {
+        "matlab": "none",
+        "native": "full",
+        "python": "full",
+        "r": "none",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [
+        {
+          "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
+          "contracts": {
+            "coordinator_branch_view.v1": {
+              "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
+            },
+            "coordinator_data_plan_envelope.v1": {
+              "normalized_sha256": "f3719abdba9b178c4d939d6173adecf32bf3a7a3e7a7f903baaf699f852ce368"
+            },
+            "data_output_provenance.v1": {
+              "normalized_sha256": "d90533a9ae7d5a9415a1f8239ea24fbb1e1c37203eba255023e1caadc43494d7"
+            },
+            "feature_fusion_selector.v1": {
+              "normalized_sha256": "8e0b16ce37ce41e8b009b288ff21e00c621f593b9e934133cf17c0042ade76a4"
+            },
+            "fitted_adapter_ref.v1": {
+              "normalized_sha256": "43001ff6f7a286924ec01ca85b95233c7a50fe9cc8595d67da1eb2a35704dddf"
+            },
+            "parity_oracle.v1": {
+              "canonical_json_sha256": "0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953"
+            },
+            "representation_registry.v1": {
+              "canonical_json_sha256": "66446af592341061c4967eb2944e32c4e785c58c2baf05db7f00bff10a431508"
+            }
+          },
+          "id": "conformance_pack",
+          "kind": "conformance_pack",
+          "pack_id": "dag-ml.shared.conformance.v1",
+          "path": "docs/contracts/conformance_pack.v1.json",
+          "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
+        },
+        {
+          "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
+          "id": "parity_oracle",
+          "kind": "parity_oracle",
+          "oracle_id": "dag-ml.nirs4all.parity_oracle.v1",
+          "path": "docs/contracts/parity_oracle.v1.json",
+          "raw_sha256": "sha256:651dfdb2d1833e45e5d4d8a50bd6cd67bed76d62517c46816c21cdabfb45b9c1",
+          "required_case_count": 5,
+          "required_case_ids": [
+            "nirs4all_core_browser_compile_plan",
+            "repetition_group_leakage_refusal",
+            "controller_registry_selector_parity",
+            "branch_merge_oof_refit_replay",
+            "python_wheel_facade_integration"
+          ]
+        },
+        {
+          "canonical_json_sha256": "sha256:0b70a5a17bb8d030f2a154b49711b20a05bc9ef27aac45aa7fd6789ceceef8cb",
+          "crate": "dag-ml",
+          "headers": [
+            {
+              "path": "crates/dag-ml-capi/include/dag_ml.h",
+              "sha256": "49e4c54cac3e0ea416537feb94e68fdb3bf6049ea424c26d407ef46d68ab8e36"
+            }
+          ],
+          "id": "abi_snapshot",
+          "kind": "abi_snapshot",
+          "package_version": "0.3.15",
+          "path": "docs/contracts/abi_snapshot.v1.json",
+          "raw_sha256": "sha256:0147741f25d80960dddea35fb1b9ae488d830cc05ff3f82ad163e4124fdf695e"
+        }
+      ],
+      "default_inclusion": "base",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": false,
+      "owner_boundary": "control",
+      "packages": {
+        "c_abi": {
+          "header": "dag_ml.h"
+        },
+        "npm": {
+          "packages": [
+            "dag-ml-wasm"
+          ]
+        },
+        "python": {
+          "distribution": "dag-ml",
+          "imports": [
+            "dag_ml"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "dag-ml",
+            "dag-ml-core",
+            "dag-ml-capi",
+            "dag-ml-cli",
+            "dag-ml-wasm"
+          ]
+        }
+      },
+      "private": false,
+      "repo_aliases": [],
+      "repo_path": "dag-ml",
+      "repo_url": "GBeurier/dag-ml",
+      "required_gates": [
+        "dagml_validate_contracts",
+        "dagml_abi_snapshot",
+        "dagml_parity_oracle"
+      ],
+      "role": "DAG runtime and native execution contracts",
+      "selected_branch_patterns": [
+        "main"
+      ],
+      "selected_workspace_path": "dag-ml",
+      "state": {
+        "branch": "main",
+        "commit": "e9f0d36b7125e3ba8498493a72af80ec8b8318aa",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "target_repo_path": null,
+      "target_repo_url": null,
+      "versions": {
+        "abi_snapshot": {
+          "kind": "json",
+          "read_from": "tracked_worktree",
+          "source": "docs/contracts/abi_snapshot.v1.json",
+          "value": "0.3.15"
+        },
+        "python": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "crates/dag-ml-py/pyproject.toml",
+          "value": "0.3.15"
+        },
+        "rust_workspace": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "Cargo.toml",
+          "value": "0.3.15"
+        }
+      }
+    },
+    "dag_ml_data": {
+      "availability": {
+        "matlab": "none",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [
+        {
+          "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
+          "contracts": {
+            "coordinator_branch_view.v1": {
+              "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
+            },
+            "coordinator_data_plan_envelope.v1": {
+              "normalized_sha256": "f3719abdba9b178c4d939d6173adecf32bf3a7a3e7a7f903baaf699f852ce368"
+            },
+            "data_output_provenance.v1": {
+              "normalized_sha256": "d90533a9ae7d5a9415a1f8239ea24fbb1e1c37203eba255023e1caadc43494d7"
+            },
+            "feature_fusion_selector.v1": {
+              "normalized_sha256": "8e0b16ce37ce41e8b009b288ff21e00c621f593b9e934133cf17c0042ade76a4"
+            },
+            "fitted_adapter_ref.v1": {
+              "normalized_sha256": "43001ff6f7a286924ec01ca85b95233c7a50fe9cc8595d67da1eb2a35704dddf"
+            },
+            "parity_oracle.v1": {
+              "canonical_json_sha256": "0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953"
+            },
+            "representation_registry.v1": {
+              "canonical_json_sha256": "66446af592341061c4967eb2944e32c4e785c58c2baf05db7f00bff10a431508"
+            }
+          },
+          "id": "conformance_pack",
+          "kind": "conformance_pack",
+          "pack_id": "dag-ml.shared.conformance.v1",
+          "path": "docs/contracts/conformance_pack.v1.json",
+          "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
+        },
+        {
+          "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
+          "id": "parity_oracle",
+          "kind": "parity_oracle",
+          "oracle_id": "dag-ml.nirs4all.parity_oracle.v1",
+          "path": "docs/contracts/parity_oracle.v1.json",
+          "raw_sha256": "sha256:651dfdb2d1833e45e5d4d8a50bd6cd67bed76d62517c46816c21cdabfb45b9c1",
+          "required_case_count": 5,
+          "required_case_ids": [
+            "nirs4all_core_browser_compile_plan",
+            "repetition_group_leakage_refusal",
+            "controller_registry_selector_parity",
+            "branch_merge_oof_refit_replay",
+            "python_wheel_facade_integration"
+          ]
+        },
+        {
+          "canonical_json_sha256": "sha256:b67e09dc4548ca46feb1c09ca4b964977c777b02d6d0923512082d9dac90059c",
+          "crate": "dag-ml-data",
+          "headers": [
+            {
+              "path": "crates/dag-ml-data-capi/include/dag_ml_data.h",
+              "sha256": "ca5d34264977867388d098cbf3af7381072a5fbd6affad8adbcee23ebb4a9b4a"
+            }
+          ],
+          "id": "abi_snapshot",
+          "kind": "abi_snapshot",
+          "package_version": "0.2.9",
+          "path": "docs/contracts/abi_snapshot.v1.json",
+          "raw_sha256": "sha256:1eb23920baacbea5a40dda16393cdd014a0c062d7a4320e2f7b829c8aa5ddf37"
+        }
+      ],
+      "default_inclusion": "base",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": false,
+      "owner_boundary": "data",
+      "packages": {
+        "c_abi": {
+          "header": "dag_ml_data.h"
+        },
+        "npm": {
+          "packages": [
+            "dag-ml-data-wasm"
+          ]
+        },
+        "python": {
+          "distribution": "dag-ml-data",
+          "imports": [
+            "dag_ml_data"
+          ]
+        },
+        "r": {
+          "packages": [
+            "dagmldata"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "dag-ml-data",
+            "dag-ml-data-core",
+            "dag-ml-data-capi",
+            "dag-ml-data-cli",
+            "dag-ml-data-wasm"
+          ]
+        }
+      },
+      "private": false,
+      "repo_aliases": [],
+      "repo_path": "dag-ml-data",
+      "repo_url": "GBeurier/dag-ml-data",
+      "required_gates": [
+        "dagml_data_validate_contracts",
+        "dagml_data_abi_snapshot",
+        "dagml_data_parity_oracle"
+      ],
+      "role": "Data provider contracts and DMD representations",
+      "selected_branch_patterns": [
+        "main"
+      ],
+      "selected_workspace_path": "dag-ml-data",
+      "state": {
+        "branch": "main",
+        "commit": "4c8ce37952427fd13a132cbcca6324214c72554a",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "target_repo_path": null,
+      "target_repo_url": null,
+      "versions": {
+        "abi_snapshot": {
+          "kind": "json",
+          "read_from": "tracked_worktree",
+          "source": "docs/contracts/abi_snapshot.v1.json",
+          "value": "0.2.9"
+        },
+        "python": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "crates/dag-ml-data-py/pyproject.toml",
+          "value": "0.2.9"
+        },
+        "r": {
+          "kind": "description",
+          "read_from": "tracked_worktree",
+          "source": "crates/dag-ml-data-r/DESCRIPTION",
+          "value": "0.2.9"
+        },
+        "rust_workspace": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "Cargo.toml",
+          "value": "0.2.9"
+        }
+      }
+    },
+    "datasets": {
+      "availability": {
+        "matlab": "none",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [],
+      "default_inclusion": "external",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": true,
+      "owner_boundary": "catalog",
+      "packages": {
+        "npm": {
+          "packages": [
+            "@nirs4all/datasets-wasm"
+          ]
+        },
+        "python": {
+          "distribution": "nirs4all-datasets",
+          "imports": [
+            "nirs4all_datasets"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4alldatasets"
+          ]
+        }
+      },
+      "private": false,
+      "repo_aliases": [],
+      "repo_path": "nirs4all-datasets",
+      "repo_url": "GBeurier/nirs4all-datasets",
+      "required_gates": [
+        "datasets_catalog_checksums"
+      ],
+      "role": "Reference dataset catalog",
+      "selected_branch_patterns": [
+        "main"
+      ],
+      "selected_workspace_path": "nirs4all-datasets",
+      "state": {
+        "branch": "main",
+        "commit": "a650d54432b1367bf80d8d5320d163ba93bdf40d",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "target_repo_path": null,
+      "target_repo_url": null,
+      "versions": {
+        "python": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "pyproject.toml",
+          "value": "0.3.8"
+        },
+        "r": {
+          "kind": "description",
+          "read_from": "tracked_worktree",
+          "source": "bindings/r/nirs4alldatasets/DESCRIPTION",
+          "value": "0.3.8"
+        },
+        "rust_workspace": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "Cargo.toml",
+          "value": "0.3.8"
+        }
+      }
+    },
+    "formats": {
+      "availability": {
+        "matlab": "none",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [],
+      "default_inclusion": "base",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": false,
+      "owner_boundary": "readers",
+      "packages": {
+        "c_abi": {
+          "header": "nirs4all_formats.h",
+          "prefix": "n4fmt_"
+        },
+        "python": {
+          "distribution": "nirs4all-formats",
+          "imports": [
+            "nirs4all_formats"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4allformats"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "nirs4all-formats",
+            "nirs4all-formats-core",
+            "nirs4all-formats-capi",
+            "nirs4all-formats-cli"
+          ]
+        }
+      },
+      "private": false,
+      "repo_aliases": [],
+      "repo_path": "nirs4all-formats",
+      "repo_url": "GBeurier/nirs4all-formats",
+      "required_gates": [
+        "formats_version_guard",
+        "formats_conformance"
+      ],
+      "role": "Vendor readers and bindings",
+      "selected_branch_patterns": [
+        "main"
+      ],
+      "selected_workspace_path": "nirs4all-formats",
+      "state": {
+        "branch": "main",
+        "commit": "7f384bbf6e4ccf70af8ab3da288078fc5caea7be",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "target_repo_path": null,
+      "target_repo_url": null,
+      "versions": {
+        "python": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "bindings/python/Cargo.toml",
+          "value": "0.2.7"
+        },
+        "r": {
+          "kind": "description",
+          "read_from": "tracked_worktree",
+          "source": "bindings/r/nirs4allformats/DESCRIPTION",
+          "value": "0.2.7"
+        },
+        "rust_workspace": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "Cargo.toml",
+          "value": "0.2.7"
+        }
+      }
+    },
+    "io": {
+      "availability": {
+        "matlab": "none",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [],
+      "default_inclusion": "base",
+      "glob_artifacts": {},
+      "license_expression": "CECILL-2.1 OR AGPL-3.0-or-later",
+      "optional": false,
+      "owner_boundary": "assembly",
+      "packages": {
+        "c_abi": {
+          "header": "nirs4all_io.h",
+          "prefix": "n4io_"
+        },
+        "python": {
+          "distribution": "nirs4all-io",
+          "imports": [
+            "nirs4all_io"
+          ]
+        },
+        "r": {
+          "packages": [
+            "nirs4allio"
+          ]
+        },
+        "rust": {
+          "crates": [
+            "nirs4all-io",
+            "nirs4all-io-core",
+            "nirs4all-io-dagml"
+          ]
+        }
+      },
+      "private": false,
+      "repo_aliases": [],
+      "repo_path": "nirs4all-io",
+      "repo_url": "GBeurier/nirs4all-io",
+      "required_gates": [
+        "io_workspace",
+        "io_dagml_path_override",
+        "dataset_package_v2"
+      ],
+      "role": "Dataset assembly and DatasetPackage bridge",
+      "selected_branch_patterns": [
+        "main"
+      ],
+      "selected_workspace_path": "nirs4all-io",
+      "state": {
+        "branch": "main",
+        "commit": "98aca515d83369f1b61538ce31a5d2b1f519d4e9",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "target_repo_path": null,
+      "target_repo_url": null,
+      "versions": {
+        "python": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "bindings/python/Cargo.toml",
+          "value": "0.1.11"
+        },
+        "r": {
+          "kind": "description",
+          "read_from": "tracked_worktree",
+          "source": "bindings/r/DESCRIPTION",
+          "value": "0.1.11"
+        },
+        "rust_workspace": {
+          "kind": "toml",
+          "read_from": "tracked_worktree",
+          "source": "Cargo.toml",
+          "value": "0.1.11"
+        }
+      }
+    },
+    "methods": {
+      "availability": {
+        "matlab": "subset",
+        "native": "full",
+        "python": "full",
+        "r": "subset",
+        "wasm": "subset"
+      },
+      "contract_artifacts": [
+        {
+          "id": "n4m_version_header",
+          "kind": "text",
+          "path": "cpp/include/n4m/n4m_version.h",
+          "raw_sha256": "sha256:c53aab410b04510371013102c21ae1988a00eac46b5ccddaae0c262debfac914"
+        }
+      ],
+      "default_inclusion": "aggregate-extra",
+      "glob_artifacts": {
+        "expected_symbols": {
+          "cpp/abi/expected_symbols_linux.txt": "sha256:3720f4c7a16eb6fd1a7df12ff3258b1454a3183e752e23f59a6ad64100ef1396",
+          "cpp/abi/expected_symbols_macos.txt": "sha256:b9b3c785cd09a4c3f875f843e97dbc1a2ce0112e8aceb1d0e7e986dc033a992a",
+          "cpp/abi/expected_symbols_windows.txt": "sha256:b9b3c785cd09a4c3f875f843e97dbc1a2ce0112e8aceb1d0e7e986dc033a992a"
+        }
+      },
+      "license_expression": "CECILL-2.1",
+      "optional": false,
+      "owner_boundary": "kernels",
+      "packages": {
+        "c_abi": {
+          "header": "n4m.h",
+          "prefix": "n4m_"
+        },
+        "npm": {
+          "packages": [
+            "@nirs4all/methods"
+          ]
+        },
+        "python": {
+          "distribution": "nirs4all-methods",
+          "imports": [
+            "nirs4all_methods",
+            "n4m",
+            "pls4all"
+          ]
+        },
+        "r": {
+          "packages": [
+            "n4m",
+            "pls4all"
+          ]
+        }
+      },
+      "private": false,
+      "repo_aliases": [],
+      "repo_path": "nirs4all-methods",
+      "repo_url": "GBeurier/nirs4all-methods",
+      "required_gates": [
+        "n4m_abi_symbols",
+        "n4m_version_sync",
+        "methods_cross_binding_parity",
+        "methods_installed_ci"
+      ],
+      "role": "Portable methods kernels and C ABI",
+      "selected_branch_patterns": [
+        "main"
+      ],
+      "selected_workspace_path": "nirs4all-methods",
+      "state": {
+        "branch": "main",
+        "commit": "2767b3a9e75dfaf30615d57593d6ed7eba160274",
+        "dirty": false,
+        "exact_tag": null
+      },
+      "target_repo_path": null,
+      "target_repo_url": null,
+      "versions": {
+        "c_header": {
+          "kind": "c_header_macros",
+          "read_from": "tracked_worktree",
+          "source": "cpp/include/n4m/n4m_version.h",
+          "value": {
+            "abi_version": "2.3.0",
+            "abi_version_int": null,
+            "project_version": "1.0.13",
+            "serialization_format_version": 1,
+            "serialization_magic": "N4MM",
+            "source_sha256": "sha256:c53aab410b04510371013102c21ae1988a00eac46b5ccddaae0c262debfac914"
+          }
+        },
+        "python_nirs4all_methods": {
+          "distribution": "nirs4all-methods",
+          "generated_by": "bindings/python/scripts/make_python_package.py",
+          "generated_output_path": "bindings/python_nirs4all_methods/pyproject.toml",
+          "kind": "toml",
+          "metadata_source": "tracked source metadata for generated package",
+          "module": "n4m",
+          "read_from": "tracked_worktree",
+          "source": "bindings/python/pyproject.toml",
+          "value": "1.0.13"
+        },
+        "python_pls4all": {
+          "distribution": "pls4all",
+          "generated_by": "bindings/python/scripts/make_python_package.py",
+          "generated_output_path": "bindings/python_pls4all/pyproject.toml",
+          "kind": "toml",
+          "metadata_source": "tracked source metadata for generated package",
+          "module": "pls4all",
+          "read_from": "tracked_worktree",
+          "source": "bindings/python/pyproject.toml",
+          "value": "1.0.13"
+        },
+        "r_n4m": {
+          "kind": "description",
+          "read_from": "tracked_worktree",
+          "source": "bindings/r/n4m/DESCRIPTION",
+          "value": "1.0.13"
+        }
+      }
+    }
+  },
+  "release_selection_policy": {
+    "preferred_exact_tag": null,
+    "repo_path_policy": "repo_path remains the public/canonical repository path recorded in the lock; selected_workspace_path names the local release-candidate checkout used as release evidence.",
+    "selected_branch_patterns": [
+      "main"
+    ],
+    "superseded_tag_policy": "Do not validate historical RC worktrees as V1 release evidence once the selected heads have been tagged on canonical main checkouts.",
+    "workspace_root": "/home/delete/nirs4all"
+  },
+  "release_train": "2026.07-refactor",
+  "schema_version": "n4a.aggregation-lock/v1",
+  "status": "candidate",
+  "verification": {
+    "all_lockstep_groups_valid": true,
+    "commands": [
+      "python3 scripts/n4a_release_lock.py checkout-members --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json --output external",
+      "python3 scripts/n4a_release_lock.py --workspace-root external validate --manifest docs/contracts/release/aggregation-manifest.n4a.json --lock docs/contracts/release/aggregation-lock.n4a.lock.json",
+      "python3 scripts/validate_contracts.py --require-sibling --sibling-root external/<sibling>  # in dag-ml and dag-ml-data"
+    ],
+    "private_repos_present": false,
+    "required_gates": [
+      "core_pipeline_parity",
+      "core_release_source",
+      "core_release_topology_manifest",
+      "core_version_guard",
+      "dagml_abi_snapshot",
+      "dagml_data_abi_snapshot",
+      "dagml_data_parity_oracle",
+      "dagml_data_validate_contracts",
+      "dagml_parity_oracle",
+      "dagml_validate_contracts",
+      "dataset_package_v2",
+      "datasets_catalog_checksums",
+      "formats_conformance",
+      "formats_version_guard",
+      "io_dagml_path_override",
+      "io_workspace",
+      "methods_cross_binding_parity",
+      "methods_installed_ci",
+      "n4m_abi_symbols",
+      "n4m_version_sync"
+    ]
+  }
+}

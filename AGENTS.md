@@ -12,11 +12,11 @@
 - Methods owns numerics, preprocessing, filters, augmentation, splitters and fitted state; DAG owns execution, variant generation, folds, OOF/leakage, search/selection, metric definitions and scoring context.
 - Keep the specifically accepted generic identity-aligned conformal exception in DAG. Methods remains the default numerical owner; shared metric fixtures qualify named profiles, not universal metric equivalence.
 - `.n4a` is directed cross-platform/language exchange for recipes, data, results, scores and fitted state. Core owns its byte container/inventory; payload owners keep semantics and serializers.
-- Container, owner-schema, ABI/wire, recipe-language and package-release versions are independent. Route by declared schema/owner, never suffix; interim SDK BundleLoader paths remain pending V1 cutover.
+- Container, owner-schema, ABI/wire, recipe-language and package-release versions are independent. Route by declared schema/owner, never suffix; SDK Python-host bundles use Core V1 containers through `BundleLoader`; active V2/V3 execution profiles remain separate, and readability does not imply portability.
 - UI owns reusable presentation/interactions; hosts own routing, persistence and execution. Repository owns presets/requirements; adapters retain complete recipes or explicitly refuse.
 - Cluster's `packages/nirs4all-access/` is the nested stdlib-only Access leaf, independent of Cluster; Cluster requires it. Datasets/Repository service extras are optional; Arena authentication remains future work and needs no upload.
 - Preserve declared identity, masks, axes, training-only fit and forward contracts. Remove obsolete alternatives only after callers migrate and parity is established; preserve identified scientific/frozen references.
-- Studio edits are last/joint with the maintainer. All Preflight edits, including instructions, belong to its independent agent; product frontend/UI/adapter/pin/asset changes need an explicit joint maintainer batch.
+- The maintainer authorizes shared-UI adoption across existing WASM demonstrators and web apps; hosts retain loading, storage and execution. Frontend pins/generated assets needed by those coherent batches are included; no hosting, publication or upload is authorized. Studio backend/owner integration, including necessary non-visual transport/contract types, may be updated autonomously; Studio GUI migration/refactoring remains last and joint with the maintainer. Preflight takeover covers its existing engine/backend, UI and instruction work; preserve all prior/concurrent work; no release, deployment or upload is authorized.
 
 ## Navigation and delivery
 
