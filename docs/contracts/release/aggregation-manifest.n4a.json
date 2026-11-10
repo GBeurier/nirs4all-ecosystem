@@ -1,23 +1,24 @@
 {
   "schema_version": "n4a.aggregation-manifest/v1",
   "aggregate_id": "nirs4all-core",
-  "release_train": "2026.07-refactor",
+  "release_train": "2026.11-owner-cohort",
   "status": "candidate",
   "compatibility_policy": {
     "python_compat_namespace": "nirs4all",
     "facade_namespace": "n4a",
     "datasets_default": "external",
     "private_repos_allowed": false,
-    "r_packages": "explicit"
+    "r_packages": "external product nirs4all-r; owner bindings remain explicitly accounted",
+    "availability_scope": "Listed bindings/packages are source declarations, not universal operation support, execution, publication or parity; this inventory is bounded."
   },
   "release_selection_policy": {
-    "workspace_root": "/home/delete/nirs4all",
+    "workspace_root": "<explicit-selected-workspace>",
     "selected_branch_patterns": [
-      "main"
+      "integration/release-20261109"
     ],
     "preferred_exact_tag": null,
     "repo_path_policy": "repo_path remains the public/canonical repository path recorded in the lock; selected_workspace_path names the local release-candidate checkout used as release evidence.",
-    "superseded_tag_policy": "Do not validate historical RC worktrees as V1 release evidence once the selected heads have been tagged on canonical main checkouts."
+    "superseded_tag_policy": "The history/2026.07-refactor snapshot is provenance only. Active validation materializes this lock; parent source gitlinks do not select runtime dependency artifacts."
   },
   "lockstep_groups": [
     {
@@ -44,9 +45,9 @@
       "repo_path": "dag-ml",
       "selected_workspace_path": "dag-ml",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
-      "preferred_exact_tag": "v0.3.15",
+      "preferred_exact_tag": "v0.4.0",
       "repo_url": "GBeurier/dag-ml",
       "role": "DAG runtime and native execution contracts",
       "owner_boundary": "control",
@@ -77,14 +78,19 @@
         },
         "c_abi": {
           "header": "dag_ml.h"
+        },
+        "r": {
+          "packages": [
+            "dagml"
+          ]
         }
       },
       "availability": {
-        "python": "full",
-        "r": "none",
-        "wasm": "subset",
-        "matlab": "none",
-        "native": "full"
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared",
+        "matlab": "not-declared",
+        "native": "source-declared"
       },
       "required_gates": [
         "dagml_validate_contracts",
@@ -109,6 +115,12 @@
           "kind": "json",
           "path": "docs/contracts/abi_snapshot.v1.json",
           "field": "package_version"
+        },
+        {
+          "key": "r",
+          "kind": "description",
+          "path": "bindings/r/DESCRIPTION",
+          "field": "Version"
         }
       ],
       "contract_artifacts": [
@@ -134,9 +146,9 @@
       "repo_path": "dag-ml-data",
       "selected_workspace_path": "dag-ml-data",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
-      "preferred_exact_tag": "v0.2.9",
+      "preferred_exact_tag": "provider-v0.2.16",
       "repo_url": "GBeurier/dag-ml-data",
       "role": "Data provider contracts and DMD representations",
       "owner_boundary": "data",
@@ -175,11 +187,11 @@
         }
       },
       "availability": {
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset",
-        "matlab": "none",
-        "native": "full"
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared",
+        "matlab": "not-declared",
+        "native": "source-declared"
       },
       "required_gates": [
         "dagml_data_validate_contracts",
@@ -235,9 +247,9 @@
       "repo_path": "nirs4all-methods",
       "selected_workspace_path": "nirs4all-methods",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
-      "preferred_exact_tag": "v1.0.9",
+      "preferred_exact_tag": null,
       "repo_url": "GBeurier/nirs4all-methods",
       "role": "Portable methods kernels and C ABI",
       "owner_boundary": "kernels",
@@ -271,11 +283,11 @@
         }
       },
       "availability": {
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset",
-        "matlab": "subset",
-        "native": "full"
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared",
+        "matlab": "source-declared",
+        "native": "source-declared"
       },
       "required_gates": [
         "n4m_abi_symbols",
@@ -337,9 +349,9 @@
       "repo_path": "nirs4all-formats",
       "selected_workspace_path": "nirs4all-formats",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
-      "preferred_exact_tag": "v0.2.7",
+      "preferred_exact_tag": "v0.2.16",
       "repo_url": "GBeurier/nirs4all-formats",
       "role": "Vendor readers and bindings",
       "owner_boundary": "readers",
@@ -373,11 +385,11 @@
         }
       },
       "availability": {
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset",
-        "matlab": "none",
-        "native": "full"
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared",
+        "matlab": "not-declared",
+        "native": "source-declared"
       },
       "required_gates": [
         "formats_version_guard",
@@ -409,9 +421,9 @@
       "repo_path": "nirs4all-io",
       "selected_workspace_path": "nirs4all-io",
       "selected_branch_patterns": [
-        "main"
+        "integration/io-wasm-numeric-wire"
       ],
-      "preferred_exact_tag": "v0.1.11",
+      "preferred_exact_tag": "v0.3.2",
       "repo_url": "GBeurier/nirs4all-io",
       "role": "Dataset assembly and DatasetPackage bridge",
       "owner_boundary": "assembly",
@@ -444,11 +456,11 @@
         }
       },
       "availability": {
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset",
-        "matlab": "none",
-        "native": "full"
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared",
+        "matlab": "not-declared",
+        "native": "source-declared"
       },
       "required_gates": [
         "io_workspace",
@@ -481,11 +493,11 @@
       "repo_path": "nirs4all-core",
       "selected_workspace_path": "nirs4all-core",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
-      "preferred_exact_tag": "v0.3.22",
+      "preferred_exact_tag": "v0.5.0",
       "repo_url": "GBeurier/nirs4all-core",
-      "role": "Canonical portable aggregate bindings (Python distribution nirs4all-core; Rust, npm/WASM, R, and MATLAB/Octave publish/import as nirs4all where the bare name is available)",
+      "role": "Portable aggregate and owner-neutral container; end-user R is maintained in nirs4all-r",
       "owner_boundary": "aggregate",
       "default_inclusion": "base",
       "optional": false,
@@ -509,11 +521,6 @@
             "nirs4all"
           ]
         },
-        "r": {
-          "packages": [
-            "nirs4all"
-          ]
-        },
         "matlab": {
           "archives": [
             "nirs4all-matlab-octave"
@@ -522,17 +529,17 @@
         }
       },
       "availability": {
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset",
-        "matlab": "subset",
-        "native": "full"
+        "python": "source-declared",
+        "r": "not-declared",
+        "wasm": "source-declared",
+        "matlab": "source-declared",
+        "native": "source-declared"
       },
       "required_gates": [
         "core_version_guard",
         "core_release_topology_manifest",
         "core_release_source",
-        "core_pipeline_parity"
+        "core_current_owner_scope"
       ],
       "version_sources": [
         {
@@ -552,12 +559,6 @@
           "kind": "json",
           "path": "bindings/wasm/package.json",
           "field": "version"
-        },
-        {
-          "key": "r",
-          "kind": "description",
-          "path": "bindings/r/DESCRIPTION",
-          "field": "Version"
         }
       ],
       "contract_artifacts": [
@@ -582,9 +583,9 @@
       "repo_path": "nirs4all-datasets",
       "selected_workspace_path": "nirs4all-datasets",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
-      "preferred_exact_tag": "v0.3.5",
+      "preferred_exact_tag": "v0.3.19",
       "repo_url": "GBeurier/nirs4all-datasets",
       "role": "Reference dataset catalog",
       "owner_boundary": "catalog",
@@ -611,11 +612,11 @@
         }
       },
       "availability": {
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset",
-        "matlab": "none",
-        "native": "full"
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared",
+        "matlab": "not-declared",
+        "native": "source-declared"
       },
       "required_gates": [
         "datasets_catalog_checksums"

@@ -18,6 +18,11 @@ LEDGER = ROOT / "docs/contracts/release/native-capability-ledger.v1.json"
 SCHEMA = ROOT / "docs/contracts/release/native-capability-ledger/v1.schema.json"
 FIXTURES = ROOT / "tests/fixtures/native-capability-ledger"
 RELEASE_WORKFLOW = ROOT / ".github/workflows/native-capability-ledger.yml"
+HISTORY = ROOT / "docs/contracts/release/history/2026.07-refactor"
+
+
+def _read_historical_ledger() -> dict[str, Any]:
+    return json.loads((HISTORY / LEDGER.name).read_text(encoding="utf-8"))
 
 
 def _load_validator() -> ModuleType:
@@ -84,9 +89,9 @@ def test_native_capability_ledger_validates_baseline_and_release_inputs() -> Non
     ledger = _validate_structural_semantics(validator, LEDGER)
 
     assert ledger["scope"]["exhaustive"] is False
-    assert ledger["release_context"]["release_train"] == "2026.07-refactor"
-    assert {entry["id"] for entry in ledger["capabilities"]} >= set(validator.PORTABLE_CONTROLLER_KINDS)
-    assert {entry["kind"] for entry in ledger["capabilities"]} >= {"api", "model", "operator", "format"}
+    assert ledger["release_context"]["release_train"] == "2026.11-owner-cohort"
+    assert {entry["id"] for entry in ledger["capabilities"]} >= set(validator.CURRENT_CORE_OPERATIONS)
+    assert {entry["kind"] for entry in ledger["capabilities"]} >= {"api", "format"}
 
 
 def test_schema_is_json_schema_for_the_contract_core() -> None:
@@ -158,21 +163,21 @@ def test_v1_and_current_readers_interoperate_on_additive_extensions(tmp_path: Pa
 @pytest.mark.parametrize(
     ("capability_id", "installed_plugins", "expected"),
     [
-        ("model.pls_regression", (), {"decision": "allow_native", "capability_id": "model.pls_regression"}),
+        ("core.n4a-container.write", (), {"decision": "allow_native", "capability_id": "core.n4a-container.write"}),
     ],
 )
 def test_native_and_installed_plugin_dispositions_from_positive_fixture(capability_id: str, installed_plugins: tuple[str, ...], expected: dict[str, str]) -> None:
     validator = _load_validator()
     ledger = _fixture("positive-v1-extension.json")
 
-    assert validator.resolve_capability(ledger, capability_id, runtime="python", installed_plugins=installed_plugins) == expected
+    assert validator.resolve_capability(ledger, capability_id, runtime="rust/windows-latest", installed_plugins=installed_plugins) == expected
 
 
 @pytest.mark.parametrize(
     ("capability_id", "installed_plugins", "code"),
     [
         ("missing.capability", (), "unknown"),
-        ("nirs4all.python.oracle.legacy-backend", (), "refused"),
+        ("core.n4a-container.predict", (), "unknown"),
         ("format.nirs4all-core.lazy-upstream", (), "unknown"),
     ],
 )
@@ -204,15 +209,13 @@ def test_native_capability_ledger_rejects_duplicate_ids(tmp_path: Path) -> None:
         _validate_structural_semantics(validator, path)
 
 
-def test_native_pls_claim_requires_the_proven_portable_alias_crosswalk(tmp_path: Path) -> None:
+def test_current_claim_requires_the_actual_owner_entrypoint(tmp_path: Path) -> None:
     validator = _load_validator()
     ledger = _read_ledger()
-    pls = next(entry for entry in ledger["capabilities"] if entry["id"] == "model.pls_regression")
-    pls["aliases"] = ["sklearn.cross_decomposition.NotPLS"]
+    ledger["capabilities"][0]["aliases"] = ["invented_storage_writer"]
     path = tmp_path / "ledger.json"
     _write_ledger(path, ledger)
-
-    with pytest.raises(validator.CapabilityLedgerError, match="portable PLS aliases"):
+    with pytest.raises(validator.CapabilityLedgerError, match="aliases disagree"):
         _validate_structural_semantics(validator, path)
 
 
@@ -245,16 +248,19 @@ def test_validator_rejects_non_object_documents(tmp_path: Path, invalid_document
 def test_release_surface_never_authorizes_runtime_and_metadata_never_executes() -> None:
     validator = _load_validator()
     ledger = _read_ledger()
-    with pytest.raises(validator.CapabilityLedgerError, match="executable assertion"):
-        validator.resolve_capability(ledger, "dag-ml.prediction-aggregation", runtime="rust", surface_id="nirs4all.rust.aggregate")
-    with pytest.raises(validator.CapabilityLedgerError, match="executable assertion"):
-        validator.resolve_capability(ledger, "format.nirs4all-core.lazy-upstream", runtime="python", surface_id="nirs4all.python.core")
-    assert validator.resolve_capability(ledger, "dag-ml.prediction-aggregation", runtime="native") == {"decision": "allow_native", "capability_id": "dag-ml.prediction-aggregation"}
+    for capability_id, runtime in (("core.n4a-container.write", "rust"),
+                                   ("core.native-n4a-canonical.predict", "python"),
+                                   ("format.nirs4all-core.lazy-upstream", "python")):
+        with pytest.raises(validator.CapabilityLedgerError, match="executable assertion"):
+            validator.resolve_capability(ledger, capability_id, runtime=runtime,
+                                         surface_id="nirs4all.rust.aggregate")
+    assert validator.resolve_capability(ledger, "core.n4a-container.write", runtime="rust/windows-latest") == {
+        "decision": "allow_native", "capability_id": "core.n4a-container.write"}
 
 
 def test_adr22_retention_profile_allows_legacy_without_calling_it_native() -> None:
     validator = _load_validator()
-    ledger = _read_ledger()
+    ledger = _read_historical_ledger()
     assert validator.resolve_capability(ledger, "nirs4all.python.oracle.legacy-backend", profile="rollback-capable", runtime="legacy-python") == {"decision": "allow_legacy_retention", "capability_id": "nirs4all.python.oracle.legacy-backend"}
 
 
@@ -351,16 +357,15 @@ def test_release_ci_gate_validates_only_a_lock_pinned_selected_workspace() -> No
     assert "scripts/n4a_native_capability_ledger.py" in workflow
     assert "tests/test_release_lock.py tests/test_native_capability_ledger.py" in workflow
     assert "--workspace-root \"$GITHUB_WORKSPACE\"" not in workflow
-    assert "git submodule update --init --checkout nirs4all" in workflow
-    assert 'git -C nirs4all fetch --depth=1 origin "$oracle_commit"' in workflow
-    assert 'git -C nirs4all checkout --detach "$oracle_commit"' in workflow
-    assert 'test "$oracle_head" = "$oracle_commit"' in workflow
+    assert "git submodule update --init --checkout nirs4all" not in workflow
+    assert workflow.count('- "docs/contracts/release/core-0.5.0-ci.json"') == 2
+    assert all("outside_lock_surface_id" not in e for c in _read_ledger()["capabilities"] for e in c["evidence"])
     assert "N4A_RELEASE_WORKSPACE_ROOT: ${{ runner.temp }}/n4a-selected-release-members" in workflow
 
 
 def test_outside_lock_oracle_ledger_commit_is_immutable() -> None:
     """The current aggregate pin may move, but evidence must select one exact commit."""
-    ledger = _read_ledger()
+    ledger = _read_historical_ledger()
     commits = {
         evidence["commit"]
         for capability in ledger["capabilities"]
@@ -381,17 +386,17 @@ def test_selected_workspace_integration_uses_the_real_release_lock_gate() -> Non
 
     validator = _load_validator()
     ledger = validator.validate_ledger(LEDGER, workspace_root=Path(configured).resolve())
-    assert ledger["release_context"]["release_train"] == "2026.07-refactor"
+    assert ledger["release_context"]["release_train"] == "2026.11-owner-cohort"
 
 
 @pytest.mark.parametrize(
     ("capability_id", "expected"),
     [
-        ("dag-ml.prediction-aggregation", "baseline must declare native prediction aggregation"),
-        ("nirs4all.python.oracle.legacy-backend", "baseline must declare retained legacy backend availability"),
+        ("core.n4a-container.write", "current baseline must declare exactly"),
+        ("core.native-n4a-canonical.predict", "current baseline must declare exactly"),
     ],
 )
-def test_baseline_requires_native_aggregation_and_rollback_retention_entries(
+def test_baseline_requires_current_operation_entries(
     tmp_path: Path, capability_id: str, expected: str
 ) -> None:
     validator = _load_validator()
@@ -405,33 +410,32 @@ def test_baseline_requires_native_aggregation_and_rollback_retention_entries(
         _validate_structural_semantics(validator, path)
 
 
-def test_baseline_requires_crosswalks_for_native_aggregation_and_rollback_retention(
+def test_baseline_requires_crosswalks_for_current_operations(
     tmp_path: Path
 ) -> None:
     validator = _load_validator()
     payload = _read_ledger()
     payload["release_surface_crosswalk"] = [
         row for row in payload["release_surface_crosswalk"]
-        if row["capability_id"] != "nirs4all.python.oracle.legacy-backend"
+        if row["capability_id"] != "core.native-n4a-canonical.predict"
     ]
     path = tmp_path / "ledger.json"
     _write_ledger(path, payload)
 
-    with pytest.raises(validator.CapabilityLedgerError, match="baseline must crosswalk retained legacy backend availability"):
+    with pytest.raises(validator.CapabilityLedgerError, match="one additive row per capability"):
         _validate_structural_semantics(validator, path)
 
 
-def test_legacy_retention_evidence_is_pinned_to_the_outside_lock_python_oracle(
-    tmp_path: Path
-) -> None:
+def test_source_supported_prediction_cannot_be_promoted_to_qualified(tmp_path: Path) -> None:
     validator = _load_validator()
     payload = _read_ledger()
-    legacy = next(entry for entry in payload["capabilities"] if entry["id"] == "nirs4all.python.oracle.legacy-backend")
-    legacy["evidence"][0]["outside_lock_surface_id"] = "nirs4all.python.core"
+    entry = next(c for c in payload["capabilities"] if c["id"] == "core.native-n4a-canonical.predict")
+    entry["disposition"] = "native"
+    entry["preflight"]["decision"] = "allow_native"
+    entry["runtime_assertions"][0]["availability"] = "executable"
     path = tmp_path / "ledger.json"
     _write_ledger(path, payload)
-
-    with pytest.raises(validator.CapabilityLedgerError, match="must remain outside the aggregation lock"):
+    with pytest.raises(validator.CapabilityLedgerError, match="unqualified or unsupported"):
         _validate_structural_semantics(validator, path)
 
 
@@ -491,3 +495,30 @@ def test_cli_defaults_ledger_from_its_repository_and_needs_explicit_workspace_ro
     validator = _load_validator()
     args = validator.parse_args(["--workspace-root", str(ROOT), "report"])
     assert args.ledger == LEDGER
+
+
+def test_current_storage_claim_rejects_a_different_receipt_digest(tmp_path: Path) -> None:
+    validator = _load_validator()
+    ledger = _read_ledger()
+    ledger["capabilities"][0]["extensions"]["org.nirs4all.owner-operation"]["qualification"]["receipt_sha256"] = "0" * 64
+    path = tmp_path / "ledger.json"
+    _write_ledger(path, ledger)
+    with pytest.raises(validator.CapabilityLedgerError, match="receipt digest"):
+        _validate_structural_semantics(validator, path)
+
+
+def test_historical_release_inputs_remain_exact_provenance() -> None:
+    import hashlib
+
+    expected = {
+        "aggregation-manifest.n4a.json": "4cb1c058c6b8c5babd4e8eec48cac34dfebaeebeec85ae9da2aa21f24184cda1",
+        "aggregation-lock.n4a.lock.json": "d5196c67f88bd18b6e0389e985e5e236ce966fc52ce6b5c310a9b0b73519a9f2",
+        "public-v1-surface-matrix.n4a.json": "b520bc664b0846d5b0158e91362dd6f2153495ee83c36567ab91f675c47faa26",
+    }
+    for name, digest in expected.items():
+        payload = json.loads((HISTORY / name).read_text())
+        assert hashlib.sha256(json.dumps(payload, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode()).hexdigest() == digest
+    historical = _read_historical_ledger()
+    assert historical["release_context"]["release_train"] == "2026.07-refactor"
+    assert _read_ledger()["release_context"]["release_train"] == "2026.11-owner-cohort"
+    _load_validator().read_v1_compatibility_view(historical)

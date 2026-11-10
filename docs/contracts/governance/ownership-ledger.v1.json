@@ -16,6 +16,7 @@
     "repository_keys": [
       "nirs4all-ecosystem",
       "nirs4all",
+      "nirs4all-r",
       "nirs4all-core",
       "dag-ml",
       "dag-ml-data",
@@ -205,6 +206,7 @@
       "repository_keys": [
         "nirs4all-ecosystem",
         "nirs4all",
+        "nirs4all-r",
         "nirs4all-core",
         "dag-ml",
         "dag-ml-data",
@@ -257,6 +259,7 @@
       "repository_keys": [
         "nirs4all-ecosystem",
         "nirs4all",
+        "nirs4all-r",
         "dag-ml",
         "nirs4all-methods",
         "nirs4all-formats",
@@ -373,6 +376,30 @@
           "C",
           "D",
           "F",
+          "G"
+        ],
+        "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."
+      }
+    },
+    {
+      "key": "nirs4all-r",
+      "repo_path": "nirs4all-r",
+      "remote": "https://github.com/GBeurier/nirs4all-r.git",
+      "lanes": [
+        "E",
+        "G"
+      ],
+      "primary_lane": "E",
+      "consulted_lanes": [
+        "G"
+      ],
+      "approver_identity_refs": [
+        "github:GBeurier"
+      ],
+      "arbitration": {
+        "id": "repo.nirs4all-r.lane-overlap",
+        "primary_lane": "E",
+        "consulted_lanes": [
           "G"
         ],
         "rule": "The primary lane routes the change; every consulted lane whose owned paths or contracts are touched must acknowledge the handoff before merge."

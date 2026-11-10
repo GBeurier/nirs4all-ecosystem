@@ -10,6 +10,7 @@ on:
       - "scripts/n4a_native_capability_ledger.py"
       - "scripts/n4a_release_lock.py"
       - "docs/contracts/release/native-capability-ledger.v1.json"
+      - "docs/contracts/release/core-0.5.0-ci.json"
       - "docs/contracts/release/native-capability-ledger/**"
       - "docs/contracts/release/aggregation-manifest.n4a.json"
       - "docs/contracts/release/aggregation-lock.n4a.lock.json"
@@ -27,6 +28,7 @@ on:
       - "scripts/n4a_native_capability_ledger.py"
       - "scripts/n4a_release_lock.py"
       - "docs/contracts/release/native-capability-ledger.v1.json"
+      - "docs/contracts/release/core-0.5.0-ci.json"
       - "docs/contracts/release/native-capability-ledger/**"
       - "docs/contracts/release/aggregation-manifest.n4a.json"
       - "docs/contracts/release/aggregation-lock.n4a.lock.json"
@@ -55,30 +57,6 @@ jobs:
           python-version: "3.11"
       - name: Install release-gate test dependency
         run: python3 -m pip install pytest jsonschema
-      - name: Materialize the ledger-pinned outside-lock Python oracle
-        run: |
-          oracle_commit="$(python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          ledger = json.loads(Path("docs/contracts/release/native-capability-ledger.v1.json").read_text(encoding="utf-8"))
-          entries = [
-              evidence["commit"]
-              for capability in ledger["capabilities"]
-              for evidence in capability["evidence"]
-              if evidence.get("outside_lock_surface_id") == "nirs4all.python.oracle"
-          ]
-          if not entries or len(set(entries)) != 1:
-              raise SystemExit("ledger must declare exactly one outside-lock Python oracle commit")
-          print(entries[0])
-          PY
-          )"
-          git submodule update --init --checkout nirs4all
-          git -C nirs4all fetch --depth=1 origin "$oracle_commit"
-          git -C nirs4all checkout --detach "$oracle_commit"
-          oracle_head="$(git -C nirs4all rev-parse HEAD)"
-          test "$oracle_head" = "$oracle_commit"
-          test -z "$(git -C nirs4all status --porcelain)"
       - name: Checkout lock-pinned selected members
         env:
           N4A_RELEASE_WORKSPACE_ROOT: ${{ runner.temp }}/n4a-selected-release-members

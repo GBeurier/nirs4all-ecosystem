@@ -1,11 +1,12 @@
 {
   "aggregation_lock_version": 1,
   "compatibility_policy": {
+    "availability_scope": "Listed bindings/packages are source declarations, not universal operation support, execution, publication or parity; this inventory is bounded.",
     "datasets_default": "external",
     "facade_namespace": "n4a",
     "private_repos_allowed": false,
     "python_compat_namespace": "nirs4all",
-    "r_packages": "explicit"
+    "r_packages": "external product nirs4all-r; owner bindings remain explicitly accounted"
   },
   "generated_from": {
     "ecosystem_repo": "nirs4all-ecosystem",
@@ -26,14 +27,14 @@
           "canonical_json_equal": true,
           "members": [
             {
-              "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
+              "canonical_json_sha256": "sha256:4efe60c6ea1c21b0e0ea3f06ec2fdc4bc967c2ca4fe75c03cb2656e72804ea9f",
               "member": "dag_ml",
-              "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
+              "raw_sha256": "sha256:685e4eb615a8f94683ab8dbc85cd32ef130c53d792a0a9a39e80dd140e07d877"
             },
             {
-              "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
+              "canonical_json_sha256": "sha256:4efe60c6ea1c21b0e0ea3f06ec2fdc4bc967c2ca4fe75c03cb2656e72804ea9f",
               "member": "dag_ml_data",
-              "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
+              "raw_sha256": "sha256:685e4eb615a8f94683ab8dbc85cd32ef130c53d792a0a9a39e80dd140e07d877"
             }
           ],
           "raw_equal": true
@@ -58,19 +59,19 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:4cb1c058c6b8c5babd4e8eec48cac34dfebaeebeec85ae9da2aa21f24184cda1",
+  "manifest_digest": "sha256:2715aede0320f6b3baaa986ebf922f05749445b1c70d77400813d2b102c522a5",
   "members": {
     "core": {
       "availability": {
-        "matlab": "subset",
-        "native": "full",
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset"
+        "matlab": "source-declared",
+        "native": "source-declared",
+        "python": "source-declared",
+        "r": "not-declared",
+        "wasm": "source-declared"
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:5c99c5b30c48788efc7dc92ebba962029d6a60449765ce6646fc88a61c47e1e1",
+          "canonical_json_sha256": "sha256:6a22b3a2a488c3c80f179ef188fa15a21d62844ecaf1a5557a6bb1e90265a097",
           "function": "release_topology_manifest",
           "id": "release_topology_manifest",
           "json": {
@@ -93,74 +94,186 @@
               ],
               "backing_import": "nirs4all_core",
               "core_exports": [
+                "BrowserTuningResult",
+                "Workspace",
+                "load_browser_tuning",
+                "save_workspace",
+                "open_workspace",
+                "import_workspace",
+                "NativePipeline",
+                "NativeMultimodal",
+                "run_multimodal",
+                "run_pipeline",
+                "TuningResult",
+                "load_tuning",
+                "robustness",
+                "CalibratedWorkflow",
+                "calibrate",
+                "predict_calibrated",
+                "conformal_metrics",
+                "export_calibrated",
+                "load_calibrated",
+                "generate",
+                "tune",
+                "resume_tuning",
+                "predict_multimodal_archive",
+                "Dataset",
+                "Experiment",
                 "LazyUpstream",
+                "MultimodalPredictor",
                 "NativeArchiveUnavailableError",
-                "PORTABLE_OPERATOR_CLASSES",
                 "PipelineDefinition",
                 "Upstream",
+                "Workflow",
                 "available_upstreams",
-                "artifact_contracts",
                 "capability_manifest",
-                "controller_capabilities",
+                "execution_profiles",
+                "dataset",
                 "dag_ml",
                 "dag_ml_data",
                 "datasets",
                 "formats",
+                "export",
                 "import_upstream",
+                "inspect_methods_archive_v2_predictors",
+                "N4aContainer",
+                "N4aFile",
+                "N4aMemberStream",
+                "inspect_n4a_bytes",
                 "io",
                 "load_pipeline_definition",
+                "load",
                 "local_implementation_registry",
                 "methods",
+                "open_experiment",
+                "open_n4a_container",
+                "open_n4a_file",
                 "portable_class_names",
+                "predict",
+                "predict_methods_archive_v2_matrix",
+                "predict_n4a_native",
+                "produce_n4a_native",
                 "require_upstream",
+                "retrain",
+                "retrain_n4a_native",
+                "write_n4a_container",
+                "write_n4a_file",
+                "run",
+                "open_native_package",
+                "read_archive_v2_payloads",
+                "read_archive_v3_view",
+                "read_native_package_view",
                 "read_portable_predictor_package_v2",
                 "read_portable_refit_package_v3",
-                "write_archive_v2_from_native_payloads",
-                "write_archive_v3_from_native_payloads",
-                "required_keyword_registry_entries",
-                "runtime_contracts",
+                "replay_methods_archive_v2",
+                "replay_methods_archive_v2_conformal_presentation_v1",
+                "replay_methods_archive_v2_conformal_presentation_v2",
+                "replay_methods_archive_v3",
+                "write_native_predictor_package",
+                "write_native_refit_package",
+                "save_experiment",
                 "runtime_surfaces",
                 "upstream_status",
                 "upstreams"
               ],
               "execution_engine": true,
               "execution_exports": [
+                "N4M_ROLE_PREFIX",
+                "N4M_TRAINED_PIPELINE_SCHEMA",
+                "N4mRolePipeline",
                 "PortableDataset",
+                "n4m_role_capabilities",
                 "parse_execution_plan",
                 "run_portable_pipeline"
               ],
               "import": "nirs4all_core",
               "public_exports": [
+                "BrowserTuningResult",
+                "Workspace",
+                "load_browser_tuning",
+                "save_workspace",
+                "open_workspace",
+                "import_workspace",
+                "NativePipeline",
+                "NativeMultimodal",
+                "run_multimodal",
+                "run_pipeline",
+                "TuningResult",
+                "load_tuning",
+                "robustness",
+                "CalibratedWorkflow",
+                "calibrate",
+                "predict_calibrated",
+                "conformal_metrics",
+                "export_calibrated",
+                "load_calibrated",
+                "generate",
+                "tune",
+                "resume_tuning",
+                "predict_multimodal_archive",
+                "Dataset",
+                "Experiment",
                 "LazyUpstream",
+                "MultimodalPredictor",
                 "NativeArchiveUnavailableError",
-                "PORTABLE_OPERATOR_CLASSES",
                 "PipelineDefinition",
                 "Upstream",
+                "Workflow",
                 "available_upstreams",
-                "artifact_contracts",
                 "capability_manifest",
-                "controller_capabilities",
+                "execution_profiles",
+                "dataset",
                 "dag_ml",
                 "dag_ml_data",
                 "datasets",
                 "formats",
+                "export",
                 "import_upstream",
+                "inspect_methods_archive_v2_predictors",
+                "N4aContainer",
+                "N4aFile",
+                "N4aMemberStream",
+                "inspect_n4a_bytes",
                 "io",
                 "load_pipeline_definition",
+                "load",
                 "local_implementation_registry",
                 "methods",
+                "open_experiment",
+                "open_n4a_container",
+                "open_n4a_file",
                 "portable_class_names",
+                "predict",
+                "predict_methods_archive_v2_matrix",
+                "predict_n4a_native",
+                "produce_n4a_native",
                 "require_upstream",
+                "retrain",
+                "retrain_n4a_native",
+                "write_n4a_container",
+                "write_n4a_file",
+                "run",
+                "open_native_package",
+                "read_archive_v2_payloads",
+                "read_archive_v3_view",
+                "read_native_package_view",
                 "read_portable_predictor_package_v2",
                 "read_portable_refit_package_v3",
-                "write_archive_v2_from_native_payloads",
-                "write_archive_v3_from_native_payloads",
-                "required_keyword_registry_entries",
-                "runtime_contracts",
+                "replay_methods_archive_v2",
+                "replay_methods_archive_v2_conformal_presentation_v1",
+                "replay_methods_archive_v2_conformal_presentation_v2",
+                "replay_methods_archive_v3",
+                "write_native_predictor_package",
+                "write_native_refit_package",
+                "save_experiment",
                 "runtime_surfaces",
                 "upstream_status",
                 "upstreams",
+                "N4M_ROLE_PREFIX",
+                "N4M_TRAINED_PIPELINE_SCHEMA",
+                "N4mRolePipeline",
                 "PortableDataset",
+                "n4m_role_capabilities",
                 "parse_execution_plan",
                 "run_portable_pipeline",
                 "CORE_FACADE_EXPORTS",
@@ -221,19 +334,6 @@
                 "role": "JavaScript/WASM aggregate package",
                 "status": "current",
                 "workflow": "release-npm.yml"
-              },
-              {
-                "artifact": "source package",
-                "default_inclusion": "base",
-                "ecosystem": "r",
-                "imports": [
-                  "library(nirs4all)"
-                ],
-                "name": "nirs4all",
-                "registry": "cran/r-universe",
-                "role": "R aggregate package",
-                "status": "current",
-                "workflow": "release-r.yml"
               },
               {
                 "artifact": "zip archive",
@@ -334,11 +434,6 @@
                 },
                 {
                   "distribution": "nirs4all",
-                  "ecosystem": "r",
-                  "namespace": "library(nirs4all)"
-                },
-                {
-                  "distribution": "nirs4all",
                   "ecosystem": "matlab_octave",
                   "namespace": "+nirs4all"
                 }
@@ -403,10 +498,23 @@
                 "expression": "CECILL-2.1 OR AGPL-3.0-or-later",
                 "files": [
                   "LICENSE",
+                  "LICENSES/AGPL-3.0-or-later.txt",
+                  "LICENSES/CeCILL-2.1.txt",
                   "bindings/python/LICENSE",
+                  "bindings/python/LICENSES/AGPL-3.0-or-later.txt",
+                  "bindings/python/LICENSES/CeCILL-2.1.txt",
+                  "bindings/python/LICENSING.md",
+                  "bindings/python/THIRD_PARTY_NOTICES.md",
                   "bindings/wasm/LICENSE",
-                  "bindings/r/LICENSE",
+                  "bindings/wasm/LICENSES/AGPL-3.0-or-later.txt",
+                  "bindings/wasm/LICENSES/CeCILL-2.1.txt",
+                  "bindings/wasm/LICENSING.md",
+                  "bindings/wasm/THIRD_PARTY_NOTICES.md",
                   "bindings/matlab/LICENSE",
+                  "bindings/matlab/LICENSES/AGPL-3.0-or-later.txt",
+                  "bindings/matlab/LICENSES/CeCILL-2.1.txt",
+                  "bindings/matlab/LICENSING.md",
+                  "bindings/matlab/THIRD_PARTY_NOTICES.md",
                   "LICENSING.md",
                   "THIRD_PARTY_NOTICES.md"
                 ],
@@ -651,18 +759,6 @@
                 "version_spelling": "cargo-semver"
               },
               {
-                "distribution": "nirs4all",
-                "ecosystem": "r",
-                "local_gate": "test-r-if-available",
-                "namespace": "library(nirs4all)",
-                "package_manifest": "bindings/r/DESCRIPTION",
-                "registry": "cran/r-universe",
-                "release_workflow": "release-r.yml",
-                "tool_policy": "skip-locally-if-r-missing",
-                "version_source": "bindings/r/DESCRIPTION:Version",
-                "version_spelling": "r-description"
-              },
-              {
                 "distribution": "nirs4all-matlab-octave",
                 "ecosystem": "matlab_octave",
                 "local_gate": "test-matlab-parity-if-available",
@@ -679,7 +775,7 @@
           "json_schema": "nirs4all-core.release-topology.v2",
           "kind": "python_function_json",
           "path": "bindings/python/src/nirs4all_core/_topology.py",
-          "raw_sha256": "sha256:cd5bc67706f4462dfcddab8ec3410bbb5e59e144bff2615c7fca1b72ab4ff399",
+          "raw_sha256": "sha256:14e2aa8253026f6841dd3e7be0f55799fcf24769a38fa293b34e685be6d00ef4",
           "read_from": "git_head",
           "source_ref": "HEAD"
         }
@@ -708,11 +804,6 @@
             "n4a"
           ]
         },
-        "r": {
-          "packages": [
-            "nirs4all"
-          ]
-        },
         "rust": {
           "crates": [
             "nirs4all"
@@ -727,18 +818,18 @@
         "core_version_guard",
         "core_release_topology_manifest",
         "core_release_source",
-        "core_pipeline_parity"
+        "core_current_owner_scope"
       ],
-      "role": "Canonical portable aggregate bindings (Python distribution nirs4all-core; Rust, npm/WASM, R, and MATLAB/Octave publish/import as nirs4all where the bare name is available)",
+      "role": "Portable aggregate and owner-neutral container; end-user R is maintained in nirs4all-r",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
       "selected_workspace_path": "nirs4all-core",
       "state": {
-        "branch": "main",
-        "commit": "d5ddf5f23d37f3528beb2ff9644e221ea86e2aa7",
+        "branch": "integration/release-20261109",
+        "commit": "53f53b727e983057f137f42ca0f87d7368db5990",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "v0.5.0"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -747,45 +838,39 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.3.22"
+          "value": "0.5.0"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.3.22"
-        },
-        "r": {
-          "kind": "description",
-          "read_from": "tracked_worktree",
-          "source": "bindings/r/DESCRIPTION",
-          "value": "0.3.22"
+          "value": "0.5.0"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.3.22"
+          "value": "0.5.0"
         }
       }
     },
     "dag_ml": {
       "availability": {
-        "matlab": "none",
-        "native": "full",
-        "python": "full",
-        "r": "none",
-        "wasm": "subset"
+        "matlab": "not-declared",
+        "native": "source-declared",
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared"
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
+          "canonical_json_sha256": "sha256:4efe60c6ea1c21b0e0ea3f06ec2fdc4bc967c2ca4fe75c03cb2656e72804ea9f",
           "contracts": {
             "coordinator_branch_view.v1": {
               "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
             },
             "coordinator_data_plan_envelope.v1": {
-              "normalized_sha256": "f3719abdba9b178c4d939d6173adecf32bf3a7a3e7a7f903baaf699f852ce368"
+              "normalized_sha256": "5e6d65b1bd8dcb6daf454781dad0737579342e0bb9b0470b569036a72ea865b5"
             },
             "data_output_provenance.v1": {
               "normalized_sha256": "d90533a9ae7d5a9415a1f8239ea24fbb1e1c37203eba255023e1caadc43494d7"
@@ -807,7 +892,7 @@
           "kind": "conformance_pack",
           "pack_id": "dag-ml.shared.conformance.v1",
           "path": "docs/contracts/conformance_pack.v1.json",
-          "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
+          "raw_sha256": "sha256:685e4eb615a8f94683ab8dbc85cd32ef130c53d792a0a9a39e80dd140e07d877"
         },
         {
           "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
@@ -826,19 +911,19 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:0b70a5a17bb8d030f2a154b49711b20a05bc9ef27aac45aa7fd6789ceceef8cb",
+          "canonical_json_sha256": "sha256:87ef78ce0dfd55471ae1924d9c2f04f39e656a9daef7ae5c94a1661181b716ed",
           "crate": "dag-ml",
           "headers": [
             {
               "path": "crates/dag-ml-capi/include/dag_ml.h",
-              "sha256": "49e4c54cac3e0ea416537feb94e68fdb3bf6049ea424c26d407ef46d68ab8e36"
+              "sha256": "d5bb1379748bbf709d112718be63b12442bd9afadf12be8f9c3d6f685bd59636"
             }
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.3.15",
+          "package_version": "0.4.0",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:0147741f25d80960dddea35fb1b9ae488d830cc05ff3f82ad163e4124fdf695e"
+          "raw_sha256": "sha256:353db675b219b6d5c8715039a5fdc7e7717edfab224f28ad893d9f996c852be2"
         }
       ],
       "default_inclusion": "base",
@@ -859,6 +944,11 @@
           "distribution": "dag-ml",
           "imports": [
             "dag_ml"
+          ]
+        },
+        "r": {
+          "packages": [
+            "dagml"
           ]
         },
         "rust": {
@@ -882,14 +972,14 @@
       ],
       "role": "DAG runtime and native execution contracts",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
       "selected_workspace_path": "dag-ml",
       "state": {
-        "branch": "main",
-        "commit": "e9f0d36b7125e3ba8498493a72af80ec8b8318aa",
+        "branch": "integration/release-20261109",
+        "commit": "beaba0b62f9a65bca86c2f521fc482bd80092ba3",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "v0.4.0"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -898,39 +988,45 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.3.15"
+          "value": "0.4.0"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-py/pyproject.toml",
-          "value": "0.3.15"
+          "value": "0.4.0"
+        },
+        "r": {
+          "kind": "description",
+          "read_from": "tracked_worktree",
+          "source": "bindings/r/DESCRIPTION",
+          "value": "0.4.0"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.3.15"
+          "value": "0.4.0"
         }
       }
     },
     "dag_ml_data": {
       "availability": {
-        "matlab": "none",
-        "native": "full",
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset"
+        "matlab": "not-declared",
+        "native": "source-declared",
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared"
       },
       "contract_artifacts": [
         {
-          "canonical_json_sha256": "sha256:ed1c918414721e1e8a0e043fcfe43e417f8aeaa31c14c589d93f825270de0124",
+          "canonical_json_sha256": "sha256:4efe60c6ea1c21b0e0ea3f06ec2fdc4bc967c2ca4fe75c03cb2656e72804ea9f",
           "contracts": {
             "coordinator_branch_view.v1": {
               "normalized_sha256": "2a6780491def139be89428b696051bfd56dab5d4225a3b3092a50624fc27618b"
             },
             "coordinator_data_plan_envelope.v1": {
-              "normalized_sha256": "f3719abdba9b178c4d939d6173adecf32bf3a7a3e7a7f903baaf699f852ce368"
+              "normalized_sha256": "5e6d65b1bd8dcb6daf454781dad0737579342e0bb9b0470b569036a72ea865b5"
             },
             "data_output_provenance.v1": {
               "normalized_sha256": "d90533a9ae7d5a9415a1f8239ea24fbb1e1c37203eba255023e1caadc43494d7"
@@ -952,7 +1048,7 @@
           "kind": "conformance_pack",
           "pack_id": "dag-ml.shared.conformance.v1",
           "path": "docs/contracts/conformance_pack.v1.json",
-          "raw_sha256": "sha256:ddc78206e1f3305c550902f2e81f849e6b23dd80040e161c65c89e7d6db971c2"
+          "raw_sha256": "sha256:685e4eb615a8f94683ab8dbc85cd32ef130c53d792a0a9a39e80dd140e07d877"
         },
         {
           "canonical_json_sha256": "sha256:0fb00e7a5513aab7fea6eb9f9016eaa427f308bc03f7bf9cdd52ad54b7545953",
@@ -971,7 +1067,7 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:b67e09dc4548ca46feb1c09ca4b964977c777b02d6d0923512082d9dac90059c",
+          "canonical_json_sha256": "sha256:7bfc4907c0a7326b106da895323e82a7242ea32e173220a0f7f795d1d6eec998",
           "crate": "dag-ml-data",
           "headers": [
             {
@@ -981,9 +1077,9 @@
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.2.9",
+          "package_version": "0.2.16",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:1eb23920baacbea5a40dda16393cdd014a0c062d7a4320e2f7b829c8aa5ddf37"
+          "raw_sha256": "sha256:c231ae2a0c67b9fe7761ce23f3603b913275a8adf604f2168dfeb2faa791f2f9"
         }
       ],
       "default_inclusion": "base",
@@ -1032,14 +1128,14 @@
       ],
       "role": "Data provider contracts and DMD representations",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
       "selected_workspace_path": "dag-ml-data",
       "state": {
-        "branch": "main",
-        "commit": "4c8ce37952427fd13a132cbcca6324214c72554a",
+        "branch": "integration/release-20261109",
+        "commit": "93138068a1d61cf04c4327b4e75e410b6d57e4ec",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "provider-v0.2.16"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1048,35 +1144,35 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.2.9"
+          "value": "0.2.16"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-data-py/pyproject.toml",
-          "value": "0.2.9"
+          "value": "0.2.16"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-data-r/DESCRIPTION",
-          "value": "0.2.9"
+          "value": "0.2.16"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.2.9"
+          "value": "0.2.16"
         }
       }
     },
     "datasets": {
       "availability": {
-        "matlab": "none",
-        "native": "full",
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset"
+        "matlab": "not-declared",
+        "native": "source-declared",
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared"
       },
       "contract_artifacts": [],
       "default_inclusion": "external",
@@ -1111,14 +1207,14 @@
       ],
       "role": "Reference dataset catalog",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
       "selected_workspace_path": "nirs4all-datasets",
       "state": {
-        "branch": "main",
-        "commit": "a650d54432b1367bf80d8d5320d163ba93bdf40d",
+        "branch": "integration/release-20261109",
+        "commit": "57ccd12fddbfb767b3ff5941433af5980f175c96",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "v0.3.19"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1127,29 +1223,29 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "pyproject.toml",
-          "value": "0.3.8"
+          "value": "0.3.19"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/nirs4alldatasets/DESCRIPTION",
-          "value": "0.3.8"
+          "value": "0.3.19"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.3.8"
+          "value": "0.3.19"
         }
       }
     },
     "formats": {
       "availability": {
-        "matlab": "none",
-        "native": "full",
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset"
+        "matlab": "not-declared",
+        "native": "source-declared",
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared"
       },
       "contract_artifacts": [],
       "default_inclusion": "base",
@@ -1192,14 +1288,14 @@
       ],
       "role": "Vendor readers and bindings",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
       "selected_workspace_path": "nirs4all-formats",
       "state": {
-        "branch": "main",
-        "commit": "7f384bbf6e4ccf70af8ab3da288078fc5caea7be",
+        "branch": "integration/release-20261109",
+        "commit": "819f5764a2138d755155e5018d7bbcb178924861",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "v0.2.16"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1208,29 +1304,29 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/Cargo.toml",
-          "value": "0.2.7"
+          "value": "0.2.16"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/nirs4allformats/DESCRIPTION",
-          "value": "0.2.7"
+          "value": "0.2.16"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.2.7"
+          "value": "0.2.16"
         }
       }
     },
     "io": {
       "availability": {
-        "matlab": "none",
-        "native": "full",
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset"
+        "matlab": "not-declared",
+        "native": "source-declared",
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared"
       },
       "contract_artifacts": [],
       "default_inclusion": "base",
@@ -1273,14 +1369,14 @@
       ],
       "role": "Dataset assembly and DatasetPackage bridge",
       "selected_branch_patterns": [
-        "main"
+        "integration/io-wasm-numeric-wire"
       ],
       "selected_workspace_path": "nirs4all-io",
       "state": {
-        "branch": "main",
-        "commit": "98aca515d83369f1b61538ce31a5d2b1f519d4e9",
+        "branch": "integration/io-wasm-numeric-wire",
+        "commit": "6c1a2567730464de5147509e39aaeba6bbc00b66",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "v0.3.2"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1289,44 +1385,44 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/Cargo.toml",
-          "value": "0.1.11"
+          "value": "0.3.2"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.1.11"
+          "value": "0.3.2"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.1.11"
+          "value": "0.3.2"
         }
       }
     },
     "methods": {
       "availability": {
-        "matlab": "subset",
-        "native": "full",
-        "python": "full",
-        "r": "subset",
-        "wasm": "subset"
+        "matlab": "source-declared",
+        "native": "source-declared",
+        "python": "source-declared",
+        "r": "source-declared",
+        "wasm": "source-declared"
       },
       "contract_artifacts": [
         {
           "id": "n4m_version_header",
           "kind": "text",
           "path": "cpp/include/n4m/n4m_version.h",
-          "raw_sha256": "sha256:c53aab410b04510371013102c21ae1988a00eac46b5ccddaae0c262debfac914"
+          "raw_sha256": "sha256:46215177240107548f101847d0e177f0733e24b2b8f4c24dffffeea2339b1999"
         }
       ],
       "default_inclusion": "aggregate-extra",
       "glob_artifacts": {
         "expected_symbols": {
-          "cpp/abi/expected_symbols_linux.txt": "sha256:3720f4c7a16eb6fd1a7df12ff3258b1454a3183e752e23f59a6ad64100ef1396",
-          "cpp/abi/expected_symbols_macos.txt": "sha256:b9b3c785cd09a4c3f875f843e97dbc1a2ce0112e8aceb1d0e7e986dc033a992a",
-          "cpp/abi/expected_symbols_windows.txt": "sha256:b9b3c785cd09a4c3f875f843e97dbc1a2ce0112e8aceb1d0e7e986dc033a992a"
+          "cpp/abi/expected_symbols_linux.txt": "sha256:1de044e933b75cff6d47024fa3c3b7b7bab9f6b94e43b4eb661a7b605dd729ca",
+          "cpp/abi/expected_symbols_macos.txt": "sha256:c73fd65cc79f3f29a0881f15ad65eec9a693f893f00c57ddb9ca57d5228042fa",
+          "cpp/abi/expected_symbols_windows.txt": "sha256:c73fd65cc79f3f29a0881f15ad65eec9a693f893f00c57ddb9ca57d5228042fa"
         }
       },
       "license_expression": "CECILL-2.1",
@@ -1369,12 +1465,12 @@
       ],
       "role": "Portable methods kernels and C ABI",
       "selected_branch_patterns": [
-        "main"
+        "integration/release-20261109"
       ],
       "selected_workspace_path": "nirs4all-methods",
       "state": {
-        "branch": "main",
-        "commit": "2767b3a9e75dfaf30615d57593d6ed7eba160274",
+        "branch": "integration/release-20261109",
+        "commit": "ff3ba7a4047c55e841ca92342abd0140b38be984",
         "dirty": false,
         "exact_tag": null
       },
@@ -1386,12 +1482,12 @@
           "read_from": "tracked_worktree",
           "source": "cpp/include/n4m/n4m_version.h",
           "value": {
-            "abi_version": "2.3.0",
+            "abi_version": "2.22.0",
             "abi_version_int": null,
-            "project_version": "1.0.13",
-            "serialization_format_version": 1,
+            "project_version": "1.3.15",
+            "serialization_format_version": 3,
             "serialization_magic": "N4MM",
-            "source_sha256": "sha256:c53aab410b04510371013102c21ae1988a00eac46b5ccddaae0c262debfac914"
+            "source_sha256": "sha256:46215177240107548f101847d0e177f0733e24b2b8f4c24dffffeea2339b1999"
           }
         },
         "python_nirs4all_methods": {
@@ -1403,7 +1499,7 @@
           "module": "n4m",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "1.0.13"
+          "value": "1.3.15"
         },
         "python_pls4all": {
           "distribution": "pls4all",
@@ -1414,13 +1510,13 @@
           "module": "pls4all",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "1.0.13"
+          "value": "1.3.15"
         },
         "r_n4m": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/n4m/DESCRIPTION",
-          "value": "1.0.13"
+          "value": "1.3.15"
         }
       }
     }
@@ -1429,12 +1525,12 @@
     "preferred_exact_tag": null,
     "repo_path_policy": "repo_path remains the public/canonical repository path recorded in the lock; selected_workspace_path names the local release-candidate checkout used as release evidence.",
     "selected_branch_patterns": [
-      "main"
+      "integration/release-20261109"
     ],
-    "superseded_tag_policy": "Do not validate historical RC worktrees as V1 release evidence once the selected heads have been tagged on canonical main checkouts.",
-    "workspace_root": "/home/delete/nirs4all"
+    "superseded_tag_policy": "The history/2026.07-refactor snapshot is provenance only. Active validation materializes this lock; parent source gitlinks do not select runtime dependency artifacts.",
+    "workspace_root": "<explicit-selected-workspace>"
   },
-  "release_train": "2026.07-refactor",
+  "release_train": "2026.11-owner-cohort",
   "schema_version": "n4a.aggregation-lock/v1",
   "status": "candidate",
   "verification": {
@@ -1446,7 +1542,7 @@
     ],
     "private_repos_present": false,
     "required_gates": [
-      "core_pipeline_parity",
+      "core_current_owner_scope",
       "core_release_source",
       "core_release_topology_manifest",
       "core_version_guard",

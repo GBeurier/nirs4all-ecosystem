@@ -1,7 +1,8 @@
 # Release Distribution Matrix
 
-The bounded, machine-readable public V1 surface matrix is the canonical tracked
-distribution inventory for this refactoring wave:
+The bounded, machine-readable surface matrix records current owner and product
+source accounting for `2026.11-owner-cohort`, independently of publication and
+operation/platform qualification:
 
 `docs/contracts/release/public-v1-surface-matrix.n4a.json`
 
@@ -10,19 +11,23 @@ The aggregate release-member intent and exact selected lock are tracked in:
 - `docs/contracts/release/aggregation-manifest.n4a.json`
 - `docs/contracts/release/aggregation-lock.n4a.lock.json`
 
-The latest head-selection and publication-state audit for this matrix and the
-aggregation lock is:
+CI materializes the active lock-selected commits and validates them against the
+manifest, surface matrix and evidence-bound native ledger. Parent gitlinks remain
+source references; runtime dependency artifacts are selected by each owner's
+manifests and exact pins. In particular, Core 0.5.0 retains Rust IO 0.3.1 even when
+the parent references the IO 0.3.2 source, and its pinned Methods runtime source
+remains distinct from a later Methods source/test successor.
 
-`docs/agent_reports/WAVE_10O_RUNTIME_E2E_LOCK_AUDIT.md`
+Core's R binding is retired; the R product lives in `nirs4all-r`. Source-supported
+operations do not imply numerical parity or every host route. The native ledger's
+current executed claim is limited to the named Windows Rust synthetic storage
+write fixture. Other source operations and unsupported storage prediction remain
+explicitly distinct; no full Python/R/WASM support statement follows.
 
-The latest operational follow-up for Studio RC packaging, cockpit manual
-blocker ordering, and the cluster GitGuardian audit is:
-
-`docs/agent_reports/WAVE_10P_STUDIO_RC_COCKPIT_CLUSTER_AUDIT.md`
-
-When live RC worktrees diverge from the selected release members, the
-aggregation lock validated from an isolated `checkout-members` workspace is the
-authority, not the live `_worktrees` checkout state.
+The exact previous manifest, lock, matrix and native ledger are preserved under
+`docs/contracts/release/history/2026.07-refactor/`. They are provenance, not active
+defaults. The WAVE 10O audit dated 8 July 2026 and the October README snapshot retain
+their own evidence scope and are not a November qualification.
 
 The release-lock tool's checkout, fetchability-audit, and full-validation
 commands first bind the lock to the exact canonical digest of the supplied

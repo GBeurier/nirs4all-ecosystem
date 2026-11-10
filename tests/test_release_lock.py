@@ -600,16 +600,16 @@ def test_central_manifest_declares_reproducible_methods_and_core_topology_source
         )
     )
     components = {component["key"]: component for component in manifest["components"]}
-    assert manifest["release_selection_policy"]["workspace_root"] == "/home/delete/nirs4all"
-    assert manifest["release_selection_policy"]["selected_branch_patterns"] == ["main"]
+    assert manifest["release_selection_policy"]["workspace_root"] == "<explicit-selected-workspace>"
+    assert manifest["release_selection_policy"]["selected_branch_patterns"] == ["integration/release-20261109"]
     assert manifest["release_selection_policy"]["preferred_exact_tag"] is None
     assert components["core"]["repo_path"] == "nirs4all-core"
     assert components["core"]["repo_url"] == "GBeurier/nirs4all-core"
     assert components["core"]["selected_workspace_path"] == "nirs4all-core"
-    assert components["core"]["preferred_exact_tag"] == "v0.3.22"
+    assert components["core"]["preferred_exact_tag"] == "v0.5.0"
     assert components["core"]["target_repo_path"] == "nirs4all-core"
     assert components["core"].get("repo_aliases", []) == []
-    assert components["formats"]["preferred_exact_tag"] == "v0.2.7"
+    assert components["formats"]["preferred_exact_tag"] == "v0.2.16"
     methods_sources = {
         source["key"]: source for source in components["methods"]["version_sources"]
     }
@@ -947,3 +947,20 @@ def test_v2_product_train_refuses_go_with_required_evidence_missing(
 
     with pytest.raises(release_lock.RelError, match="promotion refused"):
         release_lock.generate_lock(manifest_path, tmp_path / "empty-workspace")
+
+
+def test_current_methods_serialization_macro_alias_is_resolved(tmp_path: Path) -> None:
+    release_lock = _load_release_lock()
+    header = tmp_path / "n4m_version.h"
+    header.write_text("\n".join([
+        "#define N4M_PROJECT_VERSION_MAJOR 1", "#define N4M_PROJECT_VERSION_MINOR 3",
+        "#define N4M_PROJECT_VERSION_PATCH 15", "#define N4M_ABI_VERSION_MAJOR 2",
+        "#define N4M_ABI_VERSION_MINOR 22", "#define N4M_ABI_VERSION_PATCH 0",
+        '#define N4M_SERIALIZATION_MAGIC "N4MM"',
+        "#define N4M_SERIALIZATION_FORMAT_VERSION_V3 3u",
+        "#define N4M_SERIALIZATION_FORMAT_VERSION N4M_SERIALIZATION_FORMAT_VERSION_V3",
+    ]) + "\n")
+    result = release_lock.parse_c_header_macros(header)
+    assert result["project_version"] == "1.3.15"
+    assert result["abi_version"] == "2.22.0"
+    assert result["serialization_format_version"] == 3

@@ -295,6 +295,12 @@ def parse_c_header_macros(path: Path) -> dict[str, Any]:
 
     def int_macro(name: str) -> int:
         value = macros[name]
+        seen = {name}
+        while value in macros:
+            if value in seen:
+                raise RelError(f"cyclic integer macro alias in {path}: {name}")
+            seen.add(value)
+            value = macros[value]
         return int(value.rstrip("uU"))
 
     project = ".".join(
