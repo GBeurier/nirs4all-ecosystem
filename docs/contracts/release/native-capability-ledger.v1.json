@@ -38,11 +38,11 @@
     "inputs": {
       "aggregation_manifest": {
         "path": "docs/contracts/release/aggregation-manifest.n4a.json",
-        "canonical_json_sha256": "sha256:2715aede0320f6b3baaa986ebf922f05749445b1c70d77400813d2b102c522a5"
+        "canonical_json_sha256": "sha256:4c0f3177866fe1db0e0cc687d4ef9b2b2a85a95ba8e40f66f0e41f532962c656"
       },
       "aggregation_lock": {
         "path": "docs/contracts/release/aggregation-lock.n4a.lock.json",
-        "canonical_json_sha256": "sha256:601897a777b7831e72b8813576d544a0cb230f12fcf5fe268f5cfd8fb7d7b6bf"
+        "canonical_json_sha256": "sha256:4cf9a32d71621047173ed6e36f21106a3a6b34431d65ddd5b1309a4b9993c640"
       },
       "surface_matrix": {
         "path": "docs/contracts/release/public-v1-surface-matrix.n4a.json",

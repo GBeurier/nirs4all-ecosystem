@@ -59,7 +59,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:2715aede0320f6b3baaa986ebf922f05749445b1c70d77400813d2b102c522a5",
+  "manifest_digest": "sha256:4c0f3177866fe1db0e0cc687d4ef9b2b2a85a95ba8e40f66f0e41f532962c656",
   "members": {
     "core": {
       "availability": {
@@ -1067,7 +1067,7 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:7bfc4907c0a7326b106da895323e82a7242ea32e173220a0f7f795d1d6eec998",
+          "canonical_json_sha256": "sha256:e0415db498974f2c95c29c62e1f149f2905b0d3610f79a1e3a875f720208e671",
           "crate": "dag-ml-data",
           "headers": [
             {
@@ -1077,9 +1077,9 @@
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.2.16",
+          "package_version": "0.2.17",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:c231ae2a0c67b9fe7761ce23f3603b913275a8adf604f2168dfeb2faa791f2f9"
+          "raw_sha256": "sha256:962581f7290bab611f1e87c08ee2bee8af3fb6839984176fbb9d48ddc2e3d7e8"
         }
       ],
       "default_inclusion": "base",
@@ -1128,14 +1128,14 @@
       ],
       "role": "Data provider contracts and DMD representations",
       "selected_branch_patterns": [
-        "integration/release-20261109"
+        "main"
       ],
       "selected_workspace_path": "dag-ml-data",
       "state": {
-        "branch": "integration/release-20261109",
-        "commit": "93138068a1d61cf04c4327b4e75e410b6d57e4ec",
+        "branch": "main",
+        "commit": "854d5bebd88e1de761283139189735c349a6226c",
         "dirty": false,
-        "exact_tag": "provider-v0.2.16"
+        "exact_tag": "v0.2.17"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1144,25 +1144,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.2.16"
+          "value": "0.2.17"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-data-py/pyproject.toml",
-          "value": "0.2.16"
+          "value": "0.2.17"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-data-r/DESCRIPTION",
-          "value": "0.2.16"
+          "value": "0.2.17"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.2.16"
+          "value": "0.2.17"
         }
       }
     },

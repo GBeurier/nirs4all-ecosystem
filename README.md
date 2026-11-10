@@ -26,8 +26,8 @@ Its accepted source includes the nine-script Core prerequisite correction
 [`6e8412ac`](https://github.com/GBeurier/nirs4all-r/commit/6e8412ac4fcd2f353e552da972c54f4ebcf7b6bd).
 R-universe source propagation and served platform checks remain separate;
 no successful corrected R-universe build is claimed here.
-Studio retains its historical parent reference while its Main integration is deferred;
-this parent update makes no new Studio Main, GUI or release claim.
+Studio references its reviewed backend integration on Main.
+Studio GUI migration and package release remain outside this source update.
 
 The [2026.07 profile](docs/contracts/release/history/2026.07-refactor/aggregation-lock.n4a.lock.json)
 is retained as historical provenance and is not the active CI selection.
