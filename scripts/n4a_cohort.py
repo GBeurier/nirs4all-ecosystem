@@ -1472,6 +1472,8 @@ def release_plan(args: argparse.Namespace) -> int:
         released_versions.update({r["name"]: r["version"] for r in registry})
     follow_ups = []
     for record in report["requirements"]:
+        if record in report["alignments"]:
+            continue  # listed below as a prerequisite
         if record["crate"] in released_versions and record["requirement"].startswith("=") and record["requirement"][1:] != record["cohort_version"]:
             follow_ups.append(f"{record['consumer']}:{record['manifest']} pins {record['crate']} {record['requirement']}; "
                               f"update to {record['cohort_version']} (or a minor range) after release")

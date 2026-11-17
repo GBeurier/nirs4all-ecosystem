@@ -90,7 +90,7 @@
       "publishes": {"crates": ["dag-ml-core", "dag-ml-results", "dag-ml-arrow", "dag-ml"], "pypi": ["dag-ml"], "npm": ["dag-ml-wasm"]},
       "release": {"tags": ["v{version}"]},
       "gates": [
-        {"id": "dag-ml-cargo-test", "tier": "fast", "cmd": ["cargo", "test", "--workspace"]},
+        {"id": "dag-ml-cargo-test", "tier": "fast", "needs": ["libn4m"], "note": "The CLI replay tests run the sibling Methods Python sources (src/nirs4all-methods) on the cohort libn4m.", "cmd": ["cargo", "test", "--workspace"]},
         {"id": "dag-ml-python-binding", "tier": "fast", "needs": ["env"], "note": "As in dag-ml CI: the tracked Python sources with the extension built from this source (here the cohort wheel's).", "cmd": ["sh", "-c", "cp \"$1/dag_ml/_dag_ml.abi3.so\" crates/dag-ml-py/python/dag_ml/ && PYTHONPATH=crates/dag-ml-py/python exec \"$2\" -m pytest -q -p no:cacheprovider crates/dag-ml-py/tests", "sh", "{site_packages}", "{python}"]}
       ]
     },
