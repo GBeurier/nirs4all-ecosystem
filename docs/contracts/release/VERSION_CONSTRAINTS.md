@@ -89,6 +89,11 @@ one is 1.4.0) and in an `n4m` crate minor. The crate on `main` already requires
 ABI 2.23 while the published `n4m` 0.4.2 requires 2.22, so the next crate
 publication is 0.5.0.
 
+## RustSec advisories
+
+`cargo audit` gates fail on vulnerabilities and unsound advisories (`cargo audit --deny unsound`), never on informational ones.
+Unmaintained, notice and yanked advisories are printed as warnings in the job log and kept out of per-advisory ignore lists.
+
 ## Enforcement
 
 | Repository | Existing enforcement |
