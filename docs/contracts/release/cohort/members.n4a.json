@@ -91,6 +91,7 @@
       "release": {"tags": ["v{version}"]},
       "gates": [
         {"id": "dag-ml-cargo-test", "tier": "fast", "needs": ["libn4m"], "note": "The CLI replay tests run the sibling Methods Python sources (src/nirs4all-methods) on the cohort libn4m.", "cmd": ["cargo", "test", "--workspace"]},
+        {"id": "dag-ml-cli-build", "tier": "full", "note": "The CLI the SDK nightly shards drive (N4A_DAGML_CLI), built from this source.", "cmd": ["cargo", "build", "-p", "dag-ml-cli"]},
         {"id": "dag-ml-python-binding", "tier": "fast", "needs": ["env"], "note": "As in dag-ml CI: the tracked Python sources with the extension built from this source (here the cohort wheel's).", "cmd": ["sh", "-c", "cp \"$1/dag_ml/_dag_ml.abi3.so\" crates/dag-ml-py/python/dag_ml/ && PYTHONPATH=crates/dag-ml-py/python exec \"$2\" -m pytest -q -p no:cacheprovider crates/dag-ml-py/tests", "sh", "{site_packages}", "{python}"]}
       ]
     },
@@ -143,16 +144,22 @@
           "id": "sdk-pytest-integration-api",
           "tier": "full",
           "needs": ["env"],
+          "requires_source": ["dag_ml"],
+          "after": ["dag-ml-cli-build"],
+          "note": "As tests-full.yml: the DAG-ML CLI of the installed DAG-ML and an interpreter holding the installed SDK wheel.",
           "timeout": 10800,
-          "env": {"CUDA_VISIBLE_DEVICES": "", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "XLA_PYTHON_CLIENT_PREALLOCATE": "false", "TF_FORCE_GPU_ALLOW_GROWTH": "true"},
+          "env": {"CUDA_VISIBLE_DEVICES": "", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "XLA_PYTHON_CLIENT_PREALLOCATE": "false", "TF_FORCE_GPU_ALLOW_GROWTH": "true", "N4A_DAGML_CLI": "{cargo_target}/debug/dag-ml-cli", "NIRS4ALL_U07_INSTALLED_PYTHON": "{python}"},
           "cmd": ["{python}", "-m", "pytest", "-q", "-rfEs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/integration/api"]
         },
         {
           "id": "sdk-pytest-integration-parity",
           "tier": "full",
           "needs": ["env"],
+          "requires_source": ["dag_ml"],
+          "after": ["dag-ml-cli-build"],
+          "note": "As tests-full.yml: the DAG-ML CLI of the installed DAG-ML and an interpreter holding the installed SDK wheel.",
           "timeout": 10800,
-          "env": {"CUDA_VISIBLE_DEVICES": "", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "XLA_PYTHON_CLIENT_PREALLOCATE": "false", "TF_FORCE_GPU_ALLOW_GROWTH": "true"},
+          "env": {"CUDA_VISIBLE_DEVICES": "", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "XLA_PYTHON_CLIENT_PREALLOCATE": "false", "TF_FORCE_GPU_ALLOW_GROWTH": "true", "N4A_DAGML_CLI": "{cargo_target}/debug/dag-ml-cli", "NIRS4ALL_U07_INSTALLED_PYTHON": "{python}"},
           "cmd": ["{python}", "-m", "pytest", "-q", "-rfEs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/integration/parity"]
         }
       ]

@@ -1079,6 +1079,7 @@ class Cohort:
             if "node" in needs and node is None:
                 missing.append("Node >= 20 (set N4A_NODE)")
             missing += [f"gate {dep}" for dep in gate.get("after", []) if dep in failed_ids]
+            missing += [f"{member} as a source member" for member in gate.get("requires_source", []) if not self.is_source(member)]
             if any(s.layer == key and s.status == "failed" and s.name.startswith("wheel") for s in self.steps) and "env" in needs:
                 missing.append(f"{key} wheel")
             if missing:

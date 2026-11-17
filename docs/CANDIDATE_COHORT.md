@@ -100,7 +100,8 @@ Steps:
    sidecar tests and build, then one Studio end-to-end run (cohort sidecar,
    cohort environment, staged document adapters: import a three-target dataset
    with missing values, train one target to completion). `--tier full` adds
-   the SDK nightly shards. A gate whose inputs are unchanged since it last
+   the SDK nightly shards (with the cohort's `dag-ml-cli` and installed SDK, as
+   `tests-full.yml` provides them; they need DAG-ML as a source member). A gate whose inputs are unchanged since it last
    passed is reported `CACHED`; `--no-cache` reruns it, `--only`/`--skip` pick
    gates, `--stop-after pins|native|wheels|env` stops before the gates.
 
