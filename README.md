@@ -114,6 +114,10 @@ hosted workflows package and verify deliveries, with short platform UI checks.
 - Runtime dependency artifacts follow the selected owners' manifests and exact pins;
   a newer source gitlink does not silently upgrade a consumed artifact. See the
   [distribution note](docs/RELEASE_DISTRIBUTION_MATRIX.md) for scope and checks.
+- Test unreleased commits across the whole chain before releasing any of them with a
+  [candidate cohort](docs/CANDIDATE_COHORT.md) (`scripts/n4a_cohort.py`): one run builds
+  the chain from source and names the first broken layer; its release plan tags only
+  the tested commits, in dependency order.
 - `nirs4all-web` is the **client-side-only** browser/WASM product surface. Its release surface must not imply a Python server or Python parity proof by itself.
 - `nirs4all-quality` is a **client-side-only** browser/WASM quality workflow surface built from the same core/UI direction; it is tracked publicly because the cockpit links and monitors it.
 - `nirs4all-device` is a **phone/tablet spectrometer workbench** surface. The cockpit tracks its public Pages app and GitHub Android debug APK; these do not claim production-store delivery or hardware validation.

@@ -1,0 +1,19 @@
+{
+  "schema_version": "n4a.candidate-cohort/v1",
+  "cohort_id": "acceptance-20261118",
+  "description": "First acceptance cohort of the candidate-cohort tool: the unreleased IO partial-target fix and the DAG-ML standard_scale ddof fix under Core PR #26, SDK PR #167 and Studio release/0.17.2, on the published Methods, Formats and DAG-ML-Data releases. SHAs were pinned on 17 November 2026 while those branches were still moving.",
+  "python": "3.11",
+  "tier": "fast",
+  "pin_alignment": "align",
+  "members": {
+    "methods": {"ref": "published", "native_ref": "50b307dd2fc76c0a04ff06e83c316d408c19fc68", "note": "Methods 1.3.18 (ABI 2.23), the runtime source Core compat/upstreams.toml and Studio declare"},
+    "formats": "published",
+    "dag_ml_data": "published",
+    "io": {"ref": "bf61bbb6eb75fa4b2708dd79f88e89265988159d", "note": "fix/partial-target-validity-20261118: prepare nirs4all-io 0.3.6"},
+    "dag_ml": {"ref": "e3029ddb4848a224a7b8cc4d606693f2730f8eb4", "note": "fix/standard-scale-ddof-20261118: prepare dag-ml 0.4.3"},
+    "core": {"ref": "cbef8977ec7381e96d7611602783a308f6eaa94e", "note": "PR #26 chore/owner-pins-20261118"},
+    "sdk": {"ref": "20e8955e2f22273e588cb029ee5c302e88aa7630", "note": "PR #167 fix/test-suite-20261118"},
+    "studio": {"ref": "28d4fbb05dcb2dc8233bf7c127e8c8db9d8fb1b2", "note": "PR #40 release/0.17.2"},
+    "web": "published"
+  }
+}

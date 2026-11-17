@@ -1,0 +1,164 @@
+name: Candidate cohort
+
+# Build the dependency chain from unreleased refs and run its gates in one go.
+# Non-publishing by construction: read-only token, no secrets, no tag, release,
+# registry or deployment step. Each input is a commit, branch or tag of that
+# member's repository, "published", or empty to keep the manifest's value.
+
+on:
+  workflow_dispatch:
+    inputs:
+      manifest:
+        description: "Cohort manifest in this repository (empty: every member published unless set below)"
+        required: false
+        default: ""
+      methods:
+        description: "nirs4all-methods ref or 'published'"
+        required: false
+        default: ""
+      methods_native_ref:
+        description: "Methods commit for the native library when Methods is published (empty: the cohort Core's declared runtime)"
+        required: false
+        default: ""
+      formats:
+        description: "nirs4all-formats ref or 'published'"
+        required: false
+        default: ""
+      dag_ml_data:
+        description: "dag-ml-data ref or 'published'"
+        required: false
+        default: ""
+      io:
+        description: "nirs4all-io ref or 'published'"
+        required: false
+        default: ""
+      dag_ml:
+        description: "dag-ml ref or 'published'"
+        required: false
+        default: ""
+      core:
+        description: "nirs4all-core ref or 'published'"
+        required: false
+        default: ""
+      sdk:
+        description: "nirs4all (SDK) ref or 'published'"
+        required: false
+        default: ""
+      studio:
+        description: "nirs4all-studio ref or 'published'"
+        required: false
+        default: ""
+      pin_alignment:
+        description: "refuse | align (align rewrites too-strict consumer pins in the build root and reports them)"
+        required: false
+        default: "refuse"
+      tier:
+        description: "fast (pull-request gates and the Studio end-to-end run) or full (adds the SDK nightly shards)"
+        required: false
+        default: "fast"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate-cohort-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cohort:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      N4A_COHORT_BUILD_ROOT: ${{ github.workspace }}/cohort-build
+      N4A_COHORT_MIN_FREE_GB: "4"
+      N4A_WORKSPACE_ROOT: ${{ github.workspace }}
+    steps:
+      - name: Checkout the ecosystem cohort runner
+        uses: actions/checkout@v7
+        with:
+          path: nirs4all-ecosystem
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          df -h "${GITHUB_WORKSPACE}"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Install build tools
+        run: |
+          python -m pip install pyyaml pytest uv==0.10.4
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends cmake ninja-build
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+      - name: Test the cohort runner
+        working-directory: nirs4all-ecosystem
+        run: python -m pytest -q tests/test_cohort.py
+      - name: Write the cohort manifest
+        working-directory: nirs4all-ecosystem
+        env:
+          MANIFEST: ${{ inputs.manifest }}
+          PIN_ALIGNMENT: ${{ inputs.pin_alignment }}
+          TIER: ${{ inputs.tier }}
+          REF_methods: ${{ inputs.methods }}
+          NATIVE_REF: ${{ inputs.methods_native_ref }}
+          REF_formats: ${{ inputs.formats }}
+          REF_dag_ml_data: ${{ inputs.dag_ml_data }}
+          REF_io: ${{ inputs.io }}
+          REF_dag_ml: ${{ inputs.dag_ml }}
+          REF_core: ${{ inputs.core }}
+          REF_sdk: ${{ inputs.sdk }}
+          REF_studio: ${{ inputs.studio }}
+        shell: python
+        run: |
+          import json, os
+          from pathlib import Path
+          path = os.environ["MANIFEST"]
+          manifest = json.loads(Path(path).read_text()) if path else {
+              "schema_version": "n4a.candidate-cohort/v1", "cohort_id": "hosted", "members": {}}
+          for key in ("methods", "formats", "dag_ml_data", "io", "dag_ml", "core", "sdk", "studio"):
+              ref = os.environ[f"REF_{key}"].strip()
+              if ref:
+                  manifest["members"][key] = {"ref": ref}
+          # Hosted members are fetched from GitHub, never from a local working tree.
+          for key, value in list(manifest["members"].items()):
+              value = {"ref": value} if isinstance(value, str) else value
+              if value["ref"].startswith("path:"):
+                  raise SystemExit(f"{key}: a path: ref cannot be tested on a hosted runner")
+              value.pop("source", None)
+              manifest["members"][key] = value
+          if os.environ["NATIVE_REF"].strip():
+              methods = manifest["members"].setdefault("methods", {"ref": "published"})
+              methods["native_ref"] = os.environ["NATIVE_REF"].strip()
+          manifest["pin_alignment"] = os.environ["PIN_ALIGNMENT"] or manifest.get("pin_alignment", "refuse")
+          manifest["tier"] = os.environ["TIER"] or manifest.get("tier", "fast")
+          Path(os.environ["RUNNER_TEMP"], "cohort.json").write_text(json.dumps(manifest, indent=2))
+          print(json.dumps(manifest, indent=2))
+      - name: Assemble and test the cohort
+        working-directory: nirs4all-ecosystem
+        run: python scripts/n4a_cohort.py run --manifest "${RUNNER_TEMP}/cohort.json"
+      - name: Summary
+        if: ${{ always() }}
+        working-directory: nirs4all-ecosystem
+        run: |
+          {
+            echo '```'
+            python scripts/n4a_cohort.py summary || true
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
+          python scripts/n4a_cohort.py release-plan --report "${N4A_COHORT_BUILD_ROOT}/latest-report.json" --json-out "${N4A_COHORT_BUILD_ROOT}/release-plan.json" || true
+      - name: Upload the report and logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: candidate-cohort-${{ github.run_id }}
+          path: |
+            cohort-build/latest-report.json
+            cohort-build/release-plan.json
+            cohort-build/runs/*/report.json
+            cohort-build/runs/*/logs/**
+            cohort-build/work/studio-e2e-multitarget-na/sidecar.log
+          if-no-files-found: warn

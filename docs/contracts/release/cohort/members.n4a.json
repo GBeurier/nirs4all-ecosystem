@@ -1,0 +1,201 @@
+{
+  "schema_version": "n4a.cohort-members/v1",
+  "description": "How scripts/n4a_cohort.py assembles and tests each chain member from source. Members are listed in dependency order (the chain order of the summary); version sources come from the aggregation manifest when a member is a component there.",
+  "aggregation_manifest": "docs/contracts/release/aggregation-manifest.n4a.json",
+  "members": [
+    {
+      "key": "methods",
+      "repo": "GBeurier/nirs4all-methods",
+      "sibling": "nirs4all-methods",
+      "aggregation_component": "methods",
+      "release_version_key": "python_nirs4all_methods",
+      "rust": {"exclude_paths": ["bench/", "benchmarks/", "dev/", "parity/", "_archive/", "bindings/_archive/"]},
+      "native": {
+        "preset": "dev-release",
+        "target": "n4m_c",
+        "library": "build/dev-release/cpp/src/libn4m.so",
+        "header": "cpp/include/n4m/n4m_version.h"
+      },
+      "python": {
+        "distributions": ["nirs4all-methods", "pls4all"],
+        "projects": [],
+        "source_build_refusal": "Methods Python wheels bundle libn4m through the owner's release-wheels workflow; this tool builds the native library and the n4m crate from source but not those wheels. Set \"python\": \"published\" on the methods member to test the published wheels explicitly."
+      },
+      "publishes": {"crates": ["n4m"], "pypi": ["nirs4all-methods", "pls4all"], "npm": ["@nirs4all/methods"]},
+      "release": {"tags": ["v{version}"], "crate_tags": {"n4m": "n4m-v{crate_version}"}},
+      "gates": []
+    },
+    {
+      "key": "formats",
+      "repo": "GBeurier/nirs4all-formats",
+      "sibling": "nirs4all-formats",
+      "aggregation_component": "formats",
+      "release_version_key": "rust_workspace",
+      "rust": {"exclude_paths": ["tools/", "tests/conformance/", "fuzz/"]},
+      "python": {
+        "distributions": ["nirs4all-formats"],
+        "projects": [{"path": "bindings/python", "distribution": "nirs4all-formats"}]
+      },
+      "publishes": {"crates": ["nirs4all-formats-core", "nirs4all-formats"], "pypi": ["nirs4all-formats"], "npm": []},
+      "release": {"tags": ["v{version}"]},
+      "gates": [
+        {"id": "formats-cargo-test", "tier": "fast", "cmd": ["cargo", "test", "--workspace"]}
+      ]
+    },
+    {
+      "key": "dag_ml_data",
+      "repo": "GBeurier/dag-ml-data",
+      "sibling": "dag-ml-data",
+      "aggregation_component": "dag_ml_data",
+      "release_version_key": "rust_workspace",
+      "rust": {"exclude_paths": ["fuzz/", "tools/"]},
+      "python": {
+        "distributions": ["dag-ml-data"],
+        "projects": [{"path": "crates/dag-ml-data-py", "distribution": "dag-ml-data"}]
+      },
+      "publishes": {"crates": ["dag-ml-data-core", "dag-ml-data", "dag-ml-data-provider"], "pypi": ["dag-ml-data"], "npm": []},
+      "release": {"tags": ["v{version}"]},
+      "gates": [
+        {"id": "dmd-cargo-test", "tier": "fast", "cmd": ["cargo", "test", "--workspace"]}
+      ]
+    },
+    {
+      "key": "io",
+      "repo": "GBeurier/nirs4all-io",
+      "sibling": "nirs4all-io",
+      "aggregation_component": "io",
+      "release_version_key": "rust_workspace",
+      "rust": {"exclude_paths": ["fuzz/", "tools/"]},
+      "python": {
+        "distributions": ["nirs4all-io"],
+        "projects": [{"path": "bindings/python", "distribution": "nirs4all-io"}]
+      },
+      "publishes": {"crates": ["nirs4all-io-core", "nirs4all-io", "nirs4all-io-dagml"], "pypi": ["nirs4all-io"], "npm": ["@nirs4all/io-wasm"]},
+      "release": {"tags": ["v{version}"]},
+      "gates": [
+        {"id": "io-cargo-test", "tier": "fast", "cmd": ["cargo", "test", "--workspace"]}
+      ]
+    },
+    {
+      "key": "dag_ml",
+      "repo": "GBeurier/dag-ml",
+      "sibling": "dag-ml",
+      "aggregation_component": "dag_ml",
+      "release_version_key": "rust_workspace",
+      "rust": {"exclude_paths": ["parity/", "scripts/", "tools/", "fuzz/"]},
+      "python": {
+        "distributions": ["dag-ml"],
+        "projects": [{"path": "crates/dag-ml-py", "distribution": "dag-ml"}]
+      },
+      "publishes": {"crates": ["dag-ml-core", "dag-ml-results", "dag-ml-arrow", "dag-ml"], "pypi": ["dag-ml"], "npm": ["dag-ml-wasm"]},
+      "release": {"tags": ["v{version}"]},
+      "gates": [
+        {"id": "dag-ml-cargo-test", "tier": "fast", "cmd": ["cargo", "test", "--workspace"]},
+        {"id": "dag-ml-python-binding", "tier": "fast", "needs": ["env"], "note": "As in dag-ml CI: the tracked Python sources with the extension built from this source (here the cohort wheel's).", "cmd": ["sh", "-c", "cp \"$1/dag_ml/_dag_ml.abi3.so\" crates/dag-ml-py/python/dag_ml/ && PYTHONPATH=crates/dag-ml-py/python exec \"$2\" -m pytest -q -p no:cacheprovider crates/dag-ml-py/tests", "sh", "{site_packages}", "{python}"]}
+      ]
+    },
+    {
+      "key": "core",
+      "repo": "GBeurier/nirs4all-core",
+      "sibling": "nirs4all-core",
+      "aggregation_component": "core",
+      "release_version_key": "python",
+      "rust": {"exclude_paths": ["fuzz/"]},
+      "python": {
+        "distributions": ["nirs4all-core"],
+        "projects": [{"path": "bindings/python", "distribution": "nirs4all-core"}]
+      },
+      "publishes": {"crates": ["nirs4all"], "pypi": ["nirs4all-core"], "npm": ["nirs4all"]},
+      "release": {"tags": ["v{version}"]},
+      "gates": [
+        {"id": "core-cargo-test", "tier": "fast", "needs": ["libn4m"], "env": {"CORE_F10_EXECUTION_SCRATCH": "{work}", "TMPDIR": "{work}"}, "note": "Core's attested-runtime tests need the Methods digest and an admitted execution scratch (docs/n4a_native_actions.md).", "cmd": ["cargo", "test", "--workspace"]},
+        {"id": "core-python-wheel", "tier": "fast", "needs": ["env"], "cmd": ["{python}", "scripts/check_python_wheel.py", "{wheel:nirs4all-core}"]},
+        {"id": "core-python-unittest", "tier": "full", "needs": ["env", "libn4m"], "cmd": ["{python}", "-m", "unittest", "discover", "-s", "bindings/python/tests"]}
+      ]
+    },
+    {
+      "key": "sdk",
+      "repo": "GBeurier/nirs4all",
+      "sibling": "nirs4all",
+      "release_version_key": "python",
+      "version_sources": [
+        {"key": "python", "kind": "python_literal", "path": "nirs4all/__init__.py", "field": "__version__"}
+      ],
+      "python": {
+        "distributions": ["nirs4all"],
+        "projects": [{"path": ".", "distribution": "nirs4all"}],
+        "test_requirements": "requirements-test.txt",
+        "torch_cpu_from": ".github/actions/test-environment/action.yml"
+      },
+      "publishes": {"crates": [], "pypi": ["nirs4all"], "npm": []},
+      "release": {"tags": ["{version}"], "github_release": true},
+      "gates": [
+        {
+          "id": "sdk-pytest-pr",
+          "tier": "fast",
+          "needs": ["env"],
+          "timeout": 5400,
+          "env": {"CUDA_VISIBLE_DEVICES": "", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "XLA_PYTHON_CLIENT_PREALLOCATE": "false", "TF_FORCE_GPU_ALLOW_GROWTH": "true"},
+          "cmd": ["{python}", "-m", "pytest", "-q", "-rs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/", "--ignore=tests/integration/parity", "--ignore=tests/integration/api", "--ignore=tests/integration/pipeline", "--ignore=tests/e2e"]
+        },
+        {
+          "id": "sdk-pytest-integration-api",
+          "tier": "full",
+          "needs": ["env"],
+          "timeout": 10800,
+          "env": {"CUDA_VISIBLE_DEVICES": "", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "XLA_PYTHON_CLIENT_PREALLOCATE": "false", "TF_FORCE_GPU_ALLOW_GROWTH": "true"},
+          "cmd": ["{python}", "-m", "pytest", "-q", "-rs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/integration/api"]
+        },
+        {
+          "id": "sdk-pytest-integration-parity",
+          "tier": "full",
+          "needs": ["env"],
+          "timeout": 10800,
+          "env": {"CUDA_VISIBLE_DEVICES": "", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "XLA_PYTHON_CLIENT_PREALLOCATE": "false", "TF_FORCE_GPU_ALLOW_GROWTH": "true"},
+          "cmd": ["{python}", "-m", "pytest", "-q", "-rs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/integration/parity"]
+        }
+      ]
+    },
+    {
+      "key": "studio",
+      "repo": "GBeurier/nirs4all-studio",
+      "sibling": "nirs4all-studio",
+      "release_version_key": "npm",
+      "version_sources": [
+        {"key": "npm", "kind": "json", "path": "package.json", "field": "version"}
+      ],
+      "consumes_environment": true,
+      "rust": {"exclude_paths": ["sidecar/fuzz/", "sidecar/vendor/"]},
+      "abi_expectations": [
+        {"kind": "js_constants", "path": "scripts/native-runtime-contract.cjs", "major": "METHODS_ABI_MAJOR", "minor": "METHODS_ABI_MINOR", "exact": true}
+      ],
+      "publishes": {"crates": [], "pypi": [], "npm": []},
+      "release": {"excluded": "Studio releases are outside this tool's authority (maintainer-joint); the plan lists the pin updates Studio needs."},
+      "gates": [
+        {"id": "studio-sidecar-test", "tier": "fast", "needs": ["libn4m"], "cmd": ["cargo", "test", "--manifest-path", "sidecar/Cargo.toml", "--", "--test-threads=1"]},
+        {"id": "studio-sidecar-build", "tier": "fast", "needs": ["libn4m"], "cmd": ["cargo", "build", "--manifest-path", "sidecar/Cargo.toml", "--bin", "studio-sidecar"]},
+        {
+          "id": "studio-e2e-multitarget-na",
+          "tier": "fast",
+          "needs": ["env", "libn4m", "node"],
+          "after": ["studio-sidecar-build"],
+          "timeout": 1800,
+          "cmd": ["{tool_python}", "{ecosystem}/scripts/n4a_cohort_studio_e2e.py", "--sidecar", "{cargo_target}/debug/studio-sidecar", "--python", "{python}", "--studio-src", "{src}", "--libn4m", "{libn4m}", "--node", "{node}", "--work-dir", "{work}"]
+        }
+      ]
+    },
+    {
+      "key": "web",
+      "repo": "GBeurier/nirs4all-web",
+      "sibling": "nirs4all-web",
+      "release_version_key": "npm",
+      "version_sources": [
+        {"key": "npm", "kind": "json", "path": "web-app/package.json", "field": "version"}
+      ],
+      "unsupported": "Web stages the published npm packages it vendors and verifies their exact bytes (web-app/scripts/public-packages.v1.json); a candidate-cohort WASM override needs a Web owner capability that does not exist yet.",
+      "publishes": {"crates": [], "pypi": [], "npm": []},
+      "release": {"excluded": "Web is deployed, not released, through its own site workflow."},
+      "gates": []
+    }
+  ]
+}
