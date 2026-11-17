@@ -1405,7 +1405,7 @@ def release_plan(args: argparse.Namespace) -> int:
     if report["tier"] not in ("fast", "full"):
         blockers.append("unknown tier")
     if report["alignments"]:
-        blockers.append("pins were aligned in the build root; commit the consumer pin updates listed below and re-run the cohort")
+        blockers.append("pins were aligned in the build root; commit the consumer pin updates listed under 'Consumer pin updates' and re-run the cohort")
     if report.get("python_requirement_mismatches"):
         blockers.append("cohort wheels were installed against refusing Python requirements: " + "; ".join(report["python_requirement_mismatches"]))
     plan = []
