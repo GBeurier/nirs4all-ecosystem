@@ -36,6 +36,11 @@ precisely. Each ecosystem uses its caret-equivalent form:
   precise than a minor and may stay, but new constraints use the form above.
 - R expresses an upper bound only by repeating a package entry. The packages do
   not rely on it and declare lower bounds only.
+- Exception: a product's environment-admission floor (the version below which
+  the product updates a user's environment) may carry a patch floor when it is
+  the delivery mechanism for a fix; library-to-library constraints may not.
+  Studio's `recommended-config.json` `nirs4all` range `>=1.4.18,<1.5` is such a
+  floor (maintainer decision, 18 November 2026).
 - A consumer that needs a fix that exists only from a given patch does **not**
   encode it as a patch floor. Its lockfile and the release order deliver the
   patch; runtime checks (for example the Methods ABI check) refuse what cannot
