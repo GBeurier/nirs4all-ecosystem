@@ -6,6 +6,13 @@ name: Candidate cohort
 # member's repository, "published", or empty to keep the manifest's value.
 
 on:
+  # A change to the runner itself is checked on a hosted runner with the reviewed hosted-check cohort.
+  pull_request:
+    paths:
+      - .github/workflows/candidate-cohort.yml
+      - scripts/n4a_cohort.py
+      - scripts/n4a_cohort_studio_e2e.py
+      - docs/contracts/release/cohort/**
   workflow_dispatch:
     inputs:
       manifest:
@@ -49,13 +56,13 @@ on:
         required: false
         default: ""
       pin_alignment:
-        description: "refuse | align (align rewrites too-strict consumer pins in the build root and reports them)"
+        description: "refuse | align, empty for the manifest's (align rewrites too-strict consumer pins in the build root and reports them)"
         required: false
-        default: "refuse"
+        default: ""
       tier:
-        description: "fast (pull-request gates and the Studio end-to-end run) or full (adds the SDK nightly shards)"
+        description: "fast (pull-request gates and the Studio end-to-end run) or full (adds the SDK nightly shards); empty for the manifest's"
         required: false
-        default: "fast"
+        default: ""
 
 permissions:
   contents: read
@@ -100,9 +107,9 @@ jobs:
       - name: Write the cohort manifest
         working-directory: nirs4all-ecosystem
         env:
-          MANIFEST: ${{ inputs.manifest }}
-          PIN_ALIGNMENT: ${{ inputs.pin_alignment }}
-          TIER: ${{ inputs.tier }}
+          MANIFEST: ${{ github.event_name == 'pull_request' && 'docs/contracts/release/cohort/hosted-check.n4a.json' || inputs.manifest }}
+          PIN_ALIGNMENT: ${{ inputs.pin_alignment || '' }}
+          TIER: ${{ inputs.tier || '' }}
           REF_methods: ${{ inputs.methods }}
           NATIVE_REF: ${{ inputs.methods_native_ref }}
           REF_formats: ${{ inputs.formats }}

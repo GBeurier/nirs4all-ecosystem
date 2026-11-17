@@ -1,0 +1,14 @@
+{
+  "schema_version": "n4a.candidate-cohort/v1",
+  "cohort_id": "hosted-check",
+  "description": "Pull-request check of the cohort runner on a hosted runner: pushed Core, SDK and Studio commits of the November 2026 owner cohort over the published Methods, Formats, DAG-ML-Data, IO and DAG-ML releases.",
+  "python": "3.11",
+  "tier": "fast",
+  "pin_alignment": "align",
+  "members": {
+    "methods": {"ref": "published", "native_ref": "50b307dd2fc76c0a04ff06e83c316d408c19fc68"},
+    "core": {"ref": "cbef8977ec7381e96d7611602783a308f6eaa94e", "note": "PR #26 chore/owner-pins-20261118"},
+    "sdk": {"ref": "20e8955e2f22273e588cb029ee5c302e88aa7630", "note": "PR #167 fix/test-suite-20261118"},
+    "studio": {"ref": "28d4fbb05dcb2dc8233bf7c127e8c8db9d8fb1b2", "note": "PR #40 release/0.17.2"}
+  }
+}

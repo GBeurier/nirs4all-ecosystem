@@ -127,12 +127,13 @@ def test_manifest_defaults_published_and_rejects_unknown_members(tmp_path: Path)
         cohort.load_manifest(bad, [], recipes)
 
 
-def test_acceptance_manifest_pins_full_commits() -> None:
+@pytest.mark.parametrize("name", ["acceptance-20261118.n4a.json", "hosted-check.n4a.json"])
+def test_reviewed_manifests_pin_full_commits(name: str) -> None:
     recipes, _ = cohort.load_recipes(cohort.DEFAULT_MEMBERS)
-    path = ROOT / "docs/contracts/release/cohort/acceptance-20261118.n4a.json"
-    manifest = cohort.load_manifest(path, [], recipes)
+    manifest = cohort.load_manifest(ROOT / "docs/contracts/release/cohort" / name, [], recipes)
     for key, spec in manifest["members"].items():
         assert spec.published or cohort.COMMIT_RE.fullmatch(spec.ref), key
+        assert spec.native_ref is None or cohort.COMMIT_RE.fullmatch(spec.native_ref), key
 
 
 def _recipe(key: str = "demo") -> object:

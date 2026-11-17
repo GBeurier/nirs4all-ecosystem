@@ -118,7 +118,8 @@ and/or one ref per member. It runs the same command on `ubuntu-latest`,
 fetching every member from GitHub (only pushed commits can be tested; `path:`
 refs are refused), uploads the report, logs and the release plan, and writes
 the summary to the job page. The token is read-only and no step tags,
-publishes or deploys. Windows and macOS legs are not wired: they need the
+publishes or deploys. A pull request that changes the runner, its workflow or
+the cohort contracts runs it on `docs/contracts/release/cohort/hosted-check.n4a.json`. Windows and macOS legs are not wired: they need the
 Methods presets `ci-windows-msvc-release`/`ci-macos-clang-release` in the
 native step, `Scripts\python.exe` and `.exe` paths, and a process-group-free
 shutdown in the Studio driver.
