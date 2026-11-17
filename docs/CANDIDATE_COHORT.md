@@ -71,7 +71,9 @@ python3 scripts/n4a_cohort.py summary            # reprint the latest summary
 ```
 
 Everything lands in one build root (`--build-root`, `N4A_COHORT_BUILD_ROOT`,
-default `<workspace>/_cohort-build`): `src/<member>` snapshots, one
+default `<workspace>/_cohort-build`): `src/<repository>` snapshots laid out like
+the workspace (with this runner as `src/nirs4all-ecosystem`, so member tooling
+that looks for sibling checkouts finds the cohort, never other working trees), one
 `.cargo/config.toml` holding the generated `[patch.crates-io]`, one shared
 `target/` (dev profile with line tables only), `wheels/`, a uv cache, one
 CPython 3.11 environment `env/` and `runs/<id>/` with `report.json` and a log

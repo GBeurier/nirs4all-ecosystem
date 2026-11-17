@@ -133,10 +133,11 @@
         {
           "id": "sdk-pytest-pr",
           "tier": "fast",
+          "note": "The SDK CI.yaml tests job selection; -rfEs (CI: -rs) also names failures and strict XPASS in the summary.",
           "needs": ["env"],
           "timeout": 5400,
           "env": {"CUDA_VISIBLE_DEVICES": "", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "XLA_PYTHON_CLIENT_PREALLOCATE": "false", "TF_FORCE_GPU_ALLOW_GROWTH": "true"},
-          "cmd": ["{python}", "-m", "pytest", "-q", "-rs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/", "--ignore=tests/integration/parity", "--ignore=tests/integration/api", "--ignore=tests/integration/pipeline", "--ignore=tests/e2e"]
+          "cmd": ["{python}", "-m", "pytest", "-q", "-rfEs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/", "--ignore=tests/integration/parity", "--ignore=tests/integration/api", "--ignore=tests/integration/pipeline", "--ignore=tests/e2e"]
         },
         {
           "id": "sdk-pytest-integration-api",
@@ -144,7 +145,7 @@
           "needs": ["env"],
           "timeout": 10800,
           "env": {"CUDA_VISIBLE_DEVICES": "", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "XLA_PYTHON_CLIENT_PREALLOCATE": "false", "TF_FORCE_GPU_ALLOW_GROWTH": "true"},
-          "cmd": ["{python}", "-m", "pytest", "-q", "-rs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/integration/api"]
+          "cmd": ["{python}", "-m", "pytest", "-q", "-rfEs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/integration/api"]
         },
         {
           "id": "sdk-pytest-integration-parity",
@@ -152,7 +153,7 @@
           "needs": ["env"],
           "timeout": 10800,
           "env": {"CUDA_VISIBLE_DEVICES": "", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "XLA_PYTHON_CLIENT_PREALLOCATE": "false", "TF_FORCE_GPU_ALLOW_GROWTH": "true"},
-          "cmd": ["{python}", "-m", "pytest", "-q", "-rs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/integration/parity"]
+          "cmd": ["{python}", "-m", "pytest", "-q", "-rfEs", "-p", "no:cacheprovider", "-n", "auto", "--dist", "worksteal", "-m", "not gpu", "--timeout=1800", "tests/integration/parity"]
         }
       ]
     },

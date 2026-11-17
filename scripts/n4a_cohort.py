@@ -334,6 +334,17 @@ class SourceManager:
         self.build = build
         self.workspace = workspace
         (build / "src").mkdir(parents=True, exist_ok=True)
+        # Snapshots are laid out like the workspace (src/<sibling>), with this runner as
+        # src/nirs4all-ecosystem, so member tooling that looks for sibling checkouts finds
+        # the cohort's sources, never unrelated working trees above the build root.
+        link = build / "src" / "nirs4all-ecosystem"
+        if not link.is_symlink() or link.resolve() != ROOT:
+            if link.is_symlink():
+                link.unlink()
+            link.symlink_to(ROOT, target_is_directory=True)
+
+    def directory(self, recipe: Recipe) -> Path:
+        return self.build / "src" / recipe.sibling
 
     def default_source(self, recipe: Recipe) -> str:
         sibling = self.workspace / recipe.sibling
@@ -370,9 +381,8 @@ class SourceManager:
     def _stamp_path(self, key: str) -> Path:
         return self.build / "src" / f"{key}.stamp.json"
 
-    def _sync(self, key: str, desired: dict[str, tuple[str, str, Any]], reader) -> int:
+    def _sync(self, key: str, root: Path, desired: dict[str, tuple[str, str, Any]], reader) -> int:
         """desired: path -> (identity, mode, handle). Write changed files, delete stale ones."""
-        root = self.build / "src" / key
         stamp_path = self._stamp_path(key)
         previous = read_json(stamp_path)["files"] if stamp_path.exists() else {}
         root.mkdir(parents=True, exist_ok=True)
@@ -426,10 +436,10 @@ class SourceManager:
                 pos = header_end + 1 + size + 1
             return bodies
 
-        changed = self._sync(recipe.key, desired, reader)
+        changed = self._sync(recipe.key, self.directory(recipe), desired, reader)
         tree = git(repo, "rev-parse", f"{commit}^{{tree}}")
         branch = None if COMMIT_RE.fullmatch(ref) else ref
-        return Snapshot(recipe.key, "commit", self.build / "src" / recipe.key, commit, branch, False,
+        return Snapshot(recipe.key, "commit", self.directory(recipe), commit, branch, False,
                         digest=f"tree:{tree}", files={p: v[0] for p, v in desired.items()},
                         source=str(spec.source or self.default_source(recipe)), changed=changed, notes=notes, repo=repo)
 
@@ -464,7 +474,7 @@ class SourceManager:
         def reader(paths: list[Path]) -> list[bytes]:
             return [os.readlink(p).encode() if p.is_symlink() else p.read_bytes() for p in paths]
 
-        changed = self._sync(recipe.key, desired, reader)
+        changed = self._sync(recipe.key, self.directory(recipe), desired, reader)
         stamp = read_json(stamp_path)
         stamp["stat"] = stats
         write_json(stamp_path, stamp)
@@ -472,7 +482,7 @@ class SourceManager:
         dirty = bool(git(tree_root, "status", "--porcelain"))
         branch = git(tree_root, "branch", "--show-current") or None
         digest = "files:" + digest_of(sorted((p, v[0]) for p, v in desired.items()))
-        return Snapshot(recipe.key, "path", self.build / "src" / recipe.key, head, branch, dirty, digest,
+        return Snapshot(recipe.key, "path", self.directory(recipe), head, branch, dirty, digest,
                         {p: v[0] for p, v in desired.items()}, str(tree_root), changed)
 
 
@@ -1133,6 +1143,8 @@ class Cohort:
                 code = "timeout"
         text = logfile.read_text(encoding="utf-8", errors="replace")
         signals = sorted(set(re.findall(r"^\[XPASS\(strict\)\][^\n]*|^XPASS[^\n]*|^FAILED [^\n]*", text, re.M)))[:40]
+        signals += [f"FAILED {name}" for name in re.findall(r"^_{3,} (\S.*?) _{3,}$", text, re.M)
+                    if not any(name in s for s in signals)][:40]
         summary = ""
         for pattern in (r"^((?:PASS|FAIL) .*)$", r"^=+ (.*(?:passed|failed|error)[^=]*) =+$", r"^((?:\d+ (?:passed|failed|errors?|skipped|xfailed|xpassed)[, ]*)+.* in [\d.]+s.*)$", r"^test result: (FAILED[^\n]*)$", r"^(error(?:\[E\d+\])?: [^\n]*)$"):
             found = re.findall(pattern, text, re.M)
@@ -1146,7 +1158,8 @@ class Cohort:
         if gate["cmd"][0] == "cargo":
             lock_dir = snap.root / (gate["cmd"][gate["cmd"].index("--manifest-path") + 1] if "--manifest-path" in gate["cmd"] else "Cargo.toml")
             lock = lock_dir.parent / "Cargo.lock"
-            ignored = self.lock_check(key, lock)
+            resolved = code == 0 or (lock.exists() and lock.stat().st_mtime >= started)
+            ignored = self.lock_check(key, lock) if resolved else []
             if ignored:
                 signals += [f"PATCH IGNORED: {line}" for line in ignored]
                 code = code or "patch-ignored"
