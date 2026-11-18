@@ -14,9 +14,9 @@ The aggregate release-member intent and exact selected lock are tracked in:
 CI materializes the active lock-selected commits and validates them against the
 manifest, surface matrix and evidence-bound native ledger. Parent gitlinks remain
 source references; runtime dependency artifacts are selected by each owner's
-manifests and exact pins. In particular, Core 0.5.0 retains Rust IO 0.3.1 even when
-the parent references the IO 0.3.2 source, and its pinned Methods runtime source
-remains distinct from a later Methods source/test successor.
+manifests and exact pins. In particular, Core 0.5.1 locks the published Rust IO
+0.3.6 and DAG-ML 0.4.3 crates, and its pinned Methods runtime source remains
+distinct from a later Methods source/test successor.
 
 Core's R binding is retired; the R product lives in `nirs4all-r`. Source-supported
 operations do not imply numerical parity or every host route. The native ledger's

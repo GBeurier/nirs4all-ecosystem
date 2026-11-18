@@ -15,6 +15,24 @@ accounts for independent products; the [native ledger](docs/contracts/release/na
 limits qualification to its explicit operation, source, runtime and platform evidence.
 Source declarations and parent gitlinks do not establish universal parity or publication.
 
+The 18 November releases are selected here: IO **0.3.6**
+([`284f5060`](https://github.com/GBeurier/nirs4all-io/commit/284f50609212456e3275567f25dc0234e58333f6)),
+DAG-ML **0.4.3**
+([`d796152c`](https://github.com/GBeurier/dag-ml/commit/d796152c148db3bb3f4398f818e1083f5e3aa816))
+and Core **0.5.1**
+([`053704bd`](https://github.com/GBeurier/nirs4all-core/commit/053704bd62b8d08f04dc6f61f744dee04e6a2387))
+are the lock members and gitlinks; Core 0.5.1 locks the published IO 0.3.6 and
+DAG-ML 0.4.3 crates. The Python SDK **1.4.19**
+([`526052d1`](https://github.com/GBeurier/nirs4all/commit/526052d13c7903a391ce1898ad99ee96c4c2bfce))
+and [Studio 0.17.2](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.17.2)
+([`a912fb42`](https://github.com/GBeurier/nirs4all-studio/commit/a912fb42283e6ae5a98eb4fc258ccb1d0a15dfb0))
+are published. Web references its deployed Main
+[`2725e612`](https://github.com/GBeurier/nirs4all-web/commit/2725e612e4d435649b2d662fd3831003a9ed1f9f).
+The native ledger's Core storage-write receipt is the Core 0.5.1 CI run on the same
+Windows fixture. The R-universe registry selects the IO 0.3.6 and DAG-ML 0.4.3 R
+sources. These references record publication, not a new scientific or
+cross-language qualification.
+
 Providers **0.2.12** is public from
 [`93cf8381`](https://github.com/GBeurier/nirs4all-providers/commit/93cf8381de15adff54d30255da295666f8deb096),
 and Papers **0.2.4** is public from
@@ -26,8 +44,7 @@ Its accepted source includes the nine-script Core prerequisite correction
 [`6e8412ac`](https://github.com/GBeurier/nirs4all-r/commit/6e8412ac4fcd2f353e552da972c54f4ebcf7b6bd).
 R-universe source propagation and served platform checks remain separate;
 no successful corrected R-universe build is claimed here.
-Studio references its reviewed backend integration on Main.
-Studio GUI migration and package release remain outside this source update.
+Studio GUI migration remains outside this source update.
 
 The [2026.07 profile](docs/contracts/release/history/2026.07-refactor/aggregation-lock.n4a.lock.json)
 is retained as historical provenance and is not the active CI selection.
