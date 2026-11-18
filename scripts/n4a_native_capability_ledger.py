@@ -74,7 +74,7 @@ CURRENT_CORE_OPERATIONS = {
     "core.n4a-container.predict": ("n4a-container", "predict"),
 }
 CURRENT_WRITE_TEST = "production_roundtrip_exact_bytes_hashes_and_borrowed_ranges"
-CURRENT_CI_RECEIPT = Path("docs/contracts/release/core-0.5.0-ci.json")
+CURRENT_CI_RECEIPT = Path("docs/contracts/release/core-0.5.1-ci.json")
 
 
 class CapabilityLedgerError(RuntimeError):
@@ -562,7 +562,7 @@ def _validate_current_core_coverage(
     receipt = _object(_load_json(receipt_path, "current Core CI receipt"), "current Core CI receipt")
     _require(receipt.get("head_sha") == core["commit"], "Core CI receipt source does not match selected Core")
     _require(receipt.get("status") == "completed" and receipt.get("conclusion") == "success", "Core CI receipt must record completed successful execution")
-    _require(receipt.get("id") == 42595677223, "current Core evidence must identify the reviewed exact-source CI run")
+    _require(receipt.get("id") == 44260343634, "current Core evidence must identify the reviewed exact-source CI run")
     receipt_sha = hashlib.sha256(receipt_path.read_bytes()).hexdigest()
     for capability_id, (profile_id, operation) in CURRENT_CORE_OPERATIONS.items():
         entry = capabilities[capability_id]

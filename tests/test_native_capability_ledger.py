@@ -358,7 +358,7 @@ def test_release_ci_gate_validates_only_a_lock_pinned_selected_workspace() -> No
     assert "tests/test_release_lock.py tests/test_native_capability_ledger.py" in workflow
     assert "--workspace-root \"$GITHUB_WORKSPACE\"" not in workflow
     assert "git submodule update --init --checkout nirs4all" not in workflow
-    assert workflow.count('- "docs/contracts/release/core-0.5.0-ci.json"') == 2
+    assert workflow.count('- "docs/contracts/release/core-0.5.1-ci.json"') == 2
     assert all("outside_lock_surface_id" not in e for c in _read_ledger()["capabilities"] for e in c["evidence"])
     assert "N4A_RELEASE_WORKSPACE_ROOT: ${{ runner.temp }}/n4a-selected-release-members" in workflow
 

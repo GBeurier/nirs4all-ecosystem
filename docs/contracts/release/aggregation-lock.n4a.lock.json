@@ -59,7 +59,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:4c0f3177866fe1db0e0cc687d4ef9b2b2a85a95ba8e40f66f0e41f532962c656",
+  "manifest_digest": "sha256:5708012b777fb5b0019d707a9f2f8f48e1e08957c8726f5ea970840790e6b7d5",
   "members": {
     "core": {
       "availability": {
@@ -822,14 +822,14 @@
       ],
       "role": "Portable aggregate and owner-neutral container; end-user R is maintained in nirs4all-r",
       "selected_branch_patterns": [
-        "integration/release-20261109"
+        "main"
       ],
       "selected_workspace_path": "nirs4all-core",
       "state": {
-        "branch": "integration/release-20261109",
-        "commit": "53f53b727e983057f137f42ca0f87d7368db5990",
+        "branch": "main",
+        "commit": "053704bd62b8d08f04dc6f61f744dee04e6a2387",
         "dirty": false,
-        "exact_tag": "v0.5.0"
+        "exact_tag": "v0.5.1"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -838,19 +838,19 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.5.0"
+          "value": "0.5.1"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.5.0"
+          "value": "0.5.1"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.5.0"
+          "value": "0.5.1"
         }
       }
     },
@@ -911,7 +911,7 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:87ef78ce0dfd55471ae1924d9c2f04f39e656a9daef7ae5c94a1661181b716ed",
+          "canonical_json_sha256": "sha256:2df87ec54e14fae461d950cc8299de5e1203c0bb17725aa7d423873b451f68e5",
           "crate": "dag-ml",
           "headers": [
             {
@@ -921,9 +921,9 @@
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.4.0",
+          "package_version": "0.4.3",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:353db675b219b6d5c8715039a5fdc7e7717edfab224f28ad893d9f996c852be2"
+          "raw_sha256": "sha256:ad2e113dd879137a4159a56709645b5f72dd7d4227ac81123e56c79cb405d438"
         }
       ],
       "default_inclusion": "base",
@@ -972,14 +972,14 @@
       ],
       "role": "DAG runtime and native execution contracts",
       "selected_branch_patterns": [
-        "integration/release-20261109"
+        "main"
       ],
       "selected_workspace_path": "dag-ml",
       "state": {
-        "branch": "integration/release-20261109",
-        "commit": "beaba0b62f9a65bca86c2f521fc482bd80092ba3",
+        "branch": "main",
+        "commit": "d796152c148db3bb3f4398f818e1083f5e3aa816",
         "dirty": false,
-        "exact_tag": "v0.4.0"
+        "exact_tag": "v0.4.3"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -988,25 +988,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.4.0"
+          "value": "0.4.3"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-py/pyproject.toml",
-          "value": "0.4.0"
+          "value": "0.4.3"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.4.0"
+          "value": "0.4.3"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.4.0"
+          "value": "0.4.3"
         }
       }
     },
@@ -1369,14 +1369,14 @@
       ],
       "role": "Dataset assembly and DatasetPackage bridge",
       "selected_branch_patterns": [
-        "integration/io-wasm-numeric-wire"
+        "main"
       ],
       "selected_workspace_path": "nirs4all-io",
       "state": {
-        "branch": "integration/io-wasm-numeric-wire",
-        "commit": "6c1a2567730464de5147509e39aaeba6bbc00b66",
+        "branch": "main",
+        "commit": "284f50609212456e3275567f25dc0234e58333f6",
         "dirty": false,
-        "exact_tag": "v0.3.2"
+        "exact_tag": "v0.3.6"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1385,19 +1385,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/Cargo.toml",
-          "value": "0.3.2"
+          "value": "0.3.6"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.3.2"
+          "value": "0.3.6"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.3.2"
+          "value": "0.3.6"
         }
       }
     },

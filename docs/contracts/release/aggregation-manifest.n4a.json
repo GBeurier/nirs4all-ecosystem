@@ -45,9 +45,9 @@
       "repo_path": "dag-ml",
       "selected_workspace_path": "dag-ml",
       "selected_branch_patterns": [
-        "integration/release-20261109"
+        "main"
       ],
-      "preferred_exact_tag": "v0.4.0",
+      "preferred_exact_tag": "v0.4.3",
       "repo_url": "GBeurier/dag-ml",
       "role": "DAG runtime and native execution contracts",
       "owner_boundary": "control",
@@ -421,9 +421,9 @@
       "repo_path": "nirs4all-io",
       "selected_workspace_path": "nirs4all-io",
       "selected_branch_patterns": [
-        "integration/io-wasm-numeric-wire"
+        "main"
       ],
-      "preferred_exact_tag": "v0.3.2",
+      "preferred_exact_tag": "v0.3.6",
       "repo_url": "GBeurier/nirs4all-io",
       "role": "Dataset assembly and DatasetPackage bridge",
       "owner_boundary": "assembly",
@@ -493,9 +493,9 @@
       "repo_path": "nirs4all-core",
       "selected_workspace_path": "nirs4all-core",
       "selected_branch_patterns": [
-        "integration/release-20261109"
+        "main"
       ],
-      "preferred_exact_tag": "v0.5.0",
+      "preferred_exact_tag": "v0.5.1",
       "repo_url": "GBeurier/nirs4all-core",
       "role": "Portable aggregate and owner-neutral container; end-user R is maintained in nirs4all-r",
       "owner_boundary": "aggregate",
