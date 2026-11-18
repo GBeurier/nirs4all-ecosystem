@@ -3,7 +3,9 @@ name: Candidate cohort
 # Build the dependency chain from unreleased refs and run its gates in one go.
 # Non-publishing by construction: read-only token, no secrets, no tag, release,
 # registry or deployment step. Each input is a commit, branch or tag of that
-# member's repository, "published", or empty to keep the manifest's value.
+# member's repository, "published" (the version Studio ships, its exact install
+# pin), "published:latest" (the newest release within Studio's range), or empty
+# to keep the manifest's value.
 
 on:
   # A change to the runner itself is checked on a hosted runner with the reviewed hosted-check cohort.
@@ -20,7 +22,7 @@ on:
         required: false
         default: ""
       methods:
-        description: "nirs4all-methods ref or 'published'"
+        description: "nirs4all-methods ref, 'published' or 'published:latest'"
         required: false
         default: ""
       methods_native_ref:
@@ -28,31 +30,31 @@ on:
         required: false
         default: ""
       formats:
-        description: "nirs4all-formats ref or 'published'"
+        description: "nirs4all-formats ref, 'published' or 'published:latest'"
         required: false
         default: ""
       dag_ml_data:
-        description: "dag-ml-data ref or 'published'"
+        description: "dag-ml-data ref, 'published' or 'published:latest'"
         required: false
         default: ""
       io:
-        description: "nirs4all-io ref or 'published'"
+        description: "nirs4all-io ref, 'published' or 'published:latest'"
         required: false
         default: ""
       dag_ml:
-        description: "dag-ml ref or 'published'"
+        description: "dag-ml ref, 'published' or 'published:latest'"
         required: false
         default: ""
       core:
-        description: "nirs4all-core ref or 'published'"
+        description: "nirs4all-core ref, 'published' or 'published:latest'"
         required: false
         default: ""
       sdk:
-        description: "nirs4all (SDK) ref or 'published'"
+        description: "nirs4all (SDK) ref, 'published' or 'published:latest'"
         required: false
         default: ""
       studio:
-        description: "nirs4all-studio ref or 'published'"
+        description: "nirs4all-studio ref, 'published' or 'published:latest'"
         required: false
         default: ""
       pin_alignment:

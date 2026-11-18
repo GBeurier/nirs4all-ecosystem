@@ -44,6 +44,14 @@ DAG-ML-Data, IO, DAG-ML, Core, SDK, Studio, Web.
   repository to read commits from; the default is the sibling checkout, then
   GitHub. Sources are read with `git ls-tree`/`git cat-file` and copied into
   the build root, so member checkouts are never modified.
+- `published` installs the release the product ships: when Studio is a source
+  member, a published Python member comes from PyPI at Studio's exact `install`
+  version (`recommended-config.json`, `required` block), so the cohort tests the
+  environment users get. `version` pins another release explicitly.
+  `published:latest` opts into the newest release within Studio's declared
+  `range` instead (it cannot be combined with `version`); for example
+  `--set sdk=published:latest`, or `published:latest` in a workflow dispatch
+  input.
 - Published Methods still provides the native library to Rust consumers:
   `native_ref` names its runtime commit (default: the cohort Core's
   `compat/upstreams.toml`). Methods Python wheels are not built from source;
@@ -96,11 +104,12 @@ Steps:
    CPU torch, and third-party packages from PyPI. When Studio is a source
    member, the distributions its `recommended-config.json` `required` block
    declares are installed too: those the cohort does not build come from PyPI
-   at the manifest `version` of their published member, otherwise within
-   Studio's declared range (so a published SDK is the newest release Studio
-   accepts). An environment with nothing to install is refused. Installed chain
-   versions and any Python requirement that refuses a cohort version are
-   reported.
+   at the manifest `version` of their member, otherwise at Studio's exact
+   `install` version, or within Studio's declared `range` for a
+   `published:latest` member. A declared distribution without an `install`
+   version is refused, and so is an environment with nothing to install.
+   Installed chain versions and any Python requirement that refuses a cohort
+   version are reported.
 6. Gates, in chain order: owner Rust suites, DAG-ML Python binding tests, Core
    Rust tests and wheel check, the SDK pull-request pytest selection, Studio
    sidecar tests and build, then one Studio end-to-end run (cohort sidecar,

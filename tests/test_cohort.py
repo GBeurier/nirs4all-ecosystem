@@ -206,17 +206,36 @@ def _env_cohort(tmp_path: Path, members: dict, wheels: dict[str, Path] | None = 
     return instance
 
 
-def test_published_python_members_are_installed_for_the_studio_consumer(tmp_path: Path) -> None:
+def test_published_python_members_default_to_the_versions_studio_ships(tmp_path: Path) -> None:
     # Every Python member published (hosted run 44345001551): no wheel is built, so the
     # environment used to be empty and Studio's end-to-end run found no scientific host.
+    # By default the environment reproduces Studio's exact install pins, not the newest admitted release.
     assert cohort.Cohort.consumer_requirements(_env_cohort(tmp_path, {})) == [
-        "nirs4all>=1.4.20,<1.5", "nirs4all-core", "nirs4all-methods>=1.3,<2"]
+        "nirs4all==1.4.20", "nirs4all-core==0.5.1", "nirs4all-methods==1.3.19"]
+
+
+def test_published_latest_opts_into_the_newest_release_studio_admits(tmp_path: Path) -> None:
+    instance = _env_cohort(tmp_path, {"sdk": "published:latest", "core": {"ref": "published:latest"}})
+    assert cohort.Cohort.consumer_requirements(instance) == [
+        "nirs4all>=1.4.20,<1.5", "nirs4all-core", "nirs4all-methods==1.3.19"]
+    assert instance.manifest["members"]["sdk"].published
+
+
+def test_published_latest_and_an_explicit_version_are_exclusive(tmp_path: Path) -> None:
+    with pytest.raises(cohort.CohortError, match="exclusive"):
+        _env_cohort(tmp_path, {"sdk": {"ref": "published:latest", "version": "1.4.20"}})
 
 
 def test_published_member_version_and_cohort_wheels_take_precedence(tmp_path: Path) -> None:
-    instance = _env_cohort(tmp_path, {"sdk": {"ref": "published", "version": "1.4.20"}, "core": "2" * 40},
+    instance = _env_cohort(tmp_path, {"sdk": {"ref": "published", "version": "1.4.21"}, "core": "2" * 40},
                            wheels={"nirs4all-core": tmp_path / "nirs4all_core-0.6.0-py3-none-any.whl"})
-    assert cohort.Cohort.consumer_requirements(instance) == ["nirs4all==1.4.20", "nirs4all-methods>=1.3,<2"]
+    assert cohort.Cohort.consumer_requirements(instance) == ["nirs4all==1.4.21", "nirs4all-methods==1.3.19"]
+
+
+def test_studio_requirement_without_an_install_pin_is_refused(tmp_path: Path) -> None:
+    instance = _env_cohort(tmp_path, {}, required=[{"name": "nirs4all", "range": ">=1.4.20,<1.5"}])
+    with pytest.raises(cohort.CohortError, match="no exact 'install' version for nirs4all"):
+        cohort.Cohort.consumer_requirements(instance)
 
 
 def test_studio_without_declared_requirements_is_refused(tmp_path: Path) -> None:

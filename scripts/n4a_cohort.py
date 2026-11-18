@@ -229,6 +229,11 @@ def load_recipes(path: Path) -> tuple[dict[str, Recipe], dict[str, Any]]:
 # ----------------------------------------------------------------------- manifest
 
 
+# "published" installs the release a source consumer ships (its exact ``install`` pin); "published:latest" opts
+# into the newest release within that consumer's declared range.
+PUBLISHED_REFS = ("published", "published:latest")
+
+
 @dataclass
 class MemberSpec:
     key: str
@@ -241,7 +246,12 @@ class MemberSpec:
 
     @property
     def published(self) -> bool:
-        return self.ref == "published"
+        return self.ref in PUBLISHED_REFS
+
+    @property
+    def latest(self) -> bool:
+        """Whether a consumer's newest admitted release is wanted instead of its exact ``install`` pin."""
+        return self.ref == "published:latest"
 
     @property
     def is_path(self) -> bool:
@@ -263,6 +273,8 @@ def parse_member_value(key: str, value: Any, base: Path) -> MemberSpec:
         ref = "path:" + str((base / target).resolve() if not target.is_absolute() else target)
     if value.get("python") not in (None, "published"):
         raise CohortError(f"member {key}: python may only be 'published'")
+    if ref == "published:latest" and value.get("version"):
+        raise CohortError(f"member {key}: 'published:latest' and an explicit version are exclusive")
     return MemberSpec(key=key, ref=ref, source=value.get("source"), native_ref=value.get("native_ref"),
                       python=value.get("python"), version=value.get("version"), note=value.get("note"))
 
@@ -929,8 +941,9 @@ class Cohort:
         """Chain packages that source consumers of the environment declare and the cohort does not build.
 
         Cohort wheels are installed by direct-file override, so they are left out. Every other declared
-        distribution comes from PyPI: at the manifest's ``version`` when its member pins one, otherwise
-        within the consumer's declared range, so a published SDK is installed even when no wheel is built.
+        distribution comes from PyPI at the manifest's ``version`` when its member pins one, otherwise at the
+        consumer's exact ``install`` version, so the environment reproduces what the consumer ships. A member
+        whose ref is ``published:latest`` takes the newest release within the consumer's declared range instead.
         """
         owners = {dist: key for key, recipe in self.recipes.items() for dist in recipe.python.get("distributions", [])}
         requirements = []
@@ -946,7 +959,14 @@ class Cohort:
                 if name in self.wheels:
                     continue
                 spec = self.manifest["members"].get(owners.get(name, ""))
-                requirements.append(f"{name}=={spec.version}" if spec and spec.version else name + (entry.get("range") or ""))
+                if spec and spec.version:
+                    requirements.append(f"{name}=={spec.version}")
+                elif spec and spec.latest:
+                    requirements.append(name + (entry.get("range") or ""))
+                elif entry.get("install"):
+                    requirements.append(f"{name}=={entry['install']}")
+                else:
+                    raise CohortError(f"{key}: {declared['path']} declares no exact 'install' version for {name}")
         return requirements
 
     def build_env(self) -> None:
@@ -1318,7 +1338,7 @@ def print_summary(report: dict[str, Any]) -> None:
         if member.get("commit"):
             source = f"{member['commit'][:12]}{'+dirty' if member.get('dirty') else ''} {member.get('branch') or ''}".strip()
         elif member.get("published"):
-            source = "published"
+            source = member.get("ref") or "published"
         else:
             source = ""
         for index, step in enumerate(steps):
@@ -1639,7 +1659,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     init.add_argument("--out", required=True)
     init.add_argument("--cohort-id", default="local")
     init.add_argument("--from-siblings", nargs="*", default=[], help="members to take from their sibling working trees")
-    init.add_argument("--set", action="append", help="key=ref (commit, branch, path:<dir> or published)")
+    init.add_argument("--set", action="append", help="key=ref (commit, branch, path:<dir>, published or published:latest)")
 
     run_p = sub.add_parser("run", help="assemble the cohort from source and run its gates")
     run_p.add_argument("--manifest", help="cohort manifest (n4a.candidate-cohort/v1); members default to published")
