@@ -183,6 +183,55 @@ def test_lock_check_reports_registry_copies_of_cohort_crates(tmp_path: Path) -> 
     assert len(problems) == 1 and problems[0].startswith("dag-ml 0.4.2 still resolved from crates.io")
 
 
+STUDIO_REQUIRED = [
+    {"name": "nirs4all", "range": ">=1.4.20,<1.5", "install": "1.4.20"},
+    {"name": "nirs4all-core", "range": "", "install": "0.5.1"},
+    {"name": "nirs4all-methods", "range": ">=1.3,<2", "install": "1.3.19"},
+]
+
+
+def _env_cohort(tmp_path: Path, members: dict, wheels: dict[str, Path] | None = None, required: list | None = None) -> object:
+    """A cohort whose Studio is a source member and every other member is as given (published by default)."""
+    recipes, _ = cohort.load_recipes(cohort.DEFAULT_MEMBERS)
+    manifest_path = tmp_path / "cohort.json"
+    manifest_path.write_text(json.dumps({"schema_version": cohort.MANIFEST_SCHEMA, "members": {"studio": "1" * 40, **members}}))
+    studio = tmp_path / "studio"
+    studio.mkdir()
+    (studio / "recommended-config.json").write_text(json.dumps({"required": STUDIO_REQUIRED if required is None else required}))
+    instance = object.__new__(cohort.Cohort)
+    instance.recipes = recipes
+    instance.manifest = cohort.load_manifest(manifest_path, [], recipes)
+    instance.snapshots = {"studio": cohort.Snapshot("studio", "commit", studio, "1" * 40, None, False, "d", {}, "src")}
+    instance.wheels = wheels or {}
+    return instance
+
+
+def test_published_python_members_are_installed_for_the_studio_consumer(tmp_path: Path) -> None:
+    # Every Python member published (hosted run 44345001551): no wheel is built, so the
+    # environment used to be empty and Studio's end-to-end run found no scientific host.
+    assert cohort.Cohort.consumer_requirements(_env_cohort(tmp_path, {})) == [
+        "nirs4all>=1.4.20,<1.5", "nirs4all-core", "nirs4all-methods>=1.3,<2"]
+
+
+def test_published_member_version_and_cohort_wheels_take_precedence(tmp_path: Path) -> None:
+    instance = _env_cohort(tmp_path, {"sdk": {"ref": "published", "version": "1.4.20"}, "core": "2" * 40},
+                           wheels={"nirs4all-core": tmp_path / "nirs4all_core-0.6.0-py3-none-any.whl"})
+    assert cohort.Cohort.consumer_requirements(instance) == ["nirs4all==1.4.20", "nirs4all-methods>=1.3,<2"]
+
+
+def test_studio_without_declared_requirements_is_refused(tmp_path: Path) -> None:
+    with pytest.raises(cohort.CohortError, match="declares no 'required' Python requirements"):
+        cohort.Cohort.consumer_requirements(_env_cohort(tmp_path, {}, required=[]))
+
+
+def test_an_environment_with_nothing_to_install_is_refused(tmp_path: Path) -> None:
+    instance = _env_cohort(tmp_path, {})
+    instance.snapshots = {}
+    instance.build = instance.cargo_target = instance.run_dir = tmp_path
+    with pytest.raises(cohort.CohortError, match="nothing to install"):
+        cohort.Cohort.build_env(instance)
+
+
 def _report(**overrides: object) -> dict:
     report = {
         "schema_version": cohort.REPORT_SCHEMA, "cohort_id": "t", "run_id": "r", "manifest_digest": "ab" * 32,

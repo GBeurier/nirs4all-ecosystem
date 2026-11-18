@@ -925,6 +925,30 @@ class Cohort:
                     lines.append(f"{dist}=={spec.version}")
         return lines
 
+    def consumer_requirements(self) -> list[str]:
+        """Chain packages that source consumers of the environment declare and the cohort does not build.
+
+        Cohort wheels are installed by direct-file override, so they are left out. Every other declared
+        distribution comes from PyPI: at the manifest's ``version`` when its member pins one, otherwise
+        within the consumer's declared range, so a published SDK is installed even when no wheel is built.
+        """
+        owners = {dist: key for key, recipe in self.recipes.items() for dist in recipe.python.get("distributions", [])}
+        requirements = []
+        for key in self.ordered(self.snapshots):
+            declared = self.recipes[key].data.get("environment_requirements")
+            if not declared or not self.is_source(key):
+                continue
+            entries = read_json(self.snapshots[key].root / declared["path"]).get(declared["field"])
+            if not isinstance(entries, list) or not entries:
+                raise CohortError(f"{key}: {declared['path']} declares no '{declared['field']}' Python requirements")
+            for entry in entries:
+                name = entry["name"]
+                if name in self.wheels:
+                    continue
+                spec = self.manifest["members"].get(owners.get(name, ""))
+                requirements.append(f"{name}=={spec.version}" if spec and spec.version else name + (entry.get("range") or ""))
+        return requirements
+
     def build_env(self) -> None:
         started = time.time()
         env_dir = self.build / "env"
@@ -944,6 +968,9 @@ class Cohort:
             if not match:
                 raise CohortError(f"sdk: no CPU torch pin found in {sdk_recipe['torch_cpu_from']}")
             torch_spec = match.group(1)
+        requirements += self.consumer_requirements()
+        if not requirements and not self.wheels:
+            raise CohortError("the Python environment has nothing to install: no cohort wheel and no declared consumer requirement")
         overrides = self.python_overrides()
         wanted = {"python": self.manifest["python"], "requirements": requirements, "torch": torch_spec,
                   "overrides": overrides, "wheels": {d: sha256_hex(w.read_bytes()) for d, w in sorted(self.wheels.items())}}
