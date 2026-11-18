@@ -136,6 +136,13 @@ a dependency or alias. Private `nirs4all-lab` and `nirs4all-drafts` are out of s
    cohort. The lock is narrower than the public surface matrix.
    Version bumps, tags, publication and deployment are coordinated
    maintainer actions after local qualification; refresh Cockpit at batch end.
+   Classify each bump under the
+   [version constraints](docs/contracts/release/VERSION_CONSTRAINTS.md):
+   `Z` for fixes and purely additive, backward-compatible features; `Y` for any
+   compatibility break (API signature, ABI break or ABI version, wire/schema/
+   fixture, renamed ids, changed numerical results). Cross-repository ranges
+   accept one tested series, `>=X.Y[.Z],<X.(Y+1)`; never `^1.x` or Cargo `"1.x"`
+   for 1.x packages. Exact pins stay in lockfiles and install lists.
 
 **Migration scope:** consult current maintainer instructions and the target
 owner's instructions before acting; this guide grants no authorization. The
