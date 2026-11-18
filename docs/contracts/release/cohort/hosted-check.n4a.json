@@ -1,0 +1,14 @@
+{
+  "schema_version": "n4a.candidate-cohort/v1",
+  "cohort_id": "hosted-check",
+  "description": "Pull-request check of the cohort runner on a hosted runner: the released Core 0.5.1, SDK 1.4.19 and Studio 0.17.2 commits of the November 2026 owner cohort built from source over the published Methods, Formats, DAG-ML-Data, IO 0.3.6 and DAG-ML 0.4.3 releases.",
+  "python": "3.11",
+  "tier": "fast",
+  "pin_alignment": "align",
+  "members": {
+    "methods": {"ref": "published", "native_ref": "50b307dd2fc76c0a04ff06e83c316d408c19fc68"},
+    "core": {"ref": "053704bd62b8d08f04dc6f61f744dee04e6a2387", "note": "nirs4all-core v0.5.1"},
+    "sdk": {"ref": "526052d13c7903a391ce1898ad99ee96c4c2bfce", "note": "nirs4all 1.4.19 (merge of PR #167)"},
+    "studio": {"ref": "a912fb42283e6ae5a98eb4fc258ccb1d0a15dfb0", "note": "nirs4all-studio 0.17.2 (merge of PR #40)"}
+  }
+}
