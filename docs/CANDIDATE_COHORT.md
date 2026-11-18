@@ -93,8 +93,14 @@ Steps:
    upstream member or the patch set changed.
 5. Environment: `uv` installs the cohort wheels by direct-file override (a
    cohort member never comes from PyPI), the SDK's declared test cohort with its
-   CPU torch, and third-party packages from PyPI. Installed chain versions and
-   any Python requirement that refuses a cohort version are reported.
+   CPU torch, and third-party packages from PyPI. When Studio is a source
+   member, the distributions its `recommended-config.json` `required` block
+   declares are installed too: those the cohort does not build come from PyPI
+   at the manifest `version` of their published member, otherwise within
+   Studio's declared range (so a published SDK is the newest release Studio
+   accepts). An environment with nothing to install is refused. Installed chain
+   versions and any Python requirement that refuses a cohort version are
+   reported.
 6. Gates, in chain order: owner Rust suites, DAG-ML Python binding tests, Core
    Rust tests and wheel check, the SDK pull-request pytest selection, Studio
    sidecar tests and build, then one Studio end-to-end run (cohort sidecar,

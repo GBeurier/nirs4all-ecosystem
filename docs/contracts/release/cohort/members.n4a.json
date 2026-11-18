@@ -173,6 +173,7 @@
         {"key": "npm", "kind": "json", "path": "package.json", "field": "version"}
       ],
       "consumes_environment": true,
+      "environment_requirements": {"path": "recommended-config.json", "field": "required", "note": "Studio's declared Python runtime (name and range per distribution). Distributions the cohort does not build come from PyPI within that range, or at the manifest version of their published member."},
       "rust": {"exclude_paths": ["sidecar/fuzz/", "sidecar/vendor/"]},
       "abi_expectations": [
         {"kind": "js_constants", "path": "scripts/native-runtime-contract.cjs", "major": "METHODS_ABI_MAJOR", "minor": "METHODS_ABI_MINOR", "exact": true}
