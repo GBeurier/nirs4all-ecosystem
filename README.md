@@ -46,6 +46,20 @@ R-universe source propagation and served platform checks remain separate;
 no successful corrected R-universe build is claimed here.
 Studio GUI migration remains outside this source update.
 
+Domains references its Main
+[`ada9ca3e`](https://github.com/dcornet/nirs4all-domains/commit/ada9ca3e44abf58011db5be04aadd580ada69e7f)
+(18 November, green scientific-gates, browser-qualification, warning-report and
+Pages runs). The latest Domains tag is still `v0.1.0-alpha.17`; this reference
+adds the hosted WASM demonstrator, scoped X/Y/M, factor-association (F4.1) and
+train-fitted support (F4.2) browser qualifications. Its qualified owner cohort is
+unchanged (Preflight 0.1.6, Methods 1.3.13 / ABI 2.20, DAG-ML 0.3.44, Datasets
+0.3.11, IO/Formats WASM 0.2.14, UI 0.2.5). Its manifests still pin those
+owners exactly; the alignment with the
+[version constraints](docs/contracts/release/VERSION_CONSTRAINTS.md) is proposed in
+[dcornet/nirs4all-domains#18](https://github.com/dcornet/nirs4all-domains/pull/18).
+Domains is not an aggregation-lock member, and this reference records source
+integration, not a release.
+
 The [2026.07 profile](docs/contracts/release/history/2026.07-refactor/aggregation-lock.n4a.lock.json)
 is retained as historical provenance and is not the active CI selection.
 
