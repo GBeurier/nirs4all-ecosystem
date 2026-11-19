@@ -18,6 +18,7 @@ REVIEW_VISION.md
 /docs/*
 !/docs/CROSS_LANGUAGE_E2E.md
 !/docs/CANDIDATE_COHORT.md
+!/docs/TECHNICAL_DEBT.md
 !/docs/agent_reports/
 /docs/agent_reports/*
 !/docs/agent_reports/WAVE_7*.md
