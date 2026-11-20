@@ -32,8 +32,8 @@ profiles and consumer qualification remain separate evidence. Core's Rust
 aggregate retains its declared owner dependencies; selecting newer IO or
 Datasets source here does not replace Core's compiled dependencies. The native
 ledger names the actual Core 0.6.1 Windows storage-write receipt. The
-[Python SDK1.6.1](https://github.com/GBeurier/nirs4all/releases/tag/1.6.1),
-[Studio](https://github.com/GBeurier/nirs4all-studio/releases/latest) and
+[Python SDK 1.6.1](https://github.com/GBeurier/nirs4all/releases/tag/1.6.1),
+[Studio 0.19.1](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.19.1) and
 [Web](https://web.nirs4all.org/) follow their independent release gates.
 R-universe registry source selection and served platform propagation are also
 separate; an updated registry does not establish a completed binary build.
@@ -53,21 +53,24 @@ R-universe archives were checked in the same platform cohort.
 Web **0.6.0** is deployed at [web.nirs4all.org](https://web.nirs4all.org/):
 the served build supports direct original-publisher acquisition through the
 Datasets/IO owners. Public imports stay in browser session memory.
+Studio **0.19.1** adopts the public SDK 1.6.1 and its qualified native cohort.
+Installer channels publish independently after their own packaged runtime gates;
+the release page lists the artifacts actually available. Source selection does
+not assert availability or qualification of every platform.
 Studio GUI migration remains outside this source update.
 
-Domains references its Main
-[`ada9ca3e`](https://github.com/dcornet/nirs4all-domains/commit/ada9ca3e44abf58011db5be04aadd580ada69e7f)
-(18 November, green scientific-gates, browser-qualification, warning-report and
-Pages runs). The latest Domains tag is still `v0.1.0-alpha.17`; this reference
-adds the hosted WASM demonstrator, scoped X/Y/M, factor-association (F4.1) and
-train-fitted support (F4.2) browser qualifications. Its qualified owner cohort is
-unchanged (Preflight 0.1.6, Methods 1.3.13 / ABI 2.20, DAG-ML 0.3.44, Datasets
-0.3.11, IO/Formats WASM 0.2.14, UI 0.2.5). Its manifests still pin those
-owners exactly; the alignment with the
-[version constraints](docs/contracts/release/VERSION_CONSTRAINTS.md) is proposed in
-[dcornet/nirs4all-domains#18](https://github.com/dcornet/nirs4all-domains/pull/18).
-Domains is not an aggregation-lock member, and this reference records source
-integration, not a release.
+Domains **0.2.0** is an explicitly qualified native Rust/Python source prerelease,
+selected from [`477f47de`](https://github.com/dcornet/nirs4all-domains/releases/tag/v0.2.0).
+Its native cohort adopts Preflight 0.3.0, Methods 1.5.1 and DAG-ML 0.5.0.
+The native scientific and Python gates passed. The entire browser cohort remains
+**unqualified**: its strict numerical gate retains the existing seven Ubuntu and
+four Windows failures from the separately accepted F4.3 Main integration.
+The failure fields and values are unchanged; all 3,237,280 compared Linux
+native/WASM report numeric values are bit-identical to that accepted baseline.
+Passing browser lifecycle/export checks do not qualify numerical parity.
+The prerelease and [integration PR](https://github.com/dcornet/nirs4all-domains/pull/21)
+record these limits; no PyPI or crates publication is asserted.
+Domains is not an aggregation-lock member.
 
 The [2026.07 profile](docs/contracts/release/history/2026.07-refactor/aggregation-lock.n4a.lock.json)
 is retained as historical provenance and is not the active CI selection.
