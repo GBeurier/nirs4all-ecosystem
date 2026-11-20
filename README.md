@@ -44,11 +44,15 @@ and Papers **0.2.5** is public from
 [`3ba64e79`](https://github.com/GBeurier/nirs4all-papers/commit/3ba64e79e8e7b6950f5628c6ba34d42474338b94).
 Their selected source references are included in this parent; this does not assert
 that their current Main branches or public sites have been updated.
-R is the independent `nirs4all-r` product, with its own runtime prerequisites.
-Its accepted source includes the nine-script Core prerequisite correction
-[`6e8412ac`](https://github.com/GBeurier/nirs4all-r/commit/6e8412ac4fcd2f353e552da972c54f4ebcf7b6bd).
-R-universe source propagation and served platform checks remain separate;
-no successful corrected R-universe build is claimed here.
+R **0.8.0** is the independent `nirs4all-r` product, selected from
+[`d1d7517c`](https://github.com/GBeurier/nirs4all-r/releases/tag/v0.8.0).
+Its selected R-universe source, Linux, macOS ARM and Windows archives are served
+with matching versions and source identities; archive checks are separate from
+local runtime execution. Methods/pls4all1.5.1, IO0.3.8 and Datasets0.3.22
+R-universe archives were checked in the same platform cohort.
+Web **0.6.0** is deployed at [web.nirs4all.org](https://web.nirs4all.org/):
+the served build supports direct original-publisher acquisition through the
+Datasets/IO owners. Public imports stay in browser session memory.
 Studio GUI migration remains outside this source update.
 
 Domains references its Main
