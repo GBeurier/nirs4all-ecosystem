@@ -889,9 +889,9 @@
           ]
         },
         {
-          "oracle": "catalog dataset IO materialization",
-          "candidate": "R/native real dataset pipeline run",
-          "metric": "real dataset IO run preserves selected values, Python aggregate rerun matches R/native targets, RMSE, split, selected predictions, and variant predictions within tolerance",
+          "oracle": "catalog data or declared public test fixture IO materialization",
+          "candidate": "R/native selected catalog or declared public fixture pipeline run",
+          "metric": "selected catalog or declared public test fixture IO run preserves selected values, Python aggregate rerun matches R/native targets, RMSE, split, selected predictions, and variant predictions within tolerance",
           "evidence_level": "strict",
           "artifacts": [
             "{artifacts_dir}/r-dataset-io-pipeline/python-reopen-ledger.json",
@@ -902,7 +902,7 @@
       "steps": [
         {
           "id": "r-load-reshape",
-          "title": "Load reference dataset and reshape spectra/metadata through IO",
+          "title": "Load catalog data or the declared public test fixture and reshape through IO",
           "kind": "prepare",
           "repo": "nirs4all-core",
           "requires_tools": [
@@ -915,10 +915,7 @@
             "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/__init__.py",
             "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/bootstrap.py",
             "{workspace_root}/nirs4all-datasets/src/nirs4all_datasets/organize.py",
-            "{workspace_root}/nirs4all-io/src/nirs4all_io/__init__.py",
-            "{workspace_root}/nirs4all-datasets/catalog/datasets/malaria_anopheles_gambiae_sporozoite_nir.yaml",
-            "{workspace_root}/nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/manifest.json",
-            "{workspace_root}/nirs4all-datasets/datasets/malaria_anopheles_gambiae_sporozoite_nir/raw/raw_manifest.csv"
+            "{workspace_root}/nirs4all-io/src/nirs4all_io/__init__.py"
           ],
           "command": [
             "bash",
@@ -2340,7 +2337,8 @@
           "requires_paths": [
             "{workspace_root}/nirs4all-web/web-app/src/app/custom-app-host.contract.test.ts",
             "{workspace_root}/nirs4all-core/tests/parity/expected/portable_python_oracle.json",
-            "{workspace_root}/nirs4all-web/web-app/vendor/npm/nirs4all-ui-0.1.15.tgz"
+            "{workspace_root}/nirs4all-web/web-app/package.json",
+            "{workspace_root}/nirs4all-web/web-app/package-lock.json"
           ],
           "command": [
             "bash",

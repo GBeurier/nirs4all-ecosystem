@@ -79,7 +79,7 @@
   "current_recipe": {
     "manifest": "docs/contracts/e2e/cross-language-scenarios.n4a.json",
     "manifest_schema_version": "n4a.cross-language-e2e/v1",
-    "manifest_sha256": "4207c8a4ef7c2a8dc841104bcae4d8ca9356a8570a4c4532338d7fa67dc05d1a"
+    "manifest_sha256": "2ee2754cd4de9b146e82b2dfb5b9447b337d24bf13eea3a2b7d7bbf1bdeb5ed6"
   },
   "evidence": {
     "artifact_count": 70,

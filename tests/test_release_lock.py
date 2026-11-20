@@ -601,15 +601,17 @@ def test_central_manifest_declares_reproducible_methods_and_core_topology_source
     )
     components = {component["key"]: component for component in manifest["components"]}
     assert manifest["release_selection_policy"]["workspace_root"] == "<explicit-selected-workspace>"
-    assert manifest["release_selection_policy"]["selected_branch_patterns"] == ["integration/release-20261109"]
+    assert manifest["release_selection_policy"]["selected_branch_patterns"] == [
+        "release/aggregation-selected-20261119", "release/aggregation-published-20261120"
+    ]
     assert manifest["release_selection_policy"]["preferred_exact_tag"] is None
     assert components["core"]["repo_path"] == "nirs4all-core"
     assert components["core"]["repo_url"] == "GBeurier/nirs4all-core"
     assert components["core"]["selected_workspace_path"] == "nirs4all-core"
-    assert components["core"]["preferred_exact_tag"] == "v0.5.1"
+    assert components["core"]["preferred_exact_tag"] == "v0.6.1"
     assert components["core"]["target_repo_path"] == "nirs4all-core"
     assert components["core"].get("repo_aliases", []) == []
-    assert components["formats"]["preferred_exact_tag"] == "v0.2.16"
+    assert components["formats"]["preferred_exact_tag"] == "v0.2.19"
     methods_sources = {
         source["key"]: source for source in components["methods"]["version_sources"]
     }

@@ -38,11 +38,11 @@
     "inputs": {
       "aggregation_manifest": {
         "path": "docs/contracts/release/aggregation-manifest.n4a.json",
-        "canonical_json_sha256": "sha256:5708012b777fb5b0019d707a9f2f8f48e1e08957c8726f5ea970840790e6b7d5"
+        "canonical_json_sha256": "sha256:86bba9673f416c5b2cd03228825655d551b64bbd4e9c4eb995295620f4237213"
       },
       "aggregation_lock": {
         "path": "docs/contracts/release/aggregation-lock.n4a.lock.json",
-        "canonical_json_sha256": "sha256:afc71d09c96eb8ef862b97615d493db9a64584ab18cc7e976e5db14378ae21c9"
+        "canonical_json_sha256": "sha256:2c5370a19318b7991eeeed2ab863d10e7f33ce6c58e7c913ac6f452f3f1fdb37"
       },
       "surface_matrix": {
         "path": "docs/contracts/release/public-v1-surface-matrix.n4a.json",
@@ -183,8 +183,8 @@
           "qualification": {
             "state": "qualified",
             "runtime": "rust/windows-latest",
-            "receipt": "docs/contracts/release/core-0.5.1-ci.json",
-            "receipt_sha256": "5c0ee8dd765a334ea2f9f5182d78cd8f86e5b6df80a4f980dded534aa793db39",
+            "receipt": "docs/contracts/release/core-0.6.1-ci.json",
+            "receipt_sha256": "b6516ab287c672f788ec5c767beaa07049ea11b0f3a33a90aa171418f0e576df",
             "test": "production_roundtrip_exact_bytes_hashes_and_borrowed_ranges",
             "scope": "Synthetic opaque-byte storage write only; no owned-reader facade, model execution or cross-binding parity."
           }

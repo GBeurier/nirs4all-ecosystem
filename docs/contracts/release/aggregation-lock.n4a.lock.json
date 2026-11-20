@@ -59,7 +59,7 @@
       "valid": true
     }
   ],
-  "manifest_digest": "sha256:5708012b777fb5b0019d707a9f2f8f48e1e08957c8726f5ea970840790e6b7d5",
+  "manifest_digest": "sha256:86bba9673f416c5b2cd03228825655d551b64bbd4e9c4eb995295620f4237213",
   "members": {
     "core": {
       "availability": {
@@ -822,14 +822,14 @@
       ],
       "role": "Portable aggregate and owner-neutral container; end-user R is maintained in nirs4all-r",
       "selected_branch_patterns": [
-        "main"
+        "release/aggregation-selected-20261119"
       ],
       "selected_workspace_path": "nirs4all-core",
       "state": {
-        "branch": "main",
-        "commit": "053704bd62b8d08f04dc6f61f744dee04e6a2387",
+        "branch": "release/aggregation-selected-20261119",
+        "commit": "d82bea70cbe5d66ac8ff46c5b66cc64c3b90498b",
         "dirty": false,
-        "exact_tag": "v0.5.1"
+        "exact_tag": "v0.6.1"
       },
       "target_repo_path": "nirs4all-core",
       "target_repo_url": "GBeurier/nirs4all-core",
@@ -838,19 +838,19 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "bindings/wasm/package.json",
-          "value": "0.5.1"
+          "value": "0.6.1"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "0.5.1"
+          "value": "0.6.1"
         },
         "rust": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/rust/nirs4all/Cargo.toml",
-          "value": "0.5.1"
+          "value": "0.6.1"
         }
       }
     },
@@ -911,7 +911,7 @@
           ]
         },
         {
-          "canonical_json_sha256": "sha256:2df87ec54e14fae461d950cc8299de5e1203c0bb17725aa7d423873b451f68e5",
+          "canonical_json_sha256": "sha256:27296476330e1917928125b5d947cf094194ffb6ce08e1a205a2e77882c85c6a",
           "crate": "dag-ml",
           "headers": [
             {
@@ -921,9 +921,9 @@
           ],
           "id": "abi_snapshot",
           "kind": "abi_snapshot",
-          "package_version": "0.4.3",
+          "package_version": "0.5.0",
           "path": "docs/contracts/abi_snapshot.v1.json",
-          "raw_sha256": "sha256:ad2e113dd879137a4159a56709645b5f72dd7d4227ac81123e56c79cb405d438"
+          "raw_sha256": "sha256:a0035016130e7b933dade4347e565172d7c674e86adbd6a835ca24d6001f944e"
         }
       ],
       "default_inclusion": "base",
@@ -972,14 +972,14 @@
       ],
       "role": "DAG runtime and native execution contracts",
       "selected_branch_patterns": [
-        "main"
+        "release/aggregation-selected-20261119"
       ],
       "selected_workspace_path": "dag-ml",
       "state": {
-        "branch": "main",
-        "commit": "d796152c148db3bb3f4398f818e1083f5e3aa816",
+        "branch": "release/aggregation-selected-20261119",
+        "commit": "d3608565a5fe27875d4b64e54035eb8b4c05b204",
         "dirty": false,
-        "exact_tag": "v0.4.3"
+        "exact_tag": "v0.5.0"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -988,25 +988,25 @@
           "kind": "json",
           "read_from": "tracked_worktree",
           "source": "docs/contracts/abi_snapshot.v1.json",
-          "value": "0.4.3"
+          "value": "0.5.0"
         },
         "python": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "crates/dag-ml-py/pyproject.toml",
-          "value": "0.4.3"
+          "value": "0.5.0"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.4.3"
+          "value": "0.5.0"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.4.3"
+          "value": "0.5.0"
         }
       }
     },
@@ -1128,11 +1128,11 @@
       ],
       "role": "Data provider contracts and DMD representations",
       "selected_branch_patterns": [
-        "main"
+        "release/aggregation-selected-20261119"
       ],
       "selected_workspace_path": "dag-ml-data",
       "state": {
-        "branch": "main",
+        "branch": "release/aggregation-selected-20261119",
         "commit": "854d5bebd88e1de761283139189735c349a6226c",
         "dirty": false,
         "exact_tag": "v0.2.17"
@@ -1207,14 +1207,14 @@
       ],
       "role": "Reference dataset catalog",
       "selected_branch_patterns": [
-        "integration/release-20261109"
+        "release/aggregation-published-20261120"
       ],
       "selected_workspace_path": "nirs4all-datasets",
       "state": {
-        "branch": "integration/release-20261109",
-        "commit": "57ccd12fddbfb767b3ff5941433af5980f175c96",
+        "branch": "release/aggregation-published-20261120",
+        "commit": "c8aef1ec94ecde6a51abce1c61ee955c3fd0e838",
         "dirty": false,
-        "exact_tag": "v0.3.19"
+        "exact_tag": "v0.3.23"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1223,19 +1223,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "pyproject.toml",
-          "value": "0.3.19"
+          "value": "0.3.23"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/nirs4alldatasets/DESCRIPTION",
-          "value": "0.3.19"
+          "value": "0.3.23"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.3.19"
+          "value": "0.3.23"
         }
       }
     },
@@ -1288,14 +1288,14 @@
       ],
       "role": "Vendor readers and bindings",
       "selected_branch_patterns": [
-        "integration/release-20261109"
+        "release/aggregation-selected-20261119"
       ],
       "selected_workspace_path": "nirs4all-formats",
       "state": {
-        "branch": "integration/release-20261109",
-        "commit": "819f5764a2138d755155e5018d7bbcb178924861",
+        "branch": "release/aggregation-selected-20261119",
+        "commit": "5499372e0b32a35f6cc5a9aeec657ab2a1a1d1f7",
         "dirty": false,
-        "exact_tag": "v0.2.16"
+        "exact_tag": "v0.2.19"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1304,19 +1304,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/Cargo.toml",
-          "value": "0.2.16"
+          "value": "0.2.19"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/nirs4allformats/DESCRIPTION",
-          "value": "0.2.16"
+          "value": "0.2.19"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.2.16"
+          "value": "0.2.19"
         }
       }
     },
@@ -1369,14 +1369,14 @@
       ],
       "role": "Dataset assembly and DatasetPackage bridge",
       "selected_branch_patterns": [
-        "main"
+        "release/aggregation-selected-20261119"
       ],
       "selected_workspace_path": "nirs4all-io",
       "state": {
-        "branch": "main",
-        "commit": "284f50609212456e3275567f25dc0234e58333f6",
+        "branch": "release/aggregation-selected-20261119",
+        "commit": "ce82e0ac074b322d04a276c57cd9bf2b5f8adc91",
         "dirty": false,
-        "exact_tag": "v0.3.6"
+        "exact_tag": "v0.3.8"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1385,19 +1385,19 @@
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "bindings/python/Cargo.toml",
-          "value": "0.3.6"
+          "value": "0.3.8"
         },
         "r": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/DESCRIPTION",
-          "value": "0.3.6"
+          "value": "0.3.8"
         },
         "rust_workspace": {
           "kind": "toml",
           "read_from": "tracked_worktree",
           "source": "Cargo.toml",
-          "value": "0.3.6"
+          "value": "0.3.8"
         }
       }
     },
@@ -1414,15 +1414,15 @@
           "id": "n4m_version_header",
           "kind": "text",
           "path": "cpp/include/n4m/n4m_version.h",
-          "raw_sha256": "sha256:46215177240107548f101847d0e177f0733e24b2b8f4c24dffffeea2339b1999"
+          "raw_sha256": "sha256:87bff84b9be41b147f0770bb08b47309533fc9a96f25f48d149a102ffa0a31cb"
         }
       ],
       "default_inclusion": "aggregate-extra",
       "glob_artifacts": {
         "expected_symbols": {
-          "cpp/abi/expected_symbols_linux.txt": "sha256:1de044e933b75cff6d47024fa3c3b7b7bab9f6b94e43b4eb661a7b605dd729ca",
-          "cpp/abi/expected_symbols_macos.txt": "sha256:c73fd65cc79f3f29a0881f15ad65eec9a693f893f00c57ddb9ca57d5228042fa",
-          "cpp/abi/expected_symbols_windows.txt": "sha256:c73fd65cc79f3f29a0881f15ad65eec9a693f893f00c57ddb9ca57d5228042fa"
+          "cpp/abi/expected_symbols_linux.txt": "sha256:106c66be89f996c99daf9ae9e0fe3355b579e557ba84f2b5ce5e7ddfbee15293",
+          "cpp/abi/expected_symbols_macos.txt": "sha256:820f430d01312cfd7e94bd43fca039212acc5a2735feced64de692d775d052f5",
+          "cpp/abi/expected_symbols_windows.txt": "sha256:820f430d01312cfd7e94bd43fca039212acc5a2735feced64de692d775d052f5"
         }
       },
       "license_expression": "CECILL-2.1",
@@ -1465,14 +1465,14 @@
       ],
       "role": "Portable methods kernels and C ABI",
       "selected_branch_patterns": [
-        "integration/release-20261109"
+        "release/aggregation-selected-20261119"
       ],
       "selected_workspace_path": "nirs4all-methods",
       "state": {
-        "branch": "integration/release-20261109",
-        "commit": "ff3ba7a4047c55e841ca92342abd0140b38be984",
+        "branch": "release/aggregation-selected-20261119",
+        "commit": "25041f88bebb21a19748799c1681e138a3d55dfb",
         "dirty": false,
-        "exact_tag": null
+        "exact_tag": "v1.5.1"
       },
       "target_repo_path": null,
       "target_repo_url": null,
@@ -1482,12 +1482,12 @@
           "read_from": "tracked_worktree",
           "source": "cpp/include/n4m/n4m_version.h",
           "value": {
-            "abi_version": "2.22.0",
+            "abi_version": "2.24.0",
             "abi_version_int": null,
-            "project_version": "1.3.15",
+            "project_version": "1.5.1",
             "serialization_format_version": 3,
             "serialization_magic": "N4MM",
-            "source_sha256": "sha256:46215177240107548f101847d0e177f0733e24b2b8f4c24dffffeea2339b1999"
+            "source_sha256": "sha256:87bff84b9be41b147f0770bb08b47309533fc9a96f25f48d149a102ffa0a31cb"
           }
         },
         "python_nirs4all_methods": {
@@ -1499,7 +1499,7 @@
           "module": "n4m",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "1.3.15"
+          "value": "1.5.1"
         },
         "python_pls4all": {
           "distribution": "pls4all",
@@ -1510,13 +1510,13 @@
           "module": "pls4all",
           "read_from": "tracked_worktree",
           "source": "bindings/python/pyproject.toml",
-          "value": "1.3.15"
+          "value": "1.5.1"
         },
         "r_n4m": {
           "kind": "description",
           "read_from": "tracked_worktree",
           "source": "bindings/r/n4m/DESCRIPTION",
-          "value": "1.3.15"
+          "value": "1.5.1"
         }
       }
     }
@@ -1525,14 +1525,15 @@
     "preferred_exact_tag": null,
     "repo_path_policy": "repo_path remains the public/canonical repository path recorded in the lock; selected_workspace_path names the local release-candidate checkout used as release evidence.",
     "selected_branch_patterns": [
-      "integration/release-20261109"
+      "release/aggregation-selected-20261119",
+      "release/aggregation-published-20261120"
     ],
     "superseded_tag_policy": "The history/2026.07-refactor snapshot is provenance only. Active validation materializes this lock; parent source gitlinks do not select runtime dependency artifacts.",
     "workspace_root": "<explicit-selected-workspace>"
   },
   "release_train": "2026.11-owner-cohort",
   "schema_version": "n4a.aggregation-lock/v1",
-  "status": "candidate",
+  "status": "final",
   "verification": {
     "all_lockstep_groups_valid": true,
     "commands": [

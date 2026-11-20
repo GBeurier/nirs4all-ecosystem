@@ -15,50 +15,62 @@ accounts for independent products; the [native ledger](docs/contracts/release/na
 limits qualification to its explicit operation, source, runtime and platform evidence.
 Source declarations and parent gitlinks do not establish universal parity or publication.
 
-The 18 November releases are selected here: IO **0.3.6**
-([`284f5060`](https://github.com/GBeurier/nirs4all-io/commit/284f50609212456e3275567f25dc0234e58333f6)),
-DAG-ML **0.4.3**
-([`d796152c`](https://github.com/GBeurier/dag-ml/commit/d796152c148db3bb3f4398f818e1083f5e3aa816))
-and Core **0.5.1**
-([`053704bd`](https://github.com/GBeurier/nirs4all-core/commit/053704bd62b8d08f04dc6f61f744dee04e6a2387))
-are the lock members and gitlinks; Core 0.5.1 locks the published IO 0.3.6 and
-DAG-ML 0.4.3 crates. The Python SDK **1.4.19**
-([`526052d1`](https://github.com/GBeurier/nirs4all/commit/526052d13c7903a391ce1898ad99ee96c4c2bfce))
-and [Studio 0.17.2](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.17.2)
-([`a912fb42`](https://github.com/GBeurier/nirs4all-studio/commit/a912fb42283e6ae5a98eb4fc258ccb1d0a15dfb0))
-are published. Web references its deployed Main
-[`2725e612`](https://github.com/GBeurier/nirs4all-web/commit/2725e612e4d435649b2d662fd3831003a9ed1f9f).
-The native ledger's Core storage-write receipt is the Core 0.5.1 CI run on the same
-Windows fixture. The R-universe registry selects the IO 0.3.6 and DAG-ML 0.4.3 R
-sources. These references record publication, not a new scientific or
-cross-language qualification.
+The 19–20 November source cohort selects these immutable published releases:
+
+| Owner | Version | Selected source |
+| --- | --- | --- |
+| Methods | 1.5.1 | [`25041f88`](https://github.com/GBeurier/nirs4all-methods/releases/tag/v1.5.1) |
+| DAG-ML | 0.5.0 | [`d3608565`](https://github.com/GBeurier/dag-ml/releases/tag/v0.5.0) |
+| DMD | 0.2.17 | [`854d5beb`](https://github.com/GBeurier/dag-ml-data/releases/tag/v0.2.17) |
+| Formats | 0.2.19 | [`5499372e`](https://github.com/GBeurier/nirs4all-formats/releases/tag/v0.2.19) |
+| IO | 0.3.8 | [`ce82e0ac`](https://github.com/GBeurier/nirs4all-io/releases/tag/v0.3.8) |
+| Core | 0.6.1 | [`d82bea70`](https://github.com/GBeurier/nirs4all-core/releases/tag/v0.6.1) |
+| Datasets | 0.3.23 | [`c8aef1ec`](https://github.com/GBeurier/nirs4all-datasets/releases/tag/v0.3.23) |
+
+The lock and owner gitlinks select source; the packages' artifacts, native
+profiles and consumer qualification remain separate evidence. Core's Rust
+aggregate retains its declared owner dependencies; selecting newer IO or
+Datasets source here does not replace Core's compiled dependencies. The native
+ledger names the actual Core 0.6.1 Windows storage-write receipt. The
+[Python SDK 1.6.1](https://github.com/GBeurier/nirs4all/releases/tag/1.6.1),
+[Studio 0.19.1](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.19.1) and
+[Web](https://web.nirs4all.org/) follow their independent release gates.
+R-universe registry source selection and served platform propagation are also
+separate; an updated registry does not establish a completed binary build.
 
 Providers **0.2.12** is public from
 [`93cf8381`](https://github.com/GBeurier/nirs4all-providers/commit/93cf8381de15adff54d30255da295666f8deb096),
-and Papers **0.2.4** is public from
-[`f587d238`](https://github.com/GBeurier/nirs4all-papers/commit/f587d238c8b6902a4caf6850d213bf1aa4e0fa11).
+and Papers **0.2.5** is public from
+[`3ba64e79`](https://github.com/GBeurier/nirs4all-papers/commit/3ba64e79e8e7b6950f5628c6ba34d42474338b94).
 Their selected source references are included in this parent; this does not assert
 that their current Main branches or public sites have been updated.
-R is the independent `nirs4all-r` product, with its own runtime prerequisites.
-Its accepted source includes the nine-script Core prerequisite correction
-[`6e8412ac`](https://github.com/GBeurier/nirs4all-r/commit/6e8412ac4fcd2f353e552da972c54f4ebcf7b6bd).
-R-universe source propagation and served platform checks remain separate;
-no successful corrected R-universe build is claimed here.
+R **0.8.0** is the independent `nirs4all-r` product, selected from
+[`d1d7517c`](https://github.com/GBeurier/nirs4all-r/releases/tag/v0.8.0).
+Its selected R-universe source, Linux, macOS ARM and Windows archives are served
+with matching versions and source identities; archive checks are separate from
+local runtime execution. Methods/pls4all1.5.1, IO0.3.8 and Datasets0.3.22
+R-universe archives were checked in the same platform cohort.
+Web **0.6.0** is deployed at [web.nirs4all.org](https://web.nirs4all.org/):
+the served build supports direct original-publisher acquisition through the
+Datasets/IO owners. Public imports stay in browser session memory.
+Studio **0.19.1** adopts the public SDK 1.6.1 and its qualified native cohort.
+Installer channels publish independently after their own packaged runtime gates;
+the release page lists the artifacts actually available. Source selection does
+not assert availability or qualification of every platform.
 Studio GUI migration remains outside this source update.
 
-Domains references its Main
-[`ada9ca3e`](https://github.com/dcornet/nirs4all-domains/commit/ada9ca3e44abf58011db5be04aadd580ada69e7f)
-(18 November, green scientific-gates, browser-qualification, warning-report and
-Pages runs). The latest Domains tag is still `v0.1.0-alpha.17`; this reference
-adds the hosted WASM demonstrator, scoped X/Y/M, factor-association (F4.1) and
-train-fitted support (F4.2) browser qualifications. Its qualified owner cohort is
-unchanged (Preflight 0.1.6, Methods 1.3.13 / ABI 2.20, DAG-ML 0.3.44, Datasets
-0.3.11, IO/Formats WASM 0.2.14, UI 0.2.5). Its manifests still pin those
-owners exactly; the alignment with the
-[version constraints](docs/contracts/release/VERSION_CONSTRAINTS.md) is proposed in
-[dcornet/nirs4all-domains#18](https://github.com/dcornet/nirs4all-domains/pull/18).
-Domains is not an aggregation-lock member, and this reference records source
-integration, not a release.
+Domains **0.2.0** is an explicitly qualified native Rust/Python source prerelease,
+selected from [`477f47de`](https://github.com/dcornet/nirs4all-domains/releases/tag/v0.2.0).
+Its native cohort adopts Preflight 0.3.0, Methods 1.5.1 and DAG-ML 0.5.0.
+The native scientific and Python gates passed. The entire browser cohort remains
+**unqualified**: its strict numerical gate retains the existing seven Ubuntu and
+four Windows failures from the separately accepted F4.3 Main integration.
+The failure fields and values are unchanged; all 3,237,280 compared Linux
+native/WASM report numeric values are bit-identical to that accepted baseline.
+Passing browser lifecycle/export checks do not qualify numerical parity.
+The prerelease and [integration PR](https://github.com/dcornet/nirs4all-domains/pull/21)
+record these limits; no PyPI or crates publication is asserted.
+Domains is not an aggregation-lock member.
 
 The [2026.07 profile](docs/contracts/release/history/2026.07-refactor/aggregation-lock.n4a.lock.json)
 is retained as historical provenance and is not the active CI selection.
