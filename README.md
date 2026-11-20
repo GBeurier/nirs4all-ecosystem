@@ -15,28 +15,33 @@ accounts for independent products; the [native ledger](docs/contracts/release/na
 limits qualification to its explicit operation, source, runtime and platform evidence.
 Source declarations and parent gitlinks do not establish universal parity or publication.
 
-The 18 November releases are selected here: IO **0.3.6**
-([`284f5060`](https://github.com/GBeurier/nirs4all-io/commit/284f50609212456e3275567f25dc0234e58333f6)),
-DAG-ML **0.4.3**
-([`d796152c`](https://github.com/GBeurier/dag-ml/commit/d796152c148db3bb3f4398f818e1083f5e3aa816))
-and Core **0.5.1**
-([`053704bd`](https://github.com/GBeurier/nirs4all-core/commit/053704bd62b8d08f04dc6f61f744dee04e6a2387))
-are the lock members and gitlinks; Core 0.5.1 locks the published IO 0.3.6 and
-DAG-ML 0.4.3 crates. The Python SDK **1.4.19**
-([`526052d1`](https://github.com/GBeurier/nirs4all/commit/526052d13c7903a391ce1898ad99ee96c4c2bfce))
-and [Studio 0.17.2](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.17.2)
-([`a912fb42`](https://github.com/GBeurier/nirs4all-studio/commit/a912fb42283e6ae5a98eb4fc258ccb1d0a15dfb0))
-are published. Web references its deployed Main
-[`2725e612`](https://github.com/GBeurier/nirs4all-web/commit/2725e612e4d435649b2d662fd3831003a9ed1f9f).
-The native ledger's Core storage-write receipt is the Core 0.5.1 CI run on the same
-Windows fixture. The R-universe registry selects the IO 0.3.6 and DAG-ML 0.4.3 R
-sources. These references record publication, not a new scientific or
-cross-language qualification.
+The 19–20 November source cohort selects these immutable published releases:
+
+| Owner | Version | Selected source |
+| --- | --- | --- |
+| Methods | 1.5.1 | [`25041f88`](https://github.com/GBeurier/nirs4all-methods/releases/tag/v1.5.1) |
+| DAG-ML | 0.5.0 | [`d3608565`](https://github.com/GBeurier/dag-ml/releases/tag/v0.5.0) |
+| DMD | 0.2.17 | [`854d5beb`](https://github.com/GBeurier/dag-ml-data/releases/tag/v0.2.17) |
+| Formats | 0.2.19 | [`5499372e`](https://github.com/GBeurier/nirs4all-formats/releases/tag/v0.2.19) |
+| IO | 0.3.8 | [`ce82e0ac`](https://github.com/GBeurier/nirs4all-io/releases/tag/v0.3.8) |
+| Core | 0.6.1 | [`d82bea70`](https://github.com/GBeurier/nirs4all-core/releases/tag/v0.6.1) |
+| Datasets | 0.3.23 | [`c8aef1ec`](https://github.com/GBeurier/nirs4all-datasets/releases/tag/v0.3.23) |
+
+The lock and owner gitlinks select source; the packages' artifacts, native
+profiles and consumer qualification remain separate evidence. Core's Rust
+aggregate retains its declared owner dependencies; selecting newer IO or
+Datasets source here does not replace Core's compiled dependencies. The native
+ledger names the actual Core 0.6.1 Windows storage-write receipt. The
+[Python SDK](https://github.com/GBeurier/nirs4all/releases/latest),
+[Studio](https://github.com/GBeurier/nirs4all-studio/releases/latest) and
+[Web](https://web.nirs4all.org/) follow their independent release gates.
+R-universe registry source selection and served platform propagation are also
+separate; an updated registry does not establish a completed binary build.
 
 Providers **0.2.12** is public from
 [`93cf8381`](https://github.com/GBeurier/nirs4all-providers/commit/93cf8381de15adff54d30255da295666f8deb096),
-and Papers **0.2.4** is public from
-[`f587d238`](https://github.com/GBeurier/nirs4all-papers/commit/f587d238c8b6902a4caf6850d213bf1aa4e0fa11).
+and Papers **0.2.5** is public from
+[`3ba64e79`](https://github.com/GBeurier/nirs4all-papers/commit/3ba64e79e8e7b6950f5628c6ba34d42474338b94).
 Their selected source references are included in this parent; this does not assert
 that their current Main branches or public sites have been updated.
 R is the independent `nirs4all-r` product, with its own runtime prerequisites.
