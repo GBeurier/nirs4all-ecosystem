@@ -33,7 +33,7 @@ aggregate retains its declared owner dependencies; selecting newer IO or
 Datasets source here does not replace Core's compiled dependencies. The native
 ledger names the actual Core 0.6.1 Windows storage-write receipt. The
 [Python SDK 1.6.1](https://github.com/GBeurier/nirs4all/releases/tag/1.6.1),
-[Studio 0.19.1](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.19.1) and
+[Studio 0.19.2](https://github.com/GBeurier/nirs4all-studio/releases/tag/0.19.2) and
 [Web](https://web.nirs4all.org/) follow their independent release gates.
 R-universe registry source selection and served platform propagation are also
 separate; an updated registry does not establish a completed binary build.
@@ -53,7 +53,7 @@ R-universe archives were checked in the same platform cohort.
 Web **0.6.0** is deployed at [web.nirs4all.org](https://web.nirs4all.org/):
 the served build supports direct original-publisher acquisition through the
 Datasets/IO owners. Public imports stay in browser session memory.
-Studio **0.19.1** adopts the public SDK 1.6.1 and its qualified native cohort.
+Studio **0.19.2** adopts the public SDK 1.6.1 and its qualified native cohort.
 Installer channels publish independently after their own packaged runtime gates;
 the release page lists the artifacts actually available. Source selection does
 not assert availability or qualification of every platform.
