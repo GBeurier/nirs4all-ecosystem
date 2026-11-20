@@ -32,7 +32,7 @@ profiles and consumer qualification remain separate evidence. Core's Rust
 aggregate retains its declared owner dependencies; selecting newer IO or
 Datasets source here does not replace Core's compiled dependencies. The native
 ledger names the actual Core 0.6.1 Windows storage-write receipt. The
-[Python SDK](https://github.com/GBeurier/nirs4all/releases/latest),
+[Python SDK1.6.1](https://github.com/GBeurier/nirs4all/releases/tag/1.6.1),
 [Studio](https://github.com/GBeurier/nirs4all-studio/releases/latest) and
 [Web](https://web.nirs4all.org/) follow their independent release gates.
 R-universe registry source selection and served platform propagation are also
