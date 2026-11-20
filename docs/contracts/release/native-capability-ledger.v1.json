@@ -183,8 +183,8 @@
           "qualification": {
             "state": "qualified",
             "runtime": "rust/windows-latest",
-            "receipt": "docs/contracts/release/core-0.5.1-ci.json",
-            "receipt_sha256": "5c0ee8dd765a334ea2f9f5182d78cd8f86e5b6df80a4f980dded534aa793db39",
+            "receipt": "docs/contracts/release/core-0.6.1-ci.json",
+            "receipt_sha256": "b6516ab287c672f788ec5c767beaa07049ea11b0f3a33a90aa171418f0e576df",
             "test": "production_roundtrip_exact_bytes_hashes_and_borrowed_ranges",
             "scope": "Synthetic opaque-byte storage write only; no owned-reader facade, model execution or cross-binding parity."
           }
