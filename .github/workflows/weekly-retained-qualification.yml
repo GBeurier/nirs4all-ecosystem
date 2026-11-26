@@ -53,6 +53,7 @@ jobs:
     with:
       manifest: docs/contracts/release/cohort/friday-tagged.n4a.json
       qualification_only: true
+      rust_toolchain: '1.96.0'
 
   web:
     uses: ./.github/workflows/graph-io-web.yml

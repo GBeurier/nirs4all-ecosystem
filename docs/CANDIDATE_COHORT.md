@@ -156,7 +156,12 @@ Each source ref must resolve to the reviewed commit. The job rebuilds the
 supported Linux source projects and runs the full test tier, including the
 SDK nightly selections. Methods Python wheels and Datasets use Studio's
 declared releases. The weekly report also includes the separate retained
-Web, Studio wheel, Domains and release-contract checks.
+Web, Studio wheel, Domains and release-contract checks. The tagged job uses
+Rust 1.96.0 because DAG-ML v0.5.0's C conformance tests locate their library
+relative to the test executable. Cargo 1.100 changes that executable's
+location inside the build directory. Dispatch **Weekly retained artifact
+qualification** to run the same workflow manually. For a direct dispatch of
+**Candidate cohort** with this manifest, set `rust_toolchain` to `1.96.0`.
 
 The Friday run supplies evidence for the selected versions. A newer release
 series enters the cohort by updating the selected tags and their commit

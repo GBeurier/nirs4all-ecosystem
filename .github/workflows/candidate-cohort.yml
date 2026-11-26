@@ -25,12 +25,20 @@ on:
         description: Retain the test report without examining a publication plan
         type: boolean
         default: false
+      rust_toolchain:
+        description: Rust toolchain used to build and test the selected tags
+        type: string
+        default: stable
   workflow_dispatch:
     inputs:
       manifest:
         description: "Cohort manifest in this repository (empty: every member published unless set below)"
         required: false
         default: ""
+      rust_toolchain:
+        description: "Rust toolchain for this cohort (use 1.96.0 with the Friday tagged manifest)"
+        type: string
+        default: stable
       methods:
         description: "nirs4all-methods ref, 'published' or 'published:latest'"
         required: false
@@ -109,11 +117,13 @@ jobs:
           node-version: "24"
           package-manager-cache: false
       - name: Install build tools
+        env:
+          COHORT_RUST_TOOLCHAIN: ${{ inputs.rust_toolchain || 'stable' }}
         run: |
           python -m pip install pyyaml pytest uv==0.10.4
           sudo apt-get update && sudo apt-get install -y --no-install-recommends cmake ninja-build
-          rustup toolchain install stable --profile minimal
-          rustup default stable
+          rustup toolchain install "$COHORT_RUST_TOOLCHAIN" --profile minimal
+          rustup default "$COHORT_RUST_TOOLCHAIN"
       - name: Test the cohort runner
         working-directory: nirs4all-ecosystem
         run: python -m pytest -q tests/test_cohort.py
