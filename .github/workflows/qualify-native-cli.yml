@@ -21,15 +21,24 @@ jobs:
     name: ${{ matrix.member.package }} (Windows x64)
     timeout-minutes: 60
     steps:
+      - name: Allow long owner fixture paths
+        run: git config --global core.longpaths true
       - uses: actions/checkout@v7
         with:
           repository: ${{ matrix.member.origin }}
           ref: ${{ matrix.member.sha }}
+          path: source
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: '1.96.0'
+      - name: Stage the Datasets owner source train
+        if: matrix.member.package == 'nirs4all-datasets-cli'
+        working-directory: source
+        shell: bash
+        run: bash scripts/ensure_rust_deps.sh
       - name: Build and exercise the owner binary
+        working-directory: source
         shell: pwsh
         env:
           PACKAGE: ${{ matrix.member.package }}
@@ -53,5 +62,5 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.member.package }}-windows-x64
-          path: delivery/
+          path: source/delivery/
           if-no-files-found: error
