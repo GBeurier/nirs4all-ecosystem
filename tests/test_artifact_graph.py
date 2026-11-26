@@ -143,3 +143,18 @@ def test_material_cycles_are_refused(tmp_path):
     result = run("--graph", str(path), "--full")
     assert result.returncode == 2
     assert "nodes are in a cycle" in result.stderr
+
+
+def test_release_target_bindings_reference_declared_artifacts():
+    graph = json.loads(GRAPH.read_text())
+    bindings = json.loads(GRAPH.with_name("artifact-release-targets.n4a.json").read_text())
+    assert bindings["schema_version"] == "n4a.artifact-release-targets/v1"
+    assert bindings["artifacts"].keys() <= graph["artifacts"].keys()
+    for targets in bindings["artifacts"].values():
+        coordinates = [(target["packageId"], target["registry"], target["name"]) for target in targets]
+        assert len(set(coordinates)) == len(coordinates)
+        assert all(all(coordinate) for coordinate in coordinates)
+    assert bindings["artifacts"]["io.node-wasm"] == [
+        {"packageId": "nirs4all-io", "registry": "npm", "name": "@nirs4all/io-wasm"}
+    ]
+    assert "io.browser" not in bindings["artifacts"]

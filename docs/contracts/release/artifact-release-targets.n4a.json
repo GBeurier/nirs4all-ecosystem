@@ -1,0 +1,189 @@
+{
+  "schema_version": "n4a.artifact-release-targets/v1",
+  "artifacts": {
+    "access.python-wheel": [
+      {"packageId": "nirs4all-access", "registry": "pypi", "name": "nirs4all-access"}
+    ],
+    "aom.python-wheel": [
+      {"packageId": "nirs4all-aom", "registry": "pypi", "name": "nirs4all-aom"}
+    ],
+    "arena.python-wheel": [
+      {"packageId": "nirs4all-benchmarks", "registry": "pypi", "name": "nirs4all-benchmarks"}
+    ],
+    "arena.site": [
+      {"packageId": "nirs4all-benchmarks", "registry": "pages", "name": "nirs4all-benchmarks"}
+    ],
+    "cluster.python-wheel": [
+      {"packageId": "nirs4all-cluster", "registry": "pypi", "name": "nirs4all-cluster"}
+    ],
+    "cockpit.site": [
+      {"packageId": "nirs4all-cockpit", "registry": "pages", "name": "nirs4all-cockpit"}
+    ],
+    "core.npm": [
+      {"packageId": "nirs4all-core", "registry": "npm", "name": "nirs4all"}
+    ],
+    "core.python-wheel": [
+      {"packageId": "nirs4all-core", "registry": "pypi", "name": "nirs4all-core"}
+    ],
+    "core.rust-crate": [
+      {"packageId": "nirs4all-core", "registry": "crates", "name": "nirs4all"}
+    ],
+    "dag.python-wheel": [
+      {"packageId": "dag-ml", "registry": "pypi", "name": "dag-ml"}
+    ],
+    "dag.r-package": [
+      {"packageId": "dag-ml", "registry": "r-universe", "name": "dagml"}
+    ],
+    "dag.rust-crates": [
+      {"packageId": "dag-ml", "registry": "crates", "name": "dag-ml"},
+      {"packageId": "dag-ml", "registry": "crates", "name": "dag-ml-core"},
+      {"packageId": "dag-ml", "registry": "crates", "name": "dag-ml-arrow"},
+      {"packageId": "dag-ml", "registry": "crates", "name": "dag-ml-capi"},
+      {"packageId": "dag-ml", "registry": "crates", "name": "dag-ml-cli"}
+    ],
+    "dag.wasm": [
+      {"packageId": "dag-ml", "registry": "npm", "name": "dag-ml-wasm"}
+    ],
+    "datasets.python-wheel": [
+      {"packageId": "nirs4all-datasets", "registry": "pypi", "name": "nirs4all-datasets"}
+    ],
+    "datasets.r-package": [
+      {"packageId": "nirs4all-datasets", "registry": "r-universe", "name": "nirs4alldatasets"},
+      {"packageId": "nirs4all-datasets", "registry": "cran", "name": "nirs4alldatasets"}
+    ],
+    "datasets.rust-sources": [
+      {"packageId": "nirs4all-datasets", "registry": "crates", "name": "nirs4all-datasets-core"},
+      {"packageId": "nirs4all-datasets", "registry": "crates", "name": "nirs4all-datasets-capi"},
+      {"packageId": "nirs4all-datasets", "registry": "crates", "name": "nirs4all-datasets-cli"}
+    ],
+    "datasets.wasm": [
+      {"packageId": "nirs4all-datasets", "registry": "npm", "name": "@nirs4all/datasets-wasm"}
+    ],
+    "device.android-debug": [
+      {"packageId": "nirs4all-device", "registry": "github-release", "name": "nirs4all-device"}
+    ],
+    "device.site": [
+      {"packageId": "nirs4all-device", "registry": "pages", "name": "nirs4all-device"}
+    ],
+    "dmd.python-wheel": [
+      {"packageId": "dag-ml-data", "registry": "pypi", "name": "dag-ml-data"}
+    ],
+    "dmd.r-package": [
+      {"packageId": "dag-ml-data", "registry": "r-universe", "name": "dagmldata"}
+    ],
+    "dmd.rust-crates": [
+      {"packageId": "dag-ml-data", "registry": "crates", "name": "dag-ml-data"},
+      {"packageId": "dag-ml-data", "registry": "crates", "name": "dag-ml-data-core"},
+      {"packageId": "dag-ml-data", "registry": "crates", "name": "dag-ml-data-arrow"},
+      {"packageId": "dag-ml-data", "registry": "crates", "name": "dag-ml-data-capi"},
+      {"packageId": "dag-ml-data", "registry": "crates", "name": "dag-ml-data-cli"},
+      {"packageId": "dag-ml-data", "registry": "crates", "name": "dag-ml-data-provider"}
+    ],
+    "dmd.wasm": [
+      {"packageId": "dag-ml-data", "registry": "npm", "name": "dag-ml-data-wasm"}
+    ],
+    "formats.python-wheel": [
+      {"packageId": "nirs4all-formats", "registry": "pypi", "name": "nirs4all-formats"}
+    ],
+    "formats.r-package": [
+      {"packageId": "nirs4all-formats", "registry": "r-universe", "name": "nirs4allformats"},
+      {"packageId": "nirs4all-formats", "registry": "cran", "name": "nirs4allformats"}
+    ],
+    "formats.rust-crate": [
+      {"packageId": "nirs4all-formats", "registry": "crates", "name": "nirs4all-formats"}
+    ],
+    "formats.wasm": [
+      {"packageId": "nirs4all-formats", "registry": "npm", "name": "@nirs4all/formats-wasm"}
+    ],
+    "io.core-crate": [
+      {"packageId": "nirs4all-io", "registry": "crates", "name": "nirs4all-io-core"}
+    ],
+    "io.demo": [
+      {"packageId": "nirs4all-io", "registry": "pages", "name": "nirs4all-io"}
+    ],
+    "io.facade-crate": [
+      {"packageId": "nirs4all-io", "registry": "crates", "name": "nirs4all-io"}
+    ],
+    "io.node-wasm": [
+      {"packageId": "nirs4all-io", "registry": "npm", "name": "@nirs4all/io-wasm"}
+    ],
+    "io.python-wheel": [
+      {"packageId": "nirs4all-io", "registry": "pypi", "name": "nirs4all-io"}
+    ],
+    "io.r-package": [
+      {"packageId": "nirs4all-io", "registry": "r-universe", "name": "nirs4allio"},
+      {"packageId": "nirs4all-io", "registry": "cran", "name": "nirs4allio"}
+    ],
+    "methods.python-wheels": [
+      {"packageId": "nirs4all-methods", "registry": "pypi", "name": "nirs4all-methods"},
+      {"packageId": "nirs4all-methods", "registry": "pypi", "name": "pls4all"}
+    ],
+    "methods.r-package": [
+      {"packageId": "nirs4all-methods", "registry": "r-universe", "name": "n4m"},
+      {"packageId": "nirs4all-methods", "registry": "r-universe", "name": "pls4all"},
+      {"packageId": "nirs4all-methods", "registry": "cran", "name": "n4m"},
+      {"packageId": "nirs4all-methods", "registry": "cran", "name": "pls4all"}
+    ],
+    "methods.rust-crate": [
+      {"packageId": "n4m", "registry": "crates", "name": "n4m"}
+    ],
+    "methods.wasm": [
+      {"packageId": "nirs4all-methods", "registry": "npm", "name": "@nirs4all/methods"}
+    ],
+    "org.site": [
+      {"packageId": "nirs4all-org", "registry": "pages", "name": "nirs4all-org"}
+    ],
+    "papers.document-site": [
+      {"packageId": "nirs4all-papers", "registry": "pages", "name": "nirs4all-papers"}
+    ],
+    "papers.python-wheel": [
+      {"packageId": "nirs4all-papers", "registry": "pypi", "name": "nirs4all-papers"}
+    ],
+    "preflight.python-wheel": [
+      {"packageId": "nirs4all-preflight", "registry": "pypi", "name": "nirs4all-preflight"}
+    ],
+    "preflight.rust-crates": [
+      {"packageId": "nirs4all-preflight", "registry": "crates", "name": "nirs4all-preflight"}
+    ],
+    "preflight.site": [
+      {"packageId": "nirs4all-preflight", "registry": "pages", "name": "nirs4all-preflight"}
+    ],
+    "preflight.wasm": [
+      {"packageId": "nirs4all-preflight", "registry": "npm", "name": "@nirs4all/preflight"}
+    ],
+    "providers.python-wheel": [
+      {"packageId": "nirs4all-providers", "registry": "pypi", "name": "nirs4all-providers"}
+    ],
+    "providers.site": [
+      {"packageId": "nirs4all-providers", "registry": "pages", "name": "nirs4all-providers"}
+    ],
+    "quali.site": [
+      {"packageId": "nirs4all-quality", "registry": "pages", "name": "nirs4all-quality"}
+    ],
+    "r.source-package": [
+      {"packageId": "nirs4all-r", "registry": "r-universe", "name": "nirs4all"},
+      {"packageId": "nirs4all-r", "registry": "cran", "name": "nirs4all"}
+    ],
+    "repository.python-wheel": [
+      {"packageId": "nirs4all-repository", "registry": "pypi", "name": "nirs4all-repository"}
+    ],
+    "repository.site": [
+      {"packageId": "nirs4all-repository", "registry": "pages", "name": "nirs4all-repository"}
+    ],
+    "sdk.python-wheel": [
+      {"packageId": "nirs4all", "registry": "pypi", "name": "nirs4all"}
+    ],
+    "tools.python-wheel": [
+      {"packageId": "nirs4all-tools", "registry": "pypi", "name": "nirs4all-tools"}
+    ],
+    "ui.demo": [
+      {"packageId": "nirs4all-ui", "registry": "pages", "name": "nirs4all-ui"}
+    ],
+    "ui.npm": [
+      {"packageId": "nirs4all-ui", "registry": "npm", "name": "nirs4all-ui"}
+    ],
+    "web.site": [
+      {"packageId": "nirs4all-web", "registry": "pages", "name": "nirs4all-web"}
+    ]
+  }
+}
