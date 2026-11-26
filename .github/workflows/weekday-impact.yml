@@ -7,6 +7,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/weekday-impact.yml'
+      - '.github/workflows/qualify-native-cli.yml'
       - 'scripts/n4a_weekday_changes.py'
       - 'scripts/n4a_cargo_candidate.py'
       - 'scripts/n4a_crate_impact.py'
@@ -24,6 +25,7 @@ jobs:
   impact:
     runs-on: ubuntu-latest
     outputs:
+      packages: ${{ steps.plan.outputs.packages }}
       changed: ${{ steps.plan.outputs.changed }}
       domains: ${{ steps.plan.outputs.domains }}
       producer: ${{ steps.plan.outputs.producer }}
@@ -52,6 +54,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python scripts/n4a_weekday_changes.py --output impact.json --cursor .impact/heads.json --cargo-inventory .impact/manifests.json
+          jq -cr '"packages=" + (.locked_cli_candidates | tojson)' impact.json >> "$GITHUB_OUTPUT"
           jq -r '"changed=" + ((.sources | length > 0) | tostring)' impact.json >> "$GITHUB_OUTPUT"
           jq -r '"domains=" + (([.plan.builds[]? | select(.artifact == "domains.rust") | .candidate_inputs[] | select(. == "preflight.rust-crates")] | length > 0) | tostring)' impact.json >> "$GITHUB_OUTPUT"
           jq -r '"producer=" + .["nirs4all-preflight"], "consumer=" + .["nirs4all-domains"]' .impact/heads.json >> "$GITHUB_OUTPUT"
@@ -110,12 +113,20 @@ jobs:
           path: cargo-handoff.json
           if-no-files-found: error
 
+  windows-cli:
+    needs: impact
+    if: needs.impact.outputs.packages != '[]'
+    uses: ./.github/workflows/qualify-native-cli.yml
+    with:
+      packages: ${{ needs.impact.outputs.packages }}
+
   checkpoint:
-    needs: [impact, domains]
+    needs: [impact, domains, windows-cli]
     if: >-
       ${{ !cancelled() && github.event_name != 'pull_request' &&
           needs.impact.result == 'success' && needs.impact.outputs.changed == 'true' &&
-          (needs.domains.result == 'success' || needs.domains.result == 'skipped') }}
+          (needs.domains.result == 'success' || needs.domains.result == 'skipped') &&
+          (needs.windows-cli.result == 'success' || needs.windows-cli.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v8

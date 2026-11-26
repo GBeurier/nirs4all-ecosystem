@@ -108,6 +108,12 @@
       "evidence": ["bindings/rust/nirs4all/Cargo.toml", ".github/workflows/release-crates.yml"],
       "inputs": {}
     },
+    "dag.native-cli": {
+      "repository": "dag-ml",
+      "action": "build",
+      "evidence": ["crates/dag-ml-cli/Cargo.toml"],
+      "inputs": {"dag.rust-crates": "compile", "methods.rust-crate": "compile"}
+    },
     "dag.python-wheel": {
       "repository": "dag-ml",
       "action": "build",
@@ -137,6 +143,12 @@
       "action": "build",
       "evidence": ["crates/dag-ml-wasm/Cargo.toml", ".github/workflows/release-npm.yml"],
       "inputs": {"dag.rust-crates": "compile"}
+    },
+    "datasets.native-cli": {
+      "repository": "nirs4all-datasets",
+      "action": "build",
+      "evidence": ["crates/nirs4all-datasets-cli/Cargo.toml"],
+      "inputs": {"datasets.rust-sources": "compile", "formats.rust-crate": "compile", "io.core-crate": "compile", "io.facade-crate": "compile"}
     },
     "datasets.extras-check": {
       "repository": "nirs4all-datasets",
@@ -186,6 +198,12 @@
       "evidence": ["package.json", ".github/workflows/pages.yml"],
       "inputs": {"dag.wasm": "bundle", "datasets.wasm": "bundle", "dmd.wasm": "bundle", "formats.wasm": "bundle", "methods.wasm": "bundle", "ui.npm": "bundle"}
     },
+    "dmd.native-cli": {
+      "repository": "dag-ml-data",
+      "action": "build",
+      "evidence": ["crates/dag-ml-data-cli/Cargo.toml"],
+      "inputs": {"dmd.rust-crates": "compile"}
+    },
     "dmd.provider-wheel": {
       "repository": "dag-ml-data",
       "action": "build",
@@ -215,6 +233,12 @@
       "action": "build",
       "evidence": ["crates/dag-ml-data-wasm/Cargo.toml", ".github/workflows/release-npm.yml"],
       "inputs": {"dmd.rust-crates": "compile"}
+    },
+    "domains.native-cli": {
+      "repository": "nirs4all-domains",
+      "action": "build",
+      "evidence": ["crates/nirs4all-domains-cli/Cargo.toml"],
+      "inputs": {"domains.rust": "compile"}
     },
     "domains.python-bridge": {
       "repository": "nirs4all-domains",
@@ -246,6 +270,12 @@
       "evidence": [".github/workflows/cross-language-e2e.yml"],
       "inputs": {"core.npm": "runtime", "core.python-wheel": "runtime", "r.source-package": "runtime", "sdk.python-wheel": "runtime"}
     },
+    "formats.native-cli": {
+      "repository": "nirs4all-formats",
+      "action": "build",
+      "evidence": ["crates/nirs4all-formats-cli/Cargo.toml"],
+      "inputs": {"formats.rust-crate": "compile"}
+    },
     "formats.python-wheel": {
       "repository": "nirs4all-formats",
       "action": "build",
@@ -269,6 +299,12 @@
       "action": "build",
       "evidence": ["bindings/wasm/Cargo.toml", ".github/workflows/release-npm.yml"],
       "inputs": {"formats.rust-crate": "compile"}
+    },
+    "io.native-cli": {
+      "repository": "nirs4all-io",
+      "action": "build",
+      "evidence": ["crates/nirs4all-io-cli/Cargo.toml"],
+      "inputs": {"formats.rust-crate": "compile", "io.core-crate": "compile", "io.facade-crate": "compile"}
     },
     "io.browser": {
       "repository": "nirs4all-io",
@@ -383,6 +419,12 @@
       "action": "qualify",
       "evidence": ["pyproject.toml"],
       "inputs": {"core.python-wheel": "runtime", "papers.python-wheel": "runtime", "sdk.python-wheel": "runtime"}
+    },
+    "preflight.native-cli": {
+      "repository": "nirs4all-preflight",
+      "action": "build",
+      "evidence": ["crates/nirs4all-preflight-cli/Cargo.toml"],
+      "inputs": {"dag.rust-crates": "compile", "methods.rust-crate": "compile", "preflight.rust-crates": "compile"}
     },
     "preflight.python-wheel": {
       "repository": "nirs4all-preflight",

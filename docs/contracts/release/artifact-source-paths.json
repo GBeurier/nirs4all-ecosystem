@@ -1,5 +1,8 @@
 {
   "dag-ml": {
+    "crates/dag-ml-cli/src/": [
+      "dag.native-cli"
+    ],
     "crates/dag-ml-core/src/": [
       "dag.rust-crates"
     ],
@@ -11,6 +14,9 @@
     ]
   },
   "dag-ml-data": {
+    "crates/dag-ml-data-cli/src/": [
+      "dmd.native-cli"
+    ],
     "crates/dag-ml-data-core/src/": [
       "dmd.rust-crates"
     ],
@@ -44,6 +50,9 @@
     "bindings/wasm/src/": [
       "datasets.wasm"
     ],
+    "crates/nirs4all-datasets-cli/src/": [
+      "datasets.native-cli"
+    ],
     "crates/nirs4all-datasets-core/src/": [
       "datasets.rust-sources"
     ]
@@ -51,6 +60,9 @@
   "nirs4all-domains": {
     "bridges/python/src/": [
       "domains.python-bridge"
+    ],
+    "crates/nirs4all-domains-cli/src/": [
+      "domains.native-cli"
     ],
     "crates/nirs4all-domains/src/": [
       "domains.rust",
@@ -67,6 +79,9 @@
     "bindings/wasm/src/": [
       "formats.wasm"
     ],
+    "crates/nirs4all-formats-cli/src/": [
+      "formats.native-cli"
+    ],
     "crates/nirs4all-formats/src/": [
       "formats.rust-crate"
     ]
@@ -78,6 +93,9 @@
     "bindings/wasm/src/": [
       "io.browser",
       "io.node-wasm"
+    ],
+    "crates/nirs4all-io-cli/src/": [
+      "io.native-cli"
     ],
     "crates/nirs4all-io-core/src/": [
       "io.core-crate"
@@ -103,6 +121,9 @@
     ],
     "bindings/wasm/src/": [
       "preflight.wasm"
+    ],
+    "crates/nirs4all-preflight-cli/src/": [
+      "preflight.native-cli"
     ],
     "crates/nirs4all-preflight-core/src/": [
       "preflight.rust-crates"

@@ -94,9 +94,23 @@ def inspect(item, baseline):
     return repo, head, comparison_paths(comparison)
 
 
+def cli_packages(artifacts, origins, heads, selected):
+    result = []
+    for key in sorted(selected):
+        if key.endswith(".native-cli"):
+            artifact = artifacts[key]
+            repo = artifact["repository"]
+            package = Path(artifact["evidence"][0]).parent.name
+            if not re.fullmatch(r"[a-z0-9-]+", package) or not SHA.fullmatch(heads[repo]):
+                raise ValueError(f"invalid native CLI identity: {key}")
+            result.append({"origin": origins[repo], "package": package, "sha": heads[repo]})
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--weekly-cli", action="store_true", help="Select all CLI packages at the pinned gitlinks")
     parser.add_argument("--cursor", type=Path)
     parser.add_argument("--cargo-inventory", type=Path, help="Cache pinned Cargo manifests for public scans")
     parser.add_argument("--repository", help="Use a local Git diff for one repository")
@@ -108,6 +122,11 @@ def main():
     rules = load_rules(artifacts)
     baseline = json.loads(DEFAULT_GRAPH.read_text())["reviewed_sources"]
     origins = repositories()
+    if args.weekly_cli:
+        rows = subprocess.check_output(["git", "-C", str(ROOT), "ls-tree", "HEAD"], text=True).splitlines()
+        pins = {row.split()[3]: row.split()[2] for row in rows if row.startswith("160000 commit ")}
+        args.output.write_text(json.dumps(cli_packages(artifacts, origins, pins, artifacts)) + "\n")
+        return
     if args.repository:
         if not args.checkout or not all(SHA.fullmatch(v or "") for v in (args.base, args.head)):
             parser.error("local selection requires --checkout and two full commit SHAs")
@@ -151,6 +170,13 @@ def main():
         result["cargo"] = affected_crates(inventory, origins, crate_changes)
         args.cargo_inventory.parent.mkdir(parents=True, exist_ok=True)
         args.cargo_inventory.write_text(json.dumps(cache))
+    if not args.repository:
+        # A locked owner build can qualify a CLI-only source change. Mixed
+        # candidates require substitution and must not fall back to a registry.
+        candidates = [r["artifact"] for r in (result["plan"] or {}).get("builds", [])
+                      if not r["candidate_inputs"] and r["artifact"] in roots
+                      and sources[r["repository"]]["scope"] == "paths"]
+        result["locked_cli_candidates"] = cli_packages(artifacts, origins, heads, candidates)
     args.output.write_text(json.dumps(result, indent=2) + "\n")
     if not args.repository:
         args.cursor.parent.mkdir(parents=True, exist_ok=True)

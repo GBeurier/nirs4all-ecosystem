@@ -113,3 +113,17 @@ each changed source directory. The graph includes possible consumers across
 features and targets. Per-profile Cargo resolution still determines which
 candidate enters a given binary. The accompanying artifact plan describes the
 language bindings, runtime tests and products that Cargo cannot discover.
+
+Changes under the source directory of a standalone CLI select its own binary.
+The weekday job builds and tests that package in the release profile on Windows
+when all material inputs can come from the owner's locked checkout. Each
+retained binary carries its SHA-256, source revision, Cargo lock digest and
+compiler identity. A change that also needs candidate material from upstream
+remains in the impact plan for an adapter that can stage those inputs.
+
+**Weekly Windows CLI qualification** rebuilds the DAG, DMD, Datasets, Domains,
+Formats, IO and Preflight CLIs on clean Windows runners at the seven source
+commits pinned by Ecosystem's gitlinks. It runs alongside the retained Friday
+workflow at 02:15 Saturday in Europe/Paris. The source list, package tests and
+Windows binaries are available from the run. These package checks supplement
+the product qualification documented above.

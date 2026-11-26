@@ -95,3 +95,15 @@ def test_crate_graph_crosses_repository_with_workspace_and_renamed_target_depend
     assert result["roots"] == ["owner/crates/core/Cargo.toml"]
     result = affected_crates(inventory, origins, {"owner": (["Cargo.toml"], "repository")})
     assert len(result["roots"]) == 3
+
+
+def test_cli_source_selects_only_the_product_that_ships_it():
+    for repo, crate, artifact in [
+        ("nirs4all-io", "nirs4all-io-cli", "io.native-cli"),
+        ("dag-ml", "dag-ml-cli", "dag.native-cli"),
+        ("nirs4all-domains", "nirs4all-domains-cli", "domains.native-cli"),
+    ]:
+        roots, scope = classify(ARTIFACTS, RULES, repo, [f"crates/{crate}/src/main.rs"])
+        result = plan(ARTIFACTS, ORDER, roots, set(), full=False)
+        assert scope == "paths"
+        assert [row["artifact"] for row in result["builds"]] == [artifact]
