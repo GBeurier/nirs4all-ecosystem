@@ -91,8 +91,8 @@ truncated compare selects the repository's declared outputs. Both paths of a
 rename count. Some source nodes, notably DAG and Preflight, still group several
 crates. The report distinguishes path selection from repository fallback.
 
-The cached cursor records **observed** revisions after upload of the impact
-report. An expired cursor starts from the inventory's reviewed commits. Re-run
+The cached cursor records **observed** revisions after the impact report is archived
+and the selected candidate job passes. An expired cursor starts from the inventory's reviewed commits. Re-run
 a failed qualification on its original run and inspect the source SHAs in the
 receipt. The cursor does not establish a qualified or published version.
 
@@ -105,3 +105,11 @@ lock or incompatible version requires a reviewed consumer update. A manual run
 also exercises this handoff with the current public revisions. Passing this job
 qualifies only those suites. Other owner releases still follow their existing
 publication workflows.
+
+The `cargo` section expands individual crates at the observed commits. It reads
+tracked Cargo manifests, including inherited workspace dependencies, renamed
+packages and target-specific dependencies. It follows reverse dependencies from
+each changed source directory. The graph includes possible consumers across
+features and targets. Per-profile Cargo resolution still determines which
+candidate enters a given binary. The accompanying artifact plan describes the
+language bindings, runtime tests and products that Cargo cannot discover.

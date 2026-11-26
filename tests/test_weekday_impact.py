@@ -68,3 +68,30 @@ def test_local_diff_uses_both_sides_of_a_move(tmp_path):
                     "--repository", "nirs4all-io", "--base", base, "--head", git("rev-parse", "HEAD"),
                     "--output", out], check=True)
     assert set(json.loads(out.read_text())["plan"]["roots"]) == {"io.core-crate", "io.browser", "io.node-wasm"}
+
+
+def test_crate_graph_crosses_repository_with_workspace_and_renamed_target_dependency():
+    from n4a_crate_impact import affected_crates
+
+    origins = {"owner": "Org/owner", "app": "Org/app"}
+    inventory = {
+        "owner": {
+            "Cargo.toml": {"workspace": {}},
+            "crates/core/Cargo.toml": {"package": {"name": "owner-core"}},
+            "crates/facade/Cargo.toml": {"package": {"name": "owner-facade"},
+                                         "dependencies": {"engine": {"package": "owner-core", "path": "../core"}}},
+            "crates/cli/Cargo.toml": {"package": {"name": "owner-cli"}},
+        },
+        "app": {
+            "Cargo.toml": {"workspace": {"dependencies": {"bridge": {"package": "owner-facade", "version": "0.3"}}}},
+            "native/Cargo.toml": {"package": {"name": "app-native"}, "target": {
+                "cfg(windows)": {"build-dependencies": {"bridge": {"workspace": True}}}}},
+            "other/Cargo.toml": {"package": {"name": "app-other"}, "dependencies": {
+                "owner-core": {"git": "https://github.com/SomeoneElse/owner"}}},
+        },
+    }
+    result = affected_crates(inventory, origins, {"owner": (["crates/core/src/lib.rs"], "repository")})
+    assert [v["name"] for v in result["crates"].values()] == ["app-native", "owner-core", "owner-facade"]
+    assert result["roots"] == ["owner/crates/core/Cargo.toml"]
+    result = affected_crates(inventory, origins, {"owner": (["Cargo.toml"], "repository")})
+    assert len(result["roots"]) == 3

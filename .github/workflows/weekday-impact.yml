@@ -9,6 +9,7 @@ on:
       - '.github/workflows/weekday-impact.yml'
       - 'scripts/n4a_weekday_changes.py'
       - 'scripts/n4a_cargo_candidate.py'
+      - 'scripts/n4a_crate_impact.py'
       - 'docs/contracts/release/artifact-source-paths.json'
       - 'tests/test_weekday_impact.py'
 
@@ -23,6 +24,7 @@ jobs:
   impact:
     runs-on: ubuntu-latest
     outputs:
+      changed: ${{ steps.plan.outputs.changed }}
       domains: ${{ steps.plan.outputs.domains }}
       producer: ${{ steps.plan.outputs.producer }}
       consumer: ${{ steps.plan.outputs.consumer }}
@@ -41,15 +43,15 @@ jobs:
       - uses: actions/cache/restore@v4
         if: github.event_name != 'pull_request'
         with:
-          path: .impact/heads.json
-          key: impact-v1-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: impact-v1-
+          path: .impact/
+          key: impact-v2-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: impact-v2-
       - name: Compare exact public revisions
         id: plan
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python scripts/n4a_weekday_changes.py --output impact.json --cursor .impact/heads.json
+          python scripts/n4a_weekday_changes.py --output impact.json --cursor .impact/heads.json --cargo-inventory .impact/manifests.json
           jq -r '"changed=" + ((.sources | length > 0) | tostring)' impact.json >> "$GITHUB_OUTPUT"
           jq -r '"domains=" + (([.plan.builds[]? | select(.artifact == "domains.rust") | .candidate_inputs[] | select(. == "preflight.rust-crates")] | length > 0) | tostring)' impact.json >> "$GITHUB_OUTPUT"
           jq -r '"producer=" + .["nirs4all-preflight"], "consumer=" + .["nirs4all-domains"]' .impact/heads.json >> "$GITHUB_OUTPUT"
@@ -60,11 +62,13 @@ jobs:
           name: weekday-impact
           path: impact.json
           if-no-files-found: error
-      - uses: actions/cache/save@v4
+      - uses: actions/upload-artifact@v7
         if: github.event_name != 'pull_request' && steps.plan.outputs.changed == 'true'
         with:
-          path: .impact/heads.json
-          key: impact-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          name: observed-sources
+          path: .impact/
+          include-hidden-files: true
+          if-no-files-found: error
 
   domains:
     name: Preflight candidate in Domains
@@ -105,3 +109,20 @@ jobs:
           name: domains-candidate-qualification
           path: cargo-handoff.json
           if-no-files-found: error
+
+  checkpoint:
+    needs: [impact, domains]
+    if: >-
+      ${{ !cancelled() && github.event_name != 'pull_request' &&
+          needs.impact.result == 'success' && needs.impact.outputs.changed == 'true' &&
+          (needs.domains.result == 'success' || needs.domains.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: observed-sources
+          path: .impact/
+      - uses: actions/cache/save@v4
+        with:
+          path: .impact/
+          key: impact-v2-${{ github.run_id }}-${{ github.run_attempt }}

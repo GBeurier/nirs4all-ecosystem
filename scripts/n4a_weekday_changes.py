@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from n4a_artifact_graph import DEFAULT_GRAPH, ROOT, load_graph, plan
@@ -84,7 +85,12 @@ def inspect(item, baseline):
         raise ValueError(f"invalid revision for {repo}")
     if head == base:
         return repo, head, []
-    comparison = api(f"repos/{origin}/compare/{base}...{head}")
+    try:
+        comparison = api(f"repos/{origin}/compare/{base}...{head}")
+    except HTTPError as error:
+        if error.code not in {404, 409}:
+            raise
+        return repo, head, None
     return repo, head, comparison_paths(comparison)
 
 
@@ -92,6 +98,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cursor", type=Path)
+    parser.add_argument("--cargo-inventory", type=Path, help="Cache pinned Cargo manifests for public scans")
     parser.add_argument("--repository", help="Use a local Git diff for one repository")
     parser.add_argument("--checkout", type=Path)
     parser.add_argument("--base")
@@ -116,13 +123,14 @@ def main():
         with ThreadPoolExecutor(max_workers=5) as pool:
             changes = list(pool.map(lambda item: inspect(item, baseline), sorted(origins.items())))
 
-    roots, sources, heads = set(), {}, {}
+    roots, sources, heads, crate_changes = set(), {}, {}, {}
     for repo, head, paths in changes:
         heads[repo] = head
         if baseline[repo] == head:
             continue
         selected, scope = classify(artifacts, rules, repo, paths)
         roots.update(selected)
+        crate_changes[repo] = (paths, scope)
         sources[repo] = {"base": baseline[repo], "head": head, "scope": scope, "roots": sorted(selected)}
     result = {
         "schema_version": "n4a.weekday-impact/v1",
@@ -130,6 +138,19 @@ def main():
         "unwatched_repositories": sorted(set(baseline) - origins.keys()),
         "plan": plan(artifacts, order, roots, set(), full=False) if roots else None,
     }
+    if args.cargo_inventory and args.repository:
+        parser.error("--cargo-inventory requires a public scan")
+    if args.cargo_inventory and sources:
+        from n4a_crate_impact import affected_crates, fetch_manifests
+
+        cache = json.loads(args.cargo_inventory.read_text()) if args.cargo_inventory.exists() else {}
+        for repo, sha in heads.items():
+            if cache.get(repo, {}).get("sha") != sha:
+                cache[repo] = {"sha": sha, "manifests": fetch_manifests(api, origins[repo], sha)}
+        inventory = {repo: cache[repo]["manifests"] for repo in heads}
+        result["cargo"] = affected_crates(inventory, origins, crate_changes)
+        args.cargo_inventory.parent.mkdir(parents=True, exist_ok=True)
+        args.cargo_inventory.write_text(json.dumps(cache))
     args.output.write_text(json.dumps(result, indent=2) + "\n")
     if not args.repository:
         args.cursor.parent.mkdir(parents=True, exist_ok=True)
