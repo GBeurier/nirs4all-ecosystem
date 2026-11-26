@@ -37,12 +37,19 @@ jobs:
         working-directory: source
         shell: bash
         run: bash scripts/ensure_rust_deps.sh
-      - name: Prepare the DAG-ML R optimizer test
+      - uses: actions/setup-python@v6
+        if: matrix.member.package == 'dag-ml-cli'
+        with:
+          python-version: '3.11'
+      - name: Install the DAG-ML owner test dependencies
         if: matrix.member.package == 'dag-ml-cli'
         shell: pwsh
         run: |
-          Rscript -e "if (!requireNamespace('jsonlite', quietly=TRUE)) install.packages('jsonlite', repos='https://cloud.r-project.org'); stopifnot(requireNamespace('jsonlite', quietly=TRUE))"
+          python3 -m pip install numpy scikit-learn
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Rscript -e "pkgs <- c('jsonlite', 'digest'); missing <- setdiff(pkgs, rownames(installed.packages())); if (length(missing)) install.packages(missing, repos='https://cloud.r-project.org'); stopifnot(all(vapply(pkgs, requireNamespace, logical(1), quietly=TRUE)))"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          'DAG_ML_REQUIRE_SKLEARN_TEST=1' >> $env:GITHUB_ENV
           'DAGML_REQUIRE_HPO_R=1' >> $env:GITHUB_ENV
       - name: Build and exercise the owner binary
         working-directory: source
