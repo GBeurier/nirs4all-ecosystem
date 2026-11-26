@@ -40,6 +40,15 @@ def test_io_browser_change_reassembles_browser_consumers_only():
     ]
 
 
+def test_node_wasm_change_does_not_replace_browser_wasm_inside_quali():
+    result = plan("--artifact", "io.node-wasm")
+    builds = index(result, "builds")
+    checks = index(result, "qualification")
+    assert set(builds) == {"io.node-wasm", "web.site", "web.offline-app"}
+    assert "core.npm" in checks
+    assert "quali.site" not in checks
+
+
 def test_io_core_change_rebuilds_embedded_code_and_requalifies_runtime_consumers():
     result = plan("--artifact", "io.core-crate")
     builds = index(result, "builds")

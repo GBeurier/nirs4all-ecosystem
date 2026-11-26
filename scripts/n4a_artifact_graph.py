@@ -85,8 +85,8 @@ def plan(
                 "baseline_inputs": sorted(material - candidates),
             })
 
-    # Runtime extras may be mutual. Test the transitive closure after staging
-    # candidate bytes, without a build dependency on either consumer's tests.
+    # Test runtime profiles after staging candidate bytes. Runtime substitution
+    # stops at a material boundary, where the producer has fixed the input bytes.
     qualification = []
     reviews = []
     refresh = []
@@ -100,16 +100,19 @@ def plan(
         for dependency, relation in artifact["inputs"].items():
             if relation == "review" and dependency in candidates:
                 reviews.append({"consumer": artifact_id, "candidate": dependency})
-        pending = [artifact_id]
-        closure = set()
-        if artifact["action"] != "qualify":
-            closure.add(artifact_id)
+        pending = [(artifact_id, True)]
+        visited = set()
         while pending:
-            current = pending.pop()
+            current, runtime_allowed = pending.pop()
+            if (current, runtime_allowed) in visited:
+                continue
+            visited.add((current, runtime_allowed))
             for dependency, relation in artifacts[current]["inputs"].items():
-                if relation in TEST_INPUTS and dependency not in closure:
-                    closure.add(dependency)
-                    pending.append(dependency)
+                if relation in MATERIAL or (runtime_allowed and relation == "runtime"):
+                    pending.append((dependency, relation == "runtime"))
+        closure = {dependency for dependency, _ in visited}
+        if artifact["action"] == "qualify":
+            closure.remove(artifact_id)
         if artifact_id in roots or closure & candidates:
             qualification.append({
                 "artifact": artifact_id,

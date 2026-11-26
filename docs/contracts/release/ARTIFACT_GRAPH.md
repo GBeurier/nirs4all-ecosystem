@@ -1,6 +1,6 @@
 # Ecosystem artifact release graph
 
-Plan, build and qualify a change from the package or deliverable it affects. Package versions advance independently under [VERSION_CONSTRAINTS.md](VERSION_CONSTRAINTS.md). Build and qualification can consume a candidate before its registry version exists. Published tags identify public versions. A clean weekly or manual run qualifies an explicitly selected ecosystem baseline and can propose a coherent publication batch when needed.
+The planner starts from the affected package or deliverable. The target delivery flow builds and qualifies candidates before their registry versions exist. Package versions advance independently under [VERSION_CONSTRAINTS.md](VERSION_CONSTRAINTS.md). Published tags identify public versions. The rollout adds a weekly or manual clean qualification of an explicitly selected ecosystem baseline.
 
 ## Select the affected artifacts
 
@@ -22,7 +22,7 @@ The **Ecosystem artifact graph** workflow uploads the plan. Use repository scope
 | Review | Resolve an admission constraint, such as an incompatible version series or a separately maintained lock, before substitution. |
 | Observe | Refresh Cockpit after applicable publications have been verified through the public channel. |
 
-Candidate builds wait for their candidate material inputs. Qualification separately resolves the affected runtime closure. Optional integrations have named qualification gates. For example, SDK and Tools can be installed and tested together for workspace migration after each required artifact exists.
+Candidate builds wait for their candidate material inputs. Qualification separately resolves the affected runtime closure. A packed site or installer declares the dependencies it actually embeds. The planner will not substitute a runtime dependency inside already assembled bytes. Optional integrations have named qualification gates. For example, SDK and Tools can be installed and tested together for workspace migration after each required artifact exists.
 
 | Starting change | Selected outcomes |
 | --- | --- |
