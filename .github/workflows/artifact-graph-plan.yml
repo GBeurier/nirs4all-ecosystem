@@ -6,6 +6,7 @@ on:
       - '.github/workflows/artifact-graph-plan.yml'
       - '.gitmodules'
       - 'docs/contracts/release/artifact-graph.n4a.json'
+      - 'docs/contracts/release/artifact-release-targets.n4a.json'
       - 'scripts/n4a_artifact_graph.py'
       - 'tests/test_artifact_graph.py'
   workflow_dispatch:

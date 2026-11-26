@@ -41,3 +41,9 @@ Candidate builds wait for their candidate material inputs. Qualification separat
 5. Run the full qualification on a clean, pinned baseline weekly or manually. Use its evidence to check the declared graph against the actual dependency resolution and detect missing paths. Publish only when an owner version or delivery needs promotion.
 
 The current workflow executes the planning stage in read-only mode. `--full` emits the full plan. Candidate acquisition, actual build fan-out, publication, the periodic full runner and cross-channel timing measurements require the rollout above. The Studio Linux artifact rehearsal remains release-independent evidence of reuse after a late failure.
+
+## Public release observations
+
+The [artifact release targets](artifact-release-targets.n4a.json) associate a graph node with exact public Cockpit targets by package ID, registry and target name. The mapping contains no release versions. Consumers join it with the current public `data/current.json` whenever their snapshot refreshes. An artifact can have several observations, such as a source package tracked by both R-universe and CRAN.
+
+A missing target leaves the artifact visible without a release observation. Separate browser packages, individual Studio installers and other outputs need their own target evidence before they can inherit any observation. A Pages health result can have an unavailable version. These public observations describe the published channel and do not qualify a candidate build.
