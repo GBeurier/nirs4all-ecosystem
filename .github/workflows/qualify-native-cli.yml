@@ -53,7 +53,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           if ((git rev-parse HEAD) -ne $env:REVISION) { throw "Unexpected source revision" }
-          cargo test --release --locked -p $env:PACKAGE
+          cargo test --no-fail-fast --release --locked -p $env:PACKAGE
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo build --release --locked -p $env:PACKAGE --bins --message-format=json > build.jsonl
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
