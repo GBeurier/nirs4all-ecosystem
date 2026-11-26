@@ -69,3 +69,39 @@ failure summary in GitHub Actions for Monday triage. The attached full plan
 includes all declared artifacts. A green run applies to the listed checks only.
 Publication stays with the owner workflows, and the scheduled run uses read-only
 permissions.
+
+## Default-branch changes and source candidates
+
+The **Weekday ecosystem impact** workflow compares the default branch of each
+public member in `.gitmodules`, plus Ecosystem itself. It runs every 15 minutes
+and supports manual dispatch. Each scan records the exact previous and current
+commits and combines concurrent changes into a single affected plan. Scheduling
+and runner queues can add latency. Server uses local admission. Compare an
+exact range in any inventoried sibling, including Server, with this command:
+
+```sh
+python scripts/n4a_weekday_changes.py --repository nirs4all-io --checkout ../nirs4all-io \
+  --base "$BASE_SHA" --head "$HEAD_SHA" --output impact.json
+```
+
+Reviewed source-directory rules select roots for an individual change. For
+example, IO's shared WASM binding feeds both the browser and Node packages.
+A change to a workspace manifest, an unmapped file, a rewritten branch or a
+truncated compare selects the repository's declared outputs. Both paths of a
+rename count. Some source nodes, notably DAG and Preflight, still group several
+crates. The report distinguishes path selection from repository fallback.
+
+The cached cursor records **observed** revisions after upload of the impact
+report. An expired cursor starts from the inventory's reviewed commits. Re-run
+a failed qualification on its original run and inspect the source SHAs in the
+receipt. The cursor does not establish a qualified or published version.
+
+The attached plan lists all affected declared surfaces. The Preflight → Domains
+job exercises two named consumer test suites against both candidate crates in
+disposable checkouts. It verifies Cargo selected the exact source paths in the
+consumer's reachable dependency graph and retained all unrelated lock entries.
+The ordinary consumer version constraints remain active. Admission of a changed
+lock or incompatible version requires a reviewed consumer update. A manual run
+also exercises this handoff with the current public revisions. Passing this job
+qualifies only those suites. Other owner releases still follow their existing
+publication workflows.

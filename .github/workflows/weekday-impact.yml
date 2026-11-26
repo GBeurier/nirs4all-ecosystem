@@ -1,0 +1,107 @@
+name: Weekday ecosystem impact
+
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/weekday-impact.yml'
+      - 'scripts/n4a_weekday_changes.py'
+      - 'scripts/n4a_cargo_candidate.py'
+      - 'docs/contracts/release/artifact-source-paths.json'
+      - 'tests/test_weekday_impact.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekday-impact-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  impact:
+    runs-on: ubuntu-latest
+    outputs:
+      domains: ${{ steps.plan.outputs.domains }}
+      producer: ${{ steps.plan.outputs.producer }}
+      consumer: ${{ steps.plan.outputs.consumer }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Test classification and candidate resolution
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m pip install pytest
+          python -m pytest -q tests/test_artifact_graph.py tests/test_weekday_impact.py
+      - uses: actions/cache/restore@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: .impact/heads.json
+          key: impact-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: impact-v1-
+      - name: Compare exact public revisions
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/n4a_weekday_changes.py --output impact.json --cursor .impact/heads.json
+          jq -r '"changed=" + ((.sources | length > 0) | tostring)' impact.json >> "$GITHUB_OUTPUT"
+          jq -r '"domains=" + (([.plan.builds[]? | select(.artifact == "domains.rust") | .candidate_inputs[] | select(. == "preflight.rust-crates")] | length > 0) | tostring)' impact.json >> "$GITHUB_OUTPUT"
+          jq -r '"producer=" + .["nirs4all-preflight"], "consumer=" + .["nirs4all-domains"]' .impact/heads.json >> "$GITHUB_OUTPUT"
+          jq -r '"Compared public repositories. Changed: " + (.sources | keys | join(", ")) + ". Local admission: " + (.unwatched_repositories | join(", "))' impact.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: steps.plan.outputs.changed == 'true' || github.event_name != 'schedule'
+        with:
+          name: weekday-impact
+          path: impact.json
+          if-no-files-found: error
+      - uses: actions/cache/save@v4
+        if: github.event_name != 'pull_request' && steps.plan.outputs.changed == 'true'
+        with:
+          path: .impact/heads.json
+          key: impact-v1-${{ github.run_id }}-${{ github.run_attempt }}
+
+  domains:
+    name: Preflight candidate in Domains
+    needs: impact
+    if: needs.impact.outputs.domains == 'true' || github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: ecosystem
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all-preflight
+          ref: ${{ needs.impact.outputs.producer }}
+          path: producer
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: dcornet/nirs4all-domains
+          ref: ${{ needs.impact.outputs.consumer }}
+          path: consumer
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.96.0'
+      - name: Run the consumer suites against the candidate crates
+        run: |
+          python ecosystem/scripts/n4a_cargo_candidate.py --producer producer --consumer consumer \
+            --manifest crates/nirs4all-preflight/Cargo.toml --manifest crates/nirs4all-preflight-core/Cargo.toml \
+            --package nirs4all-domains --test browser --test browser_preprocessing --receipt cargo-handoff.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: domains-candidate-qualification
+          path: cargo-handoff.json
+          if-no-files-found: error
