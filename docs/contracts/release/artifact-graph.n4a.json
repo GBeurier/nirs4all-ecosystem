@@ -12,7 +12,7 @@
     "nirs4all-datasets": "926c12e91f8bde6f60c451d9ce6d6d6be4207fee",
     "nirs4all-device": "6a9f8b6706231a7b616052304998c17565bfbb1d",
     "nirs4all-domains": "82d43a8565571b2d4f31d478f64b136636fb9b0e",
-    "nirs4all-ecosystem": "80ccbab6ab5060aafeba5a46a0ce684b762f1d76",
+    "nirs4all-ecosystem": "db022ed169805ed74112d57d3c872804c5c53957",
     "nirs4all-formats": "46e52d21543fe8706479c83f5445b00a4ea5a298",
     "nirs4all-io": "334750793d21fd7fd5ef8b24729abd561503a2e1",
     "nirs4all-methods": "abe6dd142d3c5593c8f6b26f32122055f12c3b3b",
@@ -232,13 +232,13 @@
       "repository": "nirs4all-domains",
       "action": "assemble",
       "evidence": ["demo/package.json", "demo/scripts/wasm-loaders.lock.json", ".github/workflows/pages.yml"],
-      "inputs": {"domains.wasm": "bundle", "formats.wasm": "review", "io.node-wasm": "review", "ui.npm": "bundle"}
+      "inputs": {"domains.wasm": "bundle", "formats.wasm": "review", "io.node-wasm": "review", "methods.wasm": "bundle", "ui.npm": "bundle"}
     },
     "domains.wasm": {
       "repository": "nirs4all-domains",
       "action": "build",
       "evidence": ["Cargo.toml", "bindings/wasm/package.json", "crates/nirs4all-domains/Cargo.toml"],
-      "inputs": {"dag.rust-crates": "compile", "preflight.rust-crates": "compile"}
+      "inputs": {"dag.rust-crates": "compile", "methods.wasm": "runtime", "preflight.rust-crates": "compile"}
     },
     "ecosystem.integration": {
       "repository": "nirs4all-ecosystem",
@@ -406,7 +406,7 @@
       "repository": "nirs4all-preflight",
       "action": "build",
       "evidence": ["bindings/wasm/Cargo.toml", "bindings/wasm/package.json", "crates/nirs4all-preflight/Cargo.toml"],
-      "inputs": {"dag.rust-crates": "compile", "dag.wasm": "runtime", "preflight.rust-crates": "compile"}
+      "inputs": {"dag.rust-crates": "compile", "dag.wasm": "runtime", "methods.wasm": "runtime", "preflight.rust-crates": "compile"}
     },
     "providers.python-wheel": {
       "repository": "nirs4all-providers",

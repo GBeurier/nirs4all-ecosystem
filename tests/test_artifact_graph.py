@@ -69,6 +69,15 @@ def test_io_core_change_rebuilds_embedded_code_and_requalifies_runtime_consumers
         seen.add(entry["artifact"])
 
 
+def test_methods_wasm_change_reassembles_demos_without_recompiling_native_code():
+    result = plan("--artifact", "methods.wasm")
+    builds = index(result, "builds")
+    checks = index(result, "qualification")
+    assert {"domains.site", "preflight.site", "web.site", "quali.site"} <= builds.keys()
+    assert {"domains.wasm", "preflight.wasm"} <= checks.keys() - builds.keys()
+    assert {"domains.rust", "preflight.python-wheel"}.isdisjoint(checks)
+
+
 def test_preflight_rust_change_consumes_candidate_crate_in_domains():
     result = plan("--artifact", "preflight.rust-crates")
     builds = index(result, "builds")
