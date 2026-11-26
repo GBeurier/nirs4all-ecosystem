@@ -63,8 +63,10 @@ DAG-ML-Data, IO, DAG-ML, Core, SDK, Studio, Web.
   and lists every requirement that would make Cargo silently keep the registry
   version. With `align`, those requirements are rewritten to the cohort version
   in the build root only and reported; a release plan then refuses until the
-  consumers commit those pin updates. After every Cargo gate the consumer's
-  lockfile is checked: a cohort crate still resolved from crates.io fails the
+  consumers commit those pin updates. When Cargo's existing lock prefers a
+  different registry version of an admitted cohort crate, the runner selects
+  the cohort version with a targeted update in the build root before compiling.
+  After every Cargo gate the consumer's lockfile is checked: a cohort crate still resolved from crates.io fails the
   gate with `PATCH IGNORED`.
 
 ## Local loop
