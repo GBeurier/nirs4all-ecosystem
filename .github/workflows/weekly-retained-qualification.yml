@@ -69,6 +69,7 @@ jobs:
     with:
       studio_sha: ${{ needs.baseline.outputs.studio-sha }}
       studio_tag: ${{ needs.baseline.outputs.studio-tag }}
+      qualification_only: true
 
   domains:
     name: Domains tests with retained Preflight crates
@@ -100,18 +101,19 @@ jobs:
       STUDIO: ${{ needs.studio.result }}
       DOMAINS: ${{ needs.domains.result }}
       CONTRACTS: ${{ needs.release-contracts.result }}
-    run: |
-      {
-        echo '## Weekly retained artifact qualification'
-        echo
-        echo '| Coverage | Outcome |'
-        echo '| --- | --- |'
-        printf '| Frozen graph and baseline | %s |\n' "$BASELINE"
-        printf '| Web served and offline using retained WASM | %s |\n' "$WEB"
-        printf '| SDK and Studio Linux locked wheels | %s |\n' "$STUDIO"
-        printf '| Domains browser-profile Rust tests with retained Preflight | %s |\n' "$DOMAINS"
-        printf '| Aggregation lock and native capability contracts | %s |\n' "$CONTRACTS"
-        echo
-        echo 'The full graph is attached as a planning artifact. Owner-specific runtime adapters, remaining platforms and live promotion remain outside this run.'
-      } >> "$GITHUB_STEP_SUMMARY"
-      test "$BASELINE,$WEB,$STUDIO,$DOMAINS,$CONTRACTS" = success,success,success,success,success
+    steps:
+      - run: |
+          {
+            echo '## Weekly retained artifact qualification'
+            echo
+            echo '| Coverage | Outcome |'
+            echo '| --- | --- |'
+            printf '| Frozen graph and baseline | %s |\n' "$BASELINE"
+            printf '| Web served and offline using retained WASM | %s |\n' "$WEB"
+            printf '| SDK and Studio Linux locked wheels | %s |\n' "$STUDIO"
+            printf '| Domains browser-profile Rust tests with retained Preflight | %s |\n' "$DOMAINS"
+            printf '| Aggregation lock and native capability contracts | %s |\n' "$CONTRACTS"
+            echo
+            echo 'The full graph is attached as a planning artifact. Owner-specific runtime adapters, remaining platforms and live promotion remain outside this run.'
+          } >> "$GITHUB_STEP_SUMMARY"
+          test "$BASELINE,$WEB,$STUDIO,$DOMAINS,$CONTRACTS" = success,success,success,success,success

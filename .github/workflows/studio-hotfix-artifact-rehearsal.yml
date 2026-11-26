@@ -6,6 +6,9 @@ on:
       - .github/workflows/studio-hotfix-artifact-rehearsal.yml
   workflow_call:
     inputs:
+      qualification_only:
+        type: boolean
+        default: false
       studio_tag:
         type: string
         required: true
@@ -211,7 +214,7 @@ jobs:
           if-no-files-found: error
 
   promotion-rehearsal:
-    if: github.event_name != 'schedule'
+    if: ${{ !inputs.qualification_only }}
     name: Reconcile the qualified artifact with published files
     needs: [prepare, qualify]
     runs-on: ubuntu-latest
