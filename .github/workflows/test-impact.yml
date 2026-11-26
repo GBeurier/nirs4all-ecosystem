@@ -40,7 +40,9 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: public-cargo-test-targets
-          path: cargo-test-targets.json
+          path: |
+            cargo-test-targets.json
+            manifests.json
           if-no-files-found: error
 
   coverage:
@@ -70,7 +72,7 @@ jobs:
         if: inputs.tools_base != ''
         with:
           path: tools-coverage.json
-          key: tools-pytest-v2-${{ inputs.tools_base }}
+          key: tools-pytest-v3-${{ inputs.tools_base }}
       - id: tests
         env:
           BASE: ${{ inputs.tools_base }}
@@ -88,7 +90,7 @@ jobs:
         if: github.event_name != 'pull_request' && steps.tests.outputs.scope == 'suite'
         with:
           path: tools-coverage.json
-          key: tools-pytest-v2-${{ steps.tests.outputs.head }}
+          key: tools-pytest-v3-${{ steps.tests.outputs.head }}
       - name: Enumerate artifact-to-suite routes across the ecosystem
         run: python ecosystem/scripts/n4a_weekday_changes.py --all-test-routes --output suite-routes.json
       - uses: actions/upload-artifact@v7

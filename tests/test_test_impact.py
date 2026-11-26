@@ -23,11 +23,12 @@ def test_measured_change_selects_tests_and_unknown_changes_run_the_suite(tmp_pat
     git("add", ".")
     git("commit", "-qm", "base")
     base = git("rev-parse", "HEAD")
-    graph = {"schema": "n4a.pytest-impact/v2", "source": "src", "commit": base,
-             "environment": environment(), "groups": [["tests/test_engine.py::test_result"]], "files": {"src/engine.py": {"2": 0}}}
+    graph = {"schema": "n4a.pytest-impact/v3", "source": "src", "commit": base,
+             "environment": environment(), "unmapped": ["tests/test_cli.py::test_process"], "groups": [["tests/test_engine.py::test_result"]], "files": {"src/engine.py": {"2": 0}}}
     code.write_text("def result():\n    return 4\n")
     git("commit", "-qam", "change")
-    assert selection(tmp_path, base, graph, "src")["tests"] == ["tests/test_engine.py::test_result"]
+    assert selection(tmp_path, base, graph, "src")["tests"] == [
+        "tests/test_cli.py::test_process", "tests/test_engine.py::test_result"]
     assert selection(tmp_path, base, {**graph, "commit": "stale"}, "src")["scope"] == "suite"
     graph["files"]["src/engine.py"].clear()
     assert selection(tmp_path, base, graph, "src")["scope"] == "suite"

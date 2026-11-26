@@ -141,7 +141,8 @@ daily at 04:35 Europe/Paris. For the Tools Python profile it also runs the
 owner suite with pytest-cov test contexts and publishes a line-to-test graph
 bound to the Git revision, Python environment, OS and architecture. On a Tools
 change the weekday workflow tries the graph for the exact base. A measured
-change inside a function can select individual pytest node IDs. Missing
+change inside a function can select individual pytest node IDs. Tests without
+attributable source coverage accompany every narrow selection. Missing
 evidence, changes to test files, fixtures, package metadata or shared
 initialization, and unmatched environments run the full suite and refresh the
 graph. The receipt lists the actual selection and the reason. Each daily full
@@ -164,3 +165,10 @@ under a single owner's `crates/` selects its affected native workspace
 members and runs them together with one locked Cargo invocation. Cargo
 supplies their unit, integration and documentation tests. Cross-repository
 profiles that require candidate substitution keep their separate gates.
+
+For a Rust change during implementation, download `manifests.json` from the
+daily `public-cargo-test-targets` artifact. Add
+`--cargo-inventory /path/to/manifests.json` to the local Git comparison command
+above. The planner reads the candidate's manifests and test tree directly
+from its Git commit and keeps the rest of the ecosystem at the recorded
+revisions. It leaves the downloaded inventory untouched.

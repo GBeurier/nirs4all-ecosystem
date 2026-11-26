@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import PurePosixPath
 import posixpath
 import re
+import subprocess
 import tomllib
 
 
@@ -50,6 +51,19 @@ def fetch_manifests(api, origin, sha):
 
     with ThreadPoolExecutor(max_workers=4) as pool:
         return dict(pool.map(read, files))
+
+
+def checkout_manifests(checkout, sha):
+    files = subprocess.check_output(["git", "-C", str(checkout), "ls-tree", "-rz", "--name-only", sha])
+    paths = {p.decode() for p in files.split(b"\0") if p}
+    result = {}
+    for path in sorted(paths):
+        if PurePosixPath(path).name == "Cargo.toml":
+            raw = subprocess.check_output(["git", "-C", str(checkout), "show", f"{sha}:{path}"])
+            manifest = tomllib.loads(raw.decode())
+            manifest["_test_targets"] = cargo_test_targets(path, manifest, paths)
+            result[path] = manifest
+    return result
 
 
 def dependencies(manifest):
@@ -103,7 +117,7 @@ def affected_crates(inventory, origins, changes):
             elif "git" in detail:
                 url = detail["git"].removesuffix("/").removesuffix(".git")
                 providers = [key for key, (owner, _, candidate, _) in packages.items()
-                             if url == f"https://github.com/{origins[owner]}" and candidate["package"]["name"] == name]
+                             if url == f"https://github.com/{origins.get(owner)}" and candidate["package"]["name"] == name]
             else:
                 providers = registry.get(name, [])
             for provider in providers:

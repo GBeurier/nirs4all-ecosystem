@@ -26,14 +26,22 @@ def environment():
             "packages": hashlib.sha256(json.dumps(versions).encode()).hexdigest()}
 
 
+def pytest_collection_finish(session):
+    # Loaded explicitly only while measuring a complete suite.
+    Path(os.environ["N4A_TEST_COLLECTION"]).write_text(json.dumps([item.nodeid for item in session.items]))
+
+
 def measure(repo, source):
     from coverage import CoverageData
 
     with tempfile.TemporaryDirectory() as tmp:
         data_file = Path(tmp) / ".coverage"
         junit = Path(tmp) / "tests.xml"
-        env = {**os.environ, "COVERAGE_FILE": str(data_file)}
-        subprocess.run([sys.executable, "-m", "pytest", "-q", f"--cov={source}", "--cov-context=test",
+        collection = Path(tmp) / "nodes.json"
+        plugin_path = str(Path(__file__).resolve().parent)
+        env = {**os.environ, "COVERAGE_FILE": str(data_file), "N4A_TEST_COLLECTION": str(collection),
+               "PYTHONPATH": os.pathsep.join(filter(None, [plugin_path, os.environ.get("PYTHONPATH")]))}
+        subprocess.run([sys.executable, "-m", "pytest", "-p", "n4a_test_impact", "-q", f"--cov={source}", "--cov-context=test",
                         "--cov-report=", f"--junitxml={junit}"], cwd=repo, env=env, check=True)
         cases = ElementTree.parse(junit).findall(".//testcase")
         counts = {"collected": len(cases), "skipped": sum(c.find("skipped") is not None for c in cases)}
@@ -57,9 +65,10 @@ def measure(repo, source):
                     group = tuple(sorted({c.rsplit("|", 1)[0] for c in contexts}))
                     lines[str(line)] = groups.setdefault(group, len(groups))
             files[rel] = lines
-    return {"schema": "n4a.pytest-impact/v2", "commit": git(repo, "rev-parse", "HEAD").decode().strip(),
+        unmapped = set(json.loads(collection.read_text())) - {test for group in groups for test in group}
+    return {"schema": "n4a.pytest-impact/v3", "commit": git(repo, "rev-parse", "HEAD").decode().strip(),
             "source": source, "environment": environment(), "files": files,
-            "groups": list(groups), "suite": counts}
+            "groups": list(groups), "unmapped": sorted(unmapped), "suite": counts}
 
 
 def function_lines(text):
@@ -74,7 +83,7 @@ def function_lines(text):
 
 def selection(repo, base, snapshot, source):
     all_tests = lambda reason: {"scope": "suite", "reason": reason, "tests": []}
-    if (snapshot.get("schema") != "n4a.pytest-impact/v2" or snapshot.get("commit") != base or
+    if (snapshot.get("schema") != "n4a.pytest-impact/v3" or snapshot.get("commit") != base or
             snapshot.get("source") != source or snapshot.get("environment") != environment()):
         return all_tests("missing matching coverage for this base and environment")
     raw = git(repo, "diff", "--no-renames", "--name-only", "-z", base, "HEAD", "--")
@@ -101,7 +110,9 @@ def selection(repo, base, snapshot, source):
                 selected.update(snapshot["groups"][edges[str(line)]])
     if not selected:
         return all_tests("no measured tests for the diff")
-    return {"scope": "tests", "reason": "executed changed lines at the qualified base", "tests": sorted(selected)}
+    return {"scope": "tests", "reason": "measured tests plus cases without attributable coverage",
+            "measured": len(selected), "unmapped": len(snapshot["unmapped"]),
+            "tests": sorted(selected.union(snapshot["unmapped"]))}
 
 
 def main():

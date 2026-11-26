@@ -181,22 +181,26 @@ def main():
     result["test_suites"] = test_routes(artifacts, [
         row["artifact"] for row in (result["plan"] or {}).get("qualification", [])
     ])
-    if args.cargo_inventory and args.repository:
-        parser.error("--cargo-inventory requires a public scan")
     if args.full_cargo_tests and not args.cargo_inventory:
         parser.error("--full-cargo-tests requires --cargo-inventory")
     if args.cargo_inventory and (sources or args.full_cargo_tests):
-        from n4a_crate_impact import affected_crates, fetch_manifests
+        from n4a_crate_impact import affected_crates, checkout_manifests, fetch_manifests
 
         cache = json.loads(args.cargo_inventory.read_text()) if args.cargo_inventory.exists() else {}
-        for repo, sha in heads.items():
-            if cache.get(repo, {}).get("sha") != sha:
-                cache[repo] = {"sha": sha, "manifests": fetch_manifests(api, origins[repo], sha)}
-        inventory = {repo: cache[repo]["manifests"] for repo in heads}
+        if args.repository:
+            if origins.keys() - cache.keys():
+                parser.error("local Cargo selection needs the complete daily manifests.json snapshot")
+            cache[args.repository] = {"sha": args.head, "manifests": checkout_manifests(args.checkout, args.head)}
+        else:
+            for repo, sha in heads.items():
+                if cache.get(repo, {}).get("sha") != sha:
+                    cache[repo] = {"sha": sha, "manifests": fetch_manifests(api, origins[repo], sha)}
+        inventory = {repo: entry["manifests"] for repo, entry in cache.items()
+                     if repo in origins or repo == args.repository}
         result["cargo"] = affected_crates(inventory, origins, crate_changes)
         if args.full_cargo_tests:
             result["cargo_test_inventory"] = {
-                repo: {"commit": heads[repo], "packages": {
+                repo: {"commit": cache[repo]["sha"], "packages": {
                     path: {"package": m["package"]["name"], "test_targets": m["_test_targets"]}
                     for path, m in manifests.items() if "package" in m
                 }} for repo, manifests in inventory.items()
@@ -204,9 +208,10 @@ def main():
         packages = result["cargo"]["local_workspace_tests"]
         if packages:
             repo = next(iter(sources))
-            result["local_cargo_job"] = {"origin": origins[repo], "sha": heads[repo], "packages": packages}
-        args.cargo_inventory.parent.mkdir(parents=True, exist_ok=True)
-        args.cargo_inventory.write_text(json.dumps(cache))
+            result["local_cargo_job"] = {"origin": origins.get(repo), "sha": heads[repo], "packages": packages}
+        if not args.repository:
+            args.cargo_inventory.parent.mkdir(parents=True, exist_ok=True)
+            args.cargo_inventory.write_text(json.dumps(cache))
     if not args.repository:
         # A locked owner build can qualify a CLI-only source change. Mixed
         # candidates require substitution and must not fall back to a registry.
