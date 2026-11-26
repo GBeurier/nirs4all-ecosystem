@@ -69,3 +69,106 @@ failure summary in GitHub Actions for Monday triage. The attached full plan
 includes all declared artifacts. A green run applies to the listed checks only.
 Publication stays with the owner workflows, and the scheduled run uses read-only
 permissions.
+
+## Default-branch changes and source candidates
+
+The **Weekday ecosystem impact** workflow compares the default branch of each
+public member in `.gitmodules`, plus Ecosystem itself. It runs every 15 minutes
+and supports manual dispatch. Each scan records the exact previous and current
+commits and combines concurrent changes into a single affected plan. Scheduling
+and runner queues can add latency. Server uses local admission. Compare an
+exact range in any inventoried sibling, including Server, with this command:
+
+```sh
+python scripts/n4a_weekday_changes.py --repository nirs4all-io --checkout ../nirs4all-io \
+  --base "$BASE_SHA" --head "$HEAD_SHA" --output impact.json
+```
+
+Reviewed source-directory rules select roots for an individual change. For
+example, IO's shared WASM binding feeds both the browser and Node packages.
+A change to a workspace manifest, an unmapped file, a rewritten branch or a
+truncated compare selects the repository's declared outputs. Both paths of a
+rename count. Some source nodes, notably DAG and Preflight, still group several
+crates. The report distinguishes path selection from repository fallback.
+
+The cached cursor records **observed** revisions after the impact report is archived
+and the selected candidate job passes. An expired cursor starts from the inventory's reviewed commits. Re-run
+a failed qualification on its original run and inspect the source SHAs in the
+receipt. The cursor does not establish a qualified or published version.
+
+The attached plan lists all affected declared surfaces. The Preflight → Domains
+job exercises two named consumer test suites against both candidate crates in
+disposable checkouts. It verifies Cargo selected the exact source paths in the
+consumer's reachable dependency graph and retained all unrelated lock entries.
+The ordinary consumer version constraints remain active. Admission of a changed
+lock or incompatible version requires a reviewed consumer update. A manual run
+also exercises this handoff with the current public revisions. Passing this job
+qualifies only those suites. Other owner releases still follow their existing
+publication workflows.
+
+The `cargo` section expands individual crates at the observed commits. It reads
+tracked Cargo manifests, including inherited workspace dependencies, renamed
+packages and target-specific dependencies. It follows reverse dependencies from
+each changed source directory. The graph includes possible consumers across
+features and targets. Per-profile Cargo resolution still determines which
+candidate enters a given binary. The accompanying artifact plan describes the
+language bindings, runtime tests and products that Cargo cannot discover.
+
+Changes under the source directory of a standalone CLI select its own binary.
+The weekday job builds and tests that package in the release profile on Windows
+when all material inputs can come from the owner's locked checkout. Each
+retained binary carries its SHA-256, source revision, Cargo lock digest and
+compiler identity. A change that also needs candidate material from upstream
+remains in the impact plan for an adapter that can stage those inputs.
+
+**Weekly Windows CLI qualification** rebuilds the DAG, DMD, Datasets, Domains,
+Formats, IO and Preflight CLIs on clean Windows runners at the seven source
+commits pinned by Ecosystem's gitlinks. It runs alongside the retained Friday
+workflow at 02:15 Saturday in Europe/Paris. The source list, package tests and
+Windows binaries are available from the run. These package checks supplement
+the product qualification documented above.
+
+## Test selection and refresh
+
+Each impact report includes the affected artifacts grouped by owner test suite
+in `test_suites`. A surface without a verified narrower route keeps its owner
+gates. These entries express required coverage, including for local Server
+admission. They do not constitute a successful test run. The native CLI
+routes run the selected Cargo package tests under the conditions above.
+
+**Test impact coverage** produces the complete artifact-to-suite inventory
+daily at 04:35 Europe/Paris. For the Tools Python profile it also runs the
+owner suite with pytest-cov test contexts and publishes a line-to-test graph
+bound to the Git revision, Python environment, OS and architecture. On a Tools
+change the weekday workflow tries the graph for the exact base. A measured
+change inside a function can select individual pytest node IDs. Tests without
+attributable source coverage accompany every narrow selection. Missing
+evidence, changes to test files, fixtures, package metadata or shared
+initialization, and unmatched environments run the full suite and refresh the
+graph. The receipt lists the actual selection and the reason. Each daily full
+run exercises tests outside recent fast selections.
+
+The collector also runs during implementation in a clean owner checkout with
+its test dependencies installed. Store outputs outside the checkout.
+
+```sh
+python scripts/n4a_test_impact.py measure --checkout ../nirs4all-tools \
+  --graph /tmp/tools-coverage.json --receipt /tmp/tools-full.json
+python scripts/n4a_test_impact.py run --checkout ../nirs4all-tools --base "$BASE_SHA" \
+  --graph /tmp/tools-coverage.json --receipt /tmp/tools-affected.json
+```
+
+The daily run also inventories Rust library and integration test targets from
+the actual manifests and test trees of all public members. Each entry retains
+the repository commit. A weekday change confined to Rust sources or tests
+under a single owner's `crates/` selects its affected native workspace
+members and runs them together with one locked Cargo invocation. Cargo
+supplies their unit, integration and documentation tests. Cross-repository
+profiles that require candidate substitution keep their separate gates.
+
+For a Rust change during implementation, download `manifests.json` from the
+daily `public-cargo-test-targets` artifact. Add
+`--cargo-inventory /path/to/manifests.json` to the local Git comparison command
+above. The planner reads the candidate's manifests and test tree directly
+from its Git commit and keeps the rest of the ecosystem at the recorded
+revisions. It leaves the downloaded inventory untouched.

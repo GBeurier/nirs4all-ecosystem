@@ -1,0 +1,39 @@
+name: Weekly Windows CLI qualification
+
+on:
+  schedule:
+    - cron: '15 2 * * 6'
+      timezone: Europe/Paris
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/weekly-windows-cli.yml
+      - .github/workflows/qualify-native-cli.yml
+
+permissions:
+  contents: read
+
+jobs:
+  cohort:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.select.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - id: select
+        run: |
+          python3 scripts/n4a_weekday_changes.py --weekly-cli --output cli-sources.json
+          jq -cr '"packages=" + tojson' cli-sources.json >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: weekly-cli-sources
+          path: cli-sources.json
+          if-no-files-found: error
+
+  packages:
+    needs: cohort
+    uses: ./.github/workflows/qualify-native-cli.yml
+    with:
+      packages: ${{ needs.cohort.outputs.packages }}

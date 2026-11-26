@@ -1,0 +1,183 @@
+name: Weekday ecosystem impact
+
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/weekday-impact.yml'
+      - '.github/workflows/qualify-native-cli.yml'
+      - 'scripts/n4a_weekday_changes.py'
+      - 'scripts/n4a_cargo_candidate.py'
+      - 'scripts/n4a_crate_impact.py'
+      - 'docs/contracts/release/artifact-source-paths.json'
+      - 'tests/test_weekday_impact.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekday-impact-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  impact:
+    runs-on: ubuntu-latest
+    outputs:
+      local-cargo: ${{ steps.plan.outputs.local-cargo }}
+      tools-base: ${{ steps.plan.outputs.tools-base }}
+      tools-head: ${{ steps.plan.outputs.tools-head }}
+      packages: ${{ steps.plan.outputs.packages }}
+      changed: ${{ steps.plan.outputs.changed }}
+      domains: ${{ steps.plan.outputs.domains }}
+      producer: ${{ steps.plan.outputs.producer }}
+      consumer: ${{ steps.plan.outputs.consumer }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Test classification and candidate resolution
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m pip install pytest
+          python -m pytest -q tests/test_artifact_graph.py tests/test_weekday_impact.py
+      - uses: actions/cache/restore@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: .impact/
+          key: impact-v3-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: impact-v3-
+      - name: Compare exact public revisions
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/n4a_weekday_changes.py --output impact.json --cursor .impact/heads.json --cargo-inventory .impact/manifests.json
+          jq -r '.sources["nirs4all-tools"] | "tools-base="+(.base // ""),"tools-head="+(.head // "")' impact.json >> "$GITHUB_OUTPUT"
+          jq -r '"local-cargo=" + (.local_cargo_job | tojson)' impact.json >> "$GITHUB_OUTPUT"
+          jq -cr '"packages=" + (.locked_cli_candidates | tojson)' impact.json >> "$GITHUB_OUTPUT"
+          jq -r '"changed=" + ((.sources | length > 0) | tostring)' impact.json >> "$GITHUB_OUTPUT"
+          jq -r '"domains=" + (([.plan.builds[]? | select(.artifact == "domains.rust") | .candidate_inputs[] | select(. == "preflight.rust-crates")] | length > 0) | tostring)' impact.json >> "$GITHUB_OUTPUT"
+          jq -r '"producer=" + .["nirs4all-preflight"], "consumer=" + .["nirs4all-domains"]' .impact/heads.json >> "$GITHUB_OUTPUT"
+          jq -r '"Compared public repositories. Changed: " + (.sources | keys | join(", ")) + ". Local admission: " + (.unwatched_repositories | join(", "))' impact.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: steps.plan.outputs.changed == 'true' || github.event_name != 'schedule'
+        with:
+          name: weekday-impact
+          path: impact.json
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v7
+        if: github.event_name != 'pull_request' && steps.plan.outputs.changed == 'true'
+        with:
+          name: observed-sources
+          path: .impact/
+          include-hidden-files: true
+          if-no-files-found: error
+
+  domains:
+    name: Preflight candidate in Domains
+    needs: impact
+    if: needs.impact.outputs.domains == 'true' || github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: ecosystem
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all-preflight
+          ref: ${{ needs.impact.outputs.producer }}
+          path: producer
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: dcornet/nirs4all-domains
+          ref: ${{ needs.impact.outputs.consumer }}
+          path: consumer
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.96.0'
+      - name: Run the consumer suites against the candidate crates
+        run: |
+          python ecosystem/scripts/n4a_cargo_candidate.py --producer producer --consumer consumer \
+            --manifest crates/nirs4all-preflight/Cargo.toml --manifest crates/nirs4all-preflight-core/Cargo.toml \
+            --package nirs4all-domains --test browser --test browser_preprocessing --receipt cargo-handoff.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: domains-candidate-qualification
+          path: cargo-handoff.json
+          if-no-files-found: error
+
+  windows-cli:
+    needs: impact
+    if: needs.impact.outputs.packages != '[]'
+    uses: ./.github/workflows/qualify-native-cli.yml
+    with:
+      packages: ${{ needs.impact.outputs.packages }}
+
+  local-cargo:
+    needs: impact
+    if: needs.impact.outputs.local-cargo != 'null'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ fromJSON(needs.impact.outputs.local-cargo).origin }}
+          ref: ${{ fromJSON(needs.impact.outputs.local-cargo).sha }}
+          path: source
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.96.0'
+      - name: Stage Datasets owner dependencies
+        working-directory: source
+        if: fromJSON(needs.impact.outputs.local-cargo).origin == 'GBeurier/nirs4all-datasets'
+        run: bash scripts/ensure_rust_deps.sh
+      - name: Run affected workspace packages together
+        working-directory: source
+        shell: python
+        env:
+          JOB: ${{ needs.impact.outputs.local-cargo }}
+        run: |
+          import json, os, subprocess
+          packages = json.loads(os.environ["JOB"])["packages"]
+          subprocess.run(["cargo", "test", "--locked", *[arg for p in packages for arg in ("-p", p)]], check=True)
+
+  tools-tests:
+    needs: impact
+    if: needs.impact.outputs.tools-base != ''
+    uses: ./.github/workflows/test-impact.yml
+    with:
+      tools_base: ${{ needs.impact.outputs.tools-base }}
+      tools_head: ${{ needs.impact.outputs.tools-head }}
+
+  checkpoint:
+    needs: [impact, domains, windows-cli, local-cargo, tools-tests]
+    if: >-
+      ${{ !cancelled() && github.event_name != 'pull_request' &&
+          needs.impact.result == 'success' && needs.impact.outputs.changed == 'true' &&
+          (needs.domains.result == 'success' || needs.domains.result == 'skipped') &&
+          (needs.windows-cli.result == 'success' || needs.windows-cli.result == 'skipped') &&
+          (needs.tools-tests.result == 'success' || needs.tools-tests.result == 'skipped') &&
+          (needs.local-cargo.result == 'success' || needs.local-cargo.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: observed-sources
+          path: .impact/
+      - uses: actions/cache/save@v4
+        with:
+          path: .impact/
+          key: impact-v3-${{ github.run_id }}-${{ github.run_attempt }}

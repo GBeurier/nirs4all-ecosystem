@@ -1,0 +1,80 @@
+name: Qualify locked Windows CLI candidates
+
+on:
+  workflow_call:
+    inputs:
+      packages:
+        description: JSON array of owner repository, exact SHA and package
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        member: ${{ fromJSON(inputs.packages) }}
+    runs-on: windows-latest
+    name: ${{ matrix.member.package }} (Windows x64)
+    timeout-minutes: 60
+    steps:
+      - name: Allow long owner fixture paths
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ matrix.member.origin }}
+          ref: ${{ matrix.member.sha }}
+          path: source
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.96.0'
+      - name: Stage the Datasets owner source train
+        if: matrix.member.package == 'nirs4all-datasets-cli'
+        working-directory: source
+        shell: bash
+        run: bash scripts/ensure_rust_deps.sh
+      - uses: actions/setup-python@v6
+        if: matrix.member.package == 'dag-ml-cli'
+        with:
+          python-version: '3.11'
+      - name: Install the DAG-ML owner test dependencies
+        if: matrix.member.package == 'dag-ml-cli'
+        shell: pwsh
+        run: |
+          python3 -m pip install numpy scikit-learn
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Rscript -e "pkgs <- c('jsonlite', 'digest'); missing <- setdiff(pkgs, rownames(installed.packages())); if (length(missing)) install.packages(missing, repos='https://cloud.r-project.org'); stopifnot(all(vapply(pkgs, requireNamespace, logical(1), quietly=TRUE)))"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          'DAG_ML_REQUIRE_SKLEARN_TEST=1' >> $env:GITHUB_ENV
+          'DAGML_REQUIRE_HPO_R=1' >> $env:GITHUB_ENV
+      - name: Build and exercise the owner binary
+        working-directory: source
+        shell: pwsh
+        env:
+          PACKAGE: ${{ matrix.member.package }}
+          REVISION: ${{ matrix.member.sha }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ((git rev-parse HEAD) -ne $env:REVISION) { throw "Unexpected source revision" }
+          cargo test --no-fail-fast --release --locked -p $env:PACKAGE
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo build --release --locked -p $env:PACKAGE --bins --message-format=json > build.jsonl
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $binaries = @(Get-Content build.jsonl | ForEach-Object { $_ | ConvertFrom-Json } |
+            Where-Object { $_.reason -eq 'compiler-artifact' -and $_.target.kind -contains 'bin' -and $_.executable })
+          if ($binaries.Count -ne 1) { throw "Expected one release binary" }
+          New-Item -ItemType Directory -Path delivery
+          Copy-Item -LiteralPath $binaries[0].executable -Destination delivery/
+          $hash = Get-FileHash -LiteralPath $binaries[0].executable -Algorithm SHA256
+          @{package=$env:PACKAGE; commit=$env:REVISION; target='x86_64-pc-windows-msvc'; sha256=$hash.Hash;
+            lock_sha256=(Get-FileHash Cargo.lock).Hash; rustc=(rustc -V)} |
+            ConvertTo-Json | Set-Content delivery/receipt.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.member.package }}-windows-x64
+          path: source/delivery/
+          if-no-files-found: error

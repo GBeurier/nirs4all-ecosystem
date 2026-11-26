@@ -83,7 +83,7 @@ def test_preflight_rust_change_consumes_candidate_crate_in_domains():
     builds = index(result, "builds")
     assert set(builds) == {
         "preflight.rust-crates", "preflight.python-wheel", "preflight.wasm", "preflight.site",
-        "domains.rust", "domains.wasm", "domains.site"
+        "domains.rust", "domains.wasm", "domains.site", "domains.native-cli", "preflight.native-cli"
     }
     assert builds["domains.wasm"]["candidate_inputs"] == ["preflight.rust-crates"]
     assert builds["domains.site"]["candidate_inputs"] == ["domains.wasm"]

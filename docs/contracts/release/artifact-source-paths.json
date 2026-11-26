@@ -1,0 +1,151 @@
+{
+  "dag-ml": {
+    "crates/dag-ml-cli/src/": [
+      "dag.native-cli"
+    ],
+    "crates/dag-ml-core/src/": [
+      "dag.rust-crates"
+    ],
+    "crates/dag-ml-py/src/": [
+      "dag.python-wheel"
+    ],
+    "crates/dag-ml-wasm/src/": [
+      "dag.wasm"
+    ]
+  },
+  "dag-ml-data": {
+    "crates/dag-ml-data-cli/src/": [
+      "dmd.native-cli"
+    ],
+    "crates/dag-ml-data-core/src/": [
+      "dmd.rust-crates"
+    ],
+    "crates/dag-ml-data-py/src/": [
+      "dmd.python-wheel"
+    ],
+    "crates/dag-ml-data-wasm/src/": [
+      "dmd.wasm"
+    ]
+  },
+  "nirs4all-cluster": {
+    "packages/nirs4all-access/src/": [
+      "access.python-wheel"
+    ]
+  },
+  "nirs4all-core": {
+    "bindings/python-native/src/": [
+      "core.python-wheel"
+    ],
+    "bindings/rust/nirs4all/src/": [
+      "core.rust-crate"
+    ],
+    "bindings/wasm-native/src/": [
+      "core.native-wasm"
+    ]
+  },
+  "nirs4all-datasets": {
+    "bindings/python/src/": [
+      "datasets.python-wheel"
+    ],
+    "bindings/wasm/src/": [
+      "datasets.wasm"
+    ],
+    "crates/nirs4all-datasets-cli/src/": [
+      "datasets.native-cli"
+    ],
+    "crates/nirs4all-datasets-core/src/": [
+      "datasets.rust-sources"
+    ]
+  },
+  "nirs4all-domains": {
+    "bridges/python/src/": [
+      "domains.python-bridge"
+    ],
+    "crates/nirs4all-domains-cli/src/": [
+      "domains.native-cli"
+    ],
+    "crates/nirs4all-domains/src/": [
+      "domains.rust",
+      "domains.wasm"
+    ],
+    "demo/src/": [
+      "domains.site"
+    ]
+  },
+  "nirs4all-formats": {
+    "bindings/python/src/": [
+      "formats.python-wheel"
+    ],
+    "bindings/wasm/src/": [
+      "formats.wasm"
+    ],
+    "crates/nirs4all-formats-cli/src/": [
+      "formats.native-cli"
+    ],
+    "crates/nirs4all-formats/src/": [
+      "formats.rust-crate"
+    ]
+  },
+  "nirs4all-io": {
+    "bindings/python/src/": [
+      "io.python-wheel"
+    ],
+    "bindings/wasm/src/": [
+      "io.browser",
+      "io.node-wasm"
+    ],
+    "crates/nirs4all-io-cli/src/": [
+      "io.native-cli"
+    ],
+    "crates/nirs4all-io-core/src/": [
+      "io.core-crate"
+    ],
+    "crates/nirs4all-io-dagml/src/": [
+      "io.dag-adapter-crate"
+    ],
+    "crates/nirs4all-io/src/": [
+      "io.facade-crate"
+    ],
+    "web/builder-app/src/": [
+      "io.demo"
+    ]
+  },
+  "nirs4all-papers": {
+    "papers/": [
+      "papers.document-site"
+    ]
+  },
+  "nirs4all-preflight": {
+    "bindings/python/src/": [
+      "preflight.python-wheel"
+    ],
+    "bindings/wasm/src/": [
+      "preflight.wasm"
+    ],
+    "crates/nirs4all-preflight-cli/src/": [
+      "preflight.native-cli"
+    ],
+    "crates/nirs4all-preflight-core/src/": [
+      "preflight.rust-crates"
+    ],
+    "crates/nirs4all-preflight/src/": [
+      "preflight.rust-crates"
+    ],
+    "demo/src/": [
+      "preflight.site"
+    ]
+  },
+  "nirs4all-studio": {
+    "sidecar/src/": [
+      "studio.sidecar"
+    ]
+  },
+  "nirs4all-ui": {
+    "site/src/": [
+      "ui.demo"
+    ],
+    "src/": [
+      "ui.npm"
+    ]
+  }
+}

@@ -1,0 +1,103 @@
+name: Test impact coverage
+
+on:
+  schedule:
+    - cron: '35 4 * * *'
+      timezone: Europe/Paris
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      tools_base:
+        required: true
+        type: string
+      tools_head:
+        required: true
+        type: string
+  pull_request:
+    paths:
+      - .github/workflows/test-impact.yml
+      - scripts/n4a_test_impact.py
+      - tests/test_test_impact.py
+
+permissions:
+  contents: read
+
+jobs:
+  cargo-inventory:
+    if: inputs.tools_base == ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Refresh declared test targets at all public default-branch revisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/n4a_weekday_changes.py --full-cargo-tests --cursor heads.json \
+            --cargo-inventory manifests.json --output result.json
+          jq .cargo_test_inventory result.json > cargo-test-targets.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: public-cargo-test-targets
+          path: |
+            cargo-test-targets.json
+            manifests.json
+          if-no-files-found: error
+
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: ecosystem
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all-tools
+          ref: ${{ inputs.tools_head || 'main' }}
+          path: owner
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install the Tools owner test profile
+        run: python -m pip install -e './owner[dev,parquet]'
+      - name: Verify the impact selector
+        working-directory: ecosystem
+        run: python -m pytest -q tests/test_test_impact.py
+      - uses: actions/cache/restore@v4
+        if: inputs.tools_base != ''
+        with:
+          path: tools-coverage.json
+          key: tools-pytest-v3-${{ inputs.tools_base }}
+      - id: tests
+        env:
+          BASE: ${{ inputs.tools_base }}
+        run: |
+          if [[ -n "$BASE" ]]; then
+            args=(run --base "$BASE")
+          else
+            args=(measure)
+          fi
+          python ecosystem/scripts/n4a_test_impact.py "${args[@]}" --checkout owner \
+            --graph tools-coverage.json --receipt tests-run.json
+          jq -r '"scope="+.scope,"head="+.head' tests-run.json >> "$GITHUB_OUTPUT"
+          jq -r '.reason' tests-run.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/cache/save@v4
+        if: github.event_name != 'pull_request' && steps.tests.outputs.scope == 'suite'
+        with:
+          path: tools-coverage.json
+          key: tools-pytest-v3-${{ steps.tests.outputs.head }}
+      - name: Enumerate artifact-to-suite routes across the ecosystem
+        run: python ecosystem/scripts/n4a_weekday_changes.py --all-test-routes --output suite-routes.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: test-impact-coverage
+          path: |
+            tools-coverage.json
+            suite-routes.json
+            tests-run.json
+          if-no-files-found: error
