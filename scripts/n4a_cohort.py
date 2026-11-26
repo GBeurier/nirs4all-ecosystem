@@ -1683,6 +1683,14 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     plan.add_argument("--confirm", default="", help="first 16 hex digits of the tested manifest digest")
     plan.add_argument("--expected-login", default="GBeurier")
     plan.add_argument("--wait-minutes", type=int, default=120)
+
+    hotfix = sub.add_parser("studio-hotfix-plan", help="plan a DAG-ML patch against a tagged Studio baseline")
+    hotfix.add_argument("--studio-tag", required=True)
+    hotfix.add_argument("--studio-sha", required=True)
+    hotfix.add_argument("--dag-sha", required=True)
+    hotfix.add_argument("--dag-version", required=True, help="proposed stable DAG-ML version")
+    hotfix.add_argument("--compatible-patch", action="store_true", help="record the owner's compatibility decision")
+    hotfix.add_argument("--json-out")
     return parser.parse_args(argv)
 
 
@@ -1700,6 +1708,18 @@ def main(argv: list[str] | None = None) -> int:
             return 0 if report["result"] == "passed" else 1
         if args.command == "release-plan":
             return release_plan(args)
+        if args.command == "studio-hotfix-plan":
+            from n4a_studio_hotfix import draft_plan
+
+            try:
+                plan = draft_plan(Path(args.workspace_root), args.studio_tag, args.studio_sha, args.dag_sha,
+                                  args.dag_version, compatible_patch=args.compatible_patch)
+            except (ValueError, KeyError, TypeError, release_lock.RelError) as exc:
+                raise CohortError(f"invalid Studio hotfix input: {exc}") from exc
+            if args.json_out:
+                write_json(Path(args.json_out), plan)
+            print(json.dumps(plan, indent=2, sort_keys=True))
+            return 2 if plan["blockers"] else 0
     except CohortError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

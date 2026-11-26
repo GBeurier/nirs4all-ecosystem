@@ -169,3 +169,49 @@ skips tags that already point at the tested commit and refuses any other.
   buildable members, but Methods Python wheels are not built from source.
 - The Studio end-to-end run uses the dev-profile sidecar binary, not a packaged
   Electron application.
+
+## Studio hotfix plan
+
+Use `studio-hotfix-plan` to plan a DAG-ML-only delta against a tagged Studio
+baseline. The command reads exact Git objects from the Studio, DAG-ML, Core
+and SDK sibling checkouts. It needs Python 3.11 and `packaging`.
+
+```bash
+python scripts/n4a_cohort.py studio-hotfix-plan \
+  --studio-tag "$STUDIO_TAG" --studio-sha "$STUDIO_SHA" \
+  --dag-sha "$DAG_SHA" --dag-version "$DAG_VERSION" \
+  --compatible-patch --json-out studio-hotfix-plan.json
+```
+
+On GitHub Actions, dispatch **Studio hotfix plan** with the same identities.
+`compatible_patch` records the DAG-ML owner's classification under the
+[version policy](contracts/release/VERSION_CONSTRAINTS.md). A source path cannot
+prove that a scientific change is compatible. Leave this input clear when the
+owner has not classified the change.
+
+A binding-only change proposes rebuilding the DAG-ML wheel and qualifying the
+retained native stack. A change to the native DAG runtime also proposes a
+Core Python wheel and new Studio sidecars. The retained SDK wheel is named by
+its published SHA-256. Studio's install ranges and the SDK source requirements
+must admit the proposed versions. The installed SDK gate still has to verify
+the wheel bytes and its real dependency resolution. The Core wheel's proposed
+patch version is subject to the owner's release metadata and registry checks.
+
+A candidate plan lists prospective build, qualification, registry and served
+checks. Artifacts can prepare from candidate sources while publication is
+pending. Publication follows the selected SDK wheel check and the composed
+Studio source-cohort check. macOS packaged qualification depends on the public
+runtime it installs. Cockpit waits for all six Studio channels to be publicly
+verified. The plan marks release commits still to freeze and places those
+steps before the affected build or packaging jobs. Final Studio packaging must
+verify that any retained sidecar still matches its build inputs. The Python-only
+route needs Studio to record the native DAG and the DAG wheel identities
+independently when they differ.
+
+Unknown changes, version-series changes and unconfirmed compatibility return
+`requires-full-plan` (exit 2). Documentation-only or empty runtime deltas return
+`no-runtime-change`.
+
+The plan creates no release and provides no publication authority. Existing
+owner workflows continue to build and publish in their current order until
+they support consuming the planned artifacts and receipts.

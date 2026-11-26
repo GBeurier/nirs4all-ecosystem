@@ -1,0 +1,133 @@
+name: Studio hotfix plan
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/studio-hotfix-plan.yml
+      - scripts/n4a_cohort.py
+      - scripts/n4a_studio_hotfix.py
+      - tests/test_cohort.py
+  workflow_dispatch:
+    inputs:
+      studio_tag:
+        description: Stable Studio release used as the baseline
+        required: true
+        type: string
+      studio_sha:
+        description: Exact source commit of the baseline Studio release
+        required: true
+        type: string
+      dag_sha:
+        description: Exact DAG-ML candidate commit
+        required: true
+        type: string
+      dag_version:
+        description: Proposed stable DAG-ML version
+        required: true
+        type: string
+      compatible_patch:
+        description: The owner has classified this change as a compatible patch
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: python -m pip install packaging pytest pyyaml
+      - run: python -m pytest -q tests/test_cohort.py
+
+  plan:
+    if: github.event_name == 'workflow_dispatch'
+    needs: tests
+    runs-on: ubuntu-latest
+    env:
+      STUDIO_TAG: ${{ inputs.studio_tag }}
+      STUDIO_SHA: ${{ inputs.studio_sha }}
+      DAG_SHA: ${{ inputs.dag_sha }}
+      DAG_VERSION: ${{ inputs.dag_version }}
+      COMPATIBLE_PATCH: ${{ inputs.compatible_patch }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Validate source inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$STUDIO_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$DAG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$STUDIO_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$DAG_SHA" =~ ^[0-9a-f]{40}$ ]]
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all-studio
+          ref: ${{ env.STUDIO_SHA }}
+          path: sources/nirs4all-studio
+          fetch-depth: 1
+          fetch-tags: true
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/dag-ml
+          ref: ${{ env.DAG_SHA }}
+          path: sources/dag-ml
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Read the pinned SDK and Core commits
+        id: peers
+        shell: python
+        run: |
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          cohort = json.loads(Path('sources/nirs4all-studio/build/runtime-cohort.json').read_text())
+          peers = {'sdk': cohort['sdk']['source_sha'], 'core': cohort['core']['native_source_sha']}
+          for name, sha in peers.items():
+              if not re.fullmatch('[0-9a-f]{40}', sha):
+                  raise ValueError(f'invalid Studio {name} commit')
+          with Path(os.environ['GITHUB_OUTPUT']).open('a') as output:
+              for name, sha in peers.items():
+                  print(f'{name}={sha}', file=output)
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all
+          ref: ${{ steps.peers.outputs.sdk }}
+          path: sources/nirs4all
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all-core
+          ref: ${{ steps.peers.outputs.core }}
+          path: sources/nirs4all-core
+          persist-credentials: false
+      - run: python -m pip install packaging
+      - name: Plan delivery without building or publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          if [[ "$COMPATIBLE_PATCH" == true ]]; then args+=(--compatible-patch); fi
+          python scripts/n4a_cohort.py --workspace-root sources studio-hotfix-plan \
+            --studio-tag "$STUDIO_TAG" --studio-sha "$STUDIO_SHA" --dag-sha "$DAG_SHA" \
+            --dag-version "$DAG_VERSION" "${args[@]}" --json-out studio-hotfix-plan.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: studio-hotfix-plan
+          path: studio-hotfix-plan.json
+          if-no-files-found: ignore
