@@ -458,3 +458,53 @@ def test_studio_hotfix_distinguishes_version_bump_from_dependency_change(studio_
     blocked = _studio_hotfix_plan(studio_hotfix_baseline, change)
     assert blocked["status"] == "requires-full-plan"
     assert any("Cargo.toml" in reason for reason in blocked["blockers"])
+
+
+def test_tagged_source_ref_must_resolve_to_reviewed_commit(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    reviewed = _repo(repo, {"file": "reviewed"})
+    tag = "refs/tags/v1.0.0"
+    _git(repo, "tag", "-a", "-m", "reviewed tag", "v1.0.0", reviewed)
+    manager = cohort.SourceManager(tmp_path / "build", tmp_path)
+    spec = cohort.parse_member_value("demo", {"ref": tag, "source": str(repo), "expected_commit": reviewed}, tmp_path)
+    assert manager.snapshot_commit(_recipe(), spec, tag).commit == reviewed
+
+    different = _repo(repo, {"file": "different"})
+    _git(repo, "tag", "-f", "v1.0.0", different)
+    with pytest.raises(cohort.CohortError, match=f"resolved to {different}, expected {reviewed}"):
+        manager.snapshot_commit(_recipe(), spec, tag)
+
+
+def test_weekly_source_cohort_declares_tag_and_commit_for_each_supported_member() -> None:
+    recipes, _ = cohort.load_recipes(cohort.DEFAULT_MEMBERS)
+    path = ROOT / "docs/contracts/release/cohort/friday-tagged.n4a.json"
+    manifest = cohort.load_manifest(path, [], recipes)
+    assert manifest["tier"] == "full"
+    assert manifest["pin_alignment"] == "refuse"
+    for key, spec in manifest["members"].items():
+        if key == "web":
+            assert spec.published
+        else:
+            assert spec.ref.startswith("refs/tags/"), key
+            assert cohort.COMMIT_RE.fullmatch(spec.expected_commit or ""), key
+    assert manifest["members"]["methods"].python == "published"
+
+
+def test_existing_lock_switches_only_mismatched_cohort_packages(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    lock = tmp_path / "Cargo.lock"
+    outside = '\n[[package]]\nname = "outside"\nversion = "9.0.0"\nsource = "registry+example"\n'
+    lock.write_text('[[package]]\nname = "nirs4all-io"\nversion = "0.3.6"\nsource = "registry+example"\n' + outside)
+    instance = cohort.Cohort.__new__(cohort.Cohort)
+    instance.crates = {"nirs4all-io": {"version": "0.3.8"}}
+    instance.base_env = lambda: {}
+    calls = []
+
+    def update(cmd, cwd, env):
+        calls.append((cmd, cwd))
+        lock.write_text('[[package]]\nname = "nirs4all-io"\nversion = "0.3.8"\n' + outside)
+
+    monkeypatch.setattr(cohort, "run", update)
+    instance.select_cohort_versions(lock)
+    instance.select_cohort_versions(lock)
+    assert calls == [(["cargo", "update", "-p", "nirs4all-io@0.3.6", "--precise", "0.3.8"], tmp_path)]
+    assert lock.read_text().endswith(outside)

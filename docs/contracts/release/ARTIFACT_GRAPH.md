@@ -61,9 +61,10 @@ require their own adapters.
 
 **Weekly retained artifact qualification** runs Saturday at 02:15 in
 `Europe/Paris` (Friday night), and can be dispatched manually. It runs the
-retained Web checks, the SDK quickstart and replay through Studio's pinned Linux
-wheel set, the Domains browser-profile Rust tests against locked Preflight
-crates, and aggregation lock and capability checks. It posts a coverage and
+[historical tagged source cohort](../../CANDIDATE_COHORT.md#friday-tagged-source-cohort)
+at the full Linux tier alongside the retained Web checks, the SDK quickstart and
+replay through Studio's pinned Linux wheel set, the Domains browser-profile Rust
+tests against locked Preflight crates, and aggregation lock and capability checks. It posts a coverage and
 failure summary in GitHub Actions for Monday triage. The attached full plan
 includes all declared artifacts. A green run applies to the listed checks only.
 Publication stays with the owner workflows, and the scheduled run uses read-only

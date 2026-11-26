@@ -43,7 +43,9 @@ DAG-ML-Data, IO, DAG-ML, Core, SDK, Studio, Web.
   uncommitted files; relative to the manifest). `source` optionally names the
   repository to read commits from; the default is the sibling checkout, then
   GitHub. Sources are read with `git ls-tree`/`git cat-file` and copied into
-  the build root, so member checkouts are never modified.
+  the build root, so member checkouts are never modified. Set `expected_commit`
+  alongside `ref` to refuse a source ref that no longer resolves to its reviewed
+  commit. Use fully qualified `refs/tags/…` names for the tagged source cohort.
 - `published` installs the release the product ships: when Studio is a source
   member, a published Python member comes from PyPI at Studio's exact `install`
   version (`recommended-config.json`, `required` block), so the cohort tests the
@@ -61,8 +63,10 @@ DAG-ML-Data, IO, DAG-ML, Core, SDK, Studio, Web.
   and lists every requirement that would make Cargo silently keep the registry
   version. With `align`, those requirements are rewritten to the cohort version
   in the build root only and reported; a release plan then refuses until the
-  consumers commit those pin updates. After every Cargo gate the consumer's
-  lockfile is checked: a cohort crate still resolved from crates.io fails the
+  consumers commit those pin updates. When Cargo's existing lock prefers a
+  different registry version of an admitted cohort crate, the runner selects
+  the cohort version with a targeted update in the build root before compiling.
+  After every Cargo gate the consumer's lockfile is checked: a cohort crate still resolved from crates.io fails the
   gate with `PATCH IGNORED`.
 
 ## Local loop
@@ -141,6 +145,29 @@ the cohort contracts runs it on `docs/contracts/release/cohort/hosted-check.n4a.
 Methods presets `ci-windows-msvc-release`/`ci-macos-clang-release` in the
 native step, `Scripts\python.exe` and `.exe` paths, and a process-group-free
 shutdown in the Studio driver.
+
+## Friday tagged source cohort
+
+The weekend qualification calls this runner with
+[friday-tagged.n4a.json](contracts/release/cohort/friday-tagged.n4a.json). The
+first cohort selects Studio 0.19.8 and its locked owner versions, including
+Formats 0.2.17, IO 0.3.8, DAG-ML 0.5.0, Core 0.6.1, and SDK 1.6.1.
+Each source ref must resolve to the reviewed commit. The job rebuilds the
+supported Linux source projects and runs the full test tier, including the
+SDK nightly selections. Methods Python wheels and Datasets use Studio's
+declared releases. The weekly report also includes the separate retained
+Web, Studio wheel, Domains and release-contract checks. The tagged job uses
+Rust 1.96.0 because DAG-ML v0.5.0's C conformance tests locate their library
+relative to the test executable. Cargo 1.100 changes that executable's
+location inside the build directory. Dispatch **Weekly retained artifact
+qualification** to run the same workflow manually. For a direct dispatch of
+**Candidate cohort** with this manifest, set `rust_toolchain` to `1.96.0`.
+
+The Friday run supplies evidence for the selected versions. A newer release
+series enters the cohort by updating the selected tags and their commit
+identities after the affected consumers admit and qualify that series. The
+weekly run uses read-only permissions. A delivery using the historical
+release plan remains a separate maintainer operation.
 
 ## Release plan
 

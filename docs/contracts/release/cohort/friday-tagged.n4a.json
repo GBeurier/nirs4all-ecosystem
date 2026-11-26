@@ -1,0 +1,44 @@
+{
+  "schema_version": "n4a.candidate-cohort/v1",
+  "cohort_id": "friday-tagged",
+  "description": "Linux source rebuild of the tagged Studio 0.19.8 release cohort. Studio's required distributions without source recipes are installed at their declared versions.",
+  "python": "3.11",
+  "tier": "full",
+  "pin_alignment": "refuse",
+  "members": {
+    "methods": {
+      "ref": "refs/tags/v1.5.1",
+      "expected_commit": "25041f88bebb21a19748799c1681e138a3d55dfb",
+      "python": "published",
+      "version": "1.5.1"
+    },
+    "formats": {
+      "ref": "refs/tags/v0.2.17",
+      "expected_commit": "53624331210b1a6e2d797fd13c6f07363386a91e"
+    },
+    "dag_ml_data": {
+      "ref": "refs/tags/v0.2.17",
+      "expected_commit": "854d5bebd88e1de761283139189735c349a6226c"
+    },
+    "io": {
+      "ref": "refs/tags/v0.3.8",
+      "expected_commit": "ce82e0ac074b322d04a276c57cd9bf2b5f8adc91"
+    },
+    "dag_ml": {
+      "ref": "refs/tags/v0.5.0",
+      "expected_commit": "d3608565a5fe27875d4b64e54035eb8b4c05b204"
+    },
+    "core": {
+      "ref": "refs/tags/v0.6.1",
+      "expected_commit": "d82bea70cbe5d66ac8ff46c5b66cc64c3b90498b"
+    },
+    "sdk": {
+      "ref": "refs/tags/1.6.1",
+      "expected_commit": "fd5db4af9131f19477867650814f1090f2308d08"
+    },
+    "studio": {
+      "ref": "refs/tags/0.19.8",
+      "expected_commit": "21274d093efc947024d8905b6044b8bebc270028"
+    }
+  }
+}

@@ -243,6 +243,7 @@ class MemberSpec:
     python: str | None = None
     version: str | None = None
     note: str | None = None
+    expected_commit: str | None = None
 
     @property
     def published(self) -> bool:
@@ -263,7 +264,7 @@ def parse_member_value(key: str, value: Any, base: Path) -> MemberSpec:
         value = {"ref": value}
     if not isinstance(value, dict) or not isinstance(value.get("ref"), str) or not value["ref"]:
         raise CohortError(f"member {key}: an object with a non-empty 'ref' is required")
-    allowed = {"ref", "source", "native_ref", "python", "version", "note"}
+    allowed = {"ref", "source", "native_ref", "python", "version", "note", "expected_commit"}
     unknown = set(value) - allowed
     if unknown:
         raise CohortError(f"member {key}: unknown fields {sorted(unknown)}")
@@ -275,8 +276,15 @@ def parse_member_value(key: str, value: Any, base: Path) -> MemberSpec:
         raise CohortError(f"member {key}: python may only be 'published'")
     if ref == "published:latest" and value.get("version"):
         raise CohortError(f"member {key}: 'published:latest' and an explicit version are exclusive")
+    expected_commit = value.get("expected_commit")
+    if expected_commit is not None and (
+        not isinstance(expected_commit, str) or not COMMIT_RE.fullmatch(expected_commit)
+        or ref in PUBLISHED_REFS or ref.startswith("path:")
+    ):
+        raise CohortError(f"member {key}: 'expected_commit' needs a full commit SHA and a source ref")
     return MemberSpec(key=key, ref=ref, source=value.get("source"), native_ref=value.get("native_ref"),
-                      python=value.get("python"), version=value.get("version"), note=value.get("note"))
+                      python=value.get("python"), version=value.get("version"), note=value.get("note"),
+                      expected_commit=expected_commit)
 
 
 def load_manifest(path: Path | None, overrides: list[str], recipes: dict[str, Recipe]) -> dict[str, Any]:
@@ -424,6 +432,8 @@ class SourceManager:
 
     def snapshot_commit(self, recipe: Recipe, spec: MemberSpec, ref: str) -> Snapshot:
         repo, commit = self.resolve_commit(recipe, spec, ref)
+        if spec.expected_commit and commit != spec.expected_commit:
+            raise CohortError(f"{recipe.key}: {ref} resolved to {commit}, expected {spec.expected_commit}")
         listing = run(["git", "-C", str(repo), "ls-tree", "-r", "-z", "--full-tree", commit]).stdout
         desired: dict[str, tuple[str, str, Any]] = {}
         notes = []
@@ -776,6 +786,30 @@ class Cohort:
             config.write_text(text)
         self.cargo_config_digest = sha256_hex(text.encode())
 
+    def select_cohort_versions(self, lock: Path) -> None:
+        """Select admitted patches when Cargo would preserve an older registry version."""
+        if not lock.exists():
+            return
+        tried = set()
+        while True:
+            packages = tomllib.loads(lock.read_text(encoding="utf-8")).get("package", [])
+            mismatch = next((
+                pkg for pkg in packages
+                if pkg["name"] in self.crates and pkg.get("source", "").startswith("registry+")
+                and pkg["version"] != self.crates[pkg["name"]]["version"]
+            ), None)
+            if mismatch is None:
+                return
+            name = mismatch["name"]
+            old_version = mismatch["version"]
+            version = self.crates[name]["version"]
+            if (name, old_version) in tried:
+                raise CohortError(f"{lock}: Cargo kept registry {name} {old_version} after selecting cohort {version}")
+            tried.add((name, old_version))
+            log(f"{lock}: selecting {name} {version} over locked registry {old_version}")
+            run(["cargo", "update", "-p", f"{name}@{old_version}", "--precise", version],
+                cwd=lock.parent, env=self.base_env())
+
     def lock_check(self, key: str, lock: Path) -> list[str]:
         """Report cohort crates that also resolved from the registry in a consumer lockfile."""
         if not lock.exists():
@@ -786,7 +820,7 @@ class Cohort:
             name, source = package.get("name"), package.get("source", "")
             if name in self.crates and source.startswith("registry+"):
                 problems.append(f"{name} {package.get('version')} still resolved from crates.io (cohort {self.crates[name]['version']}); "
-                                f"a requirement in the graph refuses the cohort version and the patch is ignored for it")
+                                f"the patch was not selected")
         return problems
 
     # ----------------------------------------------------------------- native
@@ -899,6 +933,11 @@ class Cohort:
                     self.record(Step(key, f"wheel {dist}", "cached", 0, existing[0].name))
                     continue
                 require_disk(self.build, f"the {dist} wheel build")
+                project_dir = self.snapshots[key].root / project["path"]
+                lock = next((d / "Cargo.lock" for d in [project_dir, *project_dir.parents]
+                             if (d / "Cargo.lock").exists() and self.snapshots[key].root in [d, *d.parents]), None)
+                if lock:
+                    self.select_cohort_versions(lock)
                 if out.exists():
                     shutil.rmtree(out)
                 out.mkdir(parents=True)
@@ -912,9 +951,6 @@ class Cohort:
                     ok = False
                     self.record(Step(key, f"wheel {dist}", "failed", time.time() - started, f"uv build exited {proc.returncode}", str(logfile)))
                     continue
-                project_dir = self.snapshots[key].root / project["path"]
-                lock = next((d / "Cargo.lock" for d in [project_dir, *project_dir.parents]
-                             if (d / "Cargo.lock").exists() and self.snapshots[key].root in [d, *d.parents]), None)
                 ignored = self.lock_check(key, lock) if lock else []
                 if ignored:
                     ok = False
@@ -1180,11 +1216,17 @@ class Cohort:
         if gate["cmd"][0] == "cargo" and free_gb(self.build) < MIN_FREE_GB:
             self.record(Step(key, gate["id"], "blocked", 0, f"only {free_gb(self.build):.1f} GB free (floor {MIN_FREE_GB:g} GB)"))
             return
+        cwd = snap.root / gate.get("cwd", "")
+        lock = None
+        if cmd[0] == "cargo":
+            manifest = cmd[cmd.index("--manifest-path") + 1] if "--manifest-path" in cmd else "Cargo.toml"
+            lock = (cwd / manifest).with_name("Cargo.lock")
+            self.select_cohort_versions(lock)
         with logfile.open("wb") as handle:
             handle.write(f"$ {' '.join(cmd)}\n".encode())
             handle.flush()
             try:
-                proc = subprocess.run(cmd, cwd=snap.root / gate.get("cwd", ""), env=env, stdout=handle,
+                proc = subprocess.run(cmd, cwd=cwd, env=env, stdout=handle,
                                       stderr=subprocess.STDOUT, timeout=gate.get("timeout", 3600))
                 code = proc.returncode
             except subprocess.TimeoutExpired:
@@ -1203,9 +1245,7 @@ class Cohort:
         if not summary and cargo_runs:
             totals = [sum(int(run[i]) for run in cargo_runs) for i in range(3)]
             summary = f"cargo: {totals[0]} passed, {totals[1]} failed, {totals[2]} ignored in {len(cargo_runs)} test binaries"
-        if gate["cmd"][0] == "cargo":
-            lock_dir = snap.root / (gate["cmd"][gate["cmd"].index("--manifest-path") + 1] if "--manifest-path" in gate["cmd"] else "Cargo.toml")
-            lock = lock_dir.parent / "Cargo.lock"
+        if lock is not None:
             resolved = code == 0 or (lock.exists() and lock.stat().st_mtime >= started)
             ignored = self.lock_check(key, lock) if resolved else []
             if ignored:
