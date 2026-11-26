@@ -1,0 +1,243 @@
+name: Studio hotfix artifact rehearsal
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/studio-hotfix-artifact-rehearsal.yml
+  workflow_dispatch:
+    inputs:
+      studio_tag:
+        description: Published Studio baseline tag
+        type: string
+        required: true
+      studio_sha:
+        description: Exact source commit of the Studio tag
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  STUDIO_TAG: ${{ inputs.studio_tag || '0.19.8' }}
+  STUDIO_SHA: ${{ inputs.studio_sha || '21274d093efc947024d8905b6044b8bebc270028' }}
+  WHEEL_LOCK: build/constraints/python-wheels-linux-x64.json
+
+jobs:
+  prepare:
+    name: Prepare release wheels once
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      artifact-id: ${{ steps.bundle.outputs.artifact-id }}
+      sdk-sha: ${{ steps.inputs.outputs.sdk-sha }}
+    steps:
+      - name: Check immutable Studio inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$STUDIO_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$STUDIO_SHA" =~ ^[0-9a-f]{40}$ ]]
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all-studio
+          ref: ${{ env.STUDIO_SHA }}
+          path: studio
+          fetch-tags: true
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Bind the tag and SDK source
+        id: inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C studio rev-parse "refs/tags/$STUDIO_TAG^{commit}")" = "$STUDIO_SHA"
+          python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          cohort = json.loads(Path("studio/build/runtime-cohort.json").read_text())
+          if cohort["schema"] != "nirs4all.studio.runtime-cohort.v1":
+              raise ValueError("Unsupported Studio runtime cohort")
+          sdk = cohort["sdk"]
+          if sdk["publication_status"] != "published-registry" or not re.fullmatch(r"[0-9a-f]{40}", sdk["source_sha"]):
+              raise ValueError("Expected a published SDK source commit")
+          lock = json.loads((Path("studio") / os.environ["WHEEL_LOCK"]).read_text())
+          for key, name in (("sdk", "nirs4all"), ("dag", "dag-ml"), ("core", "nirs4all-core")):
+              wheels = [wheel for wheel in lock["packages"] if wheel["name"] == name]
+              if len(wheels) != 1 or wheels[0]["version"] != cohort[key]["version"]:
+                  raise ValueError(f"Studio wheel lock does not select {name} from the runtime cohort")
+              if key == "sdk" and wheels[0]["sha256"] != sdk["wheel_sha256"]:
+                  raise ValueError("Studio wheel lock selects a different SDK artifact")
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
+              print("sdk-sha=" + sdk["source_sha"], file=output)
+          PY
+      - name: Stage Studio's locked wheels
+        run: node studio/scripts/build-wheelhouse.cjs --platform linux --arch x64
+      - name: Prepare the pinned PyOPLS source wheel for the offline input handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p payload/support
+          node <<'JS'
+          const { downloadVerified } = require("./studio/scripts/verified-download.cjs");
+          const { lockedPackages, readLock } = require("./studio/scripts/python-wheel-lock.cjs");
+          const entry = lockedPackages(readLock("linux-x64"), "offline").find(({ name }) => name === "pyopls");
+          if (!entry || !/^pyopls-[0-9.]+(?:post[0-9]+)?\.tar\.gz$/.test(entry.filename)) {
+            throw new Error("Expected the locked PyOPLS source distribution");
+          }
+          downloadVerified(entry.url, "payload/" + entry.filename, entry.sha256).catch((error) => {
+            console.error(error.message);
+            process.exitCode = 1;
+          });
+          JS
+          python -m pip wheel --no-deps --wheel-dir payload/support payload/pyopls-*.tar.gz
+          wheels=(payload/support/*.whl)
+          test "${#wheels[@]}" -eq 1
+          [[ "${wheels[0]}" == payload/support/pyopls-*-py3-none-any.whl ]]
+          rm payload/pyopls-*.tar.gz
+      - name: Bind the payload to the wheel lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          mv studio/backend-dist/wheels payload/wheels
+          cp "studio/$WHEEL_LOCK" payload/studio-wheel-lock.json
+          cd payload
+          sha256sum studio-wheel-lock.json wheels/*.whl support/*.whl > SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        id: bundle
+        with:
+          name: studio-linux-locked-runtime
+          path: payload/
+          if-no-files-found: error
+
+  qualify:
+    name: Qualify the retained Studio and SDK inputs
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all-studio
+          ref: ${{ env.STUDIO_SHA }}
+          path: studio
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all
+          ref: ${{ needs.prepare.outputs.sdk-sha }}
+          path: sdk
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.prepare.outputs.artifact-id }}
+          path: payload
+          digest-mismatch: error
+      - name: Stage the artifact through the Studio packaging entrypoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmp "studio/$WHEEL_LOCK" payload/studio-wheel-lock.json
+          (cd payload && sha256sum --strict -c SHA256SUMS)
+          mkdir -p studio/backend-dist
+          cp -r payload/wheels studio/backend-dist/wheels
+          printf '%s\n' 'globalThis.fetch = async () => { throw new Error("Registry fetch is disabled in the retained wheel staging check"); };' > deny-fetch.cjs
+          node --require ./deny-fetch.cjs studio/scripts/build-wheelhouse.cjs --platform linux --arch x64
+          diff -qr payload/wheels studio/backend-dist/wheels
+      - name: Install the transferred wheels and test the pinned SDK
+        shell: bash
+        env:
+          NIRS4ALL_REQUIRE_NATIVE_ARCHIVE_V2: '1'
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          cp sdk/tests/integration/api/test_installed_native_quickstart.py .
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          lock = json.loads(Path("payload/studio-wheel-lock.json").read_text())
+          Path("constraints.txt").write_text("".join(f"{p['name']}=={p['version']}\n" for p in lock["packages"]))
+          PY
+          python -m venv qualification
+          python=qualification/bin/python
+          "$python" -m pip install --only-binary=:all: -c constraints.txt --report qualification-install.json \
+            studio/backend-dist/wheels/*.whl payload/support/*.whl pytest
+          "$python" -m pip check
+          "$python" -I -m pytest -q -o 'markers=methods: requires Methods' --junitxml qualification-test.xml \
+            test_installed_native_quickstart.py::test_installed_quickstart_and_fresh_replay_without_native_overrides
+          "$python" - <<'PY'
+          from xml.etree import ElementTree
+
+          suite = ElementTree.parse("qualification-test.xml").getroot().find("testsuite")
+          if suite is None or any(suite.get(key) != value for key, value in {"tests": "1", "skipped": "0", "failures": "0", "errors": "0"}.items()):
+              raise ValueError("The installed native quickstart must execute and pass")
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: studio-linux-qualification
+          path: |
+            qualification-install.json
+            qualification-test.xml
+          if-no-files-found: error
+
+  promotion-rehearsal:
+    name: Reconcile the qualified artifact with published files
+    needs: [prepare, qualify]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.prepare.outputs.artifact-id }}
+          path: payload
+          digest-mismatch: error
+      - name: Verify exact publication bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd payload
+          sha256sum --strict -c SHA256SUMS
+          python - <<'PY'
+          import hashlib
+          import json
+          import urllib.request
+          from pathlib import Path
+          from urllib.parse import quote
+
+          lock = json.loads(Path("studio-wheel-lock.json").read_text())
+          required = dict(item.split("==", 1) for item in lock["requirements"]["required"])
+          files = {entry["filename"]: entry for entry in lock["packages"] if entry["name"] in required}
+          if {wheel.name for wheel in Path("wheels").iterdir()} != files.keys():
+              raise ValueError("Retained wheel set differs from the Studio lock")
+          for filename, entry in files.items():
+              with urllib.request.urlopen(
+                  f"https://pypi.org/pypi/{quote(entry['name'])}/{quote(entry['version'])}/json", timeout=30,
+              ) as response:
+                  matches = [file for file in json.load(response)["urls"] if file["filename"] == filename]
+              with Path("wheels", filename).open("rb") as wheel:
+                  digest = hashlib.file_digest(wheel, "sha256").hexdigest()
+              if len(matches) != 1 or digest != entry["sha256"] or digest != matches[0]["digests"]["sha256"]:
+                  raise ValueError(f"Qualified artifact does not match the published {filename}")
+              print(f"{filename} {digest}")
+          PY

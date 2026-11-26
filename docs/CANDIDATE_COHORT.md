@@ -215,3 +215,22 @@ Unknown changes, version-series changes and unconfirmed compatibility return
 The plan creates no release and provides no publication authority. Existing
 owner workflows continue to build and publish in their current order until
 they support consuming the planned artifacts and receipts.
+
+### Rehearse the retained artifact handoff
+
+Dispatch **Studio hotfix artifact rehearsal** with a published Studio tag and
+its exact commit. The workflow prepares the Linux x64 wheel inputs, uploads one
+artifact, then qualifies that artifact by ID in a separate job. The pull
+request check uses the published Studio 0.19.8 baseline.
+
+Studio's own wheelhouse staging command rechecks the transferred wheels with
+registry fetch disabled. The SDK test installs those exact files, uses the
+locked versions of indirect dependencies, and exercises native fit and cold
+replay in a fresh process. The producer builds the locked pure-Python PyOPLS
+wheel once. The qualification job installs binary wheels only.
+
+The last job downloads the qualified bundle again and reconciles each required
+wheel with the published PyPI digest. The test exercises a compile-free return
+to the selected artifact. It performs no registry writes and runs no Studio
+installer. A release candidate still needs its applicable owner and packaged
+platform gates.
