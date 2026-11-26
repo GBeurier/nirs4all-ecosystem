@@ -8,6 +8,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/weekly-retained-qualification.yml
+      - docs/contracts/release/cohort/friday-tagged.n4a.json
 
 permissions:
   contents: read
@@ -58,6 +59,12 @@ jobs:
           path: full-artifact-plan.json
           if-no-files-found: error
 
+  tagged-source:
+    uses: ./.github/workflows/candidate-cohort.yml
+    with:
+      manifest: docs/contracts/release/cohort/friday-tagged.n4a.json
+      qualification_only: true
+
   web:
     uses: ./.github/workflows/graph-io-web.yml
     with:
@@ -92,11 +99,12 @@ jobs:
 
   review:
     name: Weekend coverage and failures
-    needs: [baseline, web, studio, domains, release-contracts]
+    needs: [baseline, tagged-source, web, studio, domains, release-contracts]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     env:
       BASELINE: ${{ needs.baseline.result }}
+      TAGGED_SOURCE: ${{ needs.tagged-source.result }}
       WEB: ${{ needs.web.result }}
       STUDIO: ${{ needs.studio.result }}
       DOMAINS: ${{ needs.domains.result }}
@@ -109,6 +117,7 @@ jobs:
             echo '| Coverage | Outcome |'
             echo '| --- | --- |'
             printf '| Frozen graph and baseline | %s |\n' "$BASELINE"
+            printf '| Historical tagged source cohort (Linux, full tier) | %s |\n' "$TAGGED_SOURCE"
             printf '| Web served and offline using retained WASM | %s |\n' "$WEB"
             printf '| SDK and Studio Linux locked wheels | %s |\n' "$STUDIO"
             printf '| Domains browser-profile Rust tests with retained Preflight | %s |\n' "$DOMAINS"
@@ -116,4 +125,4 @@ jobs:
             echo
             echo 'The full graph is attached as a planning artifact. Owner-specific runtime adapters, remaining platforms and live promotion remain outside this run.'
           } >> "$GITHUB_STEP_SUMMARY"
-          test "$BASELINE,$WEB,$STUDIO,$DOMAINS,$CONTRACTS" = success,success,success,success,success
+          test "$BASELINE,$TAGGED_SOURCE,$WEB,$STUDIO,$DOMAINS,$CONTRACTS" = success,success,success,success,success,success

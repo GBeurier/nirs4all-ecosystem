@@ -243,6 +243,7 @@ class MemberSpec:
     python: str | None = None
     version: str | None = None
     note: str | None = None
+    expected_commit: str | None = None
 
     @property
     def published(self) -> bool:
@@ -263,7 +264,7 @@ def parse_member_value(key: str, value: Any, base: Path) -> MemberSpec:
         value = {"ref": value}
     if not isinstance(value, dict) or not isinstance(value.get("ref"), str) or not value["ref"]:
         raise CohortError(f"member {key}: an object with a non-empty 'ref' is required")
-    allowed = {"ref", "source", "native_ref", "python", "version", "note"}
+    allowed = {"ref", "source", "native_ref", "python", "version", "note", "expected_commit"}
     unknown = set(value) - allowed
     if unknown:
         raise CohortError(f"member {key}: unknown fields {sorted(unknown)}")
@@ -275,8 +276,15 @@ def parse_member_value(key: str, value: Any, base: Path) -> MemberSpec:
         raise CohortError(f"member {key}: python may only be 'published'")
     if ref == "published:latest" and value.get("version"):
         raise CohortError(f"member {key}: 'published:latest' and an explicit version are exclusive")
+    expected_commit = value.get("expected_commit")
+    if expected_commit is not None and (
+        not isinstance(expected_commit, str) or not COMMIT_RE.fullmatch(expected_commit)
+        or ref in PUBLISHED_REFS or ref.startswith("path:")
+    ):
+        raise CohortError(f"member {key}: 'expected_commit' needs a full commit SHA and a source ref")
     return MemberSpec(key=key, ref=ref, source=value.get("source"), native_ref=value.get("native_ref"),
-                      python=value.get("python"), version=value.get("version"), note=value.get("note"))
+                      python=value.get("python"), version=value.get("version"), note=value.get("note"),
+                      expected_commit=expected_commit)
 
 
 def load_manifest(path: Path | None, overrides: list[str], recipes: dict[str, Recipe]) -> dict[str, Any]:
@@ -424,6 +432,8 @@ class SourceManager:
 
     def snapshot_commit(self, recipe: Recipe, spec: MemberSpec, ref: str) -> Snapshot:
         repo, commit = self.resolve_commit(recipe, spec, ref)
+        if spec.expected_commit and commit != spec.expected_commit:
+            raise CohortError(f"{recipe.key}: {ref} resolved to {commit}, expected {spec.expected_commit}")
         listing = run(["git", "-C", str(repo), "ls-tree", "-r", "-z", "--full-tree", commit]).stdout
         desired: dict[str, tuple[str, str, Any]] = {}
         notes = []

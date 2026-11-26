@@ -15,6 +15,16 @@ on:
       - scripts/n4a_cohort.py
       - scripts/n4a_cohort_studio_e2e.py
       - docs/contracts/release/cohort/**
+  workflow_call:
+    inputs:
+      manifest:
+        description: Exact cohort manifest in the ecosystem repository
+        type: string
+        required: true
+      qualification_only:
+        description: Retain the test report without examining a publication plan
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       manifest:
@@ -70,7 +80,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: candidate-cohort-${{ github.ref }}
+  group: candidate-cohort-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -86,6 +96,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           path: nirs4all-ecosystem
+          persist-credentials: false
       - name: Free disk space
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
@@ -109,7 +120,7 @@ jobs:
       - name: Write the cohort manifest
         working-directory: nirs4all-ecosystem
         env:
-          MANIFEST: ${{ github.event_name == 'pull_request' && 'docs/contracts/release/cohort/hosted-check.n4a.json' || inputs.manifest }}
+          MANIFEST: ${{ inputs.manifest || (github.event_name == 'pull_request' && 'docs/contracts/release/cohort/hosted-check.n4a.json') || '' }}
           PIN_ALIGNMENT: ${{ inputs.pin_alignment || '' }}
           TIER: ${{ inputs.tier || '' }}
           REF_methods: ${{ inputs.methods }}
@@ -158,7 +169,10 @@ jobs:
             python scripts/n4a_cohort.py summary || true
             echo '```'
           } >> "${GITHUB_STEP_SUMMARY}"
-          python scripts/n4a_cohort.py release-plan --report "${N4A_COHORT_BUILD_ROOT}/latest-report.json" --json-out "${N4A_COHORT_BUILD_ROOT}/release-plan.json" || true
+      - name: Inspect the release plan
+        if: ${{ always() && !inputs.qualification_only }}
+        working-directory: nirs4all-ecosystem
+        run: python scripts/n4a_cohort.py release-plan --report "${N4A_COHORT_BUILD_ROOT}/latest-report.json" --json-out "${N4A_COHORT_BUILD_ROOT}/release-plan.json" || true
       - name: Upload the report and logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v7
