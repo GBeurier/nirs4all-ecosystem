@@ -1,0 +1,195 @@
+name: Graph qualification - IO browser and Web
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/graph-io-web.yml
+      - docs/contracts/release/artifact-graph.n4a.json
+      - scripts/n4a_io_web_candidate.py
+  workflow_call:
+    inputs:
+      mode:
+        type: string
+        default: retained
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Test retained Web assets or build and test an IO browser candidate
+        type: choice
+        options: [candidate, retained]
+        default: candidate
+      io_sha:
+        description: Exact IO candidate commit (empty uses the graph's reviewed source)
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.resolve.outputs.mode }}
+      web-sha: ${{ steps.resolve.outputs.web-sha }}
+      io-sha: ${{ steps.resolve.outputs.io-sha }}
+      io-base: ${{ steps.resolve.outputs.io-base }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Select the graph path and pin source
+        id: resolve
+        shell: bash
+        env:
+          REQUESTED_MODE: ${{ inputs.mode || 'candidate' }}
+          REQUESTED_IO_SHA: ${{ inputs.io_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$REQUESTED_MODE" == candidate || "$REQUESTED_MODE" == retained ]]
+          graph=docs/contracts/release/artifact-graph.n4a.json
+          web=$(jq -er '.reviewed_sources["nirs4all-web"]' "$graph")
+          io_base=$(jq -er '.reviewed_sources["nirs4all-io"]' "$graph")
+          io=${REQUESTED_IO_SHA:-$io_base}
+          [[ "$web" =~ ^[a-f0-9]{40}$ && "$io_base" =~ ^[a-f0-9]{40}$ && "$io" =~ ^[a-f0-9]{40}$ ]]
+          python3 scripts/n4a_artifact_graph.py --artifact io.browser > affected-plan.json
+          jq -e '
+            ([.builds[] | select(.artifact == "web.site" or .artifact == "web.offline-app")] | length == 2)
+            and ([.builds[] | select(.artifact == "web.site" or .artifact == "web.offline-app")
+                  | .candidate_inputs == ["io.browser"]] | all)
+          ' affected-plan.json >/dev/null
+          printf 'mode=%s\nweb-sha=%s\nio-sha=%s\nio-base=%s\n' "$REQUESTED_MODE" "$web" "$io" "$io_base" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: io-browser-affected-plan
+          path: affected-plan.json
+          if-no-files-found: error
+
+  build-io-browser:
+    if: needs.plan.outputs.mode == 'candidate'
+    needs: plan
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    outputs:
+      artifact-id: ${{ steps.payload.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all-io
+          ref: ${{ needs.plan.outputs.io-sha }}
+          fetch-depth: 0
+          path: source-io
+          persist-credentials: false
+      - name: Refuse changes outside the browser-only source path
+        env:
+          IO_BASE: ${{ needs.plan.outputs.io-base }}
+        run: python3 scripts/n4a_io_web_candidate.py check-source source-io "$IO_BASE"
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.96.0'
+          targets: wasm32-unknown-unknown
+      - uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: v0.15.0
+      - name: Apply the owner reproducible build environment
+        run: python3 source-io/scripts/configure_release_env.py
+      - name: Build the IO browser binding once
+        working-directory: source-io
+        run: wasm-pack build bindings/wasm --target web --release -- --locked
+      - name: Freeze browser candidate
+        env:
+          IO_BASE: ${{ needs.plan.outputs.io-base }}
+        run: python3 scripts/n4a_io_web_candidate.py pack source-io "$IO_BASE" io-browser-candidate
+      - uses: actions/upload-artifact@v7
+        id: payload
+        with:
+          name: io-browser-candidate
+          path: io-browser-candidate/
+          if-no-files-found: error
+
+  qualify-web:
+    needs: [plan, build-io-browser]
+    if: ${{ !cancelled() && needs.plan.result == 'success' && (needs.plan.outputs.mode == 'retained' || needs.build-io-browser.result == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all-web
+          ref: ${{ needs.plan.outputs.web-sha }}
+          path: source-web
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: source-web/web-app/package-lock.json
+      - uses: actions/download-artifact@v8
+        if: needs.plan.outputs.mode == 'candidate'
+        with:
+          artifact-ids: ${{ needs.build-io-browser.outputs.artifact-id }}
+          path: io-browser-candidate
+          digest-mismatch: error
+      - name: Verify exact IO candidate and project it into Web
+        if: needs.plan.outputs.mode == 'candidate'
+        env:
+          IO_SHA: ${{ needs.plan.outputs.io-sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/n4a_io_web_candidate.py stage source-web/web-app io-browser-candidate "$IO_SHA"
+          cd source-web/web-app
+          node --import 'data:text/javascript,globalThis.fetch=()=>{throw%20new%20Error("Unexpected%20registry%20fetch")}' scripts/stage-io-wasm.mjs
+          node scripts/sync-component-legal.mjs
+      - name: Assemble the Web deliverables with the locked WASM inputs
+        working-directory: source-web/web-app
+        run: |
+          npm ci
+          npm run typecheck
+          npm run build
+          npm run build:single
+      - name: Qualify the served multimodal path
+        working-directory: source-web/web-app
+        run: |
+          npm run smoke -- --out-dir dist --profile strict-wasm \
+            ui-startup-smoke.mjs multimodal-smoke.mjs multimodal-builder-smoke.mjs multimodal-editor-smoke.mjs
+      - name: Qualify the offline deliverable
+        working-directory: source-web/web-app
+        run: SMOKE_URL="file://$PWD/dist-single/index.html" node tests/smoke.mjs
+      - name: Verify the candidate WASM in the deliverable bytes
+        if: needs.plan.outputs.mode == 'candidate'
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=$(jq -er '.files["nirs4all_io_wasm_bg.wasm"].sha256' io-browser-candidate/receipt.json)
+          assets=(source-web/web-app/dist/assets/nirs4all_io_wasm_bg-*.wasm)
+          test "${#assets[@]}" -eq 1
+          printf '%s  %s\n' "$expected" "${assets[0]}" | sha256sum --strict -c
+          python3 - <<'PY'
+          import base64
+          from pathlib import Path
+
+          wasm = Path("io-browser-candidate/nirs4all_io_wasm_bg.wasm").read_bytes()
+          html = Path("source-web/web-app/dist-single/index.html").read_bytes()
+          if base64.b64encode(wasm) not in html:
+              raise SystemExit("Offline Web deliverable does not contain the exact IO candidate")
+          PY
+      - name: Freeze qualified Web deliverables
+        if: needs.plan.outputs.mode == 'candidate'
+        run: |
+          mkdir web-qualification
+          tar -C source-web/web-app -cf web-qualification/web-deliverables.tar dist dist-single
+          cd web-qualification
+          sha256sum web-deliverables.tar > SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        if: needs.plan.outputs.mode == 'candidate'
+        with:
+          name: qualified-web-deliverables
+          path: web-qualification/
+          if-no-files-found: error

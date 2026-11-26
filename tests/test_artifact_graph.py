@@ -158,3 +158,28 @@ def test_release_target_bindings_reference_declared_artifacts():
         {"packageId": "nirs4all-io", "registry": "npm", "name": "@nirs4all/io-wasm"}
     ]
     assert "io.browser" not in bindings["artifacts"]
+
+
+def test_browser_candidate_rejects_renames_from_other_build_paths(tmp_path):
+    def git(*args):
+        return subprocess.check_output(["git", "-C", str(tmp_path), *args], text=True).strip()
+
+    git("init", "-q")
+    browser = tmp_path / "bindings/wasm"
+    (browser / "src").mkdir(parents=True)
+    original = browser / "build.rs"
+    original.write_text("fn main() {}\n")
+    git("add", ".")
+    author = ("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid")
+    git(*author, "commit", "-qm", "Initial source")
+    baseline = git("rev-parse", "HEAD")
+    git("mv", "bindings/wasm/build.rs", "bindings/wasm/src/build.rs")
+    git(*author, "commit", "-qm", "Move the build script into the browser module")
+    helper = ROOT / "scripts/n4a_io_web_candidate.py"
+    rejected = subprocess.run(
+        [sys.executable, str(helper), "check-source", str(tmp_path), baseline],
+        check=False, capture_output=True, text=True,
+    )
+    assert rejected.returncode != 0
+    assert "Browser-only runner cannot qualify" in rejected.stderr
+    assert "bindings/wasm/build.rs" in rejected.stderr
