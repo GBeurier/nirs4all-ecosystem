@@ -94,6 +94,22 @@ def inspect(item, baseline):
     return repo, head, comparison_paths(comparison)
 
 
+def test_routes(artifacts, ids):
+    """Keep a full owner gate for each surface without a qualified narrower suite."""
+    routes = {}
+    for key in sorted(ids):
+        artifact = artifacts[key]
+        repo = artifact["repository"]
+        if key.endswith(".native-cli"):
+            suite = "cargo:" + Path(artifact["evidence"][0]).parent.name
+        elif key == "tools.python-wheel":
+            suite = "pytest:tools"
+        else:
+            suite = "owner-gates"
+        routes.setdefault(repo, {}).setdefault(suite, []).append(key)
+    return routes
+
+
 def cli_packages(artifacts, origins, heads, selected):
     result = []
     for key in sorted(selected):
@@ -110,6 +126,7 @@ def cli_packages(artifacts, origins, heads, selected):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--all-test-routes", action="store_true")
     parser.add_argument("--weekly-cli", action="store_true", help="Select all CLI packages at the pinned gitlinks")
     parser.add_argument("--cursor", type=Path)
     parser.add_argument("--cargo-inventory", type=Path, help="Cache pinned Cargo manifests for public scans")
@@ -122,6 +139,9 @@ def main():
     rules = load_rules(artifacts)
     baseline = json.loads(DEFAULT_GRAPH.read_text())["reviewed_sources"]
     origins = repositories()
+    if args.all_test_routes:
+        args.output.write_text(json.dumps(test_routes(artifacts, artifacts), indent=2) + "\n")
+        return
     if args.weekly_cli:
         rows = subprocess.check_output(["git", "-C", str(ROOT), "ls-tree", "HEAD"], text=True).splitlines()
         pins = {row.split()[3]: row.split()[2] for row in rows if row.startswith("160000 commit ")}
@@ -157,6 +177,9 @@ def main():
         "unwatched_repositories": sorted(set(baseline) - origins.keys()),
         "plan": plan(artifacts, order, roots, set(), full=False) if roots else None,
     }
+    result["test_suites"] = test_routes(artifacts, [
+        row["artifact"] for row in (result["plan"] or {}).get("qualification", [])
+    ])
     if args.cargo_inventory and args.repository:
         parser.error("--cargo-inventory requires a public scan")
     if args.cargo_inventory and sources:

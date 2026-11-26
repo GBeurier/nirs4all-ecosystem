@@ -127,3 +127,32 @@ commits pinned by Ecosystem's gitlinks. It runs alongside the retained Friday
 workflow at 02:15 Saturday in Europe/Paris. The source list, package tests and
 Windows binaries are available from the run. These package checks supplement
 the product qualification documented above.
+
+## Test selection and refresh
+
+Each impact report includes the affected artifacts grouped by owner test suite
+in `test_suites`. A surface without a verified narrower route keeps its owner
+gates. These entries express required coverage, including for local Server
+admission. They do not constitute a successful test run. The native CLI
+routes run the selected Cargo package tests under the conditions above.
+
+**Test impact coverage** produces the complete artifact-to-suite inventory
+daily at 04:35 Europe/Paris. For the Tools Python profile it also runs the
+owner suite with pytest-cov test contexts and publishes a line-to-test graph
+bound to the Git revision, Python environment, OS and architecture. On a Tools
+change the weekday workflow tries the graph for the exact base. A measured
+change inside a function can select individual pytest node IDs. Missing
+evidence, changes to test files, fixtures, package metadata or shared
+initialization, and unmatched environments run the full suite and refresh the
+graph. The receipt lists the actual selection and the reason. Each daily full
+run exercises tests outside recent fast selections.
+
+The collector also runs during implementation in a clean owner checkout with
+its test dependencies installed. Store outputs outside the checkout.
+
+```sh
+python scripts/n4a_test_impact.py measure --checkout ../nirs4all-tools \
+  --graph /tmp/tools-coverage.json --receipt /tmp/tools-full.json
+python scripts/n4a_test_impact.py run --checkout ../nirs4all-tools --base "$BASE_SHA" \
+  --graph /tmp/tools-coverage.json --receipt /tmp/tools-affected.json
+```
