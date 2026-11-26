@@ -13,6 +13,7 @@ import re
 import subprocess
 import sys
 import tempfile
+from xml.etree import ElementTree
 
 
 def git(repo, *args):
@@ -30,14 +31,18 @@ def measure(repo, source):
 
     with tempfile.TemporaryDirectory() as tmp:
         data_file = Path(tmp) / ".coverage"
+        junit = Path(tmp) / "tests.xml"
         env = {**os.environ, "COVERAGE_FILE": str(data_file)}
         subprocess.run([sys.executable, "-m", "pytest", "-q", f"--cov={source}", "--cov-context=test",
-                        "--cov-report="], cwd=repo, env=env, check=True)
+                        "--cov-report=", f"--junitxml={junit}"], cwd=repo, env=env, check=True)
+        cases = ElementTree.parse(junit).findall(".//testcase")
+        counts = {"collected": len(cases), "skipped": sum(c.find("skipped") is not None for c in cases)}
         data = CoverageData(basename=str(data_file))
         data.read()
         tracked = set(os.fsdecode(git(repo, "ls-files", "-z")).split("\0"))
         files = {}
-        for filename in data.measured_files():
+        groups = {}
+        for filename in sorted(data.measured_files()):
             path = (repo / filename).resolve()
             if not path.is_relative_to(repo / source):
                 continue
@@ -49,10 +54,12 @@ def measure(repo, source):
             lines = {}
             for line, contexts in data.contexts_by_lineno(filename).items():
                 if all(c.endswith("|run") for c in contexts) and contexts:
-                    lines[str(line)] = sorted({c.rsplit("|", 1)[0] for c in contexts})
+                    group = tuple(sorted({c.rsplit("|", 1)[0] for c in contexts}))
+                    lines[str(line)] = groups.setdefault(group, len(groups))
             files[rel] = lines
-    return {"schema": "n4a.pytest-impact/v1", "commit": git(repo, "rev-parse", "HEAD").decode().strip(),
-            "source": source, "environment": environment(), "files": files}
+    return {"schema": "n4a.pytest-impact/v2", "commit": git(repo, "rev-parse", "HEAD").decode().strip(),
+            "source": source, "environment": environment(), "files": files,
+            "groups": list(groups), "suite": counts}
 
 
 def function_lines(text):
@@ -67,7 +74,7 @@ def function_lines(text):
 
 def selection(repo, base, snapshot, source):
     all_tests = lambda reason: {"scope": "suite", "reason": reason, "tests": []}
-    if (snapshot.get("schema") != "n4a.pytest-impact/v1" or snapshot.get("commit") != base or
+    if (snapshot.get("schema") != "n4a.pytest-impact/v2" or snapshot.get("commit") != base or
             snapshot.get("source") != source or snapshot.get("environment") != environment()):
         return all_tests("missing matching coverage for this base and environment")
     raw = git(repo, "diff", "--no-renames", "--name-only", "-z", base, "HEAD", "--")
@@ -91,7 +98,7 @@ def selection(repo, base, snapshot, source):
                     not set(new_lines) <= new_body or any(str(i) not in edges for i in old_lines)):
                 return all_tests("new, removed, shared or unmeasured lines")
             for line in old_lines:
-                selected.update(edges[str(line)])
+                selected.update(snapshot["groups"][edges[str(line)]])
     if not selected:
         return all_tests("no measured tests for the diff")
     return {"scope": "tests", "reason": "executed changed lines at the qualified base", "tests": sorted(selected)}
@@ -120,6 +127,7 @@ def main():
     if decision["scope"] == "suite":
         graph = measure(repo, args.source)
         args.graph.write_text(json.dumps(graph, sort_keys=True) + "\n")
+        decision["suite"] = graph["suite"]
     else:
         subprocess.run([sys.executable, "-m", "pytest", "-q", "--", *decision["tests"]], cwd=repo, check=True)
     decision.update({"base": args.base, "head": git(repo, "rev-parse", "HEAD").decode().strip()})

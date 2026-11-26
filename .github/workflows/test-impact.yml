@@ -23,6 +23,26 @@ permissions:
   contents: read
 
 jobs:
+  cargo-inventory:
+    if: inputs.tools_base == ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Refresh declared test targets at all public default-branch revisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/n4a_weekday_changes.py --full-cargo-tests --cursor heads.json \
+            --cargo-inventory manifests.json --output result.json
+          jq .cargo_test_inventory result.json > cargo-test-targets.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: public-cargo-test-targets
+          path: cargo-test-targets.json
+          if-no-files-found: error
+
   coverage:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -50,7 +70,7 @@ jobs:
         if: inputs.tools_base != ''
         with:
           path: tools-coverage.json
-          key: tools-pytest-v1-${{ inputs.tools_base }}
+          key: tools-pytest-v2-${{ inputs.tools_base }}
       - id: tests
         env:
           BASE: ${{ inputs.tools_base }}
@@ -68,7 +88,7 @@ jobs:
         if: github.event_name != 'pull_request' && steps.tests.outputs.scope == 'suite'
         with:
           path: tools-coverage.json
-          key: tools-pytest-v1-${{ steps.tests.outputs.head }}
+          key: tools-pytest-v2-${{ steps.tests.outputs.head }}
       - name: Enumerate artifact-to-suite routes across the ecosystem
         run: python ecosystem/scripts/n4a_weekday_changes.py --all-test-routes --output suite-routes.json
       - uses: actions/upload-artifact@v7

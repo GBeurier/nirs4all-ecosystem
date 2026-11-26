@@ -1,10 +1,35 @@
 """Compute reverse Cargo manifest dependencies at exact public repository revisions."""
 
 import base64
+import fnmatch
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import PurePosixPath
 import posixpath
+import re
 import tomllib
+
+
+def cargo_test_targets(path, manifest, files):
+    folder = PurePosixPath(path).parent
+    package = manifest.get("package", {})
+    targets = set()
+    lib = manifest.get("lib", {})
+    if lib.get("test", True) and str(folder / lib.get("path", "src/lib.rs")) in files:
+        targets.add("--lib")
+    for test in manifest.get("test", []):
+        if test.get("test", True):
+            targets.add("--test " + test["name"])
+    if package.get("autotests", True):
+        prefix = str(folder / "tests") + "/"
+        for name in files:
+            if not name.startswith(prefix):
+                continue
+            parts = PurePosixPath(name[len(prefix):]).parts
+            if len(parts) == 1 and parts[0].endswith(".rs"):
+                targets.add("--test " + parts[0][:-3])
+            elif len(parts) == 2 and parts[1] == "main.rs":
+                targets.add("--test " + parts[0])
+    return sorted(targets)
 
 
 def fetch_manifests(api, origin, sha):
@@ -13,11 +38,14 @@ def fetch_manifests(api, origin, sha):
         raise ValueError(f"incomplete manifest inventory: {origin}@{sha}")
     files = [f for f in tree["tree"] if PurePosixPath(f["path"]).name == "Cargo.toml" and f["type"] == "blob"]
 
+    paths = {f["path"] for f in tree["tree"] if f["type"] == "blob"}
+
     def read(entry):
         blob = api(f"repos/{origin}/git/blobs/{entry['sha']}")
         if blob["encoding"] != "base64":
             raise ValueError(f"unsupported manifest encoding: {origin}/{entry['path']}")
         manifest = tomllib.loads(base64.b64decode(blob["content"]).decode())
+        manifest["_test_targets"] = cargo_test_targets(entry["path"], manifest, paths)
         return entry["path"], manifest
 
     with ThreadPoolExecutor(max_workers=4) as pool:
@@ -106,9 +134,22 @@ def affected_crates(inventory, origins, changes):
         for consumer in reverse.get(pending.pop(), set()) - impacted:
             impacted.add(consumer)
             pending.append(consumer)
+    local_tests = []
+    if len(changes) == 1:
+        repo, (paths, _) = next(iter(changes.items()))
+        members = inventory[repo].get("Cargo.toml", {}).get("workspace", {}).get("members", [])
+        if paths and all(re.fullmatch(r"crates/[\w-]+/(src|tests)/.+\.rs", p) for p in paths):
+            for key in sorted(impacted):
+                owner, path, manifest, _ = packages[key]
+                relative = str(PurePosixPath(path).parent)
+                if (owner == repo and re.fullmatch(r"crates/[\w-]+", relative)
+                        and any(fnmatch.fnmatchcase(relative, pattern) for pattern in members)):
+                    local_tests.append(manifest["package"]["name"])
     return {
+        "local_workspace_tests": sorted(set(local_tests)),
         "scope": "declared-cargo-dependencies-all-targets-and-features",
         "roots": sorted(roots),
-        "crates": {k: {"name": packages[k][2]["package"]["name"], "consumers": sorted(reverse.get(k, set()))}
+        "crates": {k: {"name": packages[k][2]["package"]["name"], "consumers": sorted(reverse.get(k, set())),
+                       "declared_test_targets": packages[k][2].get("_test_targets", [])}
                    for k in sorted(impacted)},
     }

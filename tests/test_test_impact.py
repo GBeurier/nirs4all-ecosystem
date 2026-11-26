@@ -23,8 +23,8 @@ def test_measured_change_selects_tests_and_unknown_changes_run_the_suite(tmp_pat
     git("add", ".")
     git("commit", "-qm", "base")
     base = git("rev-parse", "HEAD")
-    graph = {"schema": "n4a.pytest-impact/v1", "source": "src", "commit": base,
-             "environment": environment(), "files": {"src/engine.py": {"2": ["tests/test_engine.py::test_result"]}}}
+    graph = {"schema": "n4a.pytest-impact/v2", "source": "src", "commit": base,
+             "environment": environment(), "groups": [["tests/test_engine.py::test_result"]], "files": {"src/engine.py": {"2": 0}}}
     code.write_text("def result():\n    return 4\n")
     git("commit", "-qam", "change")
     assert selection(tmp_path, base, graph, "src")["tests"] == ["tests/test_engine.py::test_result"]

@@ -63,6 +63,9 @@ def run(producer, consumer, manifests, package, tests):
         if (len(active) != 1 or Path(active[0]["manifest_path"]).resolve() != path or
                 len(rows) != 1 or "source" in rows[0]):
             raise ValueError(f"consumer did not resolve the exact candidate {name}")
+        previous = next(p["version"] for p in before if p["name"] == name)
+        if previous.split(".")[:2] != rows[0]["version"].split(".")[:2]:
+            raise ValueError(f"{name}: new version series requires consumer admission")
     # Keep Cargo's exit status and owner test output visible in the job.
     command = ["cargo", *config, "test", "--locked", "--no-default-features", "-p", package]
     for test in tests:

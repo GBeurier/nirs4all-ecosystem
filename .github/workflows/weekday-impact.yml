@@ -25,6 +25,7 @@ jobs:
   impact:
     runs-on: ubuntu-latest
     outputs:
+      local-cargo: ${{ steps.plan.outputs.local-cargo }}
       tools-base: ${{ steps.plan.outputs.tools-base }}
       tools-head: ${{ steps.plan.outputs.tools-head }}
       packages: ${{ steps.plan.outputs.packages }}
@@ -48,8 +49,8 @@ jobs:
         if: github.event_name != 'pull_request'
         with:
           path: .impact/
-          key: impact-v2-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: impact-v2-
+          key: impact-v3-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: impact-v3-
       - name: Compare exact public revisions
         id: plan
         env:
@@ -57,6 +58,7 @@ jobs:
         run: |
           python scripts/n4a_weekday_changes.py --output impact.json --cursor .impact/heads.json --cargo-inventory .impact/manifests.json
           jq -r '.sources["nirs4all-tools"] | "tools-base="+(.base // ""),"tools-head="+(.head // "")' impact.json >> "$GITHUB_OUTPUT"
+          jq -r '"local-cargo=" + (.local_cargo_job | tojson)' impact.json >> "$GITHUB_OUTPUT"
           jq -cr '"packages=" + (.locked_cli_candidates | tojson)' impact.json >> "$GITHUB_OUTPUT"
           jq -r '"changed=" + ((.sources | length > 0) | tostring)' impact.json >> "$GITHUB_OUTPUT"
           jq -r '"domains=" + (([.plan.builds[]? | select(.artifact == "domains.rust") | .candidate_inputs[] | select(. == "preflight.rust-crates")] | length > 0) | tostring)' impact.json >> "$GITHUB_OUTPUT"
@@ -123,6 +125,35 @@ jobs:
     with:
       packages: ${{ needs.impact.outputs.packages }}
 
+  local-cargo:
+    needs: impact
+    if: needs.impact.outputs.local-cargo != 'null'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ fromJSON(needs.impact.outputs.local-cargo).origin }}
+          ref: ${{ fromJSON(needs.impact.outputs.local-cargo).sha }}
+          path: source
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.96.0'
+      - name: Stage Datasets owner dependencies
+        working-directory: source
+        if: fromJSON(needs.impact.outputs.local-cargo).origin == 'GBeurier/nirs4all-datasets'
+        run: bash scripts/ensure_rust_deps.sh
+      - name: Run affected workspace packages together
+        working-directory: source
+        shell: python
+        env:
+          JOB: ${{ needs.impact.outputs.local-cargo }}
+        run: |
+          import json, os, subprocess
+          packages = json.loads(os.environ["JOB"])["packages"]
+          subprocess.run(["cargo", "test", "--locked", *[arg for p in packages for arg in ("-p", p)]], check=True)
+
   tools-tests:
     needs: impact
     if: needs.impact.outputs.tools-base != ''
@@ -132,13 +163,14 @@ jobs:
       tools_head: ${{ needs.impact.outputs.tools-head }}
 
   checkpoint:
-    needs: [impact, domains, windows-cli, tools-tests]
+    needs: [impact, domains, windows-cli, local-cargo, tools-tests]
     if: >-
       ${{ !cancelled() && github.event_name != 'pull_request' &&
           needs.impact.result == 'success' && needs.impact.outputs.changed == 'true' &&
           (needs.domains.result == 'success' || needs.domains.result == 'skipped') &&
           (needs.windows-cli.result == 'success' || needs.windows-cli.result == 'skipped') &&
-          (needs.tools-tests.result == 'success' || needs.tools-tests.result == 'skipped') }}
+          (needs.tools-tests.result == 'success' || needs.tools-tests.result == 'skipped') &&
+          (needs.local-cargo.result == 'success' || needs.local-cargo.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v8
@@ -148,4 +180,4 @@ jobs:
       - uses: actions/cache/save@v4
         with:
           path: .impact/
-          key: impact-v2-${{ github.run_id }}-${{ github.run_attempt }}
+          key: impact-v3-${{ github.run_id }}-${{ github.run_attempt }}

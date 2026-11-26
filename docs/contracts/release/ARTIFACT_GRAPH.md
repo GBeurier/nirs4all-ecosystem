@@ -156,3 +156,11 @@ python scripts/n4a_test_impact.py measure --checkout ../nirs4all-tools \
 python scripts/n4a_test_impact.py run --checkout ../nirs4all-tools --base "$BASE_SHA" \
   --graph /tmp/tools-coverage.json --receipt /tmp/tools-affected.json
 ```
+
+The daily run also inventories Rust library and integration test targets from
+the actual manifests and test trees of all public members. Each entry retains
+the repository commit. A weekday change confined to Rust sources or tests
+under a single owner's `crates/` selects its affected native workspace
+members and runs them together with one locked Cargo invocation. Cargo
+supplies their unit, integration and documentation tests. Cross-repository
+profiles that require candidate substitution keep their separate gates.

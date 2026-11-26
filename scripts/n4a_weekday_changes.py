@@ -126,6 +126,7 @@ def cli_packages(artifacts, origins, heads, selected):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--full-cargo-tests", action="store_true", help="Refresh the public Cargo test inventory")
     parser.add_argument("--all-test-routes", action="store_true")
     parser.add_argument("--weekly-cli", action="store_true", help="Select all CLI packages at the pinned gitlinks")
     parser.add_argument("--cursor", type=Path)
@@ -182,7 +183,9 @@ def main():
     ])
     if args.cargo_inventory and args.repository:
         parser.error("--cargo-inventory requires a public scan")
-    if args.cargo_inventory and sources:
+    if args.full_cargo_tests and not args.cargo_inventory:
+        parser.error("--full-cargo-tests requires --cargo-inventory")
+    if args.cargo_inventory and (sources or args.full_cargo_tests):
         from n4a_crate_impact import affected_crates, fetch_manifests
 
         cache = json.loads(args.cargo_inventory.read_text()) if args.cargo_inventory.exists() else {}
@@ -191,6 +194,17 @@ def main():
                 cache[repo] = {"sha": sha, "manifests": fetch_manifests(api, origins[repo], sha)}
         inventory = {repo: cache[repo]["manifests"] for repo in heads}
         result["cargo"] = affected_crates(inventory, origins, crate_changes)
+        if args.full_cargo_tests:
+            result["cargo_test_inventory"] = {
+                repo: {"commit": heads[repo], "packages": {
+                    path: {"package": m["package"]["name"], "test_targets": m["_test_targets"]}
+                    for path, m in manifests.items() if "package" in m
+                }} for repo, manifests in inventory.items()
+            }
+        packages = result["cargo"]["local_workspace_tests"]
+        if packages:
+            repo = next(iter(sources))
+            result["local_cargo_job"] = {"origin": origins[repo], "sha": heads[repo], "packages": packages}
         args.cargo_inventory.parent.mkdir(parents=True, exist_ok=True)
         args.cargo_inventory.write_text(json.dumps(cache))
     if not args.repository:
@@ -200,6 +214,11 @@ def main():
                       if not r["candidate_inputs"] and r["artifact"] in roots
                       and sources[r["repository"]]["scope"] == "paths"]
         result["locked_cli_candidates"] = cli_packages(artifacts, origins, heads, candidates)
+        if job := result.get("local_cargo_job"):
+            windows_packages = {r["package"] for r in result["locked_cli_candidates"]}
+            job["packages"] = [p for p in job["packages"] if p not in windows_packages]
+            if not job["packages"]:
+                del result["local_cargo_job"]
     args.output.write_text(json.dumps(result, indent=2) + "\n")
     if not args.repository:
         args.cursor.parent.mkdir(parents=True, exist_ok=True)

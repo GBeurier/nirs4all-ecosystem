@@ -107,3 +107,17 @@ def test_cli_source_selects_only_the_product_that_ships_it():
         result = plan(ARTIFACTS, ORDER, roots, set(), full=False)
         assert scope == "paths"
         assert [row["artifact"] for row in result["builds"]] == [artifact]
+
+
+def test_rust_inventory_records_real_integration_targets_and_deduplicates_workspace_tests():
+    from n4a_crate_impact import affected_crates, cargo_test_targets
+
+    path = "crates/native/Cargo.toml"
+    files = {"crates/native/src/lib.rs", "crates/native/tests/io.rs",
+             "crates/native/tests/support/mod.rs", "crates/native/tests/group/main.rs"}
+    m = {"package": {"name": "native"}, "test": [{"name": "offline", "path": "checks/offline.rs"}]}
+    assert cargo_test_targets(path, m, files) == ["--lib", "--test group", "--test io", "--test offline"]
+    manifests = {"Cargo.toml": {"workspace": {"members": ["crates/*"]}}, path: m}
+    result = affected_crates({"owner": manifests}, {"owner": "Org/owner"},
+                             {"owner": (["crates/native/src/lib.rs", "crates/native/tests/io.rs"], "paths")})
+    assert result["local_workspace_tests"] == ["native"]
