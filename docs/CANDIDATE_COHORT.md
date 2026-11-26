@@ -231,6 +231,8 @@ wheel once. The qualification job installs binary wheels only.
 
 The last job downloads the qualified bundle again and reconciles each required
 wheel with the published PyPI digest. The test exercises a compile-free return
-to the selected artifact. It performs no registry writes and runs no Studio
-installer. A release candidate still needs its applicable owner and packaged
-platform gates.
+to the selected artifact. Enable `rehearse_retry` on a manual dispatch to fail
+the first attempt after verification. Rerun the failed job to confirm that the
+producer and qualifier remain on the original attempt. The workflow performs
+no registry writes and runs no Studio installer. A release candidate still
+needs its applicable owner and packaged platform gates.

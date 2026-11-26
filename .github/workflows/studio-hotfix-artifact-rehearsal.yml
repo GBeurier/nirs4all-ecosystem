@@ -14,6 +14,10 @@ on:
         description: Exact source commit of the Studio tag
         type: string
         required: true
+      rehearse_retry:
+        description: Fail the first promotion attempt after verifying the artifact
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -241,3 +245,8 @@ jobs:
                   raise ValueError(f"Qualified artifact does not match the published {filename}")
               print(f"{filename} {digest}")
           PY
+      - name: Simulate a late delivery failure
+        if: github.event_name == 'workflow_dispatch' && inputs.rehearse_retry && github.run_attempt == '1'
+        run: |
+          echo 'Simulated failure after the qualified publication bytes were verified.'
+          exit 1
