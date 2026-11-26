@@ -1,0 +1,117 @@
+name: Weekly retained artifact qualification
+
+on:
+  schedule:
+    - cron: '15 2 * * 6'
+      timezone: Europe/Paris
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/weekly-retained-qualification.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekly-retained-qualification-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    outputs:
+      studio-sha: ${{ steps.pins.outputs.studio-sha }}
+      studio-tag: ${{ steps.studio.outputs.studio-tag }}
+      domains-sha: ${{ steps.pins.outputs.domains-sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Freeze the reviewed baseline and enumerate full coverage
+        id: pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          graph=docs/contracts/release/artifact-graph.n4a.json
+          studio=$(jq -er '.reviewed_sources["nirs4all-studio"]' "$graph")
+          domains=$(jq -er '.reviewed_sources["nirs4all-domains"]' "$graph")
+          [[ "$studio" =~ ^[0-9a-f]{40}$ && "$domains" =~ ^[0-9a-f]{40}$ ]]
+          printf 'studio-sha=%s\ndomains-sha=%s\n' "$studio" "$domains" >> "$GITHUB_OUTPUT"
+          python3 scripts/n4a_artifact_graph.py --full > full-artifact-plan.json
+      - uses: actions/checkout@v7
+        with:
+          repository: GBeurier/nirs4all-studio
+          ref: ${{ steps.pins.outputs.studio-sha }}
+          path: retained-studio
+          persist-credentials: false
+      - name: Resolve the exact Studio version
+        id: studio
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(jq -er '.version' retained-studio/package.json)
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          printf 'studio-tag=%s\n' "$version" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: weekly-full-plan
+          path: full-artifact-plan.json
+          if-no-files-found: error
+
+  web:
+    uses: ./.github/workflows/graph-io-web.yml
+    with:
+      mode: retained
+
+  studio:
+    needs: baseline
+    uses: ./.github/workflows/studio-hotfix-artifact-rehearsal.yml
+    with:
+      studio_sha: ${{ needs.baseline.outputs.studio-sha }}
+      studio_tag: ${{ needs.baseline.outputs.studio-tag }}
+
+  domains:
+    name: Domains tests with retained Preflight crates
+    needs: baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          repository: dcornet/nirs4all-domains
+          ref: ${{ needs.baseline.outputs.domains-sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.96.0'
+      - run: cargo test --locked -p nirs4all-domains --no-default-features --test browser --test browser_preprocessing
+
+  release-contracts:
+    uses: ./.github/workflows/native-capability-ledger.yml
+
+  review:
+    name: Weekend coverage and failures
+    needs: [baseline, web, studio, domains, release-contracts]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    env:
+      BASELINE: ${{ needs.baseline.result }}
+      WEB: ${{ needs.web.result }}
+      STUDIO: ${{ needs.studio.result }}
+      DOMAINS: ${{ needs.domains.result }}
+      CONTRACTS: ${{ needs.release-contracts.result }}
+    run: |
+      {
+        echo '## Weekly retained artifact qualification'
+        echo
+        echo '| Coverage | Outcome |'
+        echo '| --- | --- |'
+        printf '| Frozen graph and baseline | %s |\n' "$BASELINE"
+        printf '| Web served and offline using retained WASM | %s |\n' "$WEB"
+        printf '| SDK and Studio Linux locked wheels | %s |\n' "$STUDIO"
+        printf '| Domains browser-profile Rust tests with retained Preflight | %s |\n' "$DOMAINS"
+        printf '| Aggregation lock and native capability contracts | %s |\n' "$CONTRACTS"
+        echo
+        echo 'The full graph is attached as a planning artifact. Owner-specific runtime adapters, remaining platforms and live promotion remain outside this run.'
+      } >> "$GITHUB_STEP_SUMMARY"
+      test "$BASELINE,$WEB,$STUDIO,$DOMAINS,$CONTRACTS" = success,success,success,success,success

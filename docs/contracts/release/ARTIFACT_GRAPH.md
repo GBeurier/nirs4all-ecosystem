@@ -40,10 +40,31 @@ Candidate builds wait for their candidate material inputs. Qualification separat
 4. Promote the qualified bytes from each owner channel. Verify the served or installed bytes, then refresh Cockpit. Retry failed promotion from the same qualified artifact. Keep channel rules, trust configuration and Studio release authorization with their current owners.
 5. Run the full qualification on a clean, pinned baseline weekly or manually. Use its evidence to check the declared graph against the actual dependency resolution and detect missing paths. Publish only when an owner version or delivery needs promotion.
 
-The current workflow executes the planning stage in read-only mode. `--full` emits the full plan. Candidate acquisition, actual build fan-out, publication, the periodic full runner and cross-channel timing measurements require the rollout above. The Studio Linux artifact rehearsal remains release-independent evidence of reuse after a late failure.
+The read-only planner emits the complete affected or full plan. The workflows below execute selected paths from that plan. The remaining builders, owner promotion and cross-channel timing measurements are tracked by the rollout above.
 
 ## Public release observations
 
 The [artifact release targets](artifact-release-targets.n4a.json) associate a graph node with exact public Cockpit targets by package ID, registry and target name. The mapping contains no release versions. Consumers join it with the current public `data/current.json` whenever their snapshot refreshes. An artifact can have several observations, such as a source package tracked by both R-universe and CRAN.
 
 A missing target leaves the artifact visible without a release observation. Separate browser packages, individual Studio installers and other outputs need their own target evidence before they can inherit any observation. A Pages health result can have an unavailable version. These public observations describe the published channel and do not qualify a candidate build.
+
+## Executable qualification
+
+**Graph qualification - IO browser and Web** admits candidate changes limited to the
+Rust source of the IO browser binding. It builds the binding once from the exact
+commit, verifies and transfers its bytes to Web, and assembles Web's served and
+offline products using the retained WASM and companion files. Both products are
+smoked before the run archives them. Its retained mode exercises the same Web
+checks with the committed artifact cohort and skips the Rust browser build.
+The candidate workflow covers the Web branch of the IO plan. Other IO consumers
+require their own adapters.
+
+**Weekly retained artifact qualification** runs Saturday at 02:15 in
+`Europe/Paris` (Friday night), and can be dispatched manually. It runs the
+retained Web checks, the SDK quickstart and replay through Studio's pinned Linux
+wheel set, the Domains browser-profile Rust tests against locked Preflight
+crates, and aggregation lock and capability checks. It posts a coverage and
+failure summary in GitHub Actions for Monday triage. The attached full plan
+includes all declared artifacts. A green run applies to the listed checks only.
+Publication stays with the owner workflows, and the scheduled run uses read-only
+permissions.

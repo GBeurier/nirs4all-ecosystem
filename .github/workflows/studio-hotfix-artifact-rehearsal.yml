@@ -4,6 +4,14 @@ on:
   pull_request:
     paths:
       - .github/workflows/studio-hotfix-artifact-rehearsal.yml
+  workflow_call:
+    inputs:
+      studio_tag:
+        type: string
+        required: true
+      studio_sha:
+        type: string
+        required: true
   workflow_dispatch:
     inputs:
       studio_tag:
@@ -203,6 +211,7 @@ jobs:
           if-no-files-found: error
 
   promotion-rehearsal:
+    if: github.event_name != 'schedule'
     name: Reconcile the qualified artifact with published files
     needs: [prepare, qualify]
     runs-on: ubuntu-latest

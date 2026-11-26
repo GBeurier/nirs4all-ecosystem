@@ -37,6 +37,7 @@ on:
       - "tests/test_native_capability_ledger.py"
       - "tests/fixtures/native-capability-ledger/**"
       - "tests/test_release_lock.py"
+  workflow_call:
   workflow_dispatch:
 
 permissions:
