@@ -157,6 +157,9 @@ hosted workflows package and verify deliveries, with short platform UI checks.
 - Runtime dependency artifacts follow the selected owners' manifests and exact pins;
   a newer source gitlink does not silently upgrade a consumed artifact. See the
   [distribution note](docs/RELEASE_DISTRIBUTION_MATRIX.md) for scope and checks.
+- Select affected package builds, product assemblies and runtime tests with the
+  [artifact release graph](docs/contracts/release/ARTIFACT_GRAPH.md). The graph
+  planner reports reusable baseline inputs and the work needed for a clean qualification.
 - Test unreleased commits across the whole chain before releasing any of them with a
   [candidate cohort](docs/CANDIDATE_COHORT.md) (`scripts/n4a_cohort.py`): one run builds
   the chain from source and names the first broken layer; its release plan tags only

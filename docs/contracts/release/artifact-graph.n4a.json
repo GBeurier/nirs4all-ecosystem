@@ -1,0 +1,550 @@
+{
+  "schema_version": "n4a.artifact-graph/v1",
+  "reviewed_sources": {
+    "dag-ml": "39dc7c7380363fd857c715be06b2b51724b443ee",
+    "dag-ml-data": "65d6615808fd4e9af0f7979bea15b00d9d3d642f",
+    "nirs4all": "45a08291dabae4fec793324a5f64d623ce60b7b1",
+    "nirs4all-aom": "2c513f88bd8d6daf13ce9bf85a0ec72bdcdbec9b",
+    "nirs4all-benchmarks": "e5e382b85213b5a1220227aaf0e9a9103fc92708",
+    "nirs4all-cluster": "ca62f739816792b11179252b16997904beb77f18",
+    "nirs4all-cockpit": "02e725036eaf1516d6a1fd8829d43ea8bf084d70",
+    "nirs4all-core": "ab09ec9981ac115087ee63b8989707e1e9f37a68",
+    "nirs4all-datasets": "926c12e91f8bde6f60c451d9ce6d6d6be4207fee",
+    "nirs4all-device": "6a9f8b6706231a7b616052304998c17565bfbb1d",
+    "nirs4all-domains": "82d43a8565571b2d4f31d478f64b136636fb9b0e",
+    "nirs4all-ecosystem": "80ccbab6ab5060aafeba5a46a0ce684b762f1d76",
+    "nirs4all-formats": "46e52d21543fe8706479c83f5445b00a4ea5a298",
+    "nirs4all-io": "334750793d21fd7fd5ef8b24729abd561503a2e1",
+    "nirs4all-methods": "abe6dd142d3c5593c8f6b26f32122055f12c3b3b",
+    "nirs4all-org": "87e8326b0e9ba8964bcafe9c03a0426dc4e6a022",
+    "nirs4all-papers": "e431a06ebac8739b6656ccd013b61260e6288942",
+    "nirs4all-preflight": "7f1be5e53d8e45e3d056084f23d7873d66623533",
+    "nirs4all-providers": "7bdca2cc5fe5426f715745ee4f8d856390fb631a",
+    "nirs4all-quality": "636cd148fd8a7aadc6335c267d8760379e10f590",
+    "nirs4all-r": "0097220417588cbab5ba75cd6b0d8203d09d6d05",
+    "nirs4all-repository": "22c14b69040660af19d769e87621d1f377ff61ff",
+    "nirs4all-server": "bf3945a4932df6af1881fb5aa85a12601d1aae07",
+    "nirs4all-studio": "21274d093efc947024d8905b6044b8bebc270028",
+    "nirs4all-tools": "28f0a2a36b9f3cdeb2fdc0a32348734e9b9855a3",
+    "nirs4all-ui": "dd8127b62da719b0511a16488d4e446e23637b88",
+    "nirs4all-web": "e04c8a8b0e07c66748d97c1dbc6900489fd8ab67"
+  },
+  "artifacts": {
+    "access.python-wheel": {
+      "repository": "nirs4all-cluster",
+      "action": "build",
+      "evidence": ["packages/nirs4all-access/pyproject.toml", ".github/workflows/release-access.yml"],
+      "inputs": {}
+    },
+    "aom.python-wheel": {
+      "repository": "nirs4all-aom",
+      "action": "build",
+      "evidence": ["pyproject.toml", ".github/workflows/publish-pypi.yml"],
+      "inputs": {}
+    },
+    "aom.site": {
+      "repository": "nirs4all-aom",
+      "action": "assemble",
+      "evidence": [".github/workflows/pages-wasm-demo.yml"],
+      "inputs": {}
+    },
+    "arena.python-wheel": {
+      "repository": "nirs4all-benchmarks",
+      "action": "build",
+      "evidence": ["pyproject.toml", ".github/workflows/publish.yml"],
+      "inputs": {"access.python-wheel": "runtime", "dag.python-wheel": "runtime", "datasets.python-wheel": "runtime", "methods.python-wheels": "runtime", "repository.python-wheel": "runtime", "sdk.python-wheel": "runtime"}
+    },
+    "arena.site": {
+      "repository": "nirs4all-benchmarks",
+      "action": "assemble",
+      "evidence": ["package.json", ".github/workflows/pages.yml"],
+      "inputs": {"ui.npm": "bundle"}
+    },
+    "cluster.python-wheel": {
+      "repository": "nirs4all-cluster",
+      "action": "build",
+      "evidence": ["pyproject.toml", ".github/workflows/release.yml"],
+      "inputs": {"access.python-wheel": "runtime", "sdk.python-wheel": "runtime"}
+    },
+    "cockpit.site": {
+      "repository": "nirs4all-cockpit",
+      "action": "refresh",
+      "evidence": ["ops/targets.yaml", ".github/workflows/collect.yml", ".github/workflows/pages.yml"],
+      "inputs": {"core.npm": "observe", "core.python-wheel": "observe", "dag.python-wheel": "observe", "datasets.python-wheel": "observe", "device.android-debug": "observe", "device.site": "observe", "dmd.python-wheel": "observe", "domains.site": "observe", "formats.python-wheel": "observe", "io.python-wheel": "observe", "methods.python-wheels": "observe", "papers.document-site": "observe", "papers.python-wheel": "observe", "preflight.site": "observe", "quali.site": "observe", "r.source-package": "observe", "sdk.python-wheel": "observe", "studio.docker-image": "observe", "studio.linux-installer": "observe", "studio.macos-installer": "observe", "studio.windows-installer": "observe", "web.site": "observe"}
+    },
+    "core.archive-cli": {
+      "repository": "nirs4all-core",
+      "action": "build",
+      "evidence": ["bindings/rust/nirs4all/Cargo.toml"],
+      "inputs": {"core.rust-crate": "compile", "dag.rust-crates": "compile", "dmd.rust-crates": "compile", "formats.rust-crate": "compile", "io.core-crate": "compile", "io.dag-adapter-crate": "compile", "io.facade-crate": "compile", "methods.rust-crate": "compile"}
+    },
+    "core.matlab-octave": {
+      "repository": "nirs4all-core",
+      "action": "build",
+      "evidence": [".github/workflows/release-matlab.yml", "bindings/rust/nirs4all/Cargo.toml"],
+      "inputs": {"core.rust-crate": "compile", "dag.rust-crates": "compile", "dmd.rust-crates": "compile", "formats.rust-crate": "compile", "io.core-crate": "compile", "io.dag-adapter-crate": "compile", "io.facade-crate": "compile", "methods.rust-crate": "compile"}
+    },
+    "core.native-wasm": {
+      "repository": "nirs4all-core",
+      "action": "build",
+      "evidence": ["bindings/wasm-native/Cargo.toml"],
+      "inputs": {"core.rust-crate": "compile", "dag.rust-crates": "compile", "dmd.rust-crates": "compile", "io.core-crate": "compile", "io.dag-adapter-crate": "compile"}
+    },
+    "core.npm": {
+      "repository": "nirs4all-core",
+      "action": "assemble",
+      "evidence": ["bindings/wasm/package.json", ".github/workflows/release-npm.yml"],
+      "inputs": {"core.native-wasm": "bundle", "dag.wasm": "runtime", "datasets.wasm": "runtime", "dmd.wasm": "runtime", "formats.wasm": "runtime", "io.node-wasm": "runtime", "methods.wasm": "runtime"}
+    },
+    "core.python-wheel": {
+      "repository": "nirs4all-core",
+      "action": "build",
+      "evidence": ["bindings/python-native/Cargo.toml", "bindings/rust/nirs4all/Cargo.toml", ".github/workflows/release-python.yml"],
+      "inputs": {"core.rust-crate": "compile", "dag.rust-crates": "compile", "dmd.rust-crates": "compile", "formats.rust-crate": "compile", "io.core-crate": "compile", "io.dag-adapter-crate": "compile", "io.facade-crate": "compile", "methods.python-wheels": "runtime", "methods.rust-crate": "compile"}
+    },
+    "core.rust-crate": {
+      "repository": "nirs4all-core",
+      "action": "prepare",
+      "evidence": ["bindings/rust/nirs4all/Cargo.toml", ".github/workflows/release-crates.yml"],
+      "inputs": {}
+    },
+    "dag.python-wheel": {
+      "repository": "dag-ml",
+      "action": "build",
+      "evidence": [".github/workflows/release-python.yml"],
+      "inputs": {"dag.rust-crates": "compile", "methods.python-wheels": "runtime", "methods.rust-crate": "compile"}
+    },
+    "dag.r-package": {
+      "repository": "dag-ml",
+      "action": "build",
+      "evidence": ["bindings/r/DESCRIPTION"],
+      "inputs": {"dag.rust-crates": "compile"}
+    },
+    "dag.rust-crates": {
+      "repository": "dag-ml",
+      "action": "prepare",
+      "evidence": ["crates/dag-ml-core/Cargo.toml", ".github/workflows/release-crates.yml"],
+      "inputs": {}
+    },
+    "dag.shared-contract-check": {
+      "repository": "dag-ml",
+      "action": "qualify",
+      "evidence": ["scripts/validate_contracts.py"],
+      "inputs": {"dag.rust-crates": "runtime", "dmd.rust-crates": "runtime"}
+    },
+    "dag.wasm": {
+      "repository": "dag-ml",
+      "action": "build",
+      "evidence": ["crates/dag-ml-wasm/Cargo.toml", ".github/workflows/release-npm.yml"],
+      "inputs": {"dag.rust-crates": "compile"}
+    },
+    "datasets.extras-check": {
+      "repository": "nirs4all-datasets",
+      "action": "qualify",
+      "evidence": ["pyproject.toml"],
+      "inputs": {"access.python-wheel": "runtime", "datasets.python-wheel": "runtime", "formats.python-wheel": "runtime", "io.python-wheel": "runtime", "methods.python-wheels": "runtime", "sdk.python-wheel": "runtime"}
+    },
+    "datasets.matlab-octave": {
+      "repository": "nirs4all-datasets",
+      "action": "build",
+      "evidence": [".github/workflows/release-matlab.yml", "crates/nirs4all-datasets-core/Cargo.toml"],
+      "inputs": {"datasets.rust-sources": "compile", "formats.rust-crate": "compile", "io.core-crate": "compile", "io.facade-crate": "compile"}
+    },
+    "datasets.python-wheel": {
+      "repository": "nirs4all-datasets",
+      "action": "build",
+      "evidence": ["bindings/python/Cargo.toml", "crates/nirs4all-datasets-core/Cargo.toml", ".github/workflows/release-python.yml"],
+      "inputs": {"datasets.rust-sources": "compile", "formats.rust-crate": "compile", "io.core-crate": "compile", "io.facade-crate": "compile"}
+    },
+    "datasets.r-package": {
+      "repository": "nirs4all-datasets",
+      "action": "build",
+      "evidence": ["bindings/r/nirs4alldatasets/src/rust/Cargo.toml", ".github/workflows/release-r.yml"],
+      "inputs": {"datasets.rust-sources": "compile", "formats.rust-crate": "compile", "io.core-crate": "compile", "io.facade-crate": "compile"}
+    },
+    "datasets.rust-sources": {
+      "repository": "nirs4all-datasets",
+      "action": "prepare",
+      "evidence": ["Cargo.toml", "crates/nirs4all-datasets-core/Cargo.toml"],
+      "inputs": {}
+    },
+    "datasets.wasm": {
+      "repository": "nirs4all-datasets",
+      "action": "build",
+      "evidence": ["bindings/wasm/Cargo.toml", "crates/nirs4all-datasets-core/Cargo.toml", ".github/workflows/release-npm.yml"],
+      "inputs": {"datasets.rust-sources": "compile", "io.core-crate": "compile"}
+    },
+    "device.android-debug": {
+      "repository": "nirs4all-device",
+      "action": "assemble",
+      "evidence": ["package.json", ".github/workflows/android.yml"],
+      "inputs": {"dag.wasm": "bundle", "datasets.wasm": "bundle", "dmd.wasm": "bundle", "formats.wasm": "bundle", "methods.wasm": "bundle", "ui.npm": "bundle"}
+    },
+    "device.site": {
+      "repository": "nirs4all-device",
+      "action": "assemble",
+      "evidence": ["package.json", ".github/workflows/pages.yml"],
+      "inputs": {"dag.wasm": "bundle", "datasets.wasm": "bundle", "dmd.wasm": "bundle", "formats.wasm": "bundle", "methods.wasm": "bundle", "ui.npm": "bundle"}
+    },
+    "dmd.provider-wheel": {
+      "repository": "dag-ml-data",
+      "action": "build",
+      "evidence": [".github/workflows/release-provider-python.yml"],
+      "inputs": {"dmd.rust-crates": "compile"}
+    },
+    "dmd.python-wheel": {
+      "repository": "dag-ml-data",
+      "action": "build",
+      "evidence": [".github/workflows/release-python.yml"],
+      "inputs": {"dmd.rust-crates": "compile"}
+    },
+    "dmd.r-package": {
+      "repository": "dag-ml-data",
+      "action": "build",
+      "evidence": ["crates/dag-ml-data-r/DESCRIPTION"],
+      "inputs": {"dmd.rust-crates": "compile"}
+    },
+    "dmd.rust-crates": {
+      "repository": "dag-ml-data",
+      "action": "prepare",
+      "evidence": ["Cargo.toml", ".github/workflows/release-crates.yml"],
+      "inputs": {}
+    },
+    "dmd.wasm": {
+      "repository": "dag-ml-data",
+      "action": "build",
+      "evidence": ["crates/dag-ml-data-wasm/Cargo.toml", ".github/workflows/release-npm.yml"],
+      "inputs": {"dmd.rust-crates": "compile"}
+    },
+    "domains.python-bridge": {
+      "repository": "nirs4all-domains",
+      "action": "build",
+      "evidence": ["bridges/python/pyproject.toml"],
+      "inputs": {"dag.python-wheel": "runtime", "datasets.python-wheel": "runtime", "methods.python-wheels": "runtime"}
+    },
+    "domains.rust": {
+      "repository": "nirs4all-domains",
+      "action": "build",
+      "evidence": ["Cargo.toml", "crates/nirs4all-domains/Cargo.toml"],
+      "inputs": {"dag.rust-crates": "compile", "methods.python-wheels": "runtime", "methods.rust-crate": "compile", "preflight.rust-crates": "compile"}
+    },
+    "domains.site": {
+      "repository": "nirs4all-domains",
+      "action": "assemble",
+      "evidence": ["demo/package.json", "demo/scripts/wasm-loaders.lock.json", ".github/workflows/pages.yml"],
+      "inputs": {"domains.wasm": "bundle", "formats.wasm": "review", "io.node-wasm": "review", "ui.npm": "bundle"}
+    },
+    "domains.wasm": {
+      "repository": "nirs4all-domains",
+      "action": "build",
+      "evidence": ["Cargo.toml", "bindings/wasm/package.json", "crates/nirs4all-domains/Cargo.toml"],
+      "inputs": {"dag.rust-crates": "compile", "preflight.rust-crates": "compile"}
+    },
+    "ecosystem.integration": {
+      "repository": "nirs4all-ecosystem",
+      "action": "qualify",
+      "evidence": [".github/workflows/cross-language-e2e.yml"],
+      "inputs": {"core.npm": "runtime", "core.python-wheel": "runtime", "r.source-package": "runtime", "sdk.python-wheel": "runtime"}
+    },
+    "formats.python-wheel": {
+      "repository": "nirs4all-formats",
+      "action": "build",
+      "evidence": ["bindings/python/Cargo.toml", ".github/workflows/release.yml"],
+      "inputs": {"formats.rust-crate": "compile"}
+    },
+    "formats.r-package": {
+      "repository": "nirs4all-formats",
+      "action": "build",
+      "evidence": ["bindings/r/nirs4allformats/src/rust/Cargo.toml"],
+      "inputs": {"formats.rust-crate": "compile"}
+    },
+    "formats.rust-crate": {
+      "repository": "nirs4all-formats",
+      "action": "prepare",
+      "evidence": ["crates/nirs4all-formats/Cargo.toml"],
+      "inputs": {}
+    },
+    "formats.wasm": {
+      "repository": "nirs4all-formats",
+      "action": "build",
+      "evidence": ["bindings/wasm/Cargo.toml", ".github/workflows/release-npm.yml"],
+      "inputs": {"formats.rust-crate": "compile"}
+    },
+    "io.browser": {
+      "repository": "nirs4all-io",
+      "action": "build",
+      "evidence": ["bindings/wasm/Cargo.toml", ".github/workflows/release-browser.yml"],
+      "inputs": {"io.core-crate": "compile"}
+    },
+    "io.core-crate": {
+      "repository": "nirs4all-io",
+      "action": "prepare",
+      "evidence": ["crates/nirs4all-io-core/Cargo.toml"],
+      "inputs": {}
+    },
+    "io.dag-adapter-crate": {
+      "repository": "nirs4all-io",
+      "action": "prepare",
+      "evidence": ["crates/nirs4all-io-dagml/Cargo.toml"],
+      "inputs": {}
+    },
+    "io.demo": {
+      "repository": "nirs4all-io",
+      "action": "assemble",
+      "evidence": [".github/workflows/deploy-pages.yml"],
+      "inputs": {"formats.wasm": "bundle", "io.browser": "bundle"}
+    },
+    "io.facade-crate": {
+      "repository": "nirs4all-io",
+      "action": "prepare",
+      "evidence": ["crates/nirs4all-io/Cargo.toml"],
+      "inputs": {}
+    },
+    "io.matlab-octave": {
+      "repository": "nirs4all-io",
+      "action": "build",
+      "evidence": [".github/workflows/release-matlab.yml"],
+      "inputs": {"formats.rust-crate": "compile", "io.core-crate": "compile", "io.facade-crate": "compile"}
+    },
+    "io.node-wasm": {
+      "repository": "nirs4all-io",
+      "action": "build",
+      "evidence": ["bindings/wasm/Cargo.toml", ".github/workflows/release-npm.yml"],
+      "inputs": {"io.core-crate": "compile"}
+    },
+    "io.python-wheel": {
+      "repository": "nirs4all-io",
+      "action": "build",
+      "evidence": ["bindings/python/Cargo.toml", ".github/workflows/release.yml"],
+      "inputs": {"formats.rust-crate": "compile", "io.core-crate": "compile", "io.facade-crate": "compile"}
+    },
+    "io.r-package": {
+      "repository": "nirs4all-io",
+      "action": "build",
+      "evidence": [".github/workflows/release-r.yml"],
+      "inputs": {"formats.rust-crate": "compile", "io.core-crate": "compile", "io.facade-crate": "compile"}
+    },
+    "methods.kernel-source": {
+      "repository": "nirs4all-methods",
+      "action": "prepare",
+      "evidence": ["CMakeLists.txt"],
+      "inputs": {}
+    },
+    "methods.matlab-octave": {
+      "repository": "nirs4all-methods",
+      "action": "build",
+      "evidence": [".github/workflows/release-matlab.yml"],
+      "inputs": {"methods.kernel-source": "compile"}
+    },
+    "methods.python-wheels": {
+      "repository": "nirs4all-methods",
+      "action": "build",
+      "evidence": [".github/workflows/release-wheels.yml"],
+      "inputs": {"methods.kernel-source": "compile"}
+    },
+    "methods.r-package": {
+      "repository": "nirs4all-methods",
+      "action": "build",
+      "evidence": [".github/workflows/release-r.yml"],
+      "inputs": {"methods.kernel-source": "compile"}
+    },
+    "methods.rust-crate": {
+      "repository": "nirs4all-methods",
+      "action": "prepare",
+      "evidence": ["bindings/rust/n4m/Cargo.toml", ".github/workflows/release-n4m-crate.yml"],
+      "inputs": {}
+    },
+    "methods.wasm": {
+      "repository": "nirs4all-methods",
+      "action": "build",
+      "evidence": [".github/workflows/release-npm.yml"],
+      "inputs": {"methods.kernel-source": "compile"}
+    },
+    "org.site": {
+      "repository": "nirs4all-org",
+      "action": "assemble",
+      "evidence": ["package.json", ".github/workflows/site-quality.yml"],
+      "inputs": {}
+    },
+    "papers.document-site": {
+      "repository": "nirs4all-papers",
+      "action": "assemble",
+      "evidence": [".github/workflows/site.yml"],
+      "inputs": {"papers.python-wheel": "bundle"}
+    },
+    "papers.python-wheel": {
+      "repository": "nirs4all-papers",
+      "action": "build",
+      "evidence": ["pyproject.toml", ".github/workflows/publish.yml"],
+      "inputs": {}
+    },
+    "papers.readers-check": {
+      "repository": "nirs4all-papers",
+      "action": "qualify",
+      "evidence": ["pyproject.toml"],
+      "inputs": {"core.python-wheel": "runtime", "papers.python-wheel": "runtime", "sdk.python-wheel": "runtime"}
+    },
+    "preflight.python-wheel": {
+      "repository": "nirs4all-preflight",
+      "action": "build",
+      "evidence": ["crates/nirs4all-preflight/Cargo.toml", "bindings/python/pyproject.toml", ".github/workflows/release-python.yml"],
+      "inputs": {"dag.rust-crates": "compile", "methods.python-wheels": "runtime", "methods.rust-crate": "compile", "preflight.rust-crates": "compile"}
+    },
+    "preflight.rust-crates": {
+      "repository": "nirs4all-preflight",
+      "action": "prepare",
+      "evidence": ["Cargo.toml", "crates/nirs4all-preflight/Cargo.toml"],
+      "inputs": {}
+    },
+    "preflight.site": {
+      "repository": "nirs4all-preflight",
+      "action": "assemble",
+      "evidence": ["demo/package.json", ".github/workflows/pages.yml", "demo/vendor/io-browser-owner/PROVENANCE.json"],
+      "inputs": {"dag.wasm": "bundle", "formats.wasm": "bundle", "io.browser": "bundle", "methods.wasm": "bundle", "preflight.wasm": "bundle", "ui.npm": "bundle"}
+    },
+    "preflight.wasm": {
+      "repository": "nirs4all-preflight",
+      "action": "build",
+      "evidence": ["bindings/wasm/Cargo.toml", "bindings/wasm/package.json", "crates/nirs4all-preflight/Cargo.toml"],
+      "inputs": {"dag.rust-crates": "compile", "dag.wasm": "runtime", "preflight.rust-crates": "compile"}
+    },
+    "providers.python-wheel": {
+      "repository": "nirs4all-providers",
+      "action": "build",
+      "evidence": ["pyproject.toml", ".github/workflows/publish.yml"],
+      "inputs": {"datasets.python-wheel": "runtime", "formats.python-wheel": "runtime", "io.python-wheel": "runtime", "repository.python-wheel": "runtime"}
+    },
+    "providers.site": {
+      "repository": "nirs4all-providers",
+      "action": "assemble",
+      "evidence": [".github/workflows/pages.yml"],
+      "inputs": {}
+    },
+    "quali.site": {
+      "repository": "nirs4all-quality",
+      "action": "assemble",
+      "evidence": ["app/package.json", "app/vite.config.ts", "app/scripts/io-stage.mjs", "app/scripts/methods-stage.mjs", "app/scripts/deploy-pages.sh"],
+      "inputs": {"core.npm": "bundle", "dag.wasm": "bundle", "datasets.wasm": "bundle", "dmd.wasm": "bundle", "formats.wasm": "bundle", "io.browser": "bundle", "methods.wasm": "bundle", "server.browser-client": "bundle", "ui.npm": "bundle"}
+    },
+    "r.source-package": {
+      "repository": "nirs4all-r",
+      "action": "build",
+      "evidence": ["DESCRIPTION"],
+      "inputs": {"core.archive-cli": "runtime", "core.python-wheel": "runtime", "dag.r-package": "runtime", "datasets.r-package": "runtime", "dmd.r-package": "runtime", "formats.r-package": "runtime", "io.r-package": "runtime", "sdk.python-wheel": "runtime"}
+    },
+    "repository.python-wheel": {
+      "repository": "nirs4all-repository",
+      "action": "build",
+      "evidence": ["pyproject.toml", ".github/workflows/publish.yml"],
+      "inputs": {"access.python-wheel": "runtime"}
+    },
+    "repository.site": {
+      "repository": "nirs4all-repository",
+      "action": "assemble",
+      "evidence": ["package.json", ".github/workflows/deploy-pages.yml"],
+      "inputs": {"ui.npm": "bundle"}
+    },
+    "sdk.migration-check": {
+      "repository": "nirs4all",
+      "action": "qualify",
+      "evidence": ["pyproject.toml"],
+      "inputs": {"sdk.python-wheel": "runtime", "tools.python-wheel": "runtime"}
+    },
+    "sdk.python-wheel": {
+      "repository": "nirs4all",
+      "action": "build",
+      "evidence": ["pyproject.toml", ".github/workflows/publish.yml"],
+      "inputs": {"core.python-wheel": "runtime", "dag.python-wheel": "runtime", "dmd.python-wheel": "runtime", "io.python-wheel": "runtime", "methods.python-wheels": "runtime"}
+    },
+    "server.browser-client": {
+      "repository": "nirs4all-server",
+      "action": "build",
+      "evidence": ["browser-client/package.json"],
+      "inputs": {}
+    },
+    "server.image": {
+      "repository": "nirs4all-server",
+      "action": "assemble",
+      "evidence": ["Dockerfile", "pyproject.toml"],
+      "inputs": {"access.python-wheel": "bundle", "arena.python-wheel": "review", "cluster.python-wheel": "review", "core.python-wheel": "review", "datasets.python-wheel": "review", "papers.python-wheel": "review", "repository.python-wheel": "review", "server.python-wheel": "bundle"}
+    },
+    "server.python-wheel": {
+      "repository": "nirs4all-server",
+      "action": "build",
+      "evidence": ["pyproject.toml"],
+      "inputs": {"access.python-wheel": "runtime", "core.python-wheel": "review"}
+    },
+    "studio.docker-image": {
+      "repository": "nirs4all-studio",
+      "action": "assemble",
+      "evidence": [".github/workflows/release-unified.yml", "Dockerfile"],
+      "inputs": {"core.python-wheel": "bundle", "dag.python-wheel": "bundle", "datasets.python-wheel": "bundle", "dmd.python-wheel": "bundle", "io.python-wheel": "bundle", "methods.python-wheels": "bundle", "sdk.python-wheel": "bundle", "studio.frontend": "bundle", "studio.sidecar": "bundle"}
+    },
+    "studio.frontend": {
+      "repository": "nirs4all-studio",
+      "action": "assemble",
+      "evidence": ["package.json", ".github/workflows/release-unified.yml"],
+      "inputs": {"ui.npm": "bundle"}
+    },
+    "studio.linux-installer": {
+      "repository": "nirs4all-studio",
+      "action": "assemble",
+      "evidence": [".github/workflows/release-unified.yml", "scripts/python-wheel-lock.cjs"],
+      "inputs": {"core.python-wheel": "bundle", "dag.python-wheel": "bundle", "datasets.python-wheel": "bundle", "dmd.python-wheel": "bundle", "io.python-wheel": "bundle", "methods.python-wheels": "bundle", "sdk.python-wheel": "bundle", "studio.frontend": "bundle", "studio.sidecar": "bundle"}
+    },
+    "studio.macos-installer": {
+      "repository": "nirs4all-studio",
+      "action": "assemble",
+      "evidence": [".github/workflows/release-unified.yml"],
+      "inputs": {"core.python-wheel": "runtime", "dag.python-wheel": "runtime", "datasets.python-wheel": "runtime", "dmd.python-wheel": "runtime", "io.python-wheel": "runtime", "methods.python-wheels": "runtime", "sdk.python-wheel": "runtime", "studio.frontend": "bundle", "studio.sidecar": "bundle"}
+    },
+    "studio.sidecar": {
+      "repository": "nirs4all-studio",
+      "action": "build",
+      "evidence": ["sidecar/Cargo.toml"],
+      "inputs": {"core.rust-crate": "compile", "dag.rust-crates": "compile", "dmd.rust-crates": "compile", "formats.rust-crate": "compile", "io.core-crate": "compile", "io.dag-adapter-crate": "compile", "io.facade-crate": "compile", "methods.rust-crate": "compile"}
+    },
+    "studio.windows-installer": {
+      "repository": "nirs4all-studio",
+      "action": "assemble",
+      "evidence": [".github/workflows/release-unified.yml", "scripts/python-wheel-lock.cjs"],
+      "inputs": {"core.python-wheel": "bundle", "dag.python-wheel": "bundle", "datasets.python-wheel": "bundle", "dmd.python-wheel": "bundle", "io.python-wheel": "bundle", "methods.python-wheels": "bundle", "sdk.python-wheel": "bundle", "studio.frontend": "bundle", "studio.sidecar": "bundle"}
+    },
+    "tools.python-wheel": {
+      "repository": "nirs4all-tools",
+      "action": "build",
+      "evidence": ["pyproject.toml", ".github/workflows/publish.yml"],
+      "inputs": {}
+    },
+    "tools.target-check": {
+      "repository": "nirs4all-tools",
+      "action": "qualify",
+      "evidence": ["pyproject.toml"],
+      "inputs": {"sdk.python-wheel": "runtime", "tools.python-wheel": "runtime"}
+    },
+    "ui.demo": {
+      "repository": "nirs4all-ui",
+      "action": "assemble",
+      "evidence": [".github/workflows/pages.yml"],
+      "inputs": {"ui.npm": "bundle"}
+    },
+    "ui.npm": {
+      "repository": "nirs4all-ui",
+      "action": "build",
+      "evidence": ["package.json", ".github/workflows/release-npm.yml"],
+      "inputs": {}
+    },
+    "web.offline-app": {
+      "repository": "nirs4all-web",
+      "action": "assemble",
+      "evidence": ["web-app/package.json", "web-app/scripts/public-packages.v1.json"],
+      "inputs": {"core.npm": "bundle", "dag.wasm": "bundle", "datasets.wasm": "bundle", "dmd.wasm": "bundle", "formats.wasm": "bundle", "io.browser": "bundle", "io.node-wasm": "bundle", "methods.wasm": "bundle", "ui.npm": "bundle"}
+    },
+    "web.site": {
+      "repository": "nirs4all-web",
+      "action": "assemble",
+      "evidence": ["web-app/package.json", "web-app/scripts/public-packages.v1.json", "web-app/scripts/stage-io-wasm.mjs", ".github/workflows/deploy-pages.yml"],
+      "inputs": {"core.npm": "bundle", "dag.wasm": "bundle", "datasets.wasm": "bundle", "dmd.wasm": "bundle", "formats.wasm": "bundle", "io.browser": "bundle", "io.node-wasm": "bundle", "methods.wasm": "bundle", "ui.npm": "bundle"}
+    }
+  }
+}
