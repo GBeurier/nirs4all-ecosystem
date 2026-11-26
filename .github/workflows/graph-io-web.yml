@@ -171,13 +171,24 @@ jobs:
           assets=(source-web/web-app/dist/assets/nirs4all_io_wasm_bg-*.wasm)
           test "${#assets[@]}" -eq 1
           printf '%s  %s\n' "$expected" "${assets[0]}" | sha256sum --strict -c
+          python3 - <<'PY'
+          import base64
+          from pathlib import Path
+
+          wasm = Path("io-browser-candidate/nirs4all_io_wasm_bg.wasm").read_bytes()
+          html = Path("source-web/web-app/dist-single/index.html").read_bytes()
+          if base64.b64encode(wasm) not in html:
+              raise SystemExit("Offline Web deliverable does not contain the exact IO candidate")
+          PY
       - name: Freeze qualified Web deliverables
+        if: needs.plan.outputs.mode == 'candidate'
         run: |
           mkdir web-qualification
           tar -C source-web/web-app -cf web-qualification/web-deliverables.tar dist dist-single
           cd web-qualification
           sha256sum web-deliverables.tar > SHA256SUMS
       - uses: actions/upload-artifact@v7
+        if: needs.plan.outputs.mode == 'candidate'
         with:
           name: qualified-web-deliverables
           path: web-qualification/

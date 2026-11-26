@@ -36,7 +36,7 @@ def check_source(io: Path, baseline: str) -> None:
     if git(io, "status", "--porcelain", "--untracked-files=no"):
         raise ValueError("Candidate source must match the selected commit")
     paths = subprocess.check_output(
-        ["git", "-C", str(io), "diff", "--name-only", "-z", baseline, "HEAD"], text=True,
+        ["git", "-C", str(io), "diff", "--no-renames", "--name-only", "-z", baseline, "HEAD"], text=True,
     ).split("\0")
     outside = [path for path in paths if path and not path.startswith("bindings/wasm/src/")]
     if outside:
