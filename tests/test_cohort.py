@@ -5,6 +5,7 @@ import importlib.util
 import json
 import subprocess
 import sys
+from graphlib import TopologicalSorter
 from pathlib import Path
 from types import ModuleType
 
@@ -302,3 +303,158 @@ def test_workflow_triggers_read_the_tested_commit(tmp_path: Path) -> None:
     })
     tags, releases = cohort.workflow_triggers(repo, commit)
     assert tags == ["release.yml (tags v[0-9]*)"] and releases == ["publish.yml"]
+
+
+@pytest.fixture
+def studio_hotfix_baseline(tmp_path: Path) -> tuple[Path, str]:
+    dag = tmp_path / "dag-ml"
+    dag_base = _repo(dag, {
+        "Cargo.toml": '[workspace.package]\nversion = "0.5.0"\n',
+        "crates/dag-ml-py/pyproject.toml": '[project]\nname = "dag-ml"\nversion = "0.5.0"\n',
+        "crates/dag-ml-core/src/runtime.rs": "fn run() {}\n",
+    })
+    _git(dag, "tag", "v0.5.0")
+    sdk = _repo(tmp_path / "nirs4all", {
+        "pyproject.toml": '[project]\ndependencies = ["nirs4all-core>=0.6,<0.7", "dag-ml>=0.5,<0.6"]\n',
+    })
+    core = _repo(tmp_path / "nirs4all-core", {
+        "bindings/rust/nirs4all/Cargo.toml": """[dependencies]
+        dag_ml_crate = { package = "dag-ml", version = "0.5" }
+        dag-ml-core = "0.5"
+        dag_ml_results = { package = "dag-ml-results", version = "0.5" }
+        """,
+    })
+    runtime = {
+        "schema": "nirs4all.studio.runtime-cohort.v1",
+        "dag": {"version": "0.5.0", "source_sha": dag_base},
+        "core": {"source_sha": core, "version": "0.6.1", "native_version": "0.6.1", "native_source_sha": core},
+        "sdk": {"version": "1.6.1", "source_sha": sdk, "wheel_sha256": "a" * 64,
+                "wheel_url": "https://example.invalid/nirs4all.whl", "publication_status": "published-registry"},
+    }
+    required = [
+        {"name": "dag-ml", "install": "0.5.0", "range": ">=0.5,<0.6"},
+        {"name": "nirs4all-core", "install": "0.6.1", "range": ">=0.6,<0.7"},
+        {"name": "nirs4all", "install": "1.6.1", "range": ">=1.6,<1.7"},
+    ]
+    lock = "version = 4\n"
+    for name in ("dag-ml", "dag-ml-core", "dag-ml-results", "nirs4all"):
+        locked_version = "0.6.1" if name == "nirs4all" else "0.5.0"
+        lock += (f'[[package]]\nname = "{name}"\nversion = "{locked_version}"\n'
+                 f'source = "registry+https://github.com/rust-lang/crates.io-index"\nchecksum = "{"b" * 64}"\n')
+        if name == "nirs4all":
+            lock += 'dependencies = ["dag-ml-core"]\n'
+    studio = tmp_path / "nirs4all-studio"
+    files = {"build/runtime-cohort.json": json.dumps(runtime),
+             "recommended-config.json": json.dumps({"required": required}), "sidecar/Cargo.lock": lock}
+    for target in ("linux-x64", "win32-x64", "darwin-arm64"):
+        files[f"build/constraints/python-wheels-{target}.json"] = json.dumps({
+            "schema": "nirs4all.studio.python-wheel-lock.v1",
+            "target": target,
+            "packages": [{"name": item["name"], "version": item["install"], "sha256": "a" * 64} for item in required],
+        })
+    sha = _repo(studio, files)
+    _git(studio, "tag", "0.19.8")
+    return tmp_path, sha
+
+
+def _studio_hotfix_plan(baseline: tuple[Path, str], changes: dict[str, str], version: str = "0.5.1",
+                        approved: bool = True) -> dict:
+    from n4a_studio_hotfix import draft_plan
+
+    root, studio = baseline
+    dag = _repo(root / "dag-ml", changes)
+    return draft_plan(root, "0.19.8", studio, dag, version, compatible_patch=approved)
+
+
+def test_studio_hotfix_native_starts_independent_builds(studio_hotfix_baseline: tuple[Path, str]) -> None:
+    plan = _studio_hotfix_plan(studio_hotfix_baseline, {"crates/dag-ml-core/src/runtime.rs": "fn changed() {}\n"})
+    assert plan["status"] == "candidate-plan" and not plan["release_ready"]
+    assert plan["scope"] == "native-runtime"
+    assert plan["artifacts"]["core-wheel"] == {"action": "build", "version": "0.6.2"}
+    assert plan["artifacts"]["core-crate"]["version"] == "0.6.1"
+    assert plan["artifacts"]["sdk-wheel"]["sha256"] == "a" * 64
+    stages = plan["stages"]
+    assert plan["candidate"]["dag_release_source_commit"] is None
+    assert stages["freeze-dag-release-source"] == stages["freeze-core-release-source"] == []
+    assert stages["build-dag-wheel"] == stages["prepare-studio-sidecar"] == ["freeze-dag-release-source"]
+    assert stages["build-core-wheel"] == ["freeze-dag-release-source", "freeze-core-release-source"]
+    assert all(dependency in stages for dependencies in stages.values() for dependency in dependencies)
+    order = list(TopologicalSorter(stages).static_order())
+    for publisher in ("publish-dag-pypi", "publish-dag-crates", "publish-core-pypi"):
+        assert "qualify-sdk-wheel-in-cohort" in stages[publisher]
+        assert order.index("qualify-studio-source-cohort") < order.index(publisher)
+    assert order.index("freeze-studio-release-source") < order.index("assemble-studio-linux-standard")
+    assert "verify-dag-pypi" not in stages["freeze-studio-release-source"]
+    assert "verify-core-pypi" in stages["qualify-studio-macos-arm64"]
+    assert not any("npm" in name for name in stages)
+    assert len(stages["refresh-and-verify-cockpit"]) == len(plan["artifacts"]["studio-deliveries"]["channels"]) == 6
+
+
+def test_studio_hotfix_python_binding_retains_native_closure(studio_hotfix_baseline: tuple[Path, str]) -> None:
+    plan = _studio_hotfix_plan(studio_hotfix_baseline, {"crates/dag-ml-py/src/lib.rs": "fn changed() {}\n"})
+    assert plan["scope"] == "python-binding"
+    assert "dag-crates" not in plan["artifacts"]
+    assert plan["artifacts"]["studio-sidecar"]["action"] == "reuse-if-inputs-match"
+    assert plan["artifacts"]["core-wheel"]["action"] == "retain-installed-version"
+    assert "verify-retained-core-wheel" in plan["stages"]["qualify-sdk-wheel-in-cohort"]
+
+
+@pytest.mark.parametrize(("path", "version", "approved", "reason"), [
+    ("crates/dag-ml-core/src/runtime.rs", "0.6.0", True, "forward patch"),
+    ("crates/dag-ml-core/src/runtime.rs", "0.5.1", False, "owner patch classification"),
+    ("docs/contracts/artifact.schema.json", "0.5.1", True, "unclassified source paths"),
+])
+def test_studio_hotfix_requires_full_for_unadmitted_changes(studio_hotfix_baseline, path, version, approved, reason) -> None:
+    plan = _studio_hotfix_plan(studio_hotfix_baseline, {path: "changed\n"}, version, approved)
+    assert plan["status"] == "requires-full-plan"
+    assert any(reason in blocker for blocker in plan["blockers"])
+    assert plan["stages"] == {}
+
+
+def test_studio_hotfix_doc_only_does_not_enqueue_delivery(studio_hotfix_baseline: tuple[Path, str]) -> None:
+    plan = _studio_hotfix_plan(studio_hotfix_baseline, {"docs/usage.md": "Docs.\n"}, approved=False)
+    assert plan["status"] == "no-runtime-change"
+    assert plan["stages"] == {}
+
+
+def test_studio_hotfix_rename_does_not_hide_removed_runtime_file(studio_hotfix_baseline: tuple[Path, str]) -> None:
+    from n4a_studio_hotfix import draft_plan
+
+    root, studio = studio_hotfix_baseline
+    dag = root / "dag-ml"
+    (dag / "docs").mkdir()
+    _git(dag, "mv", "crates/dag-ml-core/src/runtime.rs", "docs/runtime.md")
+    _git(dag, "commit", "-qm", "move source into docs")
+    plan = draft_plan(root, "0.19.8", studio, _git(dag, "rev-parse", "HEAD"), "0.5.1", compatible_patch=True)
+    assert plan["scope"] == "native-runtime"
+    assert set(plan["candidate"]["changed_paths"]) == {"crates/dag-ml-core/src/runtime.rs", "docs/runtime.md"}
+
+
+def test_studio_hotfix_rejects_drift_in_the_retained_sdk_wheel(studio_hotfix_baseline: tuple[Path, str]) -> None:
+    from n4a_studio_hotfix import draft_plan
+
+    root, _ = studio_hotfix_baseline
+    studio = root / "nirs4all-studio"
+    lock_name = "build/constraints/python-wheels-win32-x64.json"
+    lock = json.loads((studio / lock_name).read_text())
+    sdk = next(wheel for wheel in lock["packages"] if wheel["name"] == "nirs4all")
+    sdk["sha256"] = "b" * 64
+    studio_sha = _repo(studio, {lock_name: json.dumps(lock)})
+    _git(studio, "tag", "0.19.9")
+    dag_sha = _repo(root / "dag-ml", {"crates/dag-ml-py/src/lib.rs": "fn changed() {}\n"})
+    with pytest.raises(ValueError, match="win32-x64 disagrees with the SDK digest"):
+        draft_plan(root, "0.19.9", studio_sha, dag_sha, "0.5.1", compatible_patch=True)
+
+
+def test_studio_hotfix_distinguishes_version_bump_from_dependency_change(studio_hotfix_baseline: tuple[Path, str]) -> None:
+    change = {"Cargo.toml": '[workspace.package]\nversion = "0.5.1"\n',
+              "crates/dag-ml-py/pyproject.toml": '[project]\nname = "dag-ml"\nversion = "0.5.1"\n',
+              "crates/dag-ml-py/python/dag_ml/__init__.py": "def run():\n    return None\n"}
+    plan = _studio_hotfix_plan(studio_hotfix_baseline, change)
+    assert plan["status"] == "candidate-plan" and not plan["candidate"]["version_metadata_pending"]
+    assert plan["candidate"]["dag_release_source_commit"] == plan["candidate"]["dag_commit"]
+    assert plan["stages"]["build-dag-wheel"] == []
+    change["Cargo.toml"] += '[workspace.dependencies]\nserde = "2"\n'
+    blocked = _studio_hotfix_plan(studio_hotfix_baseline, change)
+    assert blocked["status"] == "requires-full-plan"
+    assert any("Cargo.toml" in reason for reason in blocked["blockers"])
